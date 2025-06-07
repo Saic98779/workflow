@@ -19,19 +19,19 @@ public class OutcomeTargetController {
     private final OutcomeTargetService outcomeTargetService;
 
     @GetMapping
-    public ResponseEntity<OutcomeTargetResponse> getTargetsByYear(@RequestParam String year, @RequestParam Long agencyId) {
-        OutcomeTargetResponse outcomeTargetResponse = new OutcomeTargetResponse();
+    public ResponseEntity<?> getTargetsByYear(@RequestParam String year, @RequestParam Long agencyId) {
+//        OutcomeTargetResponse outcomeTargetResponse = new OutcomeTargetResponse();
         List<OutcomeTargetDTO> targets = outcomeTargetService.getTargetsByYear(year,agencyId);
-        int grandTargetTotal = targets.stream()
-                .mapToInt(OutcomeTargetDTO::getTotalTarget)
-                .sum();
-
-        int grandAchievedTotal = targets.stream()
-                .mapToInt(OutcomeTargetDTO::getTotalAchieved)
-                .sum();
-        outcomeTargetResponse.setOutcomeTargetDTOList(targets);
-        outcomeTargetResponse.setGrandTargetTotal(grandTargetTotal);
-        outcomeTargetResponse.setGrandAchievedTotal(grandAchievedTotal);
-        return ResponseEntity.ok(outcomeTargetResponse);
+//        int grandTargetTotal = targets.stream()
+//                .mapToInt(OutcomeTargetDTO::getTotalTarget)
+//                .sum();
+//
+//        int grandAchievedTotal = targets.stream()
+//                .mapToInt(OutcomeTargetDTO::getTotalAchieved)
+//                .sum();
+//        outcomeTargetResponse.setOutcomeTargetDTOList(targets);
+//        outcomeTargetResponse.setGrandTargetTotal(grandTargetTotal);
+//        outcomeTargetResponse.setGrandAchievedTotal(grandAchievedTotal);
+        return ResponseEntity.ok(targets);
     }
 }
