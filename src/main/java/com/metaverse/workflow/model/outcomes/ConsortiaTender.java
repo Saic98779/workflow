@@ -84,13 +84,3 @@ public class ConsortiaTender {
     @UpdateTimestamp
     private Date updatedOn;
 }
-
-
-
-
-
-
-
-
-
-
