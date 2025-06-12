@@ -54,8 +54,8 @@ public class PMS {
     @Column(name = "repayment_date")
     private Date dateOfRepayment;
 
-    @Column(name = "upi_or_qr_code")
-    private Boolean upiOrQrCode;
+    @Column(name = "is_upi_or_qr_available")
+    private Boolean isUpiOrQrAvailable;
 
     @Column(name = "online_platform_used")
     private String onlinePlatformUsed;

@@ -2,8 +2,6 @@ package com.metaverse.workflow.programoutcome.dto;
 
 import lombok.*;
 
-import java.time.LocalDate;
-
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -14,7 +12,7 @@ public class PatentsRequest {
     public String nameOfPatent;
     public String typeOfPatent;
     public String patentNumber;
-    public String dateOfGrant;
+    public String patentIssueDate;
     public String patentCoverage;
     public Double annualRevenue;
     public String dateOfExport;

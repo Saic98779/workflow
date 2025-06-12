@@ -9,7 +9,6 @@ import lombok.*;
 @Setter
 public class TReDSTransactionRequest {
 
-     
     public String tredsTransactionDate;
     public String invoiceNumber;
     public String buyerName;

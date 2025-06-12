@@ -10,14 +10,14 @@ import lombok.*;
 public class PMSRequest {
     public Double businessTurnover;
     public String loanNumber;
-    public String purposeOfLoan;
+    private String purposeOfLoan;
     public Double amountOfLoanReleased;
     public String dateOfLoanReleased;
     public Integer employmentCreatedDirect;
     public Integer employmentCreatedInDirect;
     public Double repaymentAmount;
     public String dateOfRepayment;
-    public Boolean upiOrQrCode;
+    public Boolean isUpiOrQrAvailable;
     public String onlinePlatformUsed;
     public Boolean isInfluenced;
     private Long agencyId;

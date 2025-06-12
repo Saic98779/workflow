@@ -9,7 +9,7 @@ import lombok.*;
 @Getter
 @Setter
 public class TreadMarkRequest {
-    public String nameOfTradeMark;
+    public String nameOfTradMark;
     public String trademarkClass;
     public String tradeMarkRegistrationNo;
     public String dateOfRegistration;

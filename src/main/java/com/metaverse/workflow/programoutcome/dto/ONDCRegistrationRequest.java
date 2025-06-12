@@ -10,6 +10,7 @@ import lombok.*;
 public class ONDCRegistrationRequest {
     public String ondcRegistrationNo;
     public String ondcRegistrationDate;
+    public Boolean isInfluenced;
     private Long participantId;
     private Long organizationId;
     private Long agencyId;

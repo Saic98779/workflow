@@ -6,7 +6,7 @@ import com.metaverse.workflow.model.Participant;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 import net.minidev.json.annotate.JsonIgnore;
 import org.hibernate.annotations.CreationTimestamp;
@@ -15,55 +15,42 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.util.Date;
 
 @Entity
+@Table(name = "outcome_design_rights")
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Getter
-@Table(name = "outcome_patents")
-public class Patents {
-
+public class DesignRights {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "patent_id")
-    private Long patentId;
-
-    @Column(name = "patent_name")
-    private String nameOfPatent;
-
-    @Column(name = "patent_type")
-    private String typeOfPatent;
-
-    @Column(name = "patent_number")
-    private String patentNumber;
-
-    @Column(name = "patent_issue_date")
-    private Date patentIssueDate;
-
-    @Column(name = "patent_coverage")
-    private String patentCoverage;
-
-    @Column(name = "annual_revenue")
-    private Double annualRevenue;
-
+    @Column(name = "design_rights_id")
+    private Long designRightsId;
+    @Column(name = "date_of_application")
+    private Date dateOfApplication;
+    @Column(name = "date_of_design_rights_granted")
+    private Date dateOfDesignRightsGranted;
+    @Column(name = "certification_number")
+    private String certificationNumber;
+    @Column(name = "type_of_design_registered")
+    private String typeOfDesignRegistered;
+    @Column(name = "revenue_from_design_products")
+    private Double revenueFromDesignProducts;
+    @Column(name = "is_awarded_For_design_protection")
+    private Boolean  isAwardedForDesignProtection;
+    @Column(name = "date_of_awarded")
+    private Date dateOfAwarded;
+    @Column(name = "name_of_award")
+    private String nameOfAward;
     @Column(name = "date_of_export")
     private Date dateOfExport;
-
     @Column(name = "value_of_export")
     private Double valueOfExport;
+    @Column(name = "volume_of_export")
+    private Double volumeOfExport;
+    @Column(name = "units")
+    private String units;
 
-    @Column(name = "country_of_export")
-    private String countryOfExport;
-
-    @Column(name = "jobs_created")
-    private Integer totalJobsCreated;
-
-    @Column(name = "award_name")
-    private String nameOfAward;
-
-    @Column(name = "date_of_award")
-    private Date dateOfAward;
-
-    @Column(name = "Influenced")
+    @Column(name = "is_influenced")
     private Boolean isInfluenced;
     @JsonIgnore
     @ManyToOne

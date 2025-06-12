@@ -44,21 +44,10 @@ public class GeMTransaction {
     @Column(name = "product_value")
     private Double productValue;
 
+    @ManyToOne
+    @JoinColumn(name = "gem_id")
+    private GeMRegistration gemRegistration;
 
-    @Column(name="Influenced")
-    Boolean isInfluenced;
-    @JsonIgnore
-    @ManyToOne
-    @JoinColumn(name = "agency_id")
-    private Agency agency;
-    @JsonIgnore
-    @ManyToOne
-    @JoinColumn(name = "participant_id")
-    private Participant participant;
-    @JsonIgnore
-    @ManyToOne
-    @JoinColumn(name = "organization_id")
-    private Organization organization;
     @Column(name = "created_on", insertable = true, updatable = false)
     @CreationTimestamp
     private Date createdOn;
