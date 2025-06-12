@@ -5,7 +5,6 @@ import com.metaverse.workflow.activity.repository.SubActivityRepository;
 import com.metaverse.workflow.agency.repository.AgencyRepository;
 import com.metaverse.workflow.callcenter.repository.CallCenterVerificationRepository;
 import com.metaverse.workflow.common.constants.Constants;
-import com.metaverse.workflow.common.constants.ProgramStatusConstants;
 import com.metaverse.workflow.common.fileservice.FileSystemStorageService;
 import com.metaverse.workflow.common.fileservice.StorageService;
 import com.metaverse.workflow.common.response.WorkflowResponse;
@@ -40,7 +39,6 @@ import java.nio.file.Path;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -693,16 +691,19 @@ public class ProgramServiceAdapter implements ProgramService {
             if (endDate.before(today)) {
                 if ("Program Expenditure Updated".equalsIgnoreCase(status)) {
                     completed++;
-                } else {
-                    completedDataPending++;
                 }
-            } else if (!today.before(startDate) && !today.after(endDate)) {
+                else {
+                    if (program.getParticipants().isEmpty()) {
+                        overDue++;
+                    } else {
+                        completedDataPending++;
+                    }
+                }
+            }
+            else if (!today.before(startDate) && !today.after(endDate)) {
                 inProcess++;
             } else if (startDate.after(today)) {
                 yetToBegin++;
-            } else if (program.getVersion() != null){
-                completedDataPending--;
-                overDue++;
             }
         }
 

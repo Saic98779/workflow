@@ -11,4 +11,6 @@ public interface ActivityRepository  extends JpaRepository<Activity,Long> {
     List<Activity> findByAgencyAgencyId(Long id);
 
     Optional<Activity> findByActivityName(String activityName);
+
+    Activity findByActivityId(Long activityId);
 }
