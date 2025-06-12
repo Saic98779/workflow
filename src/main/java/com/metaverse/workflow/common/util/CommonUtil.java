@@ -1,5 +1,6 @@
 package com.metaverse.workflow.common.util;
 
+import com.metaverse.workflow.activity.repository.ActivityRepository;
 import com.metaverse.workflow.activity.sevice.ActivityService;
 import com.metaverse.workflow.agency.service.AgencyService;
 import com.metaverse.workflow.common.response.WorkflowResponse;
@@ -29,6 +30,9 @@ public class CommonUtil {
     AgencyService agencyService;
     @Autowired
     ParticipantService participantService;
+
+    @Autowired
+    static ActivityRepository activityRepository;
     /*@Autowired
     ResourceService resourceService;*/
 
@@ -61,6 +65,10 @@ public class CommonUtil {
         participantMap = participantList.stream().collect(Collectors.toMap(participant -> participant.getParticipantId(), participant -> participant));
         /*List<Resource> resourceList = resourceService.getResourceEntities();
         resourceMap = resourceList.stream().collect(Collectors.toMap(resource -> resource.getResourceId(), resource -> resource.getName()));*/
+    }
+
+    public static Activity getActivityById(Long activityId) {
+        return activityRepository.findByActivityId(activityId);
     }
 
 

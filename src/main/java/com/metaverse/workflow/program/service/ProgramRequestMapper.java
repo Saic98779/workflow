@@ -1,8 +1,11 @@
 package com.metaverse.workflow.program.service;
 
+import com.metaverse.workflow.common.constants.Constants;
 import com.metaverse.workflow.common.constants.ProgramStatusConstants;
+import com.metaverse.workflow.common.util.CommonUtil;
 import com.metaverse.workflow.common.util.DateUtil;
 import com.metaverse.workflow.model.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -10,7 +13,9 @@ import java.util.List;
 
 @Component
 public class ProgramRequestMapper {
+
     public static Program map(ProgramRequest programRequest, Agency agency, Location location) {
+        Activity activity = CommonUtil.getActivityById(programRequest.getActivityId());
         return Program.builder()
                 .activityId(programRequest.getActivityId())
                 .subActivityId(programRequest.getSubActivityId())
@@ -26,7 +31,11 @@ public class ProgramRequestMapper {
                 .location(location)
                 .kpi(programRequest.getKpi())
                 .agency(agency)
-                .status(ProgramStatusConstants.PROGRAM_SCHEDULED)
+                .status(
+                        activity.getActivityName().equals(Constants.OTHER_THAN_TRAINING)
+                                ? ProgramStatusConstants.PROGRAM_EXECUTION_UPDATED
+                                : ProgramStatusConstants.PROGRAM_SCHEDULED
+                )
                 .build();
     }
 

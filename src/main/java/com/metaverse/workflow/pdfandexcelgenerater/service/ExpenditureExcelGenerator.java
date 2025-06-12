@@ -20,7 +20,7 @@ public class ExpenditureExcelGenerator {
     ExpenditureService expenditureService;
 
     public void generateProgramsExcel(HttpServletResponse response, Long programId, Long agencyId) throws IOException {
-        List<ProgramExpenditureResponse> ListOfProgramExpenditure = expenditureService.getAllProgramExpenditure(agencyId, programId);
+        List<ProgramExpenditureResponse> listOfProgramExpenditure = expenditureService.getAllProgramExpenditure(agencyId, programId);
         WorkflowResponse transaction = expenditureService.getAllBulkExpenditureTransactionByProgram(programId);
         List<BulkTransactions> bulkTransactionsList = (List<BulkTransactions>) transaction.getData();
 
@@ -73,7 +73,7 @@ public class ExpenditureExcelGenerator {
         int postRowIndex = 1;
 
         // Write ProgramExpenditure data to appropriate sheet
-        for (ProgramExpenditureResponse res : ListOfProgramExpenditure) {
+        for (ProgramExpenditureResponse res : listOfProgramExpenditure) {
             HSSFRow dataRow;
             if ("pre".equalsIgnoreCase(res.getExpenditureType())) {
                 dataRow = preSheet.createRow(preRowIndex++);
