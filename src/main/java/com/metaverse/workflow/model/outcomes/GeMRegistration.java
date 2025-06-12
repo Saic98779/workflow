@@ -1,5 +1,6 @@
 package com.metaverse.workflow.model.outcomes;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.metaverse.workflow.model.Agency;
 import com.metaverse.workflow.model.Organization;
 import com.metaverse.workflow.model.Participant;
@@ -8,40 +9,33 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import net.minidev.json.annotate.JsonIgnore;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Getter
-@Table(name = "outcome_udyam_registration")
-public class UdyamRegistration {
-
+@Table(name = "outcome_gem_registration")
+public class GeMRegistration {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "udyam_registration_id")
-    private Long udyamRegistrationId;
+    @Column(name = "gem_id")
+    private Long gemId;
 
-    @Column(name="udyam_registration_date")
-    private Date udyamRegistationDate;
+    @Column(name = "gem_registration_id")
+    private String gemRegistrationId;
 
-    @Column(name="udyam_registration_no")
-    private String udyamRegistrationNo;
+    @Column(name = "gem_registration_Date")
+    private Date gemRegistrationDate;
 
     @Column(name="Influenced")
     private Boolean isInfluenced;
 
-    @Column(name = "created_on", insertable = true, updatable = false)
-    @CreationTimestamp
-    private Date createdOn;
-    @Column(name = "updated_on", insertable = false, updatable = true)
-    @UpdateTimestamp
-    private Date updatedOn;
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "agency_id")
@@ -54,4 +48,16 @@ public class UdyamRegistration {
     @ManyToOne
     @JoinColumn(name = "organization_id")
     private Organization organization;
+    @OneToMany(mappedBy = "gemRegistration", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<GeMTransaction> ondcTransactionList;
+
+
+
+    @Column(name = "created_on", insertable = true, updatable = false)
+    @CreationTimestamp
+    private Date createdOn;
+    @Column(name = "updated_on", insertable = false, updatable = true)
+    @UpdateTimestamp
+    private Date updatedOn;
+
 }

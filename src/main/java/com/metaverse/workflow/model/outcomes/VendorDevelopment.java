@@ -13,45 +13,63 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.util.Date;
+import java.util.List;
 
-@Entity
+
 @Data
-@Builder
+
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "outcome_lean")
-public class Lean {
+@Builder
+@Entity
+@Table(name = "outcome_vendor_development")
+public class VendorDevelopment {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long leanId;
+    private Long vendorDevelopmentId;
 
-    @Column(name = "certification_type")
-    public String certificationType; //Basic Intermediate Advanced
+    @Column(name = "date_of_participation")
+    private Date dateOfParticipation;
 
-    @Column(name = "date_of_certification")
-    private Date dateOfCertification;
+    @Column(name = "vdp_program_name")
+    private String vdpProgramName;
 
-    @Column(name = "lean_consultant_appointed")
-    private Boolean isLeanConsultantAppointed;
+    @Column(name = "product_showcased")
+    private String productShowcased;
 
-    @Column(name = "date_of_appointed")
-    private Date dateOfAppointed;
+    @Column(name = "name_buyers_interested")
+    private List<String> nameOfBuyersInterested;//doubt have to use list
 
-    @Column(name = "raw_material_wastage")
-    private Double rawMaterialWastage;
+    @Column(name = "vendor_registered_with")
+    private String vendorRegisteredWith;
 
-    @Column(name = "production_rate")
-    private Double productionRate; // units/hour
+    @Column(name = "is_e_procurement_registered")
+    private Boolean iseProcurementRegistered;
+    //if yes
+    @Column(name = "portal_name")
+    private String portalName;//doubt
 
-    @Column(name = "defect_rate")
-    private Double defectRate; //
-    // in percentage
-    @Column(name = "power_usage")
-    private Double powerUsage; // in Kwh
+    @Column(name = "is_digital_catalog_created")
+    private Boolean isDigitalCatalogCreated;
 
+    @Column(name = "date_of_supply")
+    private Date dateOfSupply;
+
+    @Column(name = "volume_of_supply")
+    private Double volumeOfSupply;
+
+    @Column(name="units")
+    private String units;
+
+    @Column(name = "value_of_supply")
+    private Double valueOfSupply;
+
+    @Column(name = "monthly_turnover")
+    private Double monthlyTurnover;
 
     @Column(name = "Influenced")
     Boolean isInfluenced;
+
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "agency_id")

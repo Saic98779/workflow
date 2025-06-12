@@ -8,19 +8,14 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class LeanRequest {
-    public String zedCertificationType; // Bronze / Silver / Gold /dropdown
-    public String certificationNumber;
+    private String certificationType; // Basic, Intermediate, Advanced
     public String dateOfCertification;
-    public String validUpto;
+    public Boolean isLeanConsultantAppointed;
+    public String dateOfAppointed;
+    public Double rawMaterialWastage;
     public Double productionRate;
     public Double defectRate;
-    public Double rawMaterialWastage;
-    public Double energyConsumption;
-    public String dateOfExport;
-    public Double valueOfExport;
-    public String units;
-    public Double volumeOfExport;
-    public Double annualTurnover;
+    public Double powerUsage;
     public Boolean isInfluenced;
     private Long agencyId;
     private Long participantId;

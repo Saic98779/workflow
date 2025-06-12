@@ -12,12 +12,12 @@ public class GeMTransactionRequest {
     public String procurementDate;
     public String productName;
     public String unitOfMeasurement;
-    public String registeredAs; // Buyer or Seller
+    private String registeredAs; // Buyer or Seller
     public Integer quantity;
     public Double productValue;
-    public Boolean isInfluenced;
-    private Long agencyId;
     private Long participantId;
     private Long organizationId;
+    private Long agencyId;
+
 
 }

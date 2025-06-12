@@ -1,5 +1,6 @@
 package com.metaverse.workflow.model.outcomes;
 
+import com.nimbusds.openid.connect.sdk.claims.Gender;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,18 +22,20 @@ public class UdyamData {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "udyam_data_id")
     private Long udyamDataId;
-
+//UdyogAadharNo	EnterpriseName	PINCode	MobileNo	Gender	SocialCategory	MajorActivity	CreateDate	DISTRICT_NAME	OrganisationType	EnterpriseType
+//UdyogAadharNo  EnterpriseName	PINCode	MobileNo	Gender SocialCategory	MajorActivity	CreateDate	DISTRICT_NAME	OrganisationType	EnterpriseType
+//UdyogAadharNo	EnterpriseName	PINCode	MobileNo	Gender	SocialCategory	MajorActivity	CreateDate	DISTRICT_NAME	OrganisationType	EnterpriseType
     @Column(name = "udyam_registration_no")
     private String udyamRegistrationNo;
 
-    @Column(name = "msme_name")
-    private String nameOfMsme;
+    @Column(name = "enterprise_name")
+    private String enterpriseName;
 
-    @Column(name = "owner_name")
-    private String nameOfOwner;
+    @Column(name = "pin_code")
+    private Integer PINCode;
 
     @Column(name = "mobile_no")
-    private String mobileNo;
+    private Long mobileNo;
 
     @Column(name = "gender")
     private String gender;
@@ -40,9 +43,8 @@ public class UdyamData {
     @Column(name = "social_category")
     private String socialCategory;
 
-    @Column(name = "nature_of_enterprise")
-    private String natureOfEnterprise;
-
+    @Column(name = "Major_activity")
+    private String majorActivity;
 
     @Column(name = "create_date")
     private Date createDate;
@@ -50,8 +52,12 @@ public class UdyamData {
     @Column(name = "district_name")
     private String districtName;
 
-    @Column(name = "msme_type")
-    private String typeOfMsme;
+
+    @Column(name = "organisation_type")
+    private String organisationType;
+
+    @Column(name = "enterpriseType")
+    private String enterpriseType;
 
     @Column(name = "created_on", insertable = true, updatable = false)
     @CreationTimestamp

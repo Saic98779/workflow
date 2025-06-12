@@ -49,7 +49,7 @@ public class ONDCRegistration {
     @JoinColumn(name = "organization_id")
     private Organization organization;
     @Column(name="Influenced")
-    Boolean isInfluenced;
+    private Boolean isInfluenced;
     @OneToMany(mappedBy = "ondcRegistration", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ONDCTransaction> ondcTransactionList;
 

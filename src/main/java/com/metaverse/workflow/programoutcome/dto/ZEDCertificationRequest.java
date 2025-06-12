@@ -14,7 +14,7 @@ public class ZEDCertificationRequest {
     public Double releasedValue;
     public String groundingDate;
     public String certificationDate;
-    public String zedCertificationType; // Bronze / Silver / Gold
+    private String zedCertificationType; // Bronze / Silver / Gold
     public Double turnover;
     public Double energyConsumptionKwhHr;
     public Integer productionMtHr;

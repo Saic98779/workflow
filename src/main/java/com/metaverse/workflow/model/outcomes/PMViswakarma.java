@@ -6,7 +6,7 @@ import com.metaverse.workflow.model.Participant;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 import net.minidev.json.annotate.JsonIgnore;
 import org.hibernate.annotations.CreationTimestamp;
@@ -14,57 +14,42 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.util.Date;
 
-@Entity
+
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Getter
-@Table(name = "outcome_patents")
-public class Patents {
-
+@Entity
+@Table(name = "outcome_pm_viswakarma")
+public class PMViswakarma {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "patent_id")
-    private Long patentId;
+    @Column(name = "pm_viswakarma_id")
+    private Long pmViswakarmaId;
 
-    @Column(name = "patent_name")
-    private String nameOfPatent;
+    @Column(name = "artisan_category")
+    private String artisanCategory;
 
-    @Column(name = "patent_type")
-    private String typeOfPatent;
+    @Column(name = "date_of_training")
+    private Date dateOfTraining;
 
-    @Column(name = "patent_number")
-    private String patentNumber;
+    @Column(name = "certificate_issue_date")
+    private Date certificateIssueDate;
 
-    @Column(name = "patent_issue_date")
-    private Date patentIssueDate;
+    @Column(name = "date_of_credit_availed")
+    private Date dateOfCreditAvailed;
 
-    @Column(name = "patent_coverage")
-    private String patentCoverage;
+    @Column(name = "amount_of_credit_availed")
+    private Double amountOfCreditAvailed;
 
-    @Column(name = "annual_revenue")
-    private Double annualRevenue;
+    @Column(name = "purpose_of_utilisation")
+    private String purposeOfUtilisation; //dp- Working Capital / Renovation / Equipment
 
-    @Column(name = "date_of_export")
-    private Date dateOfExport;
-
-    @Column(name = "value_of_export")
-    private Double valueOfExport;
-
-    @Column(name = "country_of_export")
-    private String countryOfExport;
-
-    @Column(name = "jobs_created")
-    private Integer totalJobsCreated;
-
-    @Column(name = "award_name")
-    private String nameOfAward;
-
-    @Column(name = "date_of_award")
-    private Date dateOfAward;
+    @Column(name = "monthly_income_after_credit")
+    private Double monthlyIncomeAfterCredit;
 
     @Column(name = "Influenced")
-    private Boolean isInfluenced;
+    Boolean isInfluenced;
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "agency_id")
