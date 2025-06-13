@@ -15,7 +15,6 @@ import java.util.List;
 public class ProgramRequestMapper {
 
     public static Program map(ProgramRequest programRequest, Agency agency, Location location) {
-        Activity activity = CommonUtil.getActivityById(programRequest.getActivityId());
         return Program.builder()
                 .activityId(programRequest.getActivityId())
                 .subActivityId(programRequest.getSubActivityId())
@@ -32,7 +31,7 @@ public class ProgramRequestMapper {
                 .kpi(programRequest.getKpi())
                 .agency(agency)
                 .status(
-                        activity.getActivityName().equals(Constants.OTHER_THAN_TRAINING)
+                        CommonUtil.activityMap.get(programRequest.getActivityId()).equals(Constants.OTHER_THAN_TRAINING)
                                 ? ProgramStatusConstants.PROGRAM_EXECUTION_UPDATED
                                 : ProgramStatusConstants.PROGRAM_SCHEDULED
                 )
@@ -66,7 +65,7 @@ public class ProgramRequestMapper {
     }
 
 
-    public static List<ProgramSessionFile> mapProgramFiles(List<String> files){
+    public static List<ProgramSessionFile> mapProgramFiles(List<String> files) {
         List<ProgramSessionFile> programSessionFileList = new ArrayList<>();
         if (files != null && files.size() > 0)
             files.stream().forEach(file -> programSessionFileList.add(ProgramSessionFile.builder().fileType("files").filePath(file).build()));

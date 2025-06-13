@@ -31,8 +31,7 @@ public class CommonUtil {
     @Autowired
     ParticipantService participantService;
 
-    @Autowired
-    static ActivityRepository activityRepository;
+
     /*@Autowired
     ResourceService resourceService;*/
 
@@ -67,9 +66,6 @@ public class CommonUtil {
         resourceMap = resourceList.stream().collect(Collectors.toMap(resource -> resource.getResourceId(), resource -> resource.getName()));*/
     }
 
-    public static Activity getActivityById(Long activityId) {
-        return activityRepository.findByActivityId(activityId);
-    }
 
 
 }
