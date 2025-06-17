@@ -11,14 +11,14 @@ public class SIDBIAspireRequest {
 
     public String applicationSubmissionDate;
     public String sanctionDateUnderAspire;
-    public Boolean fundingSupportReceived;
+    public Boolean isFundingSupportReceived;
     public String incubationPartnerName;
     public String fundingType;
     public Double supportAmount;
     public String machinerySetupDate;
     public String productionStartedDate;
     public Integer monthlyProductionUnits;
-    public Boolean marketLinkageEnabled;
+    public Boolean isMarketLinkageEnabled;
     public String marketLinkageDate;
     public String marketLinkageVolume;
     public Double marketLinkageValue;
