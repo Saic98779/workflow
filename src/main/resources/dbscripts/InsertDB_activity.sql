@@ -96,6 +96,52 @@ insert into sub_activity(sub_activity_id,sub_activity_name) values(104,'Export C
 insert into activity_sub_activity(activity_id,sub_activity_id)values(26,104),(27,104),(28,104),(29,104);
 
 
+-- (1,'TiHCL_05'),(2,'CoDe_IITH'),(3,'RICH_6A'),(4,'RICH_6B'),(5,'CITD_11'),(6,'CIPET_!!'),(7,'WeHub'),(8,'NIMSME'),(9,'ALEAP'),(10,'TGTPC-4'),(11,'TGTPC-4'),(12,'CoI_01');
 
+insert into activity(activity_id,activity_name,agency_id) values(30,'Other than Trainings',12),(31,'Training',12);
+insert into sub_activity(sub_activity_id,sub_activity_name) values(115,'Deployment of Technical agency'),(116,'Creation of consolidated MSME database & Dashbaord'),
+(117,'Setting up call center services'),(118,'Training programs for Government officials');
+insert into activity_sub_activity(activity_id,sub_activity_id)values(30,115),(30,116),(30,117),(31,118);
 
+insert into activity(activity_id,activity_name,agency_id) values(32,'Other than Trainings',8);
+insert into sub_activity(sub_activity_id,sub_activity_name) values(119,'Development of IT Platform'),(120,'Data collection and creating information required for EDCs'),
+(121,'Setting up call center services');
+insert into activity_sub_activity(activity_id,sub_activity_id)values(32,119),(32,120),(32,121),(32,121);
 
+insert into activity(activity_id,activity_name,agency_id) values(33,'Other than Trainings',2);
+insert into sub_activity(sub_activity_id,sub_activity_name) values(122,'Infrastructure'),(123,'Staff of CEO, Project Manager, Designer'),
+(124,'Raw Material for the Skill Development Workshops'),(125,'Travel & Transport for the Staff');
+insert into activity_sub_activity(activity_id,sub_activity_id)values(33,122),(33,123),(33,124),(33,125);
+
+insert into activity(activity_id,activity_name,agency_id) values(34,'Other than Trainings',1);
+insert into sub_activity(sub_activity_id,sub_activity_name) values(126,'Co-Financing to distressed MSMEs');
+insert into activity_sub_activity(activity_id,sub_activity_id)values(34,126);
+
+insert into activity(activity_id,activity_name,agency_id) values(35,'Other than Trainings',3);
+insert into sub_activity(sub_activity_id,sub_activity_name) values(127,'Conducting Energy intensity mapping and development of Dash board'),
+(128,'Contingency expenses during the project');
+insert into activity_sub_activity(activity_id,sub_activity_id)values(35,127),(35,128);
+
+insert into activity(activity_id,activity_name,agency_id) values(36,'Other than Trainings',4);
+insert into sub_activity(sub_activity_id,sub_activity_name) values(129,'Organising Grand challenges'),(130,'Identification and onboarding of MSMEs for Greening'),
+(131,'Conducting pre and post audits at MSMEs');
+insert into activity_sub_activity(activity_id,sub_activity_id)values(36,129),(36,130),(36,131);
+
+insert into activity(activity_id,activity_name,agency_id) values(37,'Other than Trainings',10),(38,'Other than Trainings',11);
+insert into sub_activity(sub_activity_id,sub_activity_name) values(132,'Hiring of Agency');
+insert into activity_sub_activity(activity_id,sub_activity_id)values(37,132),(38,132);
+
+insert into activity(activity_id,activity_name,agency_id) values(39,'Other than Trainings',9);
+insert into sub_activity(sub_activity_id,sub_activity_name) values(133,'Conducting preliminary survey for identifying potential SHGs and Sectors'),
+(134,'Development of Dashboard'),(135,'Handhold support to MSMEs on enterprise creation'),(136,'Raw material provided to the MSMEs during training programme'),
+(137,'Contingency');
+insert into activity_sub_activity(activity_id,sub_activity_id)values(39,133),(39,134),(39,135),(39,136),(39,137);
+
+insert into activity(activity_id,activity_name,agency_id) values(40,'Other than Trainings',7);
+insert into sub_activity(sub_activity_id,sub_activity_name) values(138,'Deployment of Staff'),(139,'Ecosystem meets'),(140,'Printing of IEC material'),
+(141,'IT platform'),(142,'Overshead'),(143,'Contingency');
+insert into activity_sub_activity(activity_id,sub_activity_id)values(40,138),(40,139),(40,140),(40,141),(40,142),(40,143);
+
+insert into activity(activity_id,activity_name,agency_id) values(41,'Other than Trainings',5),(42,'Other than Trainings',6);
+insert into sub_activity(sub_activity_id,sub_activity_name) values(144,'Benchmarking study to assess technology gap in 10 Clusters ');
+insert into activity_sub_activity(activity_id,sub_activity_id)values(41,144),(42,144);

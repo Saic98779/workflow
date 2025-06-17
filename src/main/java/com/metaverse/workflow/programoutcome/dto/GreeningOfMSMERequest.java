@@ -16,7 +16,7 @@ public class GreeningOfMSMERequest {
 
     public String typeOfIntervention;
     public String typeOfPrototypeProposed;
-    public List<String> typeOfTrainingReceived;
+    private List<String> typeOfTrainingReceived;
     public String trainingCompletionDate;
     public String businessPlanSubmissionDate;
     public String amountSanctionedDate;
@@ -29,11 +29,7 @@ public class GreeningOfMSMERequest {
     public String parameter2;
     public String unitForMeasurementOfProduction;
     public Double productionPerHour;
-
-
     private Long agencyId;
     private Long participantId;
     private Long organizationId;
-
-    // Getters and Setters
 }

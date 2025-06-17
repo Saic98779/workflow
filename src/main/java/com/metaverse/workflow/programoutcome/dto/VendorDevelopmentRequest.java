@@ -13,7 +13,7 @@ public class VendorDevelopmentRequest {
     public String dateOfParticipation;
     public String vdpProgramName;
     public String productShowcased;
-    public List<String> nameOfBuyersInterested;
+    private List<String> nameOfBuyersInterested;
     public String vendorRegisteredWith;
     public Boolean iseProcurementRegistered;
     public String portalName;

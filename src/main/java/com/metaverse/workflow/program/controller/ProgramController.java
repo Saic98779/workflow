@@ -40,6 +40,17 @@ public class ProgramController {
     @Autowired
     OverdueProgramUpdater overdueProgramUpdater;
 
+
+    @GetMapping("/program/sessions/{programId}")
+    public ResponseEntity<?> getProgramSessionByProgramId(@PathVariable("programId") Long programId) {
+        try {
+            return ResponseEntity.ok(programService.getProgramSessionsByProgramId(programId));
+        } catch (DataException exception) {
+            return RestControllerBase.error(exception);
+        }
+
+    }
+
     @Operation(summary = "Create program", responses = {
             @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = WorkflowResponse.class))),
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(implementation = Exception.class)))

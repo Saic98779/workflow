@@ -406,8 +406,8 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                         .orElseThrow(() -> new DataException("Organization data not found", "ORGANIZATION-DATA-NOT-FOUND", 400));
                 if (ondcRegistrationRepository.existsByParticipant_ParticipantId(request.getParticipantId())) {
                     return WorkflowResponse.builder()
+                            .status(400)
                             .message("ONDC registration already exists for the given participant.")
-                            .data(ondcRegistrationRepository.findByParticipantId(request.getParticipantId()))
                             .build();
                 }
                 ondcRegistrationRepository.save(OutcomeRequestMapper.mapOndcRegistration(request, agency, participant, organization));
@@ -436,7 +436,7 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                 if (udyamRegistrationRepository.existsByParticipant_ParticipantId(request.getParticipantId())) {
                     return WorkflowResponse.builder()
                             .message("Udyam registration already exists for the given participant.")
-                            .data(udyamRegistrationRepository.findByParticipantParticipantId(request.getParticipantId()))
+                            .status(400)
                             .build();
                 }
                 udyamRegistrationRepository.save(OutcomeRequestMapper.mapUdyamRegistration(request, agency, participant, organization));
@@ -470,7 +470,7 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                 if (geMRegistrationRepository.existsByParticipant_ParticipantId(request.getParticipantId())) {
                     return WorkflowResponse.builder()
                             .message("GeM registration already exists for the given participant.")
-                            .data(geMRegistrationRepository.findByParticipantParticipantId(request.getParticipantId()))
+                            .status(400)
                             .build();
                 }
                 geMRegistrationRepository.save(OutcomeRequestMapper.mapGeMRegistration(request, agency, participant, organization));
@@ -499,7 +499,7 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                 if (tredsRegistrationRepository.existsByParticipant_ParticipantId(request.getParticipantId())) {
                     return WorkflowResponse.builder()
                             .message("TReDS registration already exists for the given participant.")
-                            .data(tredsRegistrationRepository.findByParticipantId(request.getParticipantId()))
+                            .status(400)
                             .build();
                 }
                 tredsRegistrationRepository.save(OutcomeRequestMapper.mapTredsRegistration(request, agency, participant, organization));
@@ -862,6 +862,5 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
         }
         return displayname;
     }
-
 
 }
