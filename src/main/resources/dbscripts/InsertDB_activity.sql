@@ -145,14 +145,3 @@ insert into activity_sub_activity(activity_id,sub_activity_id)values(40,138),(40
 insert into activity(activity_id,activity_name,agency_id) values(41,'Other than Trainings',5),(42,'Other than Trainings',6);
 insert into sub_activity(sub_activity_id,sub_activity_name) values(144,'Benchmarking study to assess technology gap in 10 Clusters ');
 insert into activity_sub_activity(activity_id,sub_activity_id)values(41,144),(42,144);
-
-
-
-
-
-
-
-
-
-
-

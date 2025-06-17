@@ -29,11 +29,7 @@ public class GreeningOfMSMERequest {
     public String parameter2;
     public String unitForMeasurementOfProduction;
     public Double productionPerHour;
-
-
     private Long agencyId;
     private Long participantId;
     private Long organizationId;
-
-    // Getters and Setters
 }
