@@ -6,17 +6,8 @@ import com.metaverse.workflow.programattendance.util.AttendanceUtil;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Mapper class for converting domain objects to response objects
- */
 public class ProgramAttendanceResponseMapper {
 
-    /**
-     * Maps a list of ProgramAttendance objects to a ProgramAttendanceResponse
-     * 
-     * @param attendanceList List of ProgramAttendance objects
-     * @return ProgramAttendanceResponse containing the mapped data
-     */
     public static ProgramAttendanceResponse map(List<ProgramAttendance> attendanceList) {
         if (attendanceList == null || attendanceList.isEmpty()) {
             return ProgramAttendanceResponse.builder().build();
