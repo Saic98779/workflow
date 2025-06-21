@@ -3,5 +3,19 @@ package com.metaverse.workflow.programoutcome.repository;
 import com.metaverse.workflow.model.outcomes.PMMY;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface PMMYRepository extends JpaRepository<PMMY,Long> {
+import java.util.Date;
+
+public interface PMMYRepository extends JpaRepository<PMMY, Long> {
+    default long countPMMY(Long agencyId, Date start, Date end) {
+        if (agencyId == -1) {
+            return countByLoanSanctionedDateBetween(start, start);
+        } else if (start == null || end == null) {
+            return count();
+        } else {
+            return countByAgencyAgencyIdAndLoanSanctionedDateBetween(agencyId, start, end);
+        }
+    }
+
+    long countByAgencyAgencyIdAndLoanSanctionedDateBetween(Long agencyId, Date start, Date end);
+    long countByLoanSanctionedDateBetween(Date start, Date start1);
 }

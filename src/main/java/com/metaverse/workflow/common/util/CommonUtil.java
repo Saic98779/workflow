@@ -42,6 +42,7 @@ public class CommonUtil {
     public void initInstance() {
         instance = this;
     }
+
     /*@Autowired
     ResourceService resourceService;*/
 

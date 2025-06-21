@@ -20,4 +20,16 @@ insert into program_outcome_tables (outcome_table_id, outcome_table_display_name
 (17,'ZEDCertification Bronze','ZEDCertificationBronze'),
 (18,'ZEDCertification Silver','ZEDCertificationSilver'),
 (19,'ZEDCertification Gold','ZEDCertificationGold'),
-(20,'Lean','Lean');
+(20,'Lean','Lean'),
+(21,'PM Viswakarma','PMViswakarma'),
+(22,'Vendor Development','VendorDevelopment'),
+(23,'Sc St Hub','ScStHub'),
+(24,'SIDBI Aspire','SIDBIAspire'),
+(25,'GeM Registration','GeMRegistration'),
+(26,'OEM','OEM'),
+(27,'PMFME Scheme','PMFMEScheme'),
+(28,'Consortia & Tender Marketing','ConsortiaTender'),
+(29,'Design Right','DesignRight')
+(30,'Copy Right','CopyRight'),
+(31,'Greening Of MSME','GreeningOfMSME');
+

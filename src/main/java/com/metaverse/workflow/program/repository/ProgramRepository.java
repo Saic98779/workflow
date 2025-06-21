@@ -29,4 +29,13 @@ public interface ProgramRepository extends JpaRepository<Program, Long> {
     List<Program> findProgramsWithStartDateEqual(@Param("targetDate") Date targetDate);
 
     List<Program> findByStartDateBefore(Date today);
+
+    
+    List<Program> findByLocation_District(String district);
+
+    List<Program> findByAgency_AgencyIdAndLocation_District(Long agencyId, String district);
+
+    List<Program> findByStartDateBetween(Date startDate, Date endDate);
+
+    List<Program> findByAgency_AgencyIdAndStartDateBetween(Long agencyId,Date startDate, Date endDate);
 }

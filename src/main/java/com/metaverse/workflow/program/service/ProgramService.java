@@ -39,4 +39,5 @@ public interface  ProgramService {
     WorkflowResponse deleteProgramAndDependencies(Long programId);
     List<ProgramFilePathInfo> getProgramFileByType(FileType fileType);
     WorkflowResponse getProgramStatusSummery(Long agencyId);
+    WorkflowResponse getProgramSessionsByProgramId(Long programId)throws DataException;
 }

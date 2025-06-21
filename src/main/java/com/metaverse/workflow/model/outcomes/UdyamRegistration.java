@@ -24,14 +24,17 @@ public class UdyamRegistration {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "startups_on_formalization_registration_id")
-    private Long StartupsOnFormalizationRegistrationId;
+    @Column(name = "udyam_registration_id")
+    private Long udyamRegistrationId;
 
     @Column(name="udyam_registration_date")
-    Date udyamRegistationDate;
+    private Date udyamRegistationDate;
 
     @Column(name="udyam_registration_no")
-    String udyamRegistrationNo;
+    private String udyamRegistrationNo;
+
+    @Column(name="Influenced")
+    private Boolean isInfluenced;
 
     @Column(name = "created_on", insertable = true, updatable = false)
     @CreationTimestamp

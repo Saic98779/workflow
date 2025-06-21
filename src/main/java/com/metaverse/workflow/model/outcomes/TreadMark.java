@@ -24,7 +24,7 @@ public class TreadMark {
     private Long treadMarkId;
 
     @Column(name = "name_of_trade_mark")
-    private String nameOfTradeMark;
+    private String nameOfTradMark;
 
     @Column(name = "trademark_class")
     private String trademarkClass;

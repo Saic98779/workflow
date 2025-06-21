@@ -19,51 +19,36 @@ import java.util.Date;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name="outcome_lean")
+@Table(name = "outcome_lean")
 public class Lean {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long leanId;
 
-    @Column(name = "zed_certification_type")
-    public String zedCertificationType; // Bronze / Silver / Gold /dropdown
-
-    @Column(name = "certification_number")
-    private String certificationNumber;
+    @Column(name = "certification_type")
+    public String certificationType; //Basic Intermediate Advanced
 
     @Column(name = "date_of_certification")
     private Date dateOfCertification;
 
-    @Column(name = "valid_upto")
-    private Date validUpto;
+    @Column(name = "lean_consultant_appointed")
+    private Boolean isLeanConsultantAppointed;
+
+    @Column(name = "date_of_appointed")
+    private Date dateOfAppointed;
+
+    @Column(name = "raw_material_wastage")
+    private Double rawMaterialWastage;
 
     @Column(name = "production_rate")
     private Double productionRate; // units/hour
 
     @Column(name = "defect_rate")
-    private Double defectRate; // in percentage
+    private Double defectRate; //
+    // in percentage
+    @Column(name = "power_usage")
+    private Double powerUsage; // in Kwh
 
-    @Column(name = "raw_material_wastage")
-    private Double rawMaterialWastage; // MTs/hour
-
-    @Column(name = "energy_consumption")
-    private Double energyConsumption; // in Kwh
-
-
-    @Column(name = "date_of_export")
-    private Date dateOfExport;
-
-    @Column(name = "value_of_export")
-    private Double valueOfExport; // in Lakhs
-
-    @Column(name = "volume_of_export")
-    private Double volumeOfExport; // in MTs
-
-    @Column(name = "units")
-    private String units;
-
-    @Column(name = "annual_turnover")
-    private Double annualTurnover; // in Lakhs
 
     @Column(name = "Influenced")
     Boolean isInfluenced;

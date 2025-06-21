@@ -36,8 +36,8 @@ public class Patents {
     @Column(name = "patent_number")
     private String patentNumber;
 
-    @Column(name = "date_of_grant")
-    private Date dateOfGrant;
+    @Column(name = "patent_issue_date")
+    private Date patentIssueDate;
 
     @Column(name = "patent_coverage")
     private String patentCoverage;
