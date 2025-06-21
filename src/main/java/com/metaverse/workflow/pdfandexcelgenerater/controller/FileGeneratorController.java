@@ -1,10 +1,12 @@
 package com.metaverse.workflow.pdfandexcelgenerater.controller;
 
+import com.metaverse.workflow.common.util.DateUtil;
 import com.metaverse.workflow.common.util.RestControllerBase;
 import com.metaverse.workflow.exceptions.DataException;
 import com.metaverse.workflow.pdfandexcelgenerater.service.*;
 import com.metaverse.workflow.program.repository.ProgramRepository;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
@@ -18,38 +20,34 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.Date;
 
 @RestController
+@RequiredArgsConstructor
 public class FileGeneratorController {
 
-    @Autowired
-    ExpenditureExcelGenerator expenditureExcelGenerator;
-    @Autowired
-    ProgramPdfGenerator programPdfGenerator;
-    @Autowired
-    ProgramExcelGenerator programExcelGenerator;
-    @Autowired
-    ProgramSummeryPdfGenerator programSummeryPdfGenerator;
-    @Autowired
-    ProgramSummeryExcelGenerator programSummeryExcelGenerator;
-    @Autowired
-    AttendancePDFGenerator attendancePDFGenerator;
-    @Autowired
-    SessionPDFGenerator sessionPDFGenerator;
-    @Autowired
-    ProgramRepository programRepository;
-    @Autowired
-    ParticipantsPDFGenerator participantsPDFGenerator;
-    @Autowired
-    LocationExcelGenerator locationExcelGenerator;
-    @Autowired
-    ResourceExcelGenerator resourceExcelGenerator;
-    @Autowired
-    OrganizationExcelGenerator organizationExcelGenerator;
-    
+    private final ExpenditureExcelGenerator expenditureExcelGenerator;
+    private final ProgramPdfGenerator programPdfGenerator;
+    private final ProgramExcelGenerator programExcelGenerator;
+    private final ProgramSummeryPdfGenerator programSummeryPdfGenerator;
+    private final ProgramSummeryExcelGenerator programSummeryExcelGenerator;
+    private final AttendancePDFGenerator attendancePDFGenerator;
+    private final SessionPDFGenerator sessionPDFGenerator;
+    private final ProgramRepository programRepository;
+    private final ParticipantsPDFGenerator participantsPDFGenerator;
+    private final LocationExcelGenerator locationExcelGenerator;
+    private final ResourceExcelGenerator resourceExcelGenerator;
+    private final OrganizationExcelGenerator organizationExcelGenerator;
+    private final ProgramStatusGenerator programStatusGenerator;
+    private final ProgramParticipantDetails programParticipantDetails;
+    private final TrainingCalendarAgencywise trainingCalendarAgencywise;
+    private final TrainingCalendarDistrictwise trainingCalendarDistrictwise;
+    private final TrainingCalendarDatewise trainingCalendarDatewise;
+
+
     @GetMapping(value = "/program/pdf/{agencyId}", produces = MediaType.APPLICATION_PDF_VALUE)
-    public ResponseEntity<InputStreamResource> generatePdfReport(HttpServletResponse response,@PathVariable Long agencyId) throws IOException {
-        ByteArrayInputStream bis = programPdfGenerator.generateProgramsPdf(response,agencyId );
+    public ResponseEntity<InputStreamResource> generatePdfReport(HttpServletResponse response, @PathVariable Long agencyId) throws IOException {
+        ByteArrayInputStream bis = programPdfGenerator.generateProgramsPdf(response, agencyId);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Disposition", "inline; filename=users.pdf");
         return ResponseEntity.ok()
@@ -60,7 +58,7 @@ public class FileGeneratorController {
     }
 
     @GetMapping(value = "/program/session/pdf/{programId}", produces = MediaType.APPLICATION_PDF_VALUE)
-    public ResponseEntity<?> generateSessionPdfReport( @PathVariable Long programId) throws IOException {
+    public ResponseEntity<?> generateSessionPdfReport(@PathVariable Long programId) throws IOException {
         if (!programRepository.existsById(programId)) {
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
@@ -76,8 +74,9 @@ public class FileGeneratorController {
                 .body(new InputStreamResource(bis));
 
     }
+
     @GetMapping(value = "/program/attendance/pdf/{programId}", produces = MediaType.APPLICATION_PDF_VALUE)
-    public ResponseEntity<?> generateAttendancePdfReport( @PathVariable Long programId) throws IOException {
+    public ResponseEntity<?> generateAttendancePdfReport(@PathVariable Long programId) throws IOException {
         if (!programRepository.existsById(programId)) {
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
@@ -93,6 +92,7 @@ public class FileGeneratorController {
                 .body(new InputStreamResource(bis));
 
     }
+
     @GetMapping(value = "/program/participant/pdf/{programId}", produces = MediaType.APPLICATION_PDF_VALUE)
     public ResponseEntity<?> generateParticipantPdfReport(@PathVariable Long programId) throws IOException {
         if (!programRepository.existsById(programId)) {
@@ -118,6 +118,7 @@ public class FileGeneratorController {
         response.setHeader("Content-Disposition", "attachment;fileName=users.xls");
         programExcelGenerator.generateProgramsExcel(response);
     }
+
     @GetMapping("/organization/excel")
     public void generateOrganizationExcelReport(HttpServletResponse response) throws IOException {
         response.setContentType("application/octet-stream");
@@ -126,22 +127,23 @@ public class FileGeneratorController {
     }
 
     @GetMapping("/location/excel/{agencyId}")
-    public void generateLocationExcelReport(HttpServletResponse response,@PathVariable Long agencyId) throws IOException {
+    public void generateLocationExcelReport(HttpServletResponse response, @PathVariable Long agencyId) throws IOException {
         response.setContentType("application/octet-stream");
         response.setHeader("Content-Disposition", "attachment;fileName=users.xls");
-        locationExcelGenerator.locationsExportToExcel(response,agencyId);
+        locationExcelGenerator.locationsExportToExcel(response, agencyId);
     }
+
     @GetMapping("/resource/excel/{agencyId}")
-    public void generateResourceExcelReport(HttpServletResponse response,@PathVariable Long agencyId) throws IOException {
+    public void generateResourceExcelReport(HttpServletResponse response, @PathVariable Long agencyId) throws IOException {
         response.setContentType("application/octet-stream");
         response.setHeader("Content-Disposition", "attachment;fileName=users.xls");
-        resourceExcelGenerator.exportAgencyResourcesToExcel(response,agencyId);
+        resourceExcelGenerator.exportAgencyResourcesToExcel(response, agencyId);
     }
 
     @GetMapping(value = "/program/summary/pdf/{programId}", produces = MediaType.APPLICATION_PDF_VALUE)
     public ResponseEntity<?> generateProgramSummeryPDF(@PathVariable Long programId, HttpServletResponse response) {
 
-        ByteArrayInputStream bis ;
+        ByteArrayInputStream bis;
         try {
             bis = programSummeryPdfGenerator.generateProgramsSummeryPdf(response, programId);
         } catch (DataException e) {
@@ -173,6 +175,49 @@ public class FileGeneratorController {
         expenditureExcelGenerator.generateProgramsExcel(response, programId, agencyId);
     }
 
+    @GetMapping("/programs-status/{agencyId}")
+    public void exportProgramStatus(HttpServletResponse response, @PathVariable Long agencyId) throws IOException {
+        response.setContentType("application/vnd.ms-excel");
+        response.setHeader("Content-Disposition", "attachment; filename=" + "Program_status.xls");
+
+        programStatusGenerator.generateProgramsExcel(response, agencyId);
+    }
+
+    @GetMapping("/programs-participant-status/{agencyId}")
+    public void exportProgramParticipantStatus(HttpServletResponse response, @PathVariable Long agencyId) throws IOException {
+        response.setContentType("application/vnd.ms-excel");
+        response.setHeader("Content-Disposition", "attachment; filename=" + "Program_Participant_status.xls");
+
+        programParticipantDetails.generateProgramsParticipantExcel(response, agencyId);
+    }
+
+    @GetMapping("/trg/calender/agency-wise/{agencyId}")
+    public void exportProgramTrgCalender(HttpServletResponse response, @PathVariable Long agencyId) throws IOException {
+        response.setContentType("application/vnd.ms-excel");
+        response.setHeader("Content-Disposition", "attachment; filename=" + "Trg_calender_district_wise.xls");
+
+        trainingCalendarAgencywise.generateProgramsExcel(response, agencyId);
+    }
+
+    @GetMapping("/trg/calender/district-wise")
+    public void exportProgramTrgCalenderDistrict(HttpServletResponse response,
+                                                 @RequestParam String district, @RequestParam Long agencyId) throws IOException {
+        response.setContentType("application/vnd.ms-excel");
+        response.setHeader("Content-Disposition", "attachment; filename=" + "Trg_calender_district_wise.xls");
+
+        trainingCalendarDistrictwise.generateProgramsExcel(response, agencyId, district);
+    }
+
+    @GetMapping("/trg/calender/date-wise")
+    public void exportProgramTrgCalenderDate(HttpServletResponse response,
+                                             @RequestParam Long agencyId,
+                                             @RequestParam String startDate,
+                                             @RequestParam String endDate) throws IOException {
+        response.setContentType("application/vnd.ms-excel");
+        response.setHeader("Content-Disposition", "attachment; filename=" + "Trg_calender_district_wise.xls");
+
+        trainingCalendarDatewise.generateProgramsExcel(response, agencyId, DateUtil.stringToDate(startDate,"dd-MM-yyyy"), DateUtil.stringToDate(endDate,"dd-MM-yyyy"));
+    }
 
 
 }

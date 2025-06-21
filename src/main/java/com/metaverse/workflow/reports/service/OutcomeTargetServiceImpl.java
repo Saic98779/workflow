@@ -42,6 +42,30 @@ public class OutcomeTargetServiceImpl implements OutcomeTargetService {
 
     private final TreadMarkRepository treadMarkRepository;
 
+    private final GeMRegistrationRepository geMRegistrationRepository;
+
+    private final GeMTransactionRepository geMTransactionRepository;
+
+    private final CGTMSETransactionRepository cgtmseTransactionRepository;
+
+    private final ConsortiaTenderRepository consortiaTenderRepository;
+
+    private final CopyRightsRepository copyRightsRepository;
+
+    private final DesignRightsRepository designRightsRepository;
+
+    private final NSICRepository nsicRepository;
+
+    private final OEMRepository oemRepository;
+
+    private final PMEGPRepository pmegpRepository;
+
+    private final PMFMESchemeRepository pmfmeSchemeRepository;
+
+    private final PMMYRepository pmmyRepository;
+
+    private final VendorDevelopmentRepository vendorDevelopmentRepository;
+
     public List<OutcomeTargetDTO> getTargetsByYear(String financialYear, Long agencyId) {
         List<PhysicalTarget> targets = physicalTargetRepository.findByFinancialYear(financialYear);
         OutcomeTargetResponse outcomeTargetResponse = null;
@@ -113,7 +137,7 @@ public class OutcomeTargetServiceImpl implements OutcomeTargetService {
 
         // ZED Certification - Bronze
         dtoList.add(createOutcomeDto("ZED Certification (Bronze)", financialYear,
-                physicalTargetRepository.findTarget("ZEDCertification",17, financialYear, agencyId),
+                physicalTargetRepository.findTarget("ZEDCertification", 17, financialYear, agencyId),
                 zedCertificationRepository.countZedCertification(agencyId, "Bronze", dQ1Start, dQ1End),
                 zedCertificationRepository.countZedCertification(agencyId, "Bronze", dQ2Start, dQ2End),
                 zedCertificationRepository.countZedCertification(agencyId, "Bronze", dQ3Start, dQ3End),
@@ -122,7 +146,7 @@ public class OutcomeTargetServiceImpl implements OutcomeTargetService {
 
         // ZED Certification - Silver
         dtoList.add(createOutcomeDto("ZED Certification (Silver)", financialYear,
-                physicalTargetRepository.findTarget("ZEDCertification",18, financialYear, agencyId),
+                physicalTargetRepository.findTarget("ZEDCertification", 18, financialYear, agencyId),
                 zedCertificationRepository.countZedCertification(agencyId, "Silver", dQ1Start, dQ1End),
                 zedCertificationRepository.countZedCertification(agencyId, "Silver", dQ2Start, dQ2End),
                 zedCertificationRepository.countZedCertification(agencyId, "Silver", dQ3Start, dQ3End),
@@ -131,7 +155,7 @@ public class OutcomeTargetServiceImpl implements OutcomeTargetService {
 
         // ZED Certification - Gold
         dtoList.add(createOutcomeDto("ZED Certification (Gold)", financialYear,
-                physicalTargetRepository.findTarget("ZEDCertification",19, financialYear, agencyId),
+                physicalTargetRepository.findTarget("ZEDCertification", 19, financialYear, agencyId),
                 zedCertificationRepository.countZedCertification(agencyId, "Gold", dQ1Start, dQ1End),
                 zedCertificationRepository.countZedCertification(agencyId, "Gold", dQ2Start, dQ2End),
                 zedCertificationRepository.countZedCertification(agencyId, "Gold", dQ3Start, dQ3End),
@@ -182,6 +206,116 @@ public class OutcomeTargetServiceImpl implements OutcomeTargetService {
                 treadMarkRepository.countTreadMark(agencyId, dQ3Start, dQ3End),
                 treadMarkRepository.countTreadMark(agencyId, dQ4Start, dQ4End)
         ));
+
+        //GeM Registration
+        dtoList.add(createOutcomeDto("GeM Registration", financialYear,
+                physicalTargetRepository.findTarget("GeMRegistration", financialYear, agencyId),
+                geMRegistrationRepository.countGeMRegistration(agencyId, dQ1Start, dQ1End),
+                geMRegistrationRepository.countGeMRegistration(agencyId, dQ2Start, dQ2End),
+                geMRegistrationRepository.countGeMRegistration(agencyId, dQ3Start, dQ3End),
+                geMRegistrationRepository.countGeMRegistration(agencyId, dQ4Start, dQ4End)
+        ));
+
+        //GeM Transaction --not completed
+        dtoList.add(createOutcomeDto("GeM Transaction", financialYear,
+                physicalTargetRepository.findTarget("GeMTransaction", financialYear, agencyId),
+                geMTransactionRepository.countGeMTransaction(agencyId, dQ1Start, dQ1End),
+                geMTransactionRepository.countGeMTransaction(agencyId, dQ2Start, dQ2End),
+                geMTransactionRepository.countGeMTransaction(agencyId, dQ3Start, dQ3End),
+                geMTransactionRepository.countGeMTransaction(agencyId, dQ4Start, dQ4End)
+        ));
+
+        //CGTMSE Transaction
+        dtoList.add(createOutcomeDto("CGTMSE Transaction", financialYear,
+                physicalTargetRepository.findTarget("CGTMSETransaction", financialYear, agencyId),
+                cgtmseTransactionRepository.countCGTMSETransaction(agencyId, dQ1Start, dQ1End),
+                cgtmseTransactionRepository.countCGTMSETransaction(agencyId, dQ2Start, dQ2End),
+                cgtmseTransactionRepository.countCGTMSETransaction(agencyId, dQ3Start, dQ3End),
+                cgtmseTransactionRepository.countCGTMSETransaction(agencyId, dQ4Start, dQ4End)
+        ));
+
+        //Consortia Tender
+        dtoList.add(createOutcomeDto("Consortia Tender", financialYear,
+                physicalTargetRepository.findTarget("ConsortiaTender", financialYear, agencyId),
+                consortiaTenderRepository.countConsortiaTender(agencyId, dQ1Start, dQ1End),
+                consortiaTenderRepository.countConsortiaTender(agencyId, dQ2Start, dQ2End),
+                consortiaTenderRepository.countConsortiaTender(agencyId, dQ3Start, dQ3End),
+                consortiaTenderRepository.countConsortiaTender(agencyId, dQ4Start, dQ4End)
+        ));
+
+        //Copy Rights
+        dtoList.add(createOutcomeDto("Copy Rights", financialYear,
+                physicalTargetRepository.findTarget("CopyRights", financialYear, agencyId),
+                copyRightsRepository.countCopyRights(agencyId, dQ1Start, dQ1End),
+                copyRightsRepository.countCopyRights(agencyId, dQ2Start, dQ2End),
+                copyRightsRepository.countCopyRights(agencyId, dQ3Start, dQ3End),
+                copyRightsRepository.countCopyRights(agencyId, dQ4Start, dQ4End)
+        ));
+
+        //Design Rights
+        dtoList.add(createOutcomeDto("Design Rights", financialYear,
+                physicalTargetRepository.findTarget("DesignRights", financialYear, agencyId),
+                designRightsRepository.countDesignRights(agencyId, dQ1Start, dQ1End),
+                designRightsRepository.countDesignRights(agencyId, dQ2Start, dQ2End),
+                designRightsRepository.countDesignRights(agencyId, dQ3Start, dQ3End),
+                designRightsRepository.countDesignRights(agencyId, dQ4Start, dQ4End)
+        ));
+
+        //NSIC
+        dtoList.add(createOutcomeDto("NSIC", financialYear,
+                physicalTargetRepository.findTarget("NSIC", financialYear, agencyId),
+                nsicRepository.countNSIC(agencyId, dQ1Start, dQ1End),
+                nsicRepository.countNSIC(agencyId, dQ2Start, dQ2End),
+                nsicRepository.countNSIC(agencyId, dQ3Start, dQ3End),
+                nsicRepository.countNSIC(agencyId, dQ4Start, dQ4End)
+        ));
+
+        //OEM
+        dtoList.add(createOutcomeDto("OEM", financialYear,
+                physicalTargetRepository.findTarget("OEM", financialYear, agencyId),
+                oemRepository.countOEM(agencyId, dQ1Start, dQ1End),
+                oemRepository.countOEM(agencyId, dQ2Start, dQ2End),
+                oemRepository.countOEM(agencyId, dQ3Start, dQ3End),
+                oemRepository.countOEM(agencyId, dQ4Start, dQ4End)
+        ));
+
+        //PMEGP
+        dtoList.add(createOutcomeDto("PMEGP", financialYear,
+                physicalTargetRepository.findTarget("PMEGP", financialYear, agencyId),
+                pmegpRepository.countPMEGP(agencyId, dQ1Start, dQ1End),
+                pmegpRepository.countPMEGP(agencyId, dQ2Start, dQ2End),
+                pmegpRepository.countPMEGP(agencyId, dQ3Start, dQ3End),
+                pmegpRepository.countPMEGP(agencyId, dQ4Start, dQ4End)
+        ));
+
+        //PMFMEScheme
+        dtoList.add(createOutcomeDto("PMFME Scheme", financialYear,
+                physicalTargetRepository.findTarget("PMFMEScheme", financialYear, agencyId),
+                pmfmeSchemeRepository.countPMFMEScheme(agencyId, dQ1Start, dQ1End),
+                pmfmeSchemeRepository.countPMFMEScheme(agencyId, dQ2Start, dQ2End),
+                pmfmeSchemeRepository.countPMFMEScheme(agencyId, dQ3Start, dQ3End),
+                pmfmeSchemeRepository.countPMFMEScheme(agencyId, dQ4Start, dQ4End)
+        ));
+
+        //PMMY
+        dtoList.add(createOutcomeDto("PMMY", financialYear,
+                physicalTargetRepository.findTarget("PMMY", financialYear, agencyId),
+                pmmyRepository.countPMMY(agencyId, dQ1Start, dQ1End),
+                pmmyRepository.countPMMY(agencyId, dQ2Start, dQ2End),
+                pmmyRepository.countPMMY(agencyId, dQ3Start, dQ3End),
+                pmmyRepository.countPMMY(agencyId, dQ4Start, dQ4End)
+        ));
+
+        //VendorDevelopment
+        dtoList.add(createOutcomeDto("Vendor Development", financialYear,
+                physicalTargetRepository.findTarget("VendorDevelopment", financialYear, agencyId),
+                vendorDevelopmentRepository.countVendorDevelopment(agencyId, dQ1Start, dQ1End),
+                vendorDevelopmentRepository.countVendorDevelopment(agencyId, dQ2Start, dQ2End),
+                vendorDevelopmentRepository.countVendorDevelopment(agencyId, dQ3Start, dQ3End),
+                vendorDevelopmentRepository.countVendorDevelopment(agencyId, dQ4Start, dQ4End)
+        ));
+
+
 
         return dtoList;
 
