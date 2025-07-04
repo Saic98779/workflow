@@ -20,7 +20,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ExpenditureServiceAdepter implements ExpenditureService {
@@ -160,10 +161,11 @@ public class ExpenditureServiceAdepter implements ExpenditureService {
                 .data(responses)
                 .build();
     }
+
     @Override
     public List<ProgramExpenditureResponse> getAllProgramExpenditure(Long agencyId, Long programId) {
         List<ProgramExpenditure> programExpendituresList =
-                programExpenditureRepository.findByAgency_AgencyIdAndProgram_ProgramId( agencyId, programId);
+                programExpenditureRepository.findByAgency_AgencyIdAndProgram_ProgramId(agencyId, programId);
 
         List<ProgramExpenditureResponse> responses = programExpendituresList.stream()
                 .map(programExpenditure -> {
@@ -582,6 +584,75 @@ public class ExpenditureServiceAdepter implements ExpenditureService {
         return WorkflowResponse.builder().message("Transaction Deleted Successfully..").status(200).build();
     }
 
+    @Override
+    public ExpenditureSummaryResponse getExpenditureHeadOfExpenseWise(Long programId) throws DataException {
+        Program program = programRepository.findById(programId)
+                .orElseThrow(() -> new DataException("Program data not found", "PROGRAM-DATA-NOT-FOUND", 400));
+
+        WorkflowResponse pre = getAllProgramExpenditureByProgram(ExpenditureType.PRE, program.getProgramId());
+        WorkflowResponse post = getAllProgramExpenditureByProgram(ExpenditureType.POST, program.getProgramId());
+        WorkflowResponse bulk = getAllBulkExpenditureTransactionByProgram(programId);
+
+        if (pre.getData() == null || post.getData() == null || bulk.getData() == null) {
+            throw new DataException("Missing expenditure data", "EXPENDITURE-DATA-NOT-FOUND", 400);
+        }
+
+        List<ProgramExpenditureResponse> expenditure = new ArrayList<>();
+        expenditure.addAll((List<ProgramExpenditureResponse>) pre.getData());
+        expenditure.addAll((List<ProgramExpenditureResponse>) post.getData());
+
+        List<BulkTransactions> transactions = (List<BulkTransactions>) bulk.getData();
+
+        List<CombinedExpenditure> combinedExpenditures = new ArrayList<>();
+        for (ProgramExpenditureResponse exp : expenditure) {
+            combinedExpenditures.add(
+                    CombinedExpenditure.builder()
+                            .headOfExpense(exp.getHeadOfExpense())
+                            .expenditureType(exp.getExpenditureType())
+                            .cost(exp.getCost() != null ? exp.getCost() : 0.0)
+                            .billNo(exp.getBillNo())
+                            .billDate(exp.getBillDate())
+                            .payeeName(exp.getPayeeName())
+                            .ifscCode(exp.getIfscCode())
+                            .modeOfPayment(exp.getModeOfPayment())
+                            .build()
+            );
+        }
+
+        for (BulkTransactions exp : transactions) {
+            combinedExpenditures.add(
+                    CombinedExpenditure.builder()
+                            .headOfExpense(exp.getHeadOfExpense())
+                            .expenditureType(exp.getExpenditureType())
+                            .cost(exp.getAllocatedCost() != null ? exp.getAllocatedCost() : 0.0)
+                            .billNo(exp.getBillNo())
+                            .billDate(exp.getBillDate() != null ? exp.getBillDate().toString().substring(0,10) : null)
+                            .payeeName(exp.getPayeeName())
+                            .ifscCode(exp.getIfscCode())
+                            .modeOfPayment(exp.getModeOfPayment())
+                            .build()
+            );
+        }
+
+        // Group by headOfExpense
+        Map<String, List<CombinedExpenditure>> groupedByHead =
+                combinedExpenditures.stream()
+                        .filter(exp -> exp.getHeadOfExpense() != null)
+                        .collect(Collectors.groupingBy(CombinedExpenditure::getHeadOfExpense));
+
+
+        List<HeadWiseExpenditureSummary> summaries = groupedByHead.entrySet().stream()
+                .map(e -> new HeadWiseExpenditureSummary(
+                        e.getKey(),
+                        e.getValue().stream().mapToDouble(c -> c.getCost() != null ? c.getCost() : 0.0).sum(),
+                        e.getValue()
+                ))
+                .collect(Collectors.toList());
+
+        double grandTotal = summaries.stream().mapToDouble(HeadWiseExpenditureSummary::getTotalCost).sum();
+
+        return new ExpenditureSummaryResponse(summaries, grandTotal);
+    }
 
 
 

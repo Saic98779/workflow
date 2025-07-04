@@ -20,7 +20,6 @@ public class BulkTransactions {
     private String purchaseDate;
     private Integer consumedQuantity;
     private Integer availableQuantity;
-
     private String expenditureType;
     private String headOfExpense;
     private Double allocatedCost;

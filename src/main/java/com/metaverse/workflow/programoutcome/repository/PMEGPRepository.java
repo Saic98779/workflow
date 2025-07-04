@@ -8,15 +8,15 @@ import java.util.Date;
 public interface PMEGPRepository extends JpaRepository<PMEGP,Long> {
     default long countPMEGP(Long agencyId, Date start, Date end) {
         if (agencyId == -1) {
-            return countByLoanSanctionedDateBetween(start, start);
+            return countByGroundingDateBetween(start, start);
         } else if (start == null || end == null) {
             return count();
         } else {
-            return countByAgencyAgencyIdAndLoanSanctionedDateBetween(agencyId, start, end);
+            return countByAgencyAgencyIdAndGroundingDateBetween(agencyId, start, end);
         }
     }
 
-    long countByAgencyAgencyIdAndLoanSanctionedDateBetween(Long agencyId, Date start, Date end);
+    long countByAgencyAgencyIdAndGroundingDateBetween(Long agencyId, Date start, Date end);
 
-    long countByLoanSanctionedDateBetween(Date start, Date start1);
+    long countByGroundingDateBetween(Date start, Date start1);
 }

@@ -7,6 +7,7 @@ import com.metaverse.workflow.model.HeadOfExpense;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 
 public interface ExpenditureService {
 
@@ -30,6 +31,7 @@ public interface ExpenditureService {
     WorkflowResponse getAllProgramExpenditureByProgramIdByAgencyId(ExpenditureType expenditureType, Long agencyId,Long programId);
     WorkflowResponse deleteTransaction(Long transactionId) throws DataException;
     List<ProgramExpenditureResponse> getAllProgramExpenditure(Long agencyId, Long programId);
+    ExpenditureSummaryResponse getExpenditureHeadOfExpenseWise(Long programId) throws DataException;
 
 }
 
