@@ -4,12 +4,13 @@ import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.common.util.DateUtil;
 import com.metaverse.workflow.model.Participant;
 import com.metaverse.workflow.model.ProgramAttendance;
+import com.metaverse.workflow.model.ProgramAttendanceId;
 import com.metaverse.workflow.model.Program;
 import com.metaverse.workflow.participant.repository.ParticipantRepository;
 import com.metaverse.workflow.program.repository.ProgramRepository;
 import com.metaverse.workflow.programattendance.repository.ProgramAttendanceRepository;
+import com.metaverse.workflow.programattendance.util.AttendanceUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -17,19 +18,24 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.Collections;
 
 @Service
 @Slf4j
 public class ProgramAttendanceServiceAdapter implements ProgramAttendanceService {
 
-    @Autowired
-    ProgramRepository programRepository;
+    private final ProgramRepository programRepository;
+    private final ParticipantRepository participantRepository;
+    private final ProgramAttendanceRepository programAttendanceRepository;
 
-    @Autowired
-    ParticipantRepository participantRepository;
-
-    @Autowired
-    ProgramAttendanceRepository programAttendanceRepository;
+    public ProgramAttendanceServiceAdapter(
+            ProgramRepository programRepository,
+            ParticipantRepository participantRepository,
+            ProgramAttendanceRepository programAttendanceRepository) {
+        this.programRepository = programRepository;
+        this.participantRepository = participantRepository;
+        this.programAttendanceRepository = programAttendanceRepository;
+    }
 
     @Override
     public WorkflowResponse attendanceByProgramId(Long programId, int page, int size) {
@@ -87,7 +93,24 @@ public class ProgramAttendanceServiceAdapter implements ProgramAttendanceService
         List<ProgramAttendance> attendanceList = ProgramAttendanceRequestMapper.map(request);
         List<ProgramAttendance> response = programAttendanceRepository.saveAll(attendanceList);
         return WorkflowResponse.builder().status(200).message("Success").data(ProgramAttendanceResponseMapper.map(response)).build();
+    }
 
+    @Override
+    public WorkflowResponse updateParticipantAttendance(ParticipantAttendanceRequest request) {
+        WorkflowResponse validationResponse = validateProgramAndParticipant(
+                request.getProgramId(), 
+                request.getParticipantId());
+        if (validationResponse != null) {
+            return validationResponse;
+        }
+        ProgramAttendance attendance = ProgramAttendanceRequestMapper.mapSingleParticipant(request);
+        ProgramAttendance savedAttendance = programAttendanceRepository.save(attendance);
+
+        return WorkflowResponse.builder()
+                .status(200)
+                .message("Success")
+                .data(ProgramAttendanceResponseMapper.map(Collections.singletonList(savedAttendance)))
+                .build();
     }
 
     private ProgramAttendanceResponse populateParticipantAttendace(Long programId, List<Participant> participants, Integer days) {
@@ -108,13 +131,6 @@ public class ProgramAttendanceServiceAdapter implements ProgramAttendanceService
         return ProgramAttendanceResponse.builder().programId(programId).participantAttendanceList(list).build();
     }
 
-    /*private Character[] populateAttendaceData(Integer days) {
-        Character[] charArray = new Character[days];
-        for (int i = 0; i < days; i++) {
-            charArray[i] = 'A';
-        }
-        return charArray;
-    }*/
    private Character[] populateAttendaceData(Integer days) {
         Character[] charArray = new Character[days];
         Character defaultChar = (days == 1) ? 'P' : 'A';
@@ -127,14 +143,36 @@ public class ProgramAttendanceServiceAdapter implements ProgramAttendanceService
         for (ProgramAttendanceResponse.ParticipantAttendance attendance : response.getParticipantAttendanceList()) {
             String attendances = existingDetailsMap.get(attendance.getParticipantId());
             if (attendances != null) {
-                Character[] charArray = new Character[attendances.length()];
-                for (int i = 0; i < attendances.length(); i++) {
-                    charArray[i] = attendances.charAt(i);
-                }
-                attendance.setAttendanceData(charArray);
+                attendance.setAttendanceData(AttendanceUtil.stringToCharacterArray(attendances));
             }
         }
         return response;
+    }
+
+    /**
+     * Validates that the program and participant exist and that the participant is enrolled in the program
+     * 
+     * @param programId ID of the program
+     * @param participantId ID of the participant
+     * @return WorkflowResponse with error details if validation fails, null if validation passes
+     */
+    private WorkflowResponse validateProgramAndParticipant(Long programId, Long participantId) {
+        Optional<Program> program = programRepository.findById(programId);
+        if (program.isEmpty()) {
+            return WorkflowResponse.builder().status(400).message("Invalid Program").build();
+        }
+
+        Optional<Participant> participant = participantRepository.findById(participantId);
+        if (participant.isEmpty()) {
+            return WorkflowResponse.builder().status(400).message("Invalid Participant").build();
+        }
+
+        boolean isEnrolled = participant.get().getPrograms().stream()
+                .anyMatch(p -> p.getProgramId().equals(programId));
+        if (!isEnrolled) {
+            return WorkflowResponse.builder().status(400).message("Participant not enrolled in this program").build();
+        }
+        return null;
     }
 
 }

@@ -11,12 +11,12 @@ import java.util.List;
 
 @Entity
 @Data
-@Table(name = "participantTemp")
+@Table(name = "participant_temp")
 public class ParticipantTemp {
     @Id
-    @Column(name = "participantTemp_id")
+    @Column(name = "participant_temp_id")
     @GeneratedValue(strategy=GenerationType.AUTO)
-    private Long participantId;
+    private Long participantTempId;
     @Column(name = "participant_name")
     private String participantName;
     @Column(name = "gender")
@@ -53,7 +53,7 @@ public class ParticipantTemp {
     @ManyToMany
     @JoinTable(
             name = "program_participant_temp",
-            joinColumns = @JoinColumn(name = "participantTemp_id"),
+            joinColumns = @JoinColumn(name = "participant_temp_id"),
             inverseJoinColumns = @JoinColumn(name = "program_id")
     )
     private List<Program> programs = new ArrayList<>();
@@ -63,6 +63,4 @@ public class ParticipantTemp {
     @Column(name = "updated_on",insertable = false,updatable = true)
     @UpdateTimestamp
     private Date updatedOn;
-    @Column(name = "member_id",unique = true)
-    private String memberId;
 }

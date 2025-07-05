@@ -7,6 +7,7 @@ import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.districtswithmandals.service.DistrictService;
 import com.metaverse.workflow.model.*;
 import com.metaverse.workflow.participant.service.ParticipantService;
+import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,16 @@ public class CommonUtil {
     @Autowired
     ParticipantService participantService;
 
+    @Autowired
+    private ActivityRepository activityRepository;
+
+    private static CommonUtil instance;
+
+
+    @PostConstruct
+    public void initInstance() {
+        instance = this;
+    }
 
     /*@Autowired
     ResourceService resourceService;*/
@@ -66,6 +77,7 @@ public class CommonUtil {
         resourceMap = resourceList.stream().collect(Collectors.toMap(resource -> resource.getResourceId(), resource -> resource.getName()));*/
     }
 
-
-
+    public static Activity getActivityById(Long activityId) {
+        return instance.activityRepository.findByActivityId(activityId);
+    }
 }
