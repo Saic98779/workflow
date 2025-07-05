@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 public class ExpenditureController {
@@ -193,6 +194,16 @@ public class ExpenditureController {
         try {
             WorkflowResponse response = expenditureService.deleteProgramExpenditure(expenditureId);
             return ResponseEntity.ok(response);
+        } catch (DataException e) {
+            return RestControllerBase.error(e);
+        }
+    }
+
+    @GetMapping("/combined/expenditure/{programId}")
+    public ResponseEntity<?> getCombinedExpenditure(@PathVariable Long programId)
+    {
+        try {
+            return  ResponseEntity.ok( expenditureService.getExpenditureHeadOfExpenseWise(programId));
         } catch (DataException e) {
             return RestControllerBase.error(e);
         }

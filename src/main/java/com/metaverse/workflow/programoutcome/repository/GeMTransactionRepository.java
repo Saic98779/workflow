@@ -8,7 +8,17 @@ import java.util.List;
 
 public interface GeMTransactionRepository extends JpaRepository<GeMTransaction,Long> {
 
-   default long countGeMTransaction(Long agencyId, Date dQ3Start, Date dQ3End){
-       return 0;
-   }
+//   default long countGeMTransaction(Long agencyId, Date start, Date end){
+//       if (agencyId == -1) {
+//           return countByProcurementDateBetween(start, end);
+//       } else if (start == null || end == null) {
+//           return count();
+//       } else {
+//           return countByAgencyAgencyIdAndProcurementDateBetween(agencyId, start, end);
+//       }
+//   }
+//
+//    long countByProcurementDateBetween(Date start, Date end);
+//
+//    long countByAgencyAgencyIdAndProcurementDateBetween(Long agencyId, Date start, Date end);
 }

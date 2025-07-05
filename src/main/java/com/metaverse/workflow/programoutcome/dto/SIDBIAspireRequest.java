@@ -10,7 +10,7 @@ import lombok.*;
 public class SIDBIAspireRequest {
 
     public String applicationSubmissionDate;
-    public String sanctionDateUnderAspire;
+    public String dateSanctionUnderAspire;
     public Boolean isFundingSupportReceived;
     public String incubationPartnerName;
     public String fundingType;
