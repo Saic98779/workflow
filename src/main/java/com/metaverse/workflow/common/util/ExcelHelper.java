@@ -2,6 +2,7 @@ package com.metaverse.workflow.common.util;
 
 import com.metaverse.workflow.model.*;
 import com.metaverse.workflow.organization.repository.OrganizationRepository;
+import com.metaverse.workflow.organization.repository.OrganizationTempRepository;
 import com.metaverse.workflow.participant.repository.ParticipantRepository;
 import com.metaverse.workflow.participant.repository.ParticipantTempRepository;
 import com.metaverse.workflow.program.repository.ProgramRepository;
@@ -32,6 +33,9 @@ public class ExcelHelper {
 
     @Autowired
     private SectorRepository sectorRepository;
+
+    @Autowired
+    private OrganizationTempRepository organizationTempRepository;
 
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
 
@@ -75,7 +79,7 @@ public class ExcelHelper {
                     Map<String, String> record = new HashMap<>();
                     record.put("participantName", getCellValue(currentRow, 0));
                     record.put("organizationName", organizationName);
-                    record.put("reason", "Organization already exists");
+                    record.put("reason", "Organization already exists, stored in OrganizationTemp");
                     notStoredRecords.add(record);
                 } else {
                     Organization newOrg = createOrganizationFromRow(currentRow);
@@ -248,7 +252,10 @@ public class ExcelHelper {
         p.setNeedAssessmentMethodology(getCellValue(row, 13));
         String prevPart = getCellValue(row, 8);
         p.setPreviousParticipationDetails(prevPart.isBlank() ? null : prevPart);
-        p.setOrganization(organization);
+
+        OrganizationTemp organizationTemp = createOrganizationTempFromOrganization(organization);
+        p.setOrganizationTemp(organizationTemp);
+
         p.setPrograms(Collections.singletonList(
                 programRepository.findById(programId).orElse(null)));
         return p;
@@ -291,5 +298,50 @@ public class ExcelHelper {
         } catch (Exception e) {
         }
         return null;
+    }
+
+    private OrganizationTemp createOrganizationTempFromOrganization(Organization organization) {
+        // Check if OrganizationTemp already exists for this Organization
+        List<OrganizationTemp> existingOrgTemps = organizationTempRepository.findByOrganizationId(organization.getOrganizationId());
+        if (!existingOrgTemps.isEmpty()) {
+            return existingOrgTemps.get(0);
+        }
+
+        // Create new OrganizationTemp from Organization
+        OrganizationTemp orgTemp = new OrganizationTemp();
+        orgTemp.setOrganizationId(organization.getOrganizationId());
+        orgTemp.setOrganizationName(organization.getOrganizationName());
+        orgTemp.setOrganizationType(organization.getOrganizationType());
+        orgTemp.setOrganizationCategory(organization.getOrganizationCategory());
+        orgTemp.setUdyamregistrationNo(organization.getUdyamregistrationNo());
+        orgTemp.setDateOfRegistration(organization.getDateOfRegistration());
+        orgTemp.setStartupCertificateNo(organization.getStartupCertificateNo());
+        orgTemp.setNatureOfStartup(organization.getNatureOfStartup());
+        orgTemp.setAreasOfWorking(organization.getAreasOfWorking());
+        orgTemp.setIncorporationDate(organization.getIncorporationDate());
+        orgTemp.setDateOfIssue(organization.getDateOfIssue());
+        orgTemp.setValidUpto(organization.getValidUpto());
+        orgTemp.setStateId(organization.getStateId());
+        orgTemp.setDistId(organization.getDistId());
+        orgTemp.setMandal(organization.getMandal());
+        orgTemp.setTown(organization.getTown());
+        orgTemp.setStreetNo(organization.getStreetNo());
+        orgTemp.setHouseNo(organization.getHouseNo());
+        orgTemp.setLatitude(organization.getLatitude());
+        orgTemp.setLongitude(organization.getLongitude());
+        orgTemp.setContactNo(organization.getContactNo());
+        orgTemp.setEmail(organization.getEmail());
+        orgTemp.setWebsite(organization.getWebsite());
+        orgTemp.setOwnerName(organization.getOwnerName());
+        orgTemp.setOwnerContactNo(organization.getOwnerContactNo());
+        orgTemp.setOwnerEmail(organization.getOwnerEmail());
+        orgTemp.setOwnerAddress(organization.getOwnerAddress());
+        orgTemp.setNameOfTheSHG(organization.getNameOfTheSHG());
+        orgTemp.setNameOfTheVO(organization.getNameOfTheVO());
+        orgTemp.setGramaPanchayat(organization.getGramaPanchayat());
+        orgTemp.setSectors(organization.getSectors());
+
+        // Save and return the OrganizationTemp
+        return organizationTempRepository.save(orgTemp);
     }
 }
