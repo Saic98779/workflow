@@ -137,156 +137,121 @@ public class ExcelHelper {
     }
 
     private Organization createOrganizationFromRow(Row row) {
-        Organization organization = new Organization();
-        try {
-            organization.setOrganizationName(getCellValue(row, 15));
-            organization.setOrganizationCategory(getCellValue(row, 38));
-            organization.setOrganizationType(getCellValue(row, 14));
-            organization.setUdyamregistrationNo(getCellValue(row, 39));
-            organization.setDateOfRegistration(parseDate(row, 40));
-            organization.setAreasOfWorking(getCellValue(row, 37));
-            organization.setIncorporationDate(parseDate(row, 34));
-            organization.setDateOfIssue(parseStringDate(row, 35));
-            organization.setValidUpto(parseStringDate(row, 36));
-            organization.setStateId(getCellValue(row, 17));
-            organization.setDistId(getCellValue(row, 18));
-            organization.setMandal(getCellValue(row, 19));
-            organization.setStreetNo(getCellValue(row, 20));
-            organization.setHouseNo(getCellValue(row, 21));
-
-            String latitude = getCellValue(row, 23);
-            if (!latitude.isEmpty()) {
-                try {
-                    organization.setLatitude(Double.parseDouble(latitude));
-                } catch (NumberFormatException e) {
-                }
-            }
-
-            String longitude = getCellValue(row, 24);
-            if (!longitude.isEmpty()) {
-                try {
-                    organization.setLongitude(Double.parseDouble(longitude));
-                } catch (NumberFormatException e) {
-                }
-            }
-
-            String contactNo = getCellValue(row, 22);
-            if (!contactNo.isEmpty()) {
-                try {
-                    organization.setContactNo(Long.parseLong(contactNo));
-                } catch (NumberFormatException e) {
-                }
-            }
-
-            organization.setWebsite(getCellValue(row, 25));
-            organization.setOwnerName(getCellValue(row, 26));
-
-            String ownerContactNo = getCellValue(row, 27);
-            if (!ownerContactNo.isEmpty()) {
-                try {
-                    organization.setOwnerContactNo(Long.parseLong(ownerContactNo.trim()));
-                } catch (NumberFormatException e) {
-                }
-            }
-            organization.setOwnerEmail(getCellValue(row, 28));
-            organization.setOwnerAddress(getCellValue(row, 29));
-            organization.setNameOfTheSHG(getCellValue(row, 30));
-            organization.setNameOfTheVO(getCellValue(row, 30));
-            organization.setGramaPanchayat(getCellValue(row, 31));
-
-            String sectorsStr = getCellValue(row, 1);
-            if (!sectorsStr.trim().isEmpty()) {
-                List<Sector> sectorList = Arrays.stream(sectorsStr.split(","))
-                        .map(String::trim)
-                        .filter(name -> !name.isEmpty())
-                        .map(sectorRepository::findBySectorName)
-                        .filter(Objects::nonNull)
-                        .collect(Collectors.toList());
-                organization.setSectors(sectorList);
-            }
-            organization.setNatureOfStartup(getCellValue(row, 32));
-            organization.setStartupCertificateNo(getCellValue(row, 33));
-
+        Organization org = new Organization();
+        org.setOrganizationType(getCellValue(row, 14));          // OrganizationType
+        org.setOrganizationName(getCellValue(row, 15));          // Organization Name*
+        String sectorsStr = getCellValue(row, 16);
+        if (!sectorsStr.isBlank()) {
+            List<Sector> sectors =
+                    Arrays.stream(sectorsStr.split(","))
+                            .map(String::trim)
+                            .filter(name -> !name.isEmpty())
+                            .map(sectorRepository::findBySectorName)
+                            .filter(Objects::nonNull)
+                            .collect(Collectors.toList());
+            org.setSectors(sectors);
         }
-        catch (NumberFormatException numberFormatException) {
-            //
-        }
-        return organization;
+        org.setStateId(getCellValue(row, 17));                   // State*
+        org.setDistId(getCellValue(row, 18));                    // District*
+        org.setMandal(getCellValue(row, 19));                    // Mandal*
+        org.setTown(getCellValue(row, 20));                      // Town / Village*
+        org.setStreetNo(getCellValue(row, 21));                  // Street No
+        org.setHouseNo(getCellValue(row, 22));                   // House No
+        org.setLatitude(parseDouble(row, 24));                   // geoLocationLatitude
+        org.setLongitude(parseDouble(row, 23));                  // geoLocationLongitude
+        org.setContactNo(parseLong(row, 24));                    // Organization Contact No*
+        org.setEmail(getCellValue(row, 25));                     // email
+        org.setWebsite(getCellValue(row, 26));                   // website
+        org.setOwnerName(getCellValue(row, 27));                 // Leader / Promoter / Director Name*
+        org.setOwnerContactNo(parseLong(row, 28));               // Leader / Promoter / Director Contact No*
+        org.setOwnerEmail(getCellValue(row, 29));                // Leader / Promoter / Director email
+        org.setOwnerAddress(getCellValue(row, 30));              // Leader / Promoter / Director Address
+        org.setNameOfTheVO(getCellValue(row, 31));               // Name Of VO*
+        org.setStartupCertificateNo(getCellValue(row, 32));
+        org.setIncorporationDate(parseDate(row, 33));            // Incorporation Date*
+        org.setDateOfIssue(parseStringDate(row, 34));            // Date Of issue*
+        org.setValidUpto(parseStringDate(row, 35));              // Valid Upto*
+        org.setAreasOfWorking(getCellValue(row, 36));            // Areas Of Working
+        org.setOrganizationCategory(getCellValue(row, 37));      // Organization Category*
+        org.setUdyamregistrationNo(getCellValue(row, 38));// Udyam Registration Number
+        org.setDateOfRegistration(parseDate(row, 39));           // Registration Date
+        org.setNatureOfStartup(getCellValue(row, 40));           // Nature Of Statup*
+        org.setGramaPanchayat(getCellValue(row, 41));            // Grama Panchayat*
+
+        return org;
     }
 
-    private Participant parseParticipant(Row row, Long programId, Organization organization) {
-        Participant participant = new Participant();
-        // Explicitly set participantId to null to allow auto-generation
-        participant.setParticipantId(null);
-        participant.setParticipantName(getCellValue(row, 0));
-
-        String gender = getCellValue(row, 1);
-        participant.setGender(gender.isEmpty() ? ' ' : gender.charAt(0));
-
-        participant.setCategory(getCellValue(row, 3));
-
-        String disability = getCellValue(row, 4);
-        participant.setDisability(disability.isEmpty() ? ' ' : disability.charAt(0));
-
-        participant.setEmail(getCellValue(row, 6));
-        participant.setDesignation(getCellValue(row, 7));
-
-        String participated = getCellValue(row, 8);
-        participant.setIsParticipatedBefore(participated.isEmpty() ? ' ' : participated.charAt(0));
-
-        participant.setPreviousParticipationDetails(getCellValue(row, 8));
-
-        String preTraining = getCellValue(row, 9);
-        participant.setPreTrainingAssessmentConducted(preTraining.isEmpty() ? ' ' : preTraining.charAt(0));
-
-        String postTraining = getCellValue(row, 10);
-        participant.setPostTrainingAssessmentConducted(postTraining.isEmpty() ? ' ' : postTraining.charAt(0));
-
-        String certificate = getCellValue(row, 11);
-        participant.setIsCertificateIssued(certificate.isEmpty() ? ' ' : certificate.charAt(0));
-
-        participant.setCertificateIssueDate(parseDate(row, 12));
-        participant.setNeedAssessmentMethodology(getCellValue(row, 13));
-        participant.setOrganization(organization);
-        participant.setPrograms(Collections.singletonList(programRepository.findById(programId).orElse(null)));
-        return participant;
+    private Long parseLong(Row row, int col) {
+        String v = getCellValue(row, col);
+        if (v.isBlank()) return null;
+        try { return Long.parseLong(v.trim()); }
+        catch (NumberFormatException ex) { return null; }
     }
 
-    private ParticipantTemp parseTempParticipant(Row row, Organization organization, Long programId) {
-        ParticipantTemp participant = new ParticipantTemp();
-        participant.setParticipantName(getCellValue(row, 0));
+    private Double parseDouble(Row row, int col) {
+        String v = getCellValue(row, col);
+        if (v.isBlank()) return null;
+        try { return Double.parseDouble(v.trim()); }
+        catch (NumberFormatException ex) { return null; }
+    }
 
-        String gender = getCellValue(row, 1);
-        participant.setGender(gender.isEmpty() ? ' ' : gender.charAt(0));
+    private Participant parseParticipant(Row row,
+                                         Long programId,
+                                         Organization organization) {
 
-        participant.setCategory(getCellValue(row, 3));
+        Participant p = new Participant();
 
-        String disability = getCellValue(row, 4);
-        participant.setDisability(disability.isEmpty() ? ' ' : disability.charAt(0));
+        p.setParticipantName(getCellValue(row, 0));
+        p.setGender(firstChar(getCellValue(row, 1)));
+        p.setMobileNo(parseLong(row, 2));   // Mobile No*
+        p.setCategory(getCellValue(row, 3));
+        p.setDisability(firstChar(getCellValue(row, 4)));
+        p.setAadharNo(parseLong(row, 5));   // Aadhaar No (12 digits)
+        p.setEmail(getCellValue(row, 6));
+        p.setDesignation(getCellValue(row, 7));
+        p.setIsParticipatedBefore(firstChar(getCellValue(row, 8)));
+        p.setPreTrainingAssessmentConducted (firstChar(getCellValue(row, 9)));
+        p.setPostTrainingAssessmentConducted(firstChar(getCellValue(row,10)));
+        p.setIsCertificateIssued(firstChar(getCellValue(row,11)));
+        p.setCertificateIssueDate(parseDate(row, 12));
+        p.setNeedAssessmentMethodology(getCellValue(row, 13));
+        String prevPart = getCellValue(row, 8);
+        p.setPreviousParticipationDetails(prevPart.isBlank() ? null : prevPart);
+        p.setOrganization(organization);
+        p.setPrograms(Collections.singletonList(
+                programRepository.findById(programId).orElse(null)));
+        return p;
+    }
 
-        participant.setEmail(getCellValue(row, 6));
-        participant.setDesignation(getCellValue(row, 7));
+    private Character firstChar(String s) {
+        return (s == null || s.isBlank()) ? ' ' : s.trim().charAt(0);
+    }
 
-        String participated = getCellValue(row, 8);
-        participant.setIsParticipatedBefore(participated.isEmpty() ? ' ' : participated.charAt(0));
+    private ParticipantTemp parseTempParticipant(Row row,
+                                                 Organization organization,
+                                                 Long programId) {
+        ParticipantTemp p = new ParticipantTemp();
 
-        participant.setPreviousParticipationDetails(getCellValue(row, 9));
-
-        String preTraining = getCellValue(row, 10);
-        participant.setPreTrainingAssessmentConducted(preTraining.isEmpty() ? ' ' : preTraining.charAt(0));
-
-        String postTraining = getCellValue(row, 11);
-        participant.setPostTrainingAssessmentConducted(postTraining.isEmpty() ? ' ' : postTraining.charAt(0));
-
-        String certificate = getCellValue(row, 12);
-        participant.setIsCertificateIssued(certificate.isEmpty() ? ' ' : certificate.charAt(0));
-
-        participant.setCertificateIssueDate(parseDate(row, 13));
-        participant.setNeedAssessmentMethodology(getCellValue(row, 14));
-        participant.setOrganization(organization);
-        participant.setPrograms(Collections.singletonList(programRepository.findById(programId).orElse(null)));
-
-        return participant;
+        p.setParticipantName(getCellValue(row, 0));
+        p.setGender(firstChar(getCellValue(row, 1)));
+        p.setMobileNo(parseLong(row, 2));   // Mobile No*
+        p.setCategory(getCellValue(row, 3));
+        p.setDisability(firstChar(getCellValue(row, 4)));
+        p.setAadharNo(parseLong(row, 5));   // Aadhaar No (12 digits)
+        p.setEmail(getCellValue(row, 6));
+        p.setDesignation(getCellValue(row, 7));
+        p.setIsParticipatedBefore(firstChar(getCellValue(row, 8)));
+        p.setPreTrainingAssessmentConducted (firstChar(getCellValue(row, 9)));
+        p.setPostTrainingAssessmentConducted(firstChar(getCellValue(row,10)));
+        p.setIsCertificateIssued(firstChar(getCellValue(row,11)));
+        p.setCertificateIssueDate(parseDate(row, 12));
+        p.setNeedAssessmentMethodology(getCellValue(row, 13));
+        String prevPart = getCellValue(row, 8);
+        p.setPreviousParticipationDetails(prevPart.isBlank() ? null : prevPart);
+        p.setOrganization(organization);
+        p.setPrograms(Collections.singletonList(
+                programRepository.findById(programId).orElse(null)));
+        return p;
     }
 
     private void saveParticipants(List<Participant> participants, List<ParticipantTemp> tempParticipants) {
