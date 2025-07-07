@@ -88,4 +88,7 @@ public class ProgramExpenditure {
         @Column(name="updated_on", insertable = false, updatable = true)
         @UpdateTimestamp
         private Date updatedOn;
+
+        @OneToMany(cascade = CascadeType.ALL,mappedBy = "expenditure")
+        private List<ExpenditureRemarks> remarks;
 }
