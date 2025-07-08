@@ -15,10 +15,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 public class ParticipantController {
-	
+
 	@Autowired
 	private ParticipantService participantService;
 
@@ -91,8 +92,12 @@ public class ParticipantController {
 				return WorkflowResponse.builder().message(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR)).status(200).data("Invalid file format").build();
 			}
 
-			excelHelper.excelToParticipants(file.getInputStream(),programId);
-			return WorkflowResponse.builder().message("Success").status(200).data(null).build();
+			Map<String, Object> result = excelHelper.excelToParticipants(file.getInputStream(), programId);
+			return WorkflowResponse.builder()
+				.message("Success")
+				.status(200)
+				.data(result)
+				.build();
 		} catch (Exception e) {
 			return WorkflowResponse.builder().message(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR)).status(200).data("Error uploading file: " + e.getMessage()).build();
 		}

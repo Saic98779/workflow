@@ -1,22 +1,23 @@
 package com.metaverse.workflow.programattendance.controller;
 
 import com.metaverse.workflow.common.response.WorkflowResponse;
+import com.metaverse.workflow.programattendance.service.ParticipantAttendanceRequest;
 import com.metaverse.workflow.programattendance.service.ProgramAttendanceRequest;
 import com.metaverse.workflow.programattendance.service.ProgramAttendanceService;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@AllArgsConstructor
 @Slf4j
 public class ProgramAttendanceController {
 
-    @Autowired
-    ProgramAttendanceService programAttendanceService;
+    private final ProgramAttendanceService programAttendanceService;
+
+    public ProgramAttendanceController(ProgramAttendanceService programAttendanceService) {
+        this.programAttendanceService = programAttendanceService;
+    }
 
     @GetMapping(value = "/program/attendence/{programId}")
     public ResponseEntity<WorkflowResponse> attendenceByProgramId(@PathVariable("programId") Long programId,
@@ -32,6 +33,14 @@ public class ProgramAttendanceController {
     public ResponseEntity<WorkflowResponse> saveProgramAttendance(@RequestBody ProgramAttendanceRequest request) {
         log.info("Program attendance controller, programId : {}", request.getProgramId());
         WorkflowResponse response = programAttendanceService.updateProgramAttendance(request);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping(value = "/participant/attendance", produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<WorkflowResponse> saveParticipantAttendance(@RequestBody ParticipantAttendanceRequest request) {
+        log.info("Participant attendance controller, programId: {}, participantId: {}", 
+                request.getProgramId(), request.getParticipantId());
+        WorkflowResponse response = programAttendanceService.updateParticipantAttendance(request);
         return ResponseEntity.ok(response);
     }
 
