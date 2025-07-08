@@ -278,7 +278,8 @@ public class ExpenditureServiceAdepter implements ExpenditureService {
 
     @Override
     public WorkflowResponse saveProgramExpenditure(ProgramExpenditureRequest expenditureRequest, List<MultipartFile> files) throws DataException {
-        Program program = programRepository.findById(expenditureRequest.getProgramId())
+        List<ProgramSessionFile> sessionFiles = new ArrayList<>();
+                Program program = programRepository.findById(expenditureRequest.getProgramId())
                 .orElseThrow(() -> new DataException(
                         "Program details for the program id " + expenditureRequest.getAgencyId() + " do not exist.",
                         "PROGRAM-DETAILS-NOT-FOUND",
@@ -314,7 +315,7 @@ public class ExpenditureServiceAdepter implements ExpenditureService {
 
         if (files != null && !files.isEmpty()) {
             List<String> filePaths = programServiceAdapter.storageProgramFiles(files, expenditureRequest.getProgramId(), "ProgramExpenditure");
-            List<ProgramSessionFile> sessionFiles = filePaths.stream()
+            sessionFiles = filePaths.stream()
                     .map(filePath -> ProgramSessionFile.builder()
                             .fileType("FILE")
                             .filePath(filePath)
@@ -322,6 +323,10 @@ public class ExpenditureServiceAdepter implements ExpenditureService {
                             .build())
                     .toList();
             programSessionFileRepository.saveAll(sessionFiles);
+        }
+        if(!sessionFiles.isEmpty()) {
+            programExpenditure.setUploadBillUrl(sessionFiles.get(0).getFilePath());
+            programExpenditureRepository.save(programExpenditure);
         }
 
         return WorkflowResponse.builder()
@@ -394,6 +399,10 @@ public class ExpenditureServiceAdepter implements ExpenditureService {
                             .build())
                     .toList();
             programSessionFileRepository.saveAll(sessionFiles);
+            if(!sessionFiles.isEmpty()) {
+                updatedExpenditure.setUploadBillUrl(sessionFiles.get(0).getFilePath());
+                programExpenditureRepository.save(existingExpenditure);
+            }
         }
 
         return WorkflowResponse.builder()
@@ -427,6 +436,7 @@ public class ExpenditureServiceAdepter implements ExpenditureService {
 
     @Override
     public WorkflowResponse updateBulkExpenditure(Long expenditureId, BulkExpenditureRequest expenditureRequest, List<MultipartFile> files) throws DataException {
+        List<ProgramSessionFile> sessionFiles = new ArrayList<>();
         BulkExpenditure existingExpenditure = bulkExpenditureRepository.findById(expenditureId)
                 .orElseThrow(() -> new DataException(
                         "BulkExpenditure with ID " + expenditureId + " does not exist.",
@@ -457,7 +467,7 @@ public class ExpenditureServiceAdepter implements ExpenditureService {
         }
         ExpenditureRequestMapper.updateBulkExpenditure(existingExpenditure, expenditureRequest, agency, headOfExpense);
 
-        bulkExpenditureRepository.save(existingExpenditure);
+         BulkExpenditure bulkExpenditure = bulkExpenditureRepository.save(existingExpenditure);
 
         List<ProgramSessionFile> oldFiles = programSessionFileRepository.findByBulkExpenditureId(expenditureId);
         if (!oldFiles.isEmpty()) {
@@ -466,7 +476,7 @@ public class ExpenditureServiceAdepter implements ExpenditureService {
         }
         if (files != null && !files.isEmpty()) {
             List<String> filePaths = programServiceAdapter.storageProgramFiles(files, expenditureRequest.getAgencyId(), "BulkExpenditure");
-            List<ProgramSessionFile> sessionFiles = filePaths.stream()
+            sessionFiles = filePaths.stream()
                     .map(filePath -> ProgramSessionFile.builder()
                             .fileType("FILE")
                             .filePath(filePath)
@@ -475,7 +485,10 @@ public class ExpenditureServiceAdepter implements ExpenditureService {
                     .toList();
             programSessionFileRepository.saveAll(sessionFiles);
         }
-
+        if(!sessionFiles.isEmpty()) {
+            bulkExpenditure.setUploadBillUrl(sessionFiles.get(0).getFilePath());
+            bulkExpenditureRepository.save(bulkExpenditure);
+        }
         return WorkflowResponse.builder()
                 .message("BulkExpenditure updated successfully")
                 .data(ExpenditureResponseMapper.mapBulkExpenditure(existingExpenditure))
