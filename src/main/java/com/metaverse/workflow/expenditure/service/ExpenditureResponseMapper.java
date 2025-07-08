@@ -34,7 +34,7 @@ public class ExpenditureResponseMapper {
                 .uploadBillUrl(expenditure.getUploadBillUrl())
                 //.fileIds(fileIds)
                 .checkNo(expenditure.getCheckNo())
-                .checkDate(expenditure.getCheckDate().toString())
+                .checkDate(DateUtil.dateToString(expenditure.getCheckDate(),"dd-MM-yyyy"))
                 .build();
     }
     public static BulkExpenditureResponse mapBulkExpenditure(BulkExpenditure expenditure , List<Long> fileIds)
@@ -60,7 +60,7 @@ public class ExpenditureResponseMapper {
                 .uploadBillUrl(expenditure.getUploadBillUrl())
                 .fileIds(fileIds)
                 .checkNo(expenditure.getCheckNo())
-                .checkDate(expenditure.getCheckDate().toString())
+                .checkDate(DateUtil.dateToString(expenditure.getCheckDate(),"dd-MM-yyyy"))
                 .build();
     }
     public static BulkTransactions mapBulkExpenditureTransaction(BulkExpenditureTransaction  expenditure)
@@ -115,7 +115,7 @@ public class ExpenditureResponseMapper {
                 .purpose(expenditure.getPurpose())
                 .uploadBillUrl(expenditure.getUploadBillUrl())
                 .checkNo(expenditure.getCheckNo())
-                .checkDate(expenditure.getCheckDate().toString())
+                .checkDate(DateUtil.dateToString(expenditure.getCheckDate(),"dd-MM-yyyy"))
                 .build();
 
     }
@@ -145,7 +145,7 @@ public class ExpenditureResponseMapper {
                 .uploadBillUrl(expenditure.getUploadBillUrl())
                 .fileIds(fileIds)
                 .checkNo(expenditure.getCheckNo())
-                .checkDate(expenditure.getCheckDate().toString())
+                .checkDate(DateUtil.dateToString(expenditure.getCheckDate(),"dd-MM-yyyy"))
                 .build();
 
     }
