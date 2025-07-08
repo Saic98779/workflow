@@ -47,9 +47,9 @@ public class ParticipantTemp {
     private Date certificateIssueDate;
     @Column(name = "need_assessment_methodology")
     private String needAssessmentMethodology;
-    @ManyToOne(cascade = CascadeType.ALL,targetEntity = Organization.class)
-    @JoinColumn(name = "organization_id",referencedColumnName = "organization_id")
-    private Organization organization;
+    @ManyToOne(cascade = CascadeType.ALL,targetEntity = OrganizationTemp.class)
+    @JoinColumn(name = "organization_temp_id",referencedColumnName = "organization_temp_id")
+    private OrganizationTemp organizationTemp;
     @ManyToMany
     @JoinTable(
             name = "program_participant_temp",
