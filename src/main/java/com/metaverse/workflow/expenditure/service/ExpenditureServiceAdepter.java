@@ -10,12 +10,14 @@ import com.metaverse.workflow.expenditure.repository.BulkExpenditureRepository;
 import com.metaverse.workflow.expenditure.repository.BulkExpenditureTransactionRepository;
 import com.metaverse.workflow.expenditure.repository.HeadOfExpenseRepository;
 import com.metaverse.workflow.expenditure.repository.ProgramExpenditureRepository;
+import com.metaverse.workflow.login.repository.LoginRepository;
 import com.metaverse.workflow.model.*;
 
 import com.metaverse.workflow.program.repository.ProgramRepository;
 import com.metaverse.workflow.program.repository.ProgramSessionFileRepository;
 import com.metaverse.workflow.program.service.ProgramServiceAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.web.webauthn.management.UserCredentialRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -45,6 +47,8 @@ public class ExpenditureServiceAdepter implements ExpenditureService {
     ProgramSessionFileRepository programSessionFileRepository;
     @Autowired
     ProgramServiceAdapter programServiceAdapter;
+    @Autowired
+    LoginRepository userRepo;
 
     @Override
     public WorkflowResponse saveBulkExpenditure(BulkExpenditureRequest expenditureRequest, List<MultipartFile> files) throws DataException {
@@ -626,7 +630,7 @@ public class ExpenditureServiceAdepter implements ExpenditureService {
                             .expenditureType(exp.getExpenditureType())
                             .cost(exp.getAllocatedCost() != null ? exp.getAllocatedCost() : 0.0)
                             .billNo(exp.getBillNo())
-                            .billDate(exp.getBillDate() != null ? exp.getBillDate().toString().substring(0,10) : null)
+                            .billDate(exp.getBillDate() != null ? exp.getBillDate().toString().substring(0, 10) : null)
                             .payeeName(exp.getPayeeName())
                             .ifscCode(exp.getIfscCode())
                             .modeOfPayment(exp.getModeOfPayment())
@@ -652,6 +656,34 @@ public class ExpenditureServiceAdepter implements ExpenditureService {
         double grandTotal = summaries.stream().mapToDouble(HeadWiseExpenditureSummary::getTotalCost).sum();
 
         return new ExpenditureSummaryResponse(summaries, grandTotal);
+    }
+
+
+    @Override
+    public WorkflowResponse addRemarkOrResponse(ExpenditureRemarksDTO remarks) throws DataException {
+
+        if (userRepo.existsById(remarks.getUserId())) {
+            ProgramExpenditure exp = programExpenditureRepository.findById(remarks.getExpenditureId())
+                    .orElseThrow(() -> new DataException("Expenditure not found", "EXPENDITURE_NOT_FOUND", 400));
+
+            ExpenditureRemarks remarkEntity = ExpenditureRemarksMapper.mapToEntity(remarks);
+            remarkEntity.setExpenditure(exp);
+
+            List<ExpenditureRemarks> remarksList = new ArrayList<>();
+            remarksList.add(remarkEntity);
+
+            exp.setRemarks(remarksList);
+
+            programExpenditureRepository.save(exp);
+
+        } else {
+            throw new DataException("User not found for this id " + remarks.getUserId(), "USER_NOT_FOUND", 400);
+        }
+
+        return WorkflowResponse.builder()
+                .message("Remark Or Response added Successfully.")
+                .status(200)
+                .build();
     }
 
 

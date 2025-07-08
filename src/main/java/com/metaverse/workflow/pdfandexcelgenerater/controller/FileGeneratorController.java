@@ -45,6 +45,7 @@ public class FileGeneratorController {
     private final TrainingCalendarDatewise trainingCalendarDatewise;
     private final GenerateCombinedExpenditureExcel combinedExpenditureExcel;
     private final GenerateProgramAllDataExcel generateProgramAllDataExcel;
+    private final GenerateProgramAllDataExcelSheets programAllDataExcelSheets;
 
     @GetMapping(value = "/program/pdf/{agencyId}", produces = MediaType.APPLICATION_PDF_VALUE)
     public ResponseEntity<InputStreamResource> generatePdfReport(HttpServletResponse response, @PathVariable Long agencyId) throws IOException {
@@ -231,6 +232,13 @@ public class FileGeneratorController {
         response.setContentType("application/vnd.ms-excel");
         response.setHeader("Content-Disposition", "attachment; filename=" + "Program_Details.xls");
         generateProgramAllDataExcel.generateProgramsExcel(response,agencyId);
+    }
+
+    @GetMapping("/program/excel/sheets")
+    public void exportProgramDetailsExcelSheets(HttpServletResponse response) throws IOException, DataException {
+        response.setContentType("application/vnd.ms-excel");
+        response.setHeader("Content-Disposition", "attachment; filename=" + "Program_Details.xls");
+        programAllDataExcelSheets.generateProgramsExcel(response);
     }
 
 
