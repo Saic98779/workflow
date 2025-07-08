@@ -3,6 +3,7 @@ package com.metaverse.workflow.expenditure.service;
 import com.metaverse.workflow.common.enums.ExpenditureType;
 import com.metaverse.workflow.common.enums.PaymentType;
 import com.metaverse.workflow.model.HeadOfExpense;
+import jakarta.persistence.Column;
 import lombok.*;
 
 import java.util.Date;
@@ -31,5 +32,7 @@ public class ProgramExpenditureRequest {
     private PaymentType modeOfPayment;
     private String purpose;
     private String uploadBillUrl;
+    private String checkNo;
+    private String checkDate;
 
 }

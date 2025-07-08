@@ -37,4 +37,6 @@ public class ProgramExpenditureResponse {
     private String purpose;
     private String uploadBillUrl;
     private List<Long> fileIds;
+    private String checkNo;
+    private String checkDate;
 }

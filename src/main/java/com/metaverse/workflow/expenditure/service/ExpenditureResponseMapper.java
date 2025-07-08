@@ -33,6 +33,8 @@ public class ExpenditureResponseMapper {
                 .remarks(expenditure.getRemarks())
                 .uploadBillUrl(expenditure.getUploadBillUrl())
                 //.fileIds(fileIds)
+                .checkNo(expenditure.getCheckNo())
+                .checkDate(expenditure.getCheckDate().toString())
                 .build();
     }
     public static BulkExpenditureResponse mapBulkExpenditure(BulkExpenditure expenditure , List<Long> fileIds)
@@ -57,6 +59,8 @@ public class ExpenditureResponseMapper {
                 .remarks(expenditure.getRemarks())
                 .uploadBillUrl(expenditure.getUploadBillUrl())
                 .fileIds(fileIds)
+                .checkNo(expenditure.getCheckNo())
+                .checkDate(expenditure.getCheckDate().toString())
                 .build();
     }
     public static BulkTransactions mapBulkExpenditureTransaction(BulkExpenditureTransaction  expenditure)
@@ -110,7 +114,8 @@ public class ExpenditureResponseMapper {
                 .modeOfPayment(expenditure.getModeOfPayment())
                 .purpose(expenditure.getPurpose())
                 .uploadBillUrl(expenditure.getUploadBillUrl())
-
+                .checkNo(expenditure.getCheckNo())
+                .checkDate(expenditure.getCheckDate().toString())
                 .build();
 
     }
@@ -139,6 +144,8 @@ public class ExpenditureResponseMapper {
                 .purpose(expenditure.getPurpose())
                 .uploadBillUrl(expenditure.getUploadBillUrl())
                 .fileIds(fileIds)
+                .checkNo(expenditure.getCheckNo())
+                .checkDate(expenditure.getCheckDate().toString())
                 .build();
 
     }

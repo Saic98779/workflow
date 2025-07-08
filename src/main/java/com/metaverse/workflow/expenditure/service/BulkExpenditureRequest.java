@@ -25,4 +25,6 @@ public class BulkExpenditureRequest {
     private PaymentType modeOfPayment;
     private String remarks;
     private String uploadBillUrl;
+    private String checkNo;
+    private String checkDate;
 }

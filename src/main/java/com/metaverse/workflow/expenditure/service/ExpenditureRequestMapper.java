@@ -25,6 +25,8 @@ public class ExpenditureRequestMapper {
                 .modeOfPayment(request.getModeOfPayment().toString())
                 .remarks(request.getRemarks())
                 .uploadBillUrl(request.getUploadBillUrl())
+                .checkDate(DateUtil.stringToDate(request.getCheckDate(),"dd-MM-yyyy"))
+                .checkNo(request.getCheckNo())
                 .build();
 
     }
@@ -47,6 +49,8 @@ public class ExpenditureRequestMapper {
                 .modeOfPayment(request.getModeOfPayment().toString())
                 .purpose(request.getPurpose())
                 .uploadBillUrl(request.getUploadBillUrl())
+                .checkDate(DateUtil.stringToDate(request.getCheckDate(),"dd-MM-yyyy"))
+                .checkNo(request.getCheckNo())
                 .build();
 
     }
@@ -69,6 +73,8 @@ public class ExpenditureRequestMapper {
         existing.setModeOfPayment(request.getModeOfPayment().toString());
         existing.setPurpose(request.getPurpose());
         existing.setUploadBillUrl(request.getUploadBillUrl());
+        existing.setCheckNo(request.getCheckNo());
+        existing.setCheckDate(DateUtil.stringToDate(request.getCheckDate(), "dd-MM-yyyy"));
 
 
     }
