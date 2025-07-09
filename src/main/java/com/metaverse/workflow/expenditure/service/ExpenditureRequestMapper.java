@@ -112,5 +112,7 @@ public class ExpenditureRequestMapper {
         existingExpenditure.setModeOfPayment(expenditureRequest.getModeOfPayment().toString());
         existingExpenditure.setRemarks(expenditureRequest.getRemarks());
         existingExpenditure.setUploadBillUrl(expenditureRequest.getUploadBillUrl());
+        existingExpenditure.setCheckDate(DateUtil.stringToDate(expenditureRequest.getCheckDate(), "dd-MM-yyyy"));
+        existingExpenditure.setCheckNo(expenditureRequest.getCheckNo());
     }
 }
