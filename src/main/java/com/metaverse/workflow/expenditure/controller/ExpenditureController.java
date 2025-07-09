@@ -208,7 +208,7 @@ public class ExpenditureController {
             return RestControllerBase.error(e);
         }
     }
-    @PutMapping("/save/remark_or_response")
+    @PutMapping("/save/remarks")
     public ResponseEntity<?> addingRemarks(@RequestBody ExpenditureRemarksDTO remarksDTO)
     {
         try {
