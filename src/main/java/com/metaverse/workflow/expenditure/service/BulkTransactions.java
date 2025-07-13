@@ -34,6 +34,6 @@ public class BulkTransactions {
     private String modeOfPayment;
     private String remarks;
     private String uploadBillUrl;
-    private List<ExpenditureRemarks> remarksList;
+    private List<String> remarksOrResponse;
 }
 

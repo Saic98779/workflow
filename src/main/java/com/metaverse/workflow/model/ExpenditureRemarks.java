@@ -36,7 +36,7 @@ public class ExpenditureRemarks {
     private ProgramExpenditure expenditure;
 
     @ManyToOne
-    @JoinColumn(name = "bulkExpenditureTransaction")
+    @JoinColumn(name = "bulkExpenditureTransaction", referencedColumnName = "bulk_expenditure_transaction_id")
     @JsonIgnore
     private BulkExpenditureTransaction bulkExpenditureTransaction;
 

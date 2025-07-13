@@ -3,6 +3,7 @@ package com.metaverse.workflow.expenditure.service;
 import com.metaverse.workflow.common.util.DateUtil;
 import com.metaverse.workflow.model.BulkExpenditure;
 import com.metaverse.workflow.model.BulkExpenditureTransaction;
+import com.metaverse.workflow.model.ExpenditureRemarks;
 import com.metaverse.workflow.model.ProgramExpenditure;
 
 import java.util.List;
@@ -85,7 +86,7 @@ public class ExpenditureResponseMapper {
                 .modeOfPayment(expenditure.getExpenditure().getModeOfPayment())
                 .remarks(expenditure.getExpenditure().getRemarks())
                 .uploadBillUrl(expenditure.getExpenditure().getUploadBillUrl())
-                .remarksList(expenditure.getRemarks())
+                .remarksOrResponse(expenditure.getRemarks().stream().map(ExpenditureRemarks::getRemark).toList())
                 .build();
     }
 
@@ -115,7 +116,7 @@ public class ExpenditureResponseMapper {
                 .uploadBillUrl(expenditure.getUploadBillUrl())
                 .checkNo(expenditure.getCheckNo())
                 .checkDate(DateUtil.dateToString(expenditure.getCheckDate(),"dd-MM-yyyy"))
-                .remarksOrResponse(expenditure.getRemarks())
+                .remarksOrResponse(expenditure.getRemarks().stream().map(ExpenditureRemarks::getRemark).toList())
                 .build();
 
     }
@@ -146,7 +147,7 @@ public class ExpenditureResponseMapper {
                 .fileIds(fileIds)
                 .checkNo(expenditure.getCheckNo())
                 .checkDate(DateUtil.dateToString(expenditure.getCheckDate(),"dd-MM-yyyy"))
-                .remarksOrResponse(expenditure.getRemarks())
+                .remarksOrResponse(expenditure.getRemarks().stream().map(ExpenditureRemarks::getRemark).toList())
                 .build();
 
     }

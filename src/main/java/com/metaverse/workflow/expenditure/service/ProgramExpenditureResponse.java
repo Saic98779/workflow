@@ -36,5 +36,5 @@ public class ProgramExpenditureResponse {
     private List<Long> fileIds;
     private String checkNo;
     private String checkDate;
-    private List<ExpenditureRemarks> remarksOrResponse;
+    private List<String> remarksOrResponse;
 }
