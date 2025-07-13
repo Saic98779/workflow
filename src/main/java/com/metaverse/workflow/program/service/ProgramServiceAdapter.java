@@ -19,6 +19,7 @@ import com.metaverse.workflow.notifications.dto.NotificationRequest;
 import com.metaverse.workflow.notifications.repository.NotificationRepository;
 import com.metaverse.workflow.notifications.service.NotificationService;
 import com.metaverse.workflow.participant.repository.ParticipantRepository;
+import com.metaverse.workflow.participant.repository.ParticipantTempRepository;
 import com.metaverse.workflow.participant.service.ParticipantResponse;
 import com.metaverse.workflow.program.repository.*;
 import com.metaverse.workflow.resouce.repository.ResourceRepository;
@@ -99,6 +100,9 @@ public class ProgramServiceAdapter implements ProgramService {
     @Autowired
     NotificationRepository notificationRepository;
 
+    @Autowired
+    private ParticipantTempRepository participantTempRepository;
+
     @PersistenceContext
     private EntityManager em;
 
@@ -164,6 +168,22 @@ public class ProgramServiceAdapter implements ProgramService {
             participantPage = participantRepository.findByProgramId(id, pageable);
         }
         response = ProgramResponseMapper.mapProgramParticipants(participantPage.getContent());
+        return WorkflowResponse.builder().status(200).message("Success").data(response).totalElements(participantPage.getTotalElements()).totalPages(participantPage.getTotalPages()).build();
+    }
+    @Override
+    public WorkflowResponse getTempProgramParticipants(Long id, Long agencyId, int page, int size) {
+        Pageable pageable;
+        Page<ParticipantTemp> participantPage;
+        List<ParticipantResponse> response;
+        pageable = PageRequest.of(page, size);
+        if (id == -1) {
+            participantPage = participantTempRepository.findAll(pageable);
+        } else if (agencyId != null) {
+            participantPage = participantTempRepository.findByPrograms_Agency_AgencyId(agencyId, pageable);
+        } else {
+            participantPage = participantTempRepository.findByProgramId(id, pageable);
+        }
+        response = ProgramResponseMapper.mapProgramTempParticipants(participantPage.getContent());
         return WorkflowResponse.builder().status(200).message("Success").data(response).totalElements(participantPage.getTotalElements()).totalPages(participantPage.getTotalPages()).build();
     }
 

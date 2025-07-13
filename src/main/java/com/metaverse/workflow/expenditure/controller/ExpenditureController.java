@@ -218,6 +218,16 @@ public class ExpenditureController {
         }
     }
 
+    @PutMapping("/save/remarks/transaction")
+    public ResponseEntity<?> addingRemarksTransaction(@RequestBody ExpenditureRemarksDTO remarksDTO)
+    {
+        try {
+            return  ResponseEntity.ok( expenditureService.addRemarkOrResponseTransaction(remarksDTO));
+        } catch (DataException e) {
+            return RestControllerBase.error(e);
+        }
+    }
+
 }
 
 

@@ -3,6 +3,7 @@ package com.metaverse.workflow.participant.service;
 import com.metaverse.workflow.common.util.CommonUtil;
 import com.metaverse.workflow.common.util.DateUtil;
 import com.metaverse.workflow.model.Participant;
+import com.metaverse.workflow.model.ParticipantTemp;
 import com.metaverse.workflow.model.Program;
 import com.metaverse.workflow.model.Sector;
 
@@ -39,6 +40,35 @@ public class ParticipantResponseMapper {
 				.sectorList(participant.getOrganization() != null ? participant.getOrganization().getSectors().stream().map(Sector::getSectorName).toList() : null)
 				.build();
 	}
+	public static ParticipantResponse mapToTempParticipant(ParticipantTemp participant)
+	{
+		return ParticipantResponse.builder()
+				.participantId(participant.getParticipantTempId())
+				.participantName(participant.getParticipantName())
+				.gender(participant.getGender())
+				.category(participant.getCategory())
+				.disability(participant.getDisability())
+				.aadharNo(participant.getAadharNo())
+				.mobileNo(participant.getMobileNo())
+				.email(participant.getEmail())
+				.designation(participant.getDesignation())
+				.isParticipatedBefore(participant.getIsParticipatedBefore())
+				.previousParticipationDetails(participant.getPreviousParticipationDetails())
+				.preTrainingAssessmentConducted(participant.getPreTrainingAssessmentConducted())
+				.postTrainingAssessmentConducted(participant.getPostTrainingAssessmentConducted())
+				.isCertificateIssued(participant.getIsCertificateIssued())
+				.certificateIssueDate(DateUtil.dateToString(participant.getCertificateIssueDate(), "dd-MM-yyyy"))
+				.needAssessmentMethodology(participant.getNeedAssessmentMethodology())
+				.organizationId(participant.getOrganizationTemp() != null ? participant.getOrganizationTemp().getOrganizationId() : null)
+				.programIds(participant.getPrograms() != null ? participant.getPrograms().stream().map(Program::getProgramId).collect(Collectors.toList()) : null)
+				.organizationName(participant.getOrganizationTemp() != null ? participant.getOrganizationTemp().getOrganizationName() : null)
+				.district(participant.getOrganizationTemp() != null ? CommonUtil.districtMap.get( Integer.valueOf(participant.getOrganizationTemp().getDistId())) : null)
+				.mandal(participant.getOrganizationTemp() != null ? CommonUtil.districtMap.get( Integer.valueOf(participant.getOrganizationTemp().getMandal())) : null)
+				.nameOfVO(participant.getOrganizationTemp() != null ? participant.getOrganizationTemp().getNameOfTheVO() : null)
+				.sectorList(participant.getOrganizationTemp() != null ? participant.getOrganizationTemp().getSectors().stream().map(Sector::getSectorName).toList() : null)
+				.build();
+	}
+
 
 	public static ParticipantResponseForESDPTraining mapForESDPTraining(Participant participant)
 	{

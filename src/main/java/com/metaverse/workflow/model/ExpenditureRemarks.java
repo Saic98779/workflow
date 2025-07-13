@@ -20,7 +20,9 @@ public class ExpenditureRemarks {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String userId;
+    @OneToOne
+    @JoinColumn(name = "userId")
+    private User userId;
 
     private String remark;
 
@@ -32,6 +34,11 @@ public class ExpenditureRemarks {
     @JoinColumn(name = "expenditure")
     @JsonIgnore
     private ProgramExpenditure expenditure;
+
+    @ManyToOne
+    @JoinColumn(name = "bulkExpenditureTransaction")
+    @JsonIgnore
+    private BulkExpenditureTransaction bulkExpenditureTransaction;
 
     @PrePersist
     public void prePersist() {

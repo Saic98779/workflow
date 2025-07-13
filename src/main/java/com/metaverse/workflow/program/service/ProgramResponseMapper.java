@@ -133,8 +133,11 @@ public class ProgramResponseMapper {
     }
 
     public static List<ParticipantResponse> mapProgramParticipants(List<Participant> participantList) {
-        return participantList != null ? participantList.stream().map(participant ->
-                        ParticipantResponseMapper.map(participant))
+        return participantList != null ? participantList.stream().map(ParticipantResponseMapper::map)
+                .collect(Collectors.toList()) : null;
+    }
+    public static List<ParticipantResponse> mapProgramTempParticipants(List<ParticipantTemp> participantList) {
+        return participantList != null ? participantList.stream().map(ParticipantResponseMapper::mapToTempParticipant)
                 .collect(Collectors.toList()) : null;
     }
 

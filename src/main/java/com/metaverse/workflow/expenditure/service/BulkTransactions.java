@@ -1,12 +1,15 @@
 package com.metaverse.workflow.expenditure.service;
 
 import com.metaverse.workflow.common.enums.PaymentType;
+import com.metaverse.workflow.model.ExpenditureRemarks;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.Date;
+import java.util.List;
+
 @AllArgsConstructor
 @Builder
 @Setter
@@ -31,5 +34,6 @@ public class BulkTransactions {
     private String modeOfPayment;
     private String remarks;
     private String uploadBillUrl;
+    private List<ExpenditureRemarks> remarksList;
 }
 
