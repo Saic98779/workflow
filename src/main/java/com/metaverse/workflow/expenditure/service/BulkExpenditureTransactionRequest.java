@@ -2,6 +2,8 @@ package com.metaverse.workflow.expenditure.service;
 
 import lombok.*;
 
+import java.util.List;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -17,4 +19,5 @@ public class BulkExpenditureTransactionRequest {
     private Long bulkExpenditureId;
     private Integer consumedQuantity;
     private Double allocatedCost;
+    private List<ExpenditureRemarksDTO> remarks;
 }

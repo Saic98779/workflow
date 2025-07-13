@@ -20,5 +20,7 @@ public class ExpenditureRemarksDTO {
     private String remarkTime;
 
     private Long expenditureId;
+
+    private Long transactionId;
 }
 

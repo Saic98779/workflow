@@ -4,7 +4,6 @@ import com.metaverse.workflow.common.util.DateUtil;
 import com.metaverse.workflow.model.BulkExpenditure;
 import com.metaverse.workflow.model.BulkExpenditureTransaction;
 import com.metaverse.workflow.model.ProgramExpenditure;
-import com.metaverse.workflow.model.ProgramSessionFile;
 
 import java.util.List;
 
@@ -66,7 +65,6 @@ public class ExpenditureResponseMapper {
     public static BulkTransactions mapBulkExpenditureTransaction(BulkExpenditureTransaction  expenditure)
     {
         return BulkTransactions.builder()
-
                 .bulkExpenditureTransactionId(expenditure.getBulkExpenditureTransactionId())
                 .itemName(expenditure.getExpenditure().getItemName())
                 .purchaseDate(DateUtil.dateToString(expenditure.getExpenditure().getPurchaseDate(),"dd-MM-yyyy"))
@@ -87,6 +85,7 @@ public class ExpenditureResponseMapper {
                 .modeOfPayment(expenditure.getExpenditure().getModeOfPayment())
                 .remarks(expenditure.getExpenditure().getRemarks())
                 .uploadBillUrl(expenditure.getExpenditure().getUploadBillUrl())
+                .remarksList(expenditure.getRemarks())
                 .build();
     }
 
@@ -116,6 +115,7 @@ public class ExpenditureResponseMapper {
                 .uploadBillUrl(expenditure.getUploadBillUrl())
                 .checkNo(expenditure.getCheckNo())
                 .checkDate(DateUtil.dateToString(expenditure.getCheckDate(),"dd-MM-yyyy"))
+                .remarksOrResponse(expenditure.getRemarks())
                 .build();
 
     }
@@ -146,6 +146,7 @@ public class ExpenditureResponseMapper {
                 .fileIds(fileIds)
                 .checkNo(expenditure.getCheckNo())
                 .checkDate(DateUtil.dateToString(expenditure.getCheckDate(),"dd-MM-yyyy"))
+                .remarksOrResponse(expenditure.getRemarks())
                 .build();
 
     }

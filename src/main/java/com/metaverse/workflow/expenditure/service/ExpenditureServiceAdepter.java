@@ -678,8 +678,8 @@ public class ExpenditureServiceAdepter implements ExpenditureService {
         if (userRepo.existsById(remarks.getUserId())) {
             ProgramExpenditure exp = programExpenditureRepository.findById(remarks.getExpenditureId())
                     .orElseThrow(() -> new DataException("Expenditure not found", "EXPENDITURE_NOT_FOUND", 400));
-
-            ExpenditureRemarks remarkEntity = ExpenditureRemarksMapper.mapToEntity(remarks);
+           Optional<User> user= userRepo.findById(remarks.getUserId());
+            ExpenditureRemarks remarkEntity = ExpenditureRemarksMapper.mapToEntity(remarks,user.get());
             remarkEntity.setExpenditure(exp);
 
             List<ExpenditureRemarks> remarksList = new ArrayList<>();
@@ -698,7 +698,33 @@ public class ExpenditureServiceAdepter implements ExpenditureService {
                 .status(200)
                 .build();
     }
+    @Override
+    public WorkflowResponse addRemarkOrResponseTransaction(ExpenditureRemarksDTO remarks) throws DataException {
 
+        if (userRepo.existsById(remarks.getUserId())) {
+            BulkExpenditureTransaction exp = transactionRepo.findById(remarks.getTransactionId())
+                    .orElseThrow(() -> new DataException("ExpenditureTransaction not found", "EXPENDITURE_TRANSACTION_NOT_FOUND", 400));
+
+            Optional<User> user= userRepo.findById(remarks.getUserId());
+            ExpenditureRemarks remarkEntity = ExpenditureRemarksMapper.mapToEntity(remarks,user.get());
+            remarkEntity.setBulkExpenditureTransaction(exp);
+
+            List<ExpenditureRemarks> remarksList = new ArrayList<>();
+            remarksList.add(remarkEntity);
+
+            exp.setRemarks(remarksList);
+
+            transactionRepo.save(exp);
+
+        } else {
+            throw new DataException("User not found for this id " + remarks.getUserId(), "USER_NOT_FOUND", 400);
+        }
+
+        return WorkflowResponse.builder()
+                .message("Remark Or Response added Successfully.")
+                .status(200)
+                .build();
+    }
 
 
 }
