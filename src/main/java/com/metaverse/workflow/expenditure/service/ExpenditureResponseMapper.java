@@ -3,7 +3,9 @@ package com.metaverse.workflow.expenditure.service;
 import com.metaverse.workflow.common.util.DateUtil;
 import com.metaverse.workflow.model.*;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 public class ExpenditureResponseMapper {
 
@@ -83,8 +85,21 @@ public class ExpenditureResponseMapper {
                 .modeOfPayment(expenditure.getExpenditure().getModeOfPayment())
                 .remarks(expenditure.getExpenditure().getRemarks())
                 .uploadBillUrl(expenditure.getExpenditure().getUploadBillUrl())
-                .spiuComments(expenditure.getSpiuComments().stream().map(SpiuComments::getFormattedRemark).toList())
-                .agencyComments(expenditure.getAgencyComments().stream().map(AgencyComments::getFormattedRemark).toList())
+                .spiuComments(
+                        Optional.ofNullable(expenditure.getSpiuComments())
+                                .orElse(List.of())
+                                .stream()
+                                .map(SpiuComments::getFormattedRemark)
+                                .toList()
+                )
+                .agencyComments(
+                        Optional.ofNullable(expenditure.getAgencyComments())
+                                .orElse(List.of())
+                                .stream()
+                                .map(AgencyComments::getFormattedRemark)
+                                .toList()
+                )
+                .status(expenditure.getStatus())
                 .build();
     }
 
@@ -114,8 +129,22 @@ public class ExpenditureResponseMapper {
                 .uploadBillUrl(expenditure.getUploadBillUrl())
                 .checkNo(expenditure.getCheckNo())
                 .checkDate(DateUtil.dateToString(expenditure.getCheckDate(),"dd-MM-yyyy"))
-                .spiuComments(expenditure.getSpiuComments().stream().map(SpiuComments::getFormattedRemark).toList())
-                .agencyComments(expenditure.getAgencyComments().stream().map(AgencyComments::getFormattedRemark).toList())                .build();
+                .spiuComments(
+                        Optional.ofNullable(expenditure.getSpiuComments())
+                                .orElse(List.of())
+                                .stream()
+                                .map(SpiuComments::getFormattedRemark)
+                                .toList()
+                )
+                .agencyComments(
+                        Optional.ofNullable(expenditure.getAgencyComments())
+                                .orElse(List.of())
+                                .stream()
+                                .map(AgencyComments::getFormattedRemark)
+                                .toList()
+                )
+                .status(expenditure.getStatus())
+                .build();
 
     }
     public static ProgramExpenditureResponse mapProgramExpenditure(ProgramExpenditure expenditure,List<Long> fileIds)
@@ -145,8 +174,21 @@ public class ExpenditureResponseMapper {
                 .fileIds(fileIds)
                 .checkNo(expenditure.getCheckNo())
                 .checkDate(DateUtil.dateToString(expenditure.getCheckDate(),"dd-MM-yyyy"))
-                .spiuComments(expenditure.getSpiuComments().stream().map(SpiuComments::getFormattedRemark).toList())
-                .agencyComments(expenditure.getAgencyComments().stream().map(AgencyComments::getFormattedRemark).toList())
+                .spiuComments(
+                        Optional.ofNullable(expenditure.getSpiuComments())
+                                .orElse(List.of())
+                                .stream()
+                                .map(SpiuComments::getFormattedRemark)
+                                .toList()
+                )
+                .agencyComments(
+                        Optional.ofNullable(expenditure.getAgencyComments())
+                                .orElse(List.of())
+                                .stream()
+                                .map(AgencyComments::getFormattedRemark)
+                                .toList()
+                )
+                .status(expenditure.getStatus())
                 .build();
 
     }
