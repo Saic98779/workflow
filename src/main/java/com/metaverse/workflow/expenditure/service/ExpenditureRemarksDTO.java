@@ -9,15 +9,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ExpenditureRemarksDTO {
 
-    private Long id;
-
     private String userId;
 
-    private String remark;
+    private String spiuComments;
 
-    private String remarkDate;
-
-    private String remarkTime;
+    private String agencyComments;
 
     private Long expenditureId;
 

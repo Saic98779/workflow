@@ -1,6 +1,7 @@
 package com.metaverse.workflow.expenditure.service;
 
-import com.metaverse.workflow.model.ExpenditureRemarks;
+import com.metaverse.workflow.model.AgencyComments;
+import com.metaverse.workflow.model.SpiuComments;
 import com.metaverse.workflow.model.User;
 
 import java.time.format.DateTimeFormatter;
@@ -22,11 +23,17 @@ public class ExpenditureRemarksMapper {
 //        );
 //    }
 
-    public static ExpenditureRemarks mapToEntity(ExpenditureRemarksDTO dto, User user) {
-        ExpenditureRemarks entity = new ExpenditureRemarks();
-        entity.setId(dto.getId());
+    public static SpiuComments mapToEntity(ExpenditureRemarksDTO dto, User user) {
+        SpiuComments entity = new SpiuComments();
         entity.setUserId(user);
-        entity.setRemark(dto.getRemark());
+        entity.setRemarks(dto.getSpiuComments());
+        return entity;
+    }
+
+    public static AgencyComments mapToEntityAgencyComments(ExpenditureRemarksDTO dto, User user) {
+        AgencyComments entity = new AgencyComments();
+        entity.setUserId(user);
+        entity.setRemarks(dto.getAgencyComments());
         return entity;
     }
 }

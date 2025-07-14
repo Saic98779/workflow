@@ -1,7 +1,5 @@
 package com.metaverse.workflow.expenditure.service;
 
-import com.metaverse.workflow.common.enums.PaymentType;
-import com.metaverse.workflow.model.ExpenditureRemarks;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -34,6 +32,6 @@ public class BulkTransactions {
     private String modeOfPayment;
     private String remarks;
     private String uploadBillUrl;
-    private List<String> remarksOrResponse;
-}
+    private List<String> spiuComments;
+    private List<String> agencyComments;}
 

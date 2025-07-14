@@ -1,6 +1,7 @@
 package com.metaverse.workflow.model;
 
 
+import com.metaverse.workflow.enums.BillRemarksStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -62,6 +63,12 @@ public class BulkExpenditureTransaction {
     @UpdateTimestamp
     private Date updatedOn;
 
+    @Column(name = "status")
+    private BillRemarksStatus status;
+
     @OneToMany(cascade = CascadeType.ALL,mappedBy = "bulkExpenditureTransaction")
-    private List<ExpenditureRemarks> remarks;
+    private List<SpiuComments> spiuComments;
+
+    @OneToMany(mappedBy = "bulkExpenditureTransaction", cascade = CascadeType.ALL)
+    private List<AgencyComments> agencyComments;
 }

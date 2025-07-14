@@ -5,10 +5,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.metaverse.workflow.common.enums.ExpenditureType;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.common.util.RestControllerBase;
+import com.metaverse.workflow.enums.BillRemarksStatus;
 import com.metaverse.workflow.exceptions.*;
 import com.metaverse.workflow.expenditure.service.*;
 import com.metaverse.workflow.model.HeadOfExpense;
-import com.metaverse.workflow.program.service.ProgramSessionRequest;
+import io.swagger.v3.oas.annotations.Operation;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 public class ExpenditureController {
@@ -209,20 +209,20 @@ public class ExpenditureController {
         }
     }
     @PutMapping("/save/remarks")
-    public ResponseEntity<?> addingRemarks(@RequestBody ExpenditureRemarksDTO remarksDTO)
+    public ResponseEntity<?> addingRemarks(@RequestBody ExpenditureRemarksDTO remarksDTO, @RequestParam("status") BillRemarksStatus status)
     {
         try {
-            return  ResponseEntity.ok( expenditureService.addRemarkOrResponse(remarksDTO));
+            return  ResponseEntity.ok(expenditureService.addRemarkOrResponse(remarksDTO, status));
         } catch (DataException e) {
             return RestControllerBase.error(e);
         }
     }
 
     @PutMapping("/save/remarks/transaction")
-    public ResponseEntity<?> addingRemarksTransaction(@RequestBody ExpenditureRemarksDTO remarksDTO)
+    public ResponseEntity<?> addingRemarksTransaction(@RequestBody ExpenditureRemarksDTO remarksDTO, @RequestParam("status") BillRemarksStatus status)
     {
         try {
-            return  ResponseEntity.ok( expenditureService.addRemarkOrResponseTransaction(remarksDTO));
+            return  ResponseEntity.ok(expenditureService.addRemarkOrResponseTransaction(remarksDTO, status));
         } catch (DataException e) {
             return RestControllerBase.error(e);
         }

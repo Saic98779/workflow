@@ -1,6 +1,5 @@
 package com.metaverse.workflow.expenditure.service;
 
-import com.metaverse.workflow.model.ExpenditureRemarks;
 import lombok.*;
 
 import java.util.List;
@@ -36,5 +35,6 @@ public class ProgramExpenditureResponse {
     private List<Long> fileIds;
     private String checkNo;
     private String checkDate;
-    private List<String> remarksOrResponse;
+    private List<String> spiuComments;
+    private List<String> agencyComments;
 }

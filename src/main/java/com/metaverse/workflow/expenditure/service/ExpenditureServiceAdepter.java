@@ -5,6 +5,7 @@ import com.metaverse.workflow.activity.repository.SubActivityRepository;
 import com.metaverse.workflow.agency.repository.AgencyRepository;
 import com.metaverse.workflow.common.enums.ExpenditureType;
 import com.metaverse.workflow.common.response.WorkflowResponse;
+import com.metaverse.workflow.enums.BillRemarksStatus;
 import com.metaverse.workflow.exceptions.*;
 import com.metaverse.workflow.expenditure.repository.BulkExpenditureRepository;
 import com.metaverse.workflow.expenditure.repository.BulkExpenditureTransactionRepository;
@@ -17,7 +18,6 @@ import com.metaverse.workflow.program.repository.ProgramRepository;
 import com.metaverse.workflow.program.repository.ProgramSessionFileRepository;
 import com.metaverse.workflow.program.service.ProgramServiceAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.web.webauthn.management.UserCredentialRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -673,58 +673,84 @@ public class ExpenditureServiceAdepter implements ExpenditureService {
 
 
     @Override
-    public WorkflowResponse addRemarkOrResponse(ExpenditureRemarksDTO remarks) throws DataException {
+    public WorkflowResponse addRemarkOrResponse(ExpenditureRemarksDTO remarks, BillRemarksStatus status) throws DataException {
 
-        if (userRepo.existsById(remarks.getUserId())) {
-            ProgramExpenditure exp = programExpenditureRepository.findById(remarks.getExpenditureId())
-                    .orElseThrow(() -> new DataException("Expenditure not found", "EXPENDITURE_NOT_FOUND", 400));
-           Optional<User> user= userRepo.findById(remarks.getUserId());
-            ExpenditureRemarks remarkEntity = ExpenditureRemarksMapper.mapToEntity(remarks,user.get());
-            remarkEntity.setExpenditure(exp);
+        // 1. Retrieve user and expenditure
+        User user = userRepo.findById(remarks.getUserId())
+                .orElseThrow(() -> new DataException("User not found for ID: " + remarks.getUserId(), "USER_NOT_FOUND", 400));
 
-            List<ExpenditureRemarks> remarksList = new ArrayList<>();
-            remarksList.add(remarkEntity);
+        ProgramExpenditure expenditure = programExpenditureRepository.findById(remarks.getExpenditureId())
+                .orElseThrow(() -> new DataException("Expenditure not found", "EXPENDITURE_NOT_FOUND", 400));
 
-            exp.setRemarks(remarksList);
+        // 2. Create and associate SpiuComment
+        SpiuComments spiuComment = ExpenditureRemarksMapper.mapToEntity(remarks, user);
+        spiuComment.setExpenditure(expenditure);
+        expenditure.getSpiuComments().add(spiuComment);
 
-            programExpenditureRepository.save(exp);
+        // 3. Create and associate AgencyComment
+        AgencyComments agencyComment = ExpenditureRemarksMapper.mapToEntityAgencyComments(remarks, user);
+        agencyComment.setExpenditure(expenditure); // Ensure bidirectional relationship
+        expenditure.getAgencyComments().add(agencyComment);
 
-        } else {
-            throw new DataException("User not found for this id " + remarks.getUserId(), "USER_NOT_FOUND", 400);
+        // 4. Set status if provided
+        if (status != null) {
+            expenditure.setStatus(status);
         }
 
+        // 5. Save all changes (cascading will persist the comments if configured)
+        programExpenditureRepository.save(expenditure);
+
+        // 6. Return response
         return WorkflowResponse.builder()
-                .message("Remark Or Response added Successfully.")
+                .message("Remark or Response added successfully.")
                 .status(200)
                 .build();
     }
+
     @Override
-    public WorkflowResponse addRemarkOrResponseTransaction(ExpenditureRemarksDTO remarks) throws DataException {
+    public WorkflowResponse addRemarkOrResponseTransaction(ExpenditureRemarksDTO remarks, BillRemarksStatus status) throws DataException {
 
-        if (userRepo.existsById(remarks.getUserId())) {
-            BulkExpenditureTransaction exp = transactionRepo.findById(remarks.getTransactionId())
-                    .orElseThrow(() -> new DataException("ExpenditureTransaction not found", "EXPENDITURE_TRANSACTION_NOT_FOUND", 400));
+        // 1. Fetch user
+        User user = userRepo.findById(remarks.getUserId())
+                .orElseThrow(() -> new DataException("User not found for ID: " + remarks.getUserId(), "USER_NOT_FOUND", 400));
 
-            Optional<User> user= userRepo.findById(remarks.getUserId());
-            ExpenditureRemarks remarkEntity = ExpenditureRemarksMapper.mapToEntity(remarks,user.get());
-            remarkEntity.setBulkExpenditureTransaction(exp);
+        // 2. Fetch transaction
+        BulkExpenditureTransaction transaction = transactionRepo.findById(remarks.getTransactionId())
+                .orElseThrow(() -> new DataException("Expenditure Transaction not found", "EXPENDITURE_TRANSACTION_NOT_FOUND", 400));
 
-            List<ExpenditureRemarks> remarksList = new ArrayList<>();
-            remarksList.add(remarkEntity);
+        // 3. Create and associate SpiuComment
+        SpiuComments spiuComment = ExpenditureRemarksMapper.mapToEntity(remarks, user);
+        spiuComment.setBulkExpenditureTransaction(transaction);
 
-            exp.setRemarks(remarksList);
+        if (transaction.getSpiuComments() == null) {
+            transaction.setSpiuComments(new ArrayList<>());
+        }
+        transaction.getSpiuComments().add(spiuComment);
 
-            transactionRepo.save(exp);
+        // 4. Create and associate AgencyComment
+        AgencyComments agencyComment = ExpenditureRemarksMapper.mapToEntityAgencyComments(remarks, user);
+        agencyComment.setBulkExpenditureTransaction(transaction);
 
-        } else {
-            throw new DataException("User not found for this id " + remarks.getUserId(), "USER_NOT_FOUND", 400);
+        if (transaction.getAgencyComments() == null) {
+            transaction.setAgencyComments(new ArrayList<>());
+        }
+        transaction.getAgencyComments().add(agencyComment);
+
+        // 5. Set status if provided
+        if (status != null) {
+            transaction.setStatus(status);
         }
 
+        // 6. Save transaction (with cascading, comments will persist)
+        transactionRepo.save(transaction);
+
+        // 7. Return success response
         return WorkflowResponse.builder()
-                .message("Remark Or Response added Successfully.")
+                .message("Remark or Response added successfully.")
                 .status(200)
                 .build();
     }
+
 
 
 }

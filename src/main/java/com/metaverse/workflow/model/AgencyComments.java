@@ -1,34 +1,34 @@
 package com.metaverse.workflow.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 @Entity
-@Table(name = "expenditure_remarks")
-public class ExpenditureRemarks {
+@Table(name = "agency_comments")
+public class AgencyComments {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
-    @JoinColumn(name = "userId")
+    @ManyToOne
+    @JoinColumn(name = "user_id")
     private User userId;
 
-    private String remark;
+    private String remarks;
 
-    private LocalDate remarkDate;
-
-    private LocalTime remarkTime;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yy HH:mm:ss")
+    private LocalDateTime remarkTimestamp;
 
     @ManyToOne
     @JoinColumn(name = "expenditure")
@@ -40,12 +40,18 @@ public class ExpenditureRemarks {
     @JsonIgnore
     private BulkExpenditureTransaction bulkExpenditureTransaction;
 
+    @Transient
+    public String getFormattedRemark() {
+        if (remarkTimestamp == null || remarks == null) return "";
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yy HH:mm:ss");
+        return remarkTimestamp.format(formatter) + ": " + remarks;
+    }
+
     @PrePersist
     public void prePersist() {
-        LocalDate nowDate = LocalDate.now();
-        LocalTime nowTime = LocalTime.now();
-        this.remarkDate = nowDate;
-        this.remarkTime = nowTime;
+        this.remarkTimestamp = LocalDateTime.now();
     }
 
 }
+
