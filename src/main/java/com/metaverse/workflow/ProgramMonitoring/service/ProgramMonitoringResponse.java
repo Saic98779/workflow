@@ -73,7 +73,6 @@ public class ProgramMonitoringResponse {
         private Integer timeTaken;
         private Boolean audioVisualUsed;
         private String relevance;
-        private Integer speakerEffectiveness;
     }
 
     @Builder

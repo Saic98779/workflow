@@ -74,7 +74,6 @@ ProgramMonitoringRequest {
         private Integer timeTaken;
         private Boolean audioVisualUsed;
         private String relevance;
-        private Integer speakerEffectiveness;//Ratting
     }
 
     @Builder

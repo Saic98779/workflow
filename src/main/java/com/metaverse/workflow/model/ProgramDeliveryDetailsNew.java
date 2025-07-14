@@ -25,8 +25,7 @@ public class ProgramDeliveryDetailsNew {
     private Boolean audioVisualUsed;
     @Column(name="relevance")
     private String relevance;
-    @Column(name="speaker_effectiveness")
-    private Integer speakerEffectiveness;//Ratting
+
 
     @ManyToOne
     @JoinColumn(name = "program_monitoring_id", nullable = false)

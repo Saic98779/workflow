@@ -74,7 +74,6 @@ public class ProgramMonitoringMapper {
                             .timeTaken(d.getTimeTaken())
                             .audioVisualUsed(d.getAudioVisualUsed())
                             .relevance(d.getRelevance())
-                            .speakerEffectiveness(d.getSpeakerEffectiveness())
                             .programMonitoring(feedback)
                             .build())
                     .collect(Collectors.toList());
@@ -156,7 +155,6 @@ public class ProgramMonitoringMapper {
                                         .timeTaken(detail.getTimeTaken())
                                         .audioVisualUsed(detail.getAudioVisualUsed())
                                         .relevance(detail.getRelevance())
-                                        .speakerEffectiveness(detail.getSpeakerEffectiveness())
                                         .build()
                                 ).toList()
                 )
@@ -255,7 +253,6 @@ public class ProgramMonitoringMapper {
                             existing.setTimeTaken(req.getTimeTaken());
                             existing.setAudioVisualUsed(req.getAudioVisualUsed());
                             existing.setRelevance(req.getRelevance());
-                            existing.setSpeakerEffectiveness(req.getSpeakerEffectiveness());
                             updatedList.add(existing);
                             existingMap.remove(req.getProgramDeliveryDetailsId());
                         } else {
@@ -265,7 +262,6 @@ public class ProgramMonitoringMapper {
                                     .timeTaken(req.getTimeTaken())
                                     .audioVisualUsed(req.getAudioVisualUsed())
                                     .relevance(req.getRelevance())
-                                    .speakerEffectiveness(req.getSpeakerEffectiveness())
                                     .programMonitoring(entity)
                                     .build();
                             updatedList.add(newDetail);
