@@ -1,5 +1,6 @@
 package com.metaverse.workflow.programoutcometargets.controller;
 
+import com.metaverse.workflow.common.logs.ActivityLogService;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.common.util.RestControllerBase;
 import com.metaverse.workflow.exceptions.DataException;
@@ -16,10 +17,14 @@ import org.springframework.web.bind.annotation.*;
 public class TargetController {
     @Autowired
     private TargetService targetService;
+    @Autowired
+    private ActivityLogService logService;
+
     @PostMapping("/financial/save")
     public ResponseEntity<?> createFinancialTarget(@RequestBody FinancialTargetRequest request) {
         try {
             WorkflowResponse response = targetService.saveFinancialTarget(request);
+            logService.logs("Save","Outcome Target","Adding finance Target for outcome Id: "+request.getOutcomeId());
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (DataException e) {
             return RestControllerBase.error(e);
@@ -32,6 +37,7 @@ public class TargetController {
             @RequestBody FinancialTargetRequest request) {
         try {
             WorkflowResponse response = targetService.updateFinancialTarget(request, id);
+            logService.logs("Update","Outcome Target","Update finance Target for outcome Id: "+request.getOutcomeId());
             return ResponseEntity.ok(response);
         } catch (DataException e) {
             return RestControllerBase.error(e);
@@ -58,35 +64,42 @@ public class TargetController {
             return RestControllerBase.error(e);
         }
     }
+
     @DeleteMapping("/financial/{id}")
     public ResponseEntity<?> deleteFinancialTargetById(@PathVariable("id") Long id) {
         try {
             WorkflowResponse response = targetService.deleteFinancialTarget(id);
+            logService.logs("Delete","Outcome Target","Delete finance Target for target Id: "+id);
             return ResponseEntity.ok(response);
         } catch (DataException e) {
             return RestControllerBase.error(e);
         }
     }
+
     @PostMapping("/physical/save")
     public ResponseEntity<?> createPhysicalTarget(@RequestBody PhysicalTargetRequest request) {
         try {
             WorkflowResponse response = targetService.savePhysicalTarget(request);
+            logService.logs("Save","Outcome Target","Adding Physical Target for outcome Id: "+request.getOutcomeId());
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (DataException e) {
             return RestControllerBase.error(e);
         }
     }
+
     @PutMapping("/physical/update/{id}")
     public ResponseEntity<?> updatePhysicalTarget(
             @PathVariable("id") Long id,
             @RequestBody PhysicalTargetRequest request) {
         try {
             WorkflowResponse response = targetService.updatePhysicalTarget(request, id);
+            logService.logs("Update","Outcome Target","Update Physical Target for outcome Id: "+request.getOutcomeId());
             return ResponseEntity.ok(response);
         } catch (DataException e) {
             return RestControllerBase.error(e);
         }
     }
+
     @GetMapping("/physical/agency/{agencyId}")
     public ResponseEntity<?> getAllPhysicalTargets(@PathVariable("agencyId") Long agencyId) {
         try {
@@ -97,6 +110,7 @@ public class TargetController {
         }
 
     }
+
     @GetMapping("/physical/{id}")
     public ResponseEntity<?> getPhysicalTargetById(@PathVariable("id") Long id) {
         try {
@@ -106,10 +120,12 @@ public class TargetController {
             return RestControllerBase.error(e);
         }
     }
+
     @DeleteMapping("/physical/{id}")
     public ResponseEntity<?> deletePhysicalTargetById(@PathVariable("id") Long id) {
         try {
             WorkflowResponse response = targetService.deletePhysicalTarget(id);
+            logService.logs("Save","Outcome Target","Delete Physical Target for target Id: "+id);
             return ResponseEntity.ok(response);
         } catch (DataException e) {
             return RestControllerBase.error(e);

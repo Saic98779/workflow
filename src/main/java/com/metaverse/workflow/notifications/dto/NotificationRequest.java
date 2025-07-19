@@ -1,6 +1,6 @@
 package com.metaverse.workflow.notifications.dto;
 
-import com.metaverse.workflow.enums.UserType;
+import com.metaverse.workflow.common.enums.UserType;
 import lombok.Data;
 
 @Data

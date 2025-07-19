@@ -5,7 +5,7 @@ import com.metaverse.workflow.activity.repository.SubActivityRepository;
 import com.metaverse.workflow.agency.repository.AgencyRepository;
 import com.metaverse.workflow.common.enums.ExpenditureType;
 import com.metaverse.workflow.common.response.WorkflowResponse;
-import com.metaverse.workflow.enums.BillRemarksStatus;
+import com.metaverse.workflow.common.enums.BillRemarksStatus;
 import com.metaverse.workflow.exceptions.*;
 import com.metaverse.workflow.expenditure.repository.BulkExpenditureRepository;
 import com.metaverse.workflow.expenditure.repository.BulkExpenditureTransactionRepository;

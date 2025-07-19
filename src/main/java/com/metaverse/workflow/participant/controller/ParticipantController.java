@@ -1,7 +1,10 @@
 package com.metaverse.workflow.participant.controller;
 
+import com.metaverse.workflow.common.constants.ProgramStatusConstants;
+import com.metaverse.workflow.common.logs.ActivityLogService;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.common.util.ExcelHelper;
+import com.metaverse.workflow.login.service.LoginService;
 import com.metaverse.workflow.model.Participant;
 import com.metaverse.workflow.organization.repository.OrganizationRepository;
 import com.metaverse.workflow.participant.repository.ParticipantRepository;
@@ -32,16 +35,21 @@ public class ParticipantController {
 	@Autowired
 	private ParticipantRepository participantRepository;
 
+	@Autowired
+	private ActivityLogService logService;
+
 	@PostMapping("/participant/save")
 	public ResponseEntity<WorkflowResponse> saveParticipant(@RequestBody ParticipantRequest participantRequest)
 	{
 		WorkflowResponse response = participantService.saveParticipant(participantRequest);
+		logService.logs("Save","Participant", ProgramStatusConstants.PARTICIPANTS_ADDED);
 		return ResponseEntity.ok(response);
 	}
 	@PostMapping("/updateParticipant")
 	public ResponseEntity<WorkflowResponse> updateParticipant(@RequestBody ParticipantRequest participantRequest)
 	{
 		WorkflowResponse response = participantService.updateParticipant(participantRequest);
+		logService.logs("Update","Participant", ProgramStatusConstants.PARTICIPANTS_ADDED);
 		return ResponseEntity.ok(response);
 	}
 
@@ -93,6 +101,7 @@ public class ParticipantController {
 			}
 
 			Map<String, Object> result = excelHelper.excelToParticipants(file.getInputStream(), programId);
+			logService.logs("Save","Participant import", ProgramStatusConstants.PARTICIPANTS_ADDED);
 			return WorkflowResponse.builder()
 				.message("Success")
 				.status(200)

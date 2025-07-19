@@ -1,7 +1,7 @@
 package com.metaverse.workflow.model;
 
 import com.metaverse.workflow.common.enums.ExpenditureType;
-import com.metaverse.workflow.enums.BillRemarksStatus;
+import com.metaverse.workflow.common.enums.BillRemarksStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;

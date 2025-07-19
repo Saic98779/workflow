@@ -1,4 +1,4 @@
-package com.metaverse.workflow.enums;
+package com.metaverse.workflow.common.enums;
 
 public enum BillRemarksStatus {
     APPROVED,

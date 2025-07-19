@@ -2,6 +2,7 @@ package com.metaverse.workflow.ESDPTraining.controller;
 
 import com.metaverse.workflow.ESDPTraining.service.ESDPTrainingRequest;
 import com.metaverse.workflow.ESDPTraining.service.ESDPTrainingService;
+import com.metaverse.workflow.common.logs.ActivityLogService;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,11 +17,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class ESDPTrainingController {
     @Autowired
     ESDPTrainingService esdpTrainingService;
+    @Autowired
+    private ActivityLogService logService;
 
     @PostMapping("/SaveESDPTraining")
     public ResponseEntity<WorkflowResponse> SaveESDPTraining(@RequestBody ESDPTrainingRequest esdpTrainingRequest)
     {
         WorkflowResponse response=  esdpTrainingService.saveESDPTrainingProgram(esdpTrainingRequest);
+        logService.logs("Save","ESDPTraining","Creating ESDP Training Program");
         return ResponseEntity.ok(response);
     }
 

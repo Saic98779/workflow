@@ -1,5 +1,6 @@
 package com.metaverse.workflow.resouce.controller;
 
+import com.metaverse.workflow.common.logs.ActivityLogService;
 import com.metaverse.workflow.common.util.RestControllerBase;
 import com.metaverse.workflow.exceptions.DataException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,10 +17,13 @@ public class ResouceController {
 
     @Autowired
     private ResourceService service;
+    @Autowired
+    private ActivityLogService logService;
 
     @PostMapping("/resource/save")
     public ResponseEntity<WorkflowResponse> saveResource(@RequestBody ResourceRequest resourceRequest) {
         ResourceResponse saveResource = service.saveResource(resourceRequest);
+        logService.logs("Save", "Resource", "Adding resource person details for the session under the program.");
         return ResponseEntity.ok(WorkflowResponse.builder().status(200).message("Created").data(saveResource).build());
     }
 
@@ -32,14 +36,17 @@ public class ResouceController {
     @PutMapping("/resource/update/{resourceId}")
     public ResponseEntity<?> updateResource(@PathVariable Long resourceId, @RequestBody ResourceRequest resourceRequest) {
         try {
+            logService.logs("Update", "Resource", "Updated resource person details for session" );
             return ResponseEntity.ok(service.updateResources(resourceRequest, resourceId));
         } catch (DataException e) {
             return RestControllerBase.error(e);
         }
     }
+
     @DeleteMapping("/resource/delete/{resourceId}")
     public ResponseEntity<?> deleteResource(@PathVariable Long resourceId) {
         try {
+            logService.logs("Delete", "Resource", "Deleted resource person details from session");
             return ResponseEntity.ok(service.deleteResources(resourceId));
         } catch (DataException e) {
             return RestControllerBase.error(e);
