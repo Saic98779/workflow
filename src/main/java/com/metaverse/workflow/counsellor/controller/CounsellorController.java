@@ -1,5 +1,6 @@
 package com.metaverse.workflow.counsellor.controller;
 
+import com.metaverse.workflow.common.logs.ActivityLogService;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.counsellor.service.CounsellorRegistrationRequest;
 import com.metaverse.workflow.counsellor.service.CounsellorService;
@@ -16,12 +17,15 @@ public class CounsellorController {
 
     @Autowired
     CounsellorService counsellorService;
+    @Autowired
+    private ActivityLogService logService;
 
 
     @PostMapping("/saveCounsellor")
     public ResponseEntity<WorkflowResponse> saveCounsellor(@RequestBody CounsellorRegistrationRequest counsellorRequest) {
         log.info("Save counsellor");
         WorkflowResponse response = counsellorService.saveCounseller(counsellorRequest);
+        logService.logs("Save","Counsellor","Adding Counsellor Data");
         return ResponseEntity.ok(response);
     }
 

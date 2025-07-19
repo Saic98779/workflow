@@ -1,6 +1,6 @@
 package com.metaverse.workflow.expenditure.service;
 
-import com.metaverse.workflow.enums.BillRemarksStatus;
+import com.metaverse.workflow.common.enums.BillRemarksStatus;
 import lombok.*;
 
 import java.util.List;

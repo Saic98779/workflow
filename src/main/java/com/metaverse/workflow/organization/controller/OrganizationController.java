@@ -1,6 +1,7 @@
 package com.metaverse.workflow.organization.controller;
 
 import com.metaverse.workflow.agency.service.AgencyResponseMapper;
+import com.metaverse.workflow.common.logs.ActivityLogService;
 import com.metaverse.workflow.model.Agency;
 import com.metaverse.workflow.resouce.service.ResourceResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,10 +20,13 @@ public class OrganizationController {
 
     @Autowired
     private OrganizationService organizationService;
+    @Autowired
+    private ActivityLogService logService;
 
     @PostMapping("/organization/save")
     public ResponseEntity<WorkflowResponse> saveOrganization(@RequestBody OrganizationRequest request) {
         WorkflowResponse response = organizationService.saveOrganization(request);
+        logService.logs("Save","Organization","Adding organization details");
         return ResponseEntity.ok(response);
     }
 

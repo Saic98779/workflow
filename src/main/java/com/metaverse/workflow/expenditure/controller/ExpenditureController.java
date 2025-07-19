@@ -3,13 +3,13 @@ package com.metaverse.workflow.expenditure.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.metaverse.workflow.common.enums.ExpenditureType;
+import com.metaverse.workflow.common.logs.ActivityLogService;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.common.util.RestControllerBase;
-import com.metaverse.workflow.enums.BillRemarksStatus;
+import com.metaverse.workflow.common.enums.BillRemarksStatus;
 import com.metaverse.workflow.exceptions.*;
 import com.metaverse.workflow.expenditure.service.*;
 import com.metaverse.workflow.model.HeadOfExpense;
-import io.swagger.v3.oas.annotations.Operation;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,12 +24,15 @@ import java.util.List;
 public class ExpenditureController {
     @Autowired
     ExpenditureService expenditureService;
+    @Autowired
+    private ActivityLogService logService;
 
     @PostMapping("/bulk/expenditure/save")
     public ResponseEntity<?> saveBulkExpenditure(@RequestPart String request, @RequestPart(required = false) List<MultipartFile> files) throws JsonProcessingException {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             BulkExpenditureRequest bulkExpenditureRequest = objectMapper.readValue(request, BulkExpenditureRequest.class);
+            logService.logs("Save","Bulk Expenditure","Bulk Expenditure Created");
             return ResponseEntity.ok(expenditureService.saveBulkExpenditure(bulkExpenditureRequest, files));
         }
         catch(DataException exception)
@@ -43,6 +46,7 @@ public class ExpenditureController {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             BulkExpenditureRequest bulkExpenditureRequest = objectMapper.readValue(request, BulkExpenditureRequest.class);
+            logService.logs("Update","Bulk Expenditure","Bulk Expenditure Updated");
             return ResponseEntity.ok(expenditureService.updateBulkExpenditure(expenditureId, bulkExpenditureRequest, files));
         } catch (DataException exception) {
             return RestControllerBase.error(exception);
@@ -52,6 +56,7 @@ public class ExpenditureController {
     public ResponseEntity<?> deleteBulkExpenditure(@PathVariable Long expenditureId) {
         try {
             WorkflowResponse response = expenditureService.deleteBulkExpenditure(expenditureId);
+            logService.logs("Delete","Bulk Expenditure","Bulk Expenditure Deleted");
             return ResponseEntity.ok(response);
         } catch (DataException e) {
             return RestControllerBase.error(e);
@@ -71,6 +76,7 @@ public class ExpenditureController {
             JSONParser parser = new JSONParser();
             ProgramExpenditureRequest programExpenditureRequest = parser.parse(request, ProgramExpenditureRequest.class);
             var response = expenditureService.saveProgramExpenditure(programExpenditureRequest, files);
+            logService.logs("Save","Program Expenditure","Program Expenditure Created");
             return ResponseEntity.ok(response);
         }
         catch (DataException exception) {
@@ -90,6 +96,7 @@ public class ExpenditureController {
             JSONParser parser = new JSONParser();
             ProgramExpenditureRequest programExpenditureRequest = parser.parse(request, ProgramExpenditureRequest.class);
             var response = expenditureService.updateProgramExpenditure(expenditureId, programExpenditureRequest, files);
+            logService.logs("Update","Program Expenditure","Program Expenditure Updated");
             return ResponseEntity.ok(response);
         }
         catch (DataException exception) {
@@ -132,6 +139,7 @@ public class ExpenditureController {
             @RequestBody BulkExpenditureTransactionRequest request) throws DataException {
         try {
             BulkExpenditureTransactionResponse response = expenditureService.saveTransaction(request);
+            logService.logs("Save","Bulk Expenditure Transaction","Bulk Expenditure Transaction Created");
             return ResponseEntity.ok(response);
         }
         catch (DataException ex) {
@@ -142,6 +150,7 @@ public class ExpenditureController {
     public ResponseEntity<?> deleteTransaction(@PathVariable Long transactionId) throws DataException {
         try {
             WorkflowResponse response = expenditureService.deleteTransaction(transactionId);
+            logService.logs("Delete","Bulk Expenditure Transaction","Bulk Expenditure Transaction Deleted");
             return ResponseEntity.ok(response);
         }
         catch (DataException ex) {
@@ -153,6 +162,7 @@ public class ExpenditureController {
             @RequestBody BulkExpenditureTransactionRequest request) throws DataException {
         try {
             WorkflowResponse response = expenditureService.updateTransaction(transactionId,request);
+            logService.logs("Update","Bulk Expenditure Transaction","Bulk Expenditure Transaction Updated");
             return ResponseEntity.ok(response);
         }
         catch (DataException ex) {
@@ -165,6 +175,7 @@ public class ExpenditureController {
             @RequestBody BulkExpenditureLookupRequest request) throws DataException {
         try {
             BulkExpenditureLookupResponse result = expenditureService.getBulkExpendituresByExpenseAndItem(request);
+            logService.logs("Update","Bulk Expenditure Transaction","Bulk Expenditure Transaction lookup Updated");
             return ResponseEntity.ok(result);
         }
         catch (DataException ex) {
@@ -193,6 +204,7 @@ public class ExpenditureController {
     public ResponseEntity<?> deleteProgramExpenditure(@PathVariable Long expenditureId) {
         try {
             WorkflowResponse response = expenditureService.deleteProgramExpenditure(expenditureId);
+            logService.logs("Delete","Program Expenditure","Program Expenditure Deleted");
             return ResponseEntity.ok(response);
         } catch (DataException e) {
             return RestControllerBase.error(e);
@@ -212,6 +224,8 @@ public class ExpenditureController {
     public ResponseEntity<?> addingRemarks(@RequestBody ExpenditureRemarksDTO remarksDTO, @RequestParam("status") BillRemarksStatus status)
     {
         try {
+            logService.logs("Update","Program Expenditure","Program Expenditure Transaction Remarks/Response");
+
             return  ResponseEntity.ok(expenditureService.addRemarkOrResponse(remarksDTO, status));
         } catch (DataException e) {
             return RestControllerBase.error(e);
@@ -222,6 +236,7 @@ public class ExpenditureController {
     public ResponseEntity<?> addingRemarksTransaction(@RequestBody ExpenditureRemarksDTO remarksDTO, @RequestParam("status") BillRemarksStatus status)
     {
         try {
+            logService.logs("Update","Bulk Expenditure","Bulk Expenditure Transaction Remarks/Response");
             return  ResponseEntity.ok(expenditureService.addRemarkOrResponseTransaction(remarksDTO, status));
         } catch (DataException e) {
             return RestControllerBase.error(e);

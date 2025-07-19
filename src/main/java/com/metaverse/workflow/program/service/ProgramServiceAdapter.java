@@ -9,7 +9,7 @@ import com.metaverse.workflow.common.fileservice.FileSystemStorageService;
 import com.metaverse.workflow.common.fileservice.StorageService;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.common.util.DateUtil;
-import com.metaverse.workflow.enums.UserType;
+import com.metaverse.workflow.common.enums.UserType;
 import com.metaverse.workflow.exceptions.DataException;
 import com.metaverse.workflow.expenditure.repository.BulkExpenditureTransactionRepository;
 import com.metaverse.workflow.expenditure.repository.ProgramExpenditureRepository;

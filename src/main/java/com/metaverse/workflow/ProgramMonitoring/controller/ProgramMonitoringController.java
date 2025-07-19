@@ -3,10 +3,12 @@ package com.metaverse.workflow.ProgramMonitoring.controller;
 import com.metaverse.workflow.ProgramMonitoring.repository.ProgramMonitoringRepo;
 import com.metaverse.workflow.ProgramMonitoring.service.ProgramMonitoringRequest;
 import com.metaverse.workflow.ProgramMonitoring.service.ProgramMonitoringService;
+import com.metaverse.workflow.common.logs.ActivityLogService;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.common.util.RestControllerBase;
 import com.metaverse.workflow.exceptions.DataException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,10 +18,11 @@ import org.springframework.web.bind.annotation.*;
 public class ProgramMonitoringController {
     private final ProgramMonitoringService programService;
     private final ProgramMonitoringRepo feedbackRepository;
-
+    private final ActivityLogService logService;
     @PostMapping("/program/feedback/save")
     public ResponseEntity<WorkflowResponse> saveFeedback(@RequestBody ProgramMonitoringRequest request)
     {
+        logService.logs("Save","Program Monitoring", "Creating Program Monitoring Details");
         return ResponseEntity.ok(programService.saveFeedback(request));
     }
     @PostMapping("/program/feedback/update/{monitorId}")
@@ -30,6 +33,7 @@ public class ProgramMonitoringController {
         } catch (DataException exception) {
             return RestControllerBase.error(exception);
         }
+        logService.logs("Update","Program Monitoring", "Program Monitoring Details");
         return ResponseEntity.ok(response);
     }
 
@@ -62,9 +66,11 @@ public class ProgramMonitoringController {
     }
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteProgramMonitoringFeedback(@PathVariable Long id) {
+        logService.logs("Delete","Program Monitoring", "Deleting Program Monitoring details");
         return feedbackRepository.findById(id).map(feedback -> {
             feedbackRepository.delete(feedback);
             return ResponseEntity.ok("Program Monitoring FeedBack deleted successfully.");
         }).orElse(ResponseEntity.notFound().build());
+
     }
 }

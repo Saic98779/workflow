@@ -1,10 +1,13 @@
 package com.metaverse.workflow.programattendance.controller;
 
+import com.metaverse.workflow.common.logs.ActivityLogService;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.programattendance.service.ParticipantAttendanceRequest;
 import com.metaverse.workflow.programattendance.service.ProgramAttendanceRequest;
 import com.metaverse.workflow.programattendance.service.ProgramAttendanceService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +17,8 @@ import org.springframework.web.bind.annotation.*;
 public class ProgramAttendanceController {
 
     private final ProgramAttendanceService programAttendanceService;
+    @Autowired
+    private ActivityLogService logService;
 
     public ProgramAttendanceController(ProgramAttendanceService programAttendanceService) {
         this.programAttendanceService = programAttendanceService;
@@ -33,6 +38,7 @@ public class ProgramAttendanceController {
     public ResponseEntity<WorkflowResponse> saveProgramAttendance(@RequestBody ProgramAttendanceRequest request) {
         log.info("Program attendance controller, programId : {}", request.getProgramId());
         WorkflowResponse response = programAttendanceService.updateProgramAttendance(request);
+        logService.logs("Save","Attendance","Attendance added for "+request.getProgramId() + " this program");
         return ResponseEntity.ok(response);
     }
 
@@ -41,6 +47,7 @@ public class ProgramAttendanceController {
         log.info("Participant attendance controller, programId: {}, participantId: {}", 
                 request.getProgramId(), request.getParticipantId());
         WorkflowResponse response = programAttendanceService.updateParticipantAttendance(request);
+        logService.logs("Save","Attendance","Attendance added for "+request.getProgramId() + " this program");
         return ResponseEntity.ok(response);
     }
 

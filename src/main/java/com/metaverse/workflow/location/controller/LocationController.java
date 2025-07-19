@@ -2,8 +2,10 @@ package com.metaverse.workflow.location.controller;
 
 import java.util.List;
 
+import com.metaverse.workflow.common.logs.ActivityLogService;
 import com.metaverse.workflow.common.util.RestControllerBase;
 import com.metaverse.workflow.exceptions.DataException;
+import com.metaverse.workflow.model.ActivityLogs;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,12 +20,15 @@ import com.metaverse.workflow.location.service.LocationService;
 public class LocationController {
 	@Autowired
 	private LocationService locationSercice;
+	@Autowired
+	private ActivityLogService logService;
 	
 	@PostMapping("/location/save")
 	public ResponseEntity<WorkflowResponse> saveLocation(@RequestBody LocationRequest location)
 	{
 	LocationResponse response = locationSercice.saveLocation(location);
 		if(response==null)return  ResponseEntity.internalServerError().body(WorkflowResponse.builder().message("Invalid Agency Id").status(400).build());
+		logService.logs("Save","Location","Location Adding By "+location.getAgency().getAgencyName());
 		return ResponseEntity.ok(WorkflowResponse.builder().status(200).message("Created").data(response).build());
 	}
 	
@@ -43,6 +48,7 @@ public class LocationController {
 	@PutMapping("/locations/update/{locationId}")
 	public ResponseEntity<?> updateLocation(@PathVariable Long locationId, @RequestBody LocationRequest locationRequest) {
 		try {
+			logService.logs("Update","Location","Location Updating By "+locationRequest.getAgency().getAgencyName());
 			return ResponseEntity.ok(locationSercice.updateLocation(locationId, locationRequest));
 		} catch (DataException e) {
 			return RestControllerBase.error(e);
@@ -51,6 +57,7 @@ public class LocationController {
 	@DeleteMapping("locations/delete/{locationId}")
 	public ResponseEntity<?> deleteLocation(@PathVariable Long locationId) {
 		try {
+			logService.logs("Delete","Location","Location Deleting" );
 			return ResponseEntity.ok(locationSercice.deleteLocation(locationId));
 		} catch (DataException e) {
 			return RestControllerBase.error(e);

@@ -1,5 +1,6 @@
 package com.metaverse.workflow.programrawmaterial.controller;
 
+import com.metaverse.workflow.common.logs.ActivityLogService;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.programattendance.service.ProgramAttendanceRequest;
 import com.metaverse.workflow.programrawmaterial.service.ProgramRawMaterialRequest;
@@ -10,11 +11,14 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
+
 @RestController
 @Slf4j
 public class ProgramRawMaterialController {
 
-
+    @Autowired
+    private ActivityLogService logService;
     @Autowired
     ProgramRawMaterialService programRawMaterialService;
 
@@ -28,9 +32,10 @@ public class ProgramRawMaterialController {
     }
 
     @PostMapping(value = "/program/rawmaterial", produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<WorkflowResponse> saveProgramRawMaterial(@RequestBody ProgramRawMaterialRequest request) {
+    public ResponseEntity<WorkflowResponse> saveProgramRawMaterial(@RequestBody ProgramRawMaterialRequest request, Principal principal) {
         log.info("Program Raw Material controller, programId : {}", request.getProgramId());
         WorkflowResponse response = programRawMaterialService.updateProgramRawMaterial(request);
+        logService.logs( "Save","Program Raw material","Adding raw material details for program");
         return ResponseEntity.ok(response);
     }
 }

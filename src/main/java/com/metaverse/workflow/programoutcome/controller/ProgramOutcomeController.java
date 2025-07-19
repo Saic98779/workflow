@@ -1,5 +1,6 @@
 package com.metaverse.workflow.programoutcome.controller;
 
+import com.metaverse.workflow.common.logs.ActivityLogService;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.common.util.RestControllerBase;
 import com.metaverse.workflow.exceptions.DataException;
@@ -30,6 +31,9 @@ public class ProgramOutcomeController {
 
     @Autowired
     UdyamService udyamService;
+
+    @Autowired
+    private ActivityLogService logService;
 
     @GetMapping(value = "/program/outcome/tables")
     public ResponseEntity<WorkflowResponse> getProgramOutcomeTables() {

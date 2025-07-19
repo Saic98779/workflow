@@ -40,11 +40,11 @@ public class ProgramMonitoring {
     private Integer femaleParticipants;
     private Integer transGenderParticipants;
     private Integer totalParticipants;
-    private Integer noOfSHG;
-    private Integer noOfMSME;
-    private Integer noOfStartup;
-    private Integer noOfDIC;
-    private Integer noOfIAs;
+    private Boolean noOfSHG;
+    private Boolean noOfMSME;
+    private Boolean noOfStartup;
+    private Boolean noOfDIC;
+    private Boolean noOfIAs;
 
     //PreEventChecklist
     @OneToMany(mappedBy = "programMonitoring", cascade = CascadeType.ALL)
