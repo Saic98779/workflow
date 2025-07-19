@@ -92,4 +92,10 @@ public class BulkExpenditure {
     @Column(name="updated_on", insertable = false, updatable = true)
     @UpdateTimestamp
     private Date updatedOn;
+
+    @Column(name = "check_no")
+    private String checkNo;
+
+    @Column(name = "check_date")
+    private Date checkDate;
 }

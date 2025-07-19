@@ -1,6 +1,7 @@
 package com.metaverse.workflow.reports.service;
 
 import com.metaverse.workflow.model.PhysicalTarget;
+import com.metaverse.workflow.model.outcomes.SIDBIAspire;
 import com.metaverse.workflow.programoutcome.repository.*;
 import com.metaverse.workflow.programoutcometargets.repository.PhysicalRepository;
 import com.metaverse.workflow.reports.dto.OutcomeTargetDTO;
@@ -65,6 +66,15 @@ public class OutcomeTargetServiceImpl implements OutcomeTargetService {
     private final PMMYRepository pmmyRepository;
 
     private final VendorDevelopmentRepository vendorDevelopmentRepository;
+
+    private final PMSRepository pmsRepository;
+
+    private final LeanRepository leanRepository;
+
+    private final PMViswakarmaReposiroty pmViswakarmaReposiroty;
+
+    private final SIDBIAspireRepository sidbiAspireRepository;
+
 
     public List<OutcomeTargetDTO> getTargetsByYear(String financialYear, Long agencyId) {
         List<PhysicalTarget> targets = physicalTargetRepository.findByFinancialYear(financialYear);
@@ -216,14 +226,14 @@ public class OutcomeTargetServiceImpl implements OutcomeTargetService {
                 geMRegistrationRepository.countGeMRegistration(agencyId, dQ4Start, dQ4End)
         ));
 
-        //GeM Transaction --not completed
-        dtoList.add(createOutcomeDto("GeM Transaction", financialYear,
-                physicalTargetRepository.findTarget("GeMTransaction", financialYear, agencyId),
-                geMTransactionRepository.countGeMTransaction(agencyId, dQ1Start, dQ1End),
-                geMTransactionRepository.countGeMTransaction(agencyId, dQ2Start, dQ2End),
-                geMTransactionRepository.countGeMTransaction(agencyId, dQ3Start, dQ3End),
-                geMTransactionRepository.countGeMTransaction(agencyId, dQ4Start, dQ4End)
-        ));
+        //GeM Transaction
+//        dtoList.add(createOutcomeDto("GeM Transaction", financialYear,
+//                physicalTargetRepository.findTarget("GeMTransaction", financialYear, agencyId),
+//                geMTransactionRepository.countGeMTransaction(agencyId, dQ1Start, dQ1End),
+//                geMTransactionRepository.countGeMTransaction(agencyId, dQ2Start, dQ2End),
+//                geMTransactionRepository.countGeMTransaction(agencyId, dQ3Start, dQ3End),
+//                geMTransactionRepository.countGeMTransaction(agencyId, dQ4Start, dQ4End)
+//        ));
 
         //CGTMSE Transaction
         dtoList.add(createOutcomeDto("CGTMSE Transaction", financialYear,
@@ -314,7 +324,38 @@ public class OutcomeTargetServiceImpl implements OutcomeTargetService {
                 vendorDevelopmentRepository.countVendorDevelopment(agencyId, dQ3Start, dQ3End),
                 vendorDevelopmentRepository.countVendorDevelopment(agencyId, dQ4Start, dQ4End)
         ));
-
+        //PMS
+        dtoList.add(createOutcomeDto("PMS", financialYear,
+                physicalTargetRepository.findTarget("PMS", financialYear, agencyId),
+                pmsRepository.countPMS(agencyId, dQ1Start, dQ1End),
+                pmsRepository.countPMS(agencyId, dQ2Start, dQ2End),
+                pmsRepository.countPMS(agencyId, dQ3Start, dQ3End),
+                pmsRepository.countPMS(agencyId, dQ4Start, dQ4End)
+        ));
+        //Lean
+        dtoList.add(createOutcomeDto("Lean", financialYear,
+                physicalTargetRepository.findTarget("Lean", financialYear, agencyId),
+                leanRepository.countLean(agencyId, dQ1Start, dQ1End),
+                leanRepository.countLean(agencyId, dQ2Start, dQ2End),
+                leanRepository.countLean(agencyId, dQ3Start, dQ3End),
+                leanRepository.countLean(agencyId, dQ4Start, dQ4End)
+        ));
+        //PM Viswakarma
+        dtoList.add(createOutcomeDto("PM Viswakarma", financialYear,
+                physicalTargetRepository.findTarget("PMViswakarma", financialYear, agencyId),
+                pmViswakarmaReposiroty.countPMViswakarma(agencyId, dQ1Start, dQ1End),
+                pmViswakarmaReposiroty.countPMViswakarma(agencyId, dQ2Start, dQ2End),
+                pmViswakarmaReposiroty.countPMViswakarma(agencyId, dQ3Start, dQ3End),
+                pmViswakarmaReposiroty.countPMViswakarma(agencyId, dQ4Start, dQ4End)
+        ));
+        //SIDBIAspire
+        dtoList.add(createOutcomeDto("SIDBI Aspire", financialYear,
+                physicalTargetRepository.findTarget("SIDBIAspire", financialYear, agencyId),
+                sidbiAspireRepository.countSIDBIAspire(agencyId, dQ1Start, dQ1End),
+                sidbiAspireRepository.countSIDBIAspire(agencyId, dQ2Start, dQ2End),
+                sidbiAspireRepository.countSIDBIAspire(agencyId, dQ3Start, dQ3End),
+                sidbiAspireRepository.countSIDBIAspire(agencyId, dQ4Start, dQ4End)
+        ));
 
 
         return dtoList;

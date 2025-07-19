@@ -1,12 +1,11 @@
 package com.metaverse.workflow.expenditure.service;
 
 import com.metaverse.workflow.common.util.DateUtil;
-import com.metaverse.workflow.model.BulkExpenditure;
-import com.metaverse.workflow.model.BulkExpenditureTransaction;
-import com.metaverse.workflow.model.ProgramExpenditure;
-import com.metaverse.workflow.model.ProgramSessionFile;
+import com.metaverse.workflow.model.*;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 public class ExpenditureResponseMapper {
 
@@ -33,6 +32,8 @@ public class ExpenditureResponseMapper {
                 .remarks(expenditure.getRemarks())
                 .uploadBillUrl(expenditure.getUploadBillUrl())
                 //.fileIds(fileIds)
+                .checkNo(expenditure.getCheckNo())
+                .checkDate(DateUtil.dateToString(expenditure.getCheckDate(),"dd-MM-yyyy"))
                 .build();
     }
     public static BulkExpenditureResponse mapBulkExpenditure(BulkExpenditure expenditure , List<Long> fileIds)
@@ -57,12 +58,13 @@ public class ExpenditureResponseMapper {
                 .remarks(expenditure.getRemarks())
                 .uploadBillUrl(expenditure.getUploadBillUrl())
                 .fileIds(fileIds)
+                .checkNo(expenditure.getCheckNo())
+                .checkDate(DateUtil.dateToString(expenditure.getCheckDate(),"dd-MM-yyyy"))
                 .build();
     }
     public static BulkTransactions mapBulkExpenditureTransaction(BulkExpenditureTransaction  expenditure)
     {
         return BulkTransactions.builder()
-
                 .bulkExpenditureTransactionId(expenditure.getBulkExpenditureTransactionId())
                 .itemName(expenditure.getExpenditure().getItemName())
                 .purchaseDate(DateUtil.dateToString(expenditure.getExpenditure().getPurchaseDate(),"dd-MM-yyyy"))
@@ -83,6 +85,21 @@ public class ExpenditureResponseMapper {
                 .modeOfPayment(expenditure.getExpenditure().getModeOfPayment())
                 .remarks(expenditure.getExpenditure().getRemarks())
                 .uploadBillUrl(expenditure.getExpenditure().getUploadBillUrl())
+                .spiuComments(
+                        Optional.ofNullable(expenditure.getSpiuComments())
+                                .orElse(List.of())
+                                .stream()
+                                .map(SpiuComments::getFormattedRemark)
+                                .toList()
+                )
+                .agencyComments(
+                        Optional.ofNullable(expenditure.getAgencyComments())
+                                .orElse(List.of())
+                                .stream()
+                                .map(AgencyComments::getFormattedRemark)
+                                .toList()
+                )
+                .status(expenditure.getStatus())
                 .build();
     }
 
@@ -110,7 +127,23 @@ public class ExpenditureResponseMapper {
                 .modeOfPayment(expenditure.getModeOfPayment())
                 .purpose(expenditure.getPurpose())
                 .uploadBillUrl(expenditure.getUploadBillUrl())
-
+                .checkNo(expenditure.getCheckNo())
+                .checkDate(DateUtil.dateToString(expenditure.getCheckDate(),"dd-MM-yyyy"))
+                .spiuComments(
+                        Optional.ofNullable(expenditure.getSpiuComments())
+                                .orElse(List.of())
+                                .stream()
+                                .map(SpiuComments::getFormattedRemark)
+                                .toList()
+                )
+                .agencyComments(
+                        Optional.ofNullable(expenditure.getAgencyComments())
+                                .orElse(List.of())
+                                .stream()
+                                .map(AgencyComments::getFormattedRemark)
+                                .toList()
+                )
+                .status(expenditure.getStatus())
                 .build();
 
     }
@@ -139,6 +172,23 @@ public class ExpenditureResponseMapper {
                 .purpose(expenditure.getPurpose())
                 .uploadBillUrl(expenditure.getUploadBillUrl())
                 .fileIds(fileIds)
+                .checkNo(expenditure.getCheckNo())
+                .checkDate(DateUtil.dateToString(expenditure.getCheckDate(),"dd-MM-yyyy"))
+                .spiuComments(
+                        Optional.ofNullable(expenditure.getSpiuComments())
+                                .orElse(List.of())
+                                .stream()
+                                .map(SpiuComments::getFormattedRemark)
+                                .toList()
+                )
+                .agencyComments(
+                        Optional.ofNullable(expenditure.getAgencyComments())
+                                .orElse(List.of())
+                                .stream()
+                                .map(AgencyComments::getFormattedRemark)
+                                .toList()
+                )
+                .status(expenditure.getStatus())
                 .build();
 
     }

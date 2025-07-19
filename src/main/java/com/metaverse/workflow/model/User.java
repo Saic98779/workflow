@@ -1,5 +1,6 @@
 package com.metaverse.workflow.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -47,6 +48,7 @@ public class User {
     private Date updatedOn;
     @ManyToOne
     @JoinColumn(name = "agency_id")
+    @JsonBackReference
     private Agency agency;
 
 }

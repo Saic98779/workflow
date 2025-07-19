@@ -43,7 +43,9 @@ public class FileGeneratorController {
     private final TrainingCalendarAgencywise trainingCalendarAgencywise;
     private final TrainingCalendarDistrictwise trainingCalendarDistrictwise;
     private final TrainingCalendarDatewise trainingCalendarDatewise;
-
+    private final GenerateCombinedExpenditureExcel combinedExpenditureExcel;
+    private final GenerateProgramAllDataExcel generateProgramAllDataExcel;
+    private final GenerateProgramAllDataExcelSheets programAllDataExcelSheets;
 
     @GetMapping(value = "/program/pdf/{agencyId}", produces = MediaType.APPLICATION_PDF_VALUE)
     public ResponseEntity<InputStreamResource> generatePdfReport(HttpServletResponse response, @PathVariable Long agencyId) throws IOException {
@@ -194,7 +196,7 @@ public class FileGeneratorController {
     @GetMapping("/trg/calender/agency-wise/{agencyId}")
     public void exportProgramTrgCalender(HttpServletResponse response, @PathVariable Long agencyId) throws IOException {
         response.setContentType("application/vnd.ms-excel");
-        response.setHeader("Content-Disposition", "attachment; filename=" + "Trg_calender_district_wise.xls");
+        response.setHeader("Content-Disposition", "attachment; filename=" + "Trg_calender_agency_wise.xls");
 
         trainingCalendarAgencywise.generateProgramsExcel(response, agencyId);
     }
@@ -214,9 +216,29 @@ public class FileGeneratorController {
                                              @RequestParam String startDate,
                                              @RequestParam String endDate) throws IOException {
         response.setContentType("application/vnd.ms-excel");
-        response.setHeader("Content-Disposition", "attachment; filename=" + "Trg_calender_district_wise.xls");
+        response.setHeader("Content-Disposition", "attachment; filename=" + "Trg_calender_date_wise.xls");
 
-        trainingCalendarDatewise.generateProgramsExcel(response, agencyId, DateUtil.stringToDate(startDate,"dd-MM-yyyy"), DateUtil.stringToDate(endDate,"dd-MM-yyyy"));
+        trainingCalendarDatewise.generateProgramsExcel(response, agencyId, DateUtil.stringToDate(startDate, "dd-MM-yyyy"), DateUtil.stringToDate(endDate, "dd-MM-yyyy"));
+    }
+
+    @GetMapping("/combined/expenditure/excel/{programId}")
+    public void exportExpenditure(HttpServletResponse response, @PathVariable Long programId) throws IOException, DataException {
+        response.setContentType("application/vnd.ms-excel");
+        response.setHeader("Content-Disposition", "attachment; filename=" + "Total_Expenditure.xls");
+        combinedExpenditureExcel.generateCombinedExpenditureExcel(response,programId);
+    }
+    @GetMapping("/program/excel/{agencyId}")
+    public void exportProgramDetails(HttpServletResponse response, @PathVariable Long agencyId) throws IOException, DataException {
+        response.setContentType("application/vnd.ms-excel");
+        response.setHeader("Content-Disposition", "attachment; filename=" + "Program_Details.xls");
+        generateProgramAllDataExcel.generateProgramsExcel(response,agencyId);
+    }
+
+    @GetMapping("/program/excel/sheets")
+    public void exportProgramDetailsExcelSheets(HttpServletResponse response) throws IOException, DataException {
+        response.setContentType("application/vnd.ms-excel");
+        response.setHeader("Content-Disposition", "attachment; filename=" + "Program_Details.xls");
+        programAllDataExcelSheets.generateProgramsExcel(response);
     }
 
 

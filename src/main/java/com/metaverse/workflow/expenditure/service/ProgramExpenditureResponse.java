@@ -1,9 +1,6 @@
 package com.metaverse.workflow.expenditure.service;
 
-import com.metaverse.workflow.common.enums.ExpenditureType;
-import com.metaverse.workflow.common.enums.PaymentType;
-import com.metaverse.workflow.model.HeadOfExpense;
-import com.metaverse.workflow.model.ProgramExpenditure;
+import com.metaverse.workflow.enums.BillRemarksStatus;
 import lombok.*;
 
 import java.util.List;
@@ -37,4 +34,9 @@ public class ProgramExpenditureResponse {
     private String purpose;
     private String uploadBillUrl;
     private List<Long> fileIds;
+    private String checkNo;
+    private String checkDate;
+    private List<String> spiuComments;
+    private List<String> agencyComments;
+    private BillRemarksStatus status;
 }

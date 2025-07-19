@@ -5,11 +5,13 @@ import com.metaverse.workflow.activity.repository.SubActivityRepository;
 import com.metaverse.workflow.agency.repository.AgencyRepository;
 import com.metaverse.workflow.common.enums.ExpenditureType;
 import com.metaverse.workflow.common.response.WorkflowResponse;
+import com.metaverse.workflow.enums.BillRemarksStatus;
 import com.metaverse.workflow.exceptions.*;
 import com.metaverse.workflow.expenditure.repository.BulkExpenditureRepository;
 import com.metaverse.workflow.expenditure.repository.BulkExpenditureTransactionRepository;
 import com.metaverse.workflow.expenditure.repository.HeadOfExpenseRepository;
 import com.metaverse.workflow.expenditure.repository.ProgramExpenditureRepository;
+import com.metaverse.workflow.login.repository.LoginRepository;
 import com.metaverse.workflow.model.*;
 
 import com.metaverse.workflow.program.repository.ProgramRepository;
@@ -20,7 +22,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ExpenditureServiceAdepter implements ExpenditureService {
@@ -44,6 +47,8 @@ public class ExpenditureServiceAdepter implements ExpenditureService {
     ProgramSessionFileRepository programSessionFileRepository;
     @Autowired
     ProgramServiceAdapter programServiceAdapter;
+    @Autowired
+    LoginRepository userRepo;
 
     @Override
     public WorkflowResponse saveBulkExpenditure(BulkExpenditureRequest expenditureRequest, List<MultipartFile> files) throws DataException {
@@ -160,10 +165,11 @@ public class ExpenditureServiceAdepter implements ExpenditureService {
                 .data(responses)
                 .build();
     }
+
     @Override
     public List<ProgramExpenditureResponse> getAllProgramExpenditure(Long agencyId, Long programId) {
         List<ProgramExpenditure> programExpendituresList =
-                programExpenditureRepository.findByAgency_AgencyIdAndProgram_ProgramId( agencyId, programId);
+                programExpenditureRepository.findByAgency_AgencyIdAndProgram_ProgramId(agencyId, programId);
 
         List<ProgramExpenditureResponse> responses = programExpendituresList.stream()
                 .map(programExpenditure -> {
@@ -272,7 +278,8 @@ public class ExpenditureServiceAdepter implements ExpenditureService {
 
     @Override
     public WorkflowResponse saveProgramExpenditure(ProgramExpenditureRequest expenditureRequest, List<MultipartFile> files) throws DataException {
-        Program program = programRepository.findById(expenditureRequest.getProgramId())
+        List<ProgramSessionFile> sessionFiles = new ArrayList<>();
+                Program program = programRepository.findById(expenditureRequest.getProgramId())
                 .orElseThrow(() -> new DataException(
                         "Program details for the program id " + expenditureRequest.getAgencyId() + " do not exist.",
                         "PROGRAM-DETAILS-NOT-FOUND",
@@ -308,7 +315,7 @@ public class ExpenditureServiceAdepter implements ExpenditureService {
 
         if (files != null && !files.isEmpty()) {
             List<String> filePaths = programServiceAdapter.storageProgramFiles(files, expenditureRequest.getProgramId(), "ProgramExpenditure");
-            List<ProgramSessionFile> sessionFiles = filePaths.stream()
+            sessionFiles = filePaths.stream()
                     .map(filePath -> ProgramSessionFile.builder()
                             .fileType("FILE")
                             .filePath(filePath)
@@ -316,6 +323,10 @@ public class ExpenditureServiceAdepter implements ExpenditureService {
                             .build())
                     .toList();
             programSessionFileRepository.saveAll(sessionFiles);
+        }
+        if(!sessionFiles.isEmpty()) {
+            programExpenditure.setUploadBillUrl(sessionFiles.get(0).getFilePath());
+            programExpenditureRepository.save(programExpenditure);
         }
 
         return WorkflowResponse.builder()
@@ -388,6 +399,10 @@ public class ExpenditureServiceAdepter implements ExpenditureService {
                             .build())
                     .toList();
             programSessionFileRepository.saveAll(sessionFiles);
+            if(!sessionFiles.isEmpty()) {
+                updatedExpenditure.setUploadBillUrl(sessionFiles.get(0).getFilePath());
+                programExpenditureRepository.save(existingExpenditure);
+            }
         }
 
         return WorkflowResponse.builder()
@@ -421,6 +436,7 @@ public class ExpenditureServiceAdepter implements ExpenditureService {
 
     @Override
     public WorkflowResponse updateBulkExpenditure(Long expenditureId, BulkExpenditureRequest expenditureRequest, List<MultipartFile> files) throws DataException {
+        List<ProgramSessionFile> sessionFiles = new ArrayList<>();
         BulkExpenditure existingExpenditure = bulkExpenditureRepository.findById(expenditureId)
                 .orElseThrow(() -> new DataException(
                         "BulkExpenditure with ID " + expenditureId + " does not exist.",
@@ -451,7 +467,7 @@ public class ExpenditureServiceAdepter implements ExpenditureService {
         }
         ExpenditureRequestMapper.updateBulkExpenditure(existingExpenditure, expenditureRequest, agency, headOfExpense);
 
-        bulkExpenditureRepository.save(existingExpenditure);
+         BulkExpenditure bulkExpenditure = bulkExpenditureRepository.save(existingExpenditure);
 
         List<ProgramSessionFile> oldFiles = programSessionFileRepository.findByBulkExpenditureId(expenditureId);
         if (!oldFiles.isEmpty()) {
@@ -460,7 +476,7 @@ public class ExpenditureServiceAdepter implements ExpenditureService {
         }
         if (files != null && !files.isEmpty()) {
             List<String> filePaths = programServiceAdapter.storageProgramFiles(files, expenditureRequest.getAgencyId(), "BulkExpenditure");
-            List<ProgramSessionFile> sessionFiles = filePaths.stream()
+            sessionFiles = filePaths.stream()
                     .map(filePath -> ProgramSessionFile.builder()
                             .fileType("FILE")
                             .filePath(filePath)
@@ -469,7 +485,10 @@ public class ExpenditureServiceAdepter implements ExpenditureService {
                     .toList();
             programSessionFileRepository.saveAll(sessionFiles);
         }
-
+        if(!sessionFiles.isEmpty()) {
+            bulkExpenditure.setUploadBillUrl(sessionFiles.get(0).getFilePath());
+            bulkExpenditureRepository.save(bulkExpenditure);
+        }
         return WorkflowResponse.builder()
                 .message("BulkExpenditure updated successfully")
                 .data(ExpenditureResponseMapper.mapBulkExpenditure(existingExpenditure))
@@ -582,6 +601,155 @@ public class ExpenditureServiceAdepter implements ExpenditureService {
         return WorkflowResponse.builder().message("Transaction Deleted Successfully..").status(200).build();
     }
 
+    @Override
+    public ExpenditureSummaryResponse getExpenditureHeadOfExpenseWise(Long programId) throws DataException {
+        Program program = programRepository.findById(programId)
+                .orElseThrow(() -> new DataException("Program data not found", "PROGRAM-DATA-NOT-FOUND", 400));
+
+        WorkflowResponse pre = getAllProgramExpenditureByProgram(ExpenditureType.PRE, program.getProgramId());
+        WorkflowResponse post = getAllProgramExpenditureByProgram(ExpenditureType.POST, program.getProgramId());
+        WorkflowResponse bulk = getAllBulkExpenditureTransactionByProgram(programId);
+
+        if (pre.getData() == null || post.getData() == null || bulk.getData() == null) {
+            throw new DataException("Missing expenditure data", "EXPENDITURE-DATA-NOT-FOUND", 400);
+        }
+
+        List<ProgramExpenditureResponse> expenditure = new ArrayList<>();
+        expenditure.addAll((List<ProgramExpenditureResponse>) pre.getData());
+        expenditure.addAll((List<ProgramExpenditureResponse>) post.getData());
+
+        List<BulkTransactions> transactions = (List<BulkTransactions>) bulk.getData();
+
+        List<CombinedExpenditure> combinedExpenditures = new ArrayList<>();
+        for (ProgramExpenditureResponse exp : expenditure) {
+            combinedExpenditures.add(
+                    CombinedExpenditure.builder()
+                            .headOfExpense(exp.getHeadOfExpense())
+                            .expenditureType(exp.getExpenditureType())
+                            .cost(exp.getCost() != null ? exp.getCost() : 0.0)
+                            .billNo(exp.getBillNo())
+                            .billDate(exp.getBillDate())
+                            .payeeName(exp.getPayeeName())
+                            .ifscCode(exp.getIfscCode())
+                            .modeOfPayment(exp.getModeOfPayment())
+                            .build()
+            );
+        }
+
+        for (BulkTransactions exp : transactions) {
+            combinedExpenditures.add(
+                    CombinedExpenditure.builder()
+                            .headOfExpense(exp.getHeadOfExpense())
+                            .expenditureType(exp.getExpenditureType())
+                            .cost(exp.getAllocatedCost() != null ? exp.getAllocatedCost() : 0.0)
+                            .billNo(exp.getBillNo())
+                            .billDate(exp.getBillDate() != null ? exp.getBillDate().toString().substring(0, 10) : null)
+                            .payeeName(exp.getPayeeName())
+                            .ifscCode(exp.getIfscCode())
+                            .modeOfPayment(exp.getModeOfPayment())
+                            .build()
+            );
+        }
+
+        // Group by headOfExpense
+        Map<String, List<CombinedExpenditure>> groupedByHead =
+                combinedExpenditures.stream()
+                        .filter(exp -> exp.getHeadOfExpense() != null)
+                        .collect(Collectors.groupingBy(CombinedExpenditure::getHeadOfExpense));
+
+
+        List<HeadWiseExpenditureSummary> summaries = groupedByHead.entrySet().stream()
+                .map(e -> new HeadWiseExpenditureSummary(
+                        e.getKey(),
+                        e.getValue().stream().mapToDouble(c -> c.getCost() != null ? c.getCost() : 0.0).sum(),
+                        e.getValue()
+                ))
+                .collect(Collectors.toList());
+
+        double grandTotal = summaries.stream().mapToDouble(HeadWiseExpenditureSummary::getTotalCost).sum();
+
+        return new ExpenditureSummaryResponse(summaries, grandTotal);
+    }
+
+
+    @Override
+    public WorkflowResponse addRemarkOrResponse(ExpenditureRemarksDTO remarks, BillRemarksStatus status) throws DataException {
+
+        // 1. Retrieve user and expenditure
+        User user = userRepo.findById(remarks.getUserId())
+                .orElseThrow(() -> new DataException("User not found for ID: " + remarks.getUserId(), "USER_NOT_FOUND", 400));
+
+        ProgramExpenditure expenditure = programExpenditureRepository.findById(remarks.getExpenditureId())
+                .orElseThrow(() -> new DataException("Expenditure not found", "EXPENDITURE_NOT_FOUND", 400));
+
+        // 2. Create and associate SpiuComment
+        SpiuComments spiuComment = ExpenditureRemarksMapper.mapToEntity(remarks, user);
+        spiuComment.setExpenditure(expenditure);
+        expenditure.getSpiuComments().add(spiuComment);
+
+        // 3. Create and associate AgencyComment
+        AgencyComments agencyComment = ExpenditureRemarksMapper.mapToEntityAgencyComments(remarks, user);
+        agencyComment.setExpenditure(expenditure); // Ensure bidirectional relationship
+        expenditure.getAgencyComments().add(agencyComment);
+
+        // 4. Set status if provided
+        if (status != null) {
+            expenditure.setStatus(status);
+        }
+
+        // 5. Save all changes (cascading will persist the comments if configured)
+        programExpenditureRepository.save(expenditure);
+
+        // 6. Return response
+        return WorkflowResponse.builder()
+                .message("Remark or Response added successfully.")
+                .status(200)
+                .build();
+    }
+
+    @Override
+    public WorkflowResponse addRemarkOrResponseTransaction(ExpenditureRemarksDTO remarks, BillRemarksStatus status) throws DataException {
+
+        // 1. Fetch user
+        User user = userRepo.findById(remarks.getUserId())
+                .orElseThrow(() -> new DataException("User not found for ID: " + remarks.getUserId(), "USER_NOT_FOUND", 400));
+
+        // 2. Fetch transaction
+        BulkExpenditureTransaction transaction = transactionRepo.findById(remarks.getTransactionId())
+                .orElseThrow(() -> new DataException("Expenditure Transaction not found", "EXPENDITURE_TRANSACTION_NOT_FOUND", 400));
+
+        // 3. Create and associate SpiuComment
+        SpiuComments spiuComment = ExpenditureRemarksMapper.mapToEntity(remarks, user);
+        spiuComment.setBulkExpenditureTransaction(transaction);
+
+        if (transaction.getSpiuComments() == null) {
+            transaction.setSpiuComments(new ArrayList<>());
+        }
+        transaction.getSpiuComments().add(spiuComment);
+
+        // 4. Create and associate AgencyComment
+        AgencyComments agencyComment = ExpenditureRemarksMapper.mapToEntityAgencyComments(remarks, user);
+        agencyComment.setBulkExpenditureTransaction(transaction);
+
+        if (transaction.getAgencyComments() == null) {
+            transaction.setAgencyComments(new ArrayList<>());
+        }
+        transaction.getAgencyComments().add(agencyComment);
+
+        // 5. Set status if provided
+        if (status != null) {
+            transaction.setStatus(status);
+        }
+
+        // 6. Save transaction (with cascading, comments will persist)
+        transactionRepo.save(transaction);
+
+        // 7. Return success response
+        return WorkflowResponse.builder()
+                .message("Remark or Response added successfully.")
+                .status(200)
+                .build();
+    }
 
 
 

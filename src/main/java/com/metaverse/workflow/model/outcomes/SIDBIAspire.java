@@ -29,7 +29,7 @@ public class SIDBIAspire {
     private Date applicationSubmissionDate;
 
     @Column(name = "sanction_date")
-    private Date sanctionDateUnderAspire;
+    private Date dateSanctionUnderAspire;
 
     @Column(name = "funding_support_received")
     private Boolean fundingSupportReceived;

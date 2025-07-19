@@ -13,9 +13,8 @@ import java.util.List;
 @Builder
 @Setter
 @Getter
-public class BulkExpenditureResponse {
-
-
+public class
+BulkExpenditureResponse {
     private Long bulkExpenditureId;
     private Long agencyId;
     private String agencyName;
@@ -35,4 +34,6 @@ public class BulkExpenditureResponse {
     private String remarks;
     private String uploadBillUrl;
     private List<Long> fileIds;
+    private String checkNo;
+    private String checkDate;
 }

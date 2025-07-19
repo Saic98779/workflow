@@ -1,5 +1,7 @@
 package com.metaverse.workflow.common.util;
 
+import com.metaverse.workflow.districtswithmandals.repository.DistrictRepository;
+import com.metaverse.workflow.districtswithmandals.repository.MandalRepositrory;
 import com.metaverse.workflow.model.*;
 import com.metaverse.workflow.organization.repository.OrganizationRepository;
 import com.metaverse.workflow.organization.repository.OrganizationTempRepository;
@@ -8,11 +10,15 @@ import com.metaverse.workflow.participant.repository.ParticipantTempRepository;
 import com.metaverse.workflow.program.repository.ProgramRepository;
 import com.metaverse.workflow.sector.repository.SectorRepository;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -37,10 +43,14 @@ public class ExcelHelper {
     @Autowired
     private OrganizationTempRepository organizationTempRepository;
 
-    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
+    @Autowired
+    private DistrictRepository districtRepository;
+
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd-MMM-yyyy", Locale.ENGLISH);
+
 
     public Map<String, Object> excelToParticipants(InputStream is, Long programId) {
-        try (Workbook workbook = WorkbookFactory.create(is)) {
+        try (Workbook workbook = new XSSFWorkbook(is)) {
             if (workbook.getNumberOfSheets() == 0) {
                 throw new RuntimeException("Excel file contains no sheets");
             }
@@ -156,31 +166,72 @@ public class ExcelHelper {
             org.setSectors(sectors);
         }
         org.setStateId(getCellValue(row, 17));                   // State*
-        org.setDistId(getCellValue(row, 18));                    // District*
-        org.setMandal(getCellValue(row, 19));                    // Mandal*
+        String district = getCellValue(row, 18);// District*
+        String mandal = getCellValue(row, 19);// Mandal*
+        List<District> allDistrict = districtRepository.findByDistrictName(district);
+        allDistrict.forEach(s -> {
+            if(s.getDistrictName().equalsIgnoreCase(district)){
+                s.getMandals().forEach(m ->
+                {
+                    if(m.getMandalName().equalsIgnoreCase(mandal)){
+                        org.setMandal(m.getMandalId()+"");
+                        System.out.println(m.getMandalName());
+                    }
+                });
+                org.setDistId(s.getDistrictId()+"");
+            }
+        });
+
         org.setTown(getCellValue(row, 20));                      // Town / Village*
         org.setStreetNo(getCellValue(row, 21));                  // Street No
         org.setHouseNo(getCellValue(row, 22));                   // House No
-        org.setLatitude(parseDouble(row, 24));                   // geoLocationLatitude
-        org.setLongitude(parseDouble(row, 23));                  // geoLocationLongitude
-        org.setContactNo(parseLong(row, 24));                    // Organization Contact No*
-        org.setEmail(getCellValue(row, 25));                     // email
-        org.setWebsite(getCellValue(row, 26));                   // website
-        org.setOwnerName(getCellValue(row, 27));                 // Leader / Promoter / Director Name*
-        org.setOwnerContactNo(parseLong(row, 28));               // Leader / Promoter / Director Contact No*
-        org.setOwnerEmail(getCellValue(row, 29));                // Leader / Promoter / Director email
-        org.setOwnerAddress(getCellValue(row, 30));              // Leader / Promoter / Director Address
-        org.setNameOfTheVO(getCellValue(row, 31));               // Name Of VO*
-        org.setStartupCertificateNo(getCellValue(row, 32));
-        org.setIncorporationDate(parseDate(row, 33));            // Incorporation Date*
-        org.setDateOfIssue(parseStringDate(row, 34));            // Date Of issue*
-        org.setValidUpto(parseStringDate(row, 35));              // Valid Upto*
-        org.setAreasOfWorking(getCellValue(row, 36));            // Areas Of Working
-        org.setOrganizationCategory(getCellValue(row, 37));      // Organization Category*
-        org.setUdyamregistrationNo(getCellValue(row, 38));// Udyam Registration Number
-        org.setDateOfRegistration(parseDate(row, 39));           // Registration Date
-        org.setNatureOfStartup(getCellValue(row, 40));           // Nature Of Statup*
-        org.setGramaPanchayat(getCellValue(row, 41));            // Grama Panchayat*
+        String latitude = getCellValue(row, 24);
+        if (!latitude.isEmpty()) {
+            try {
+                org.setLatitude(Double.parseDouble(latitude));
+            } catch (NumberFormatException e) {
+            }
+        } // geoLocationLatitude
+
+
+        String longitude = getCellValue(row, 23);
+        if (!longitude.isEmpty()) {
+            try {
+                org.setLongitude(Double.parseDouble(longitude));
+            } catch (NumberFormatException e) {
+            }
+        }                  // geoLocationLongitude
+        String contactNo = getCellValue(row, 25);
+        if (!contactNo.isEmpty()) {
+            try {
+                org.setContactNo(Long.parseLong(contactNo));
+            } catch (NumberFormatException e) {
+            }
+        }// Organization Contact No*
+        org.setEmail(getCellValue(row, 26));                     // org email
+        org.setWebsite(getCellValue(row, 27));                   // website
+        org.setOwnerName(getCellValue(row, 28));                 // Leader / Promoter / Director Name*
+        String ownerContactNo = getCellValue(row, 29);
+        if (!ownerContactNo.isEmpty()) {
+            try {
+                org.setOwnerContactNo(Long.parseLong(ownerContactNo.trim()));
+            } catch (NumberFormatException e) {
+            }
+        }               // Leader / Promoter / Director Contact No*
+        org.setOwnerEmail(getCellValue(row, 30));                // Leader / Promoter / Director email
+        org.setOwnerAddress(getCellValue(row, 31));              // Leader / Promoter / Director Address
+        org.setNameOfTheVO(getCellValue(row, 32));               // Name Of VO*
+        org.setStartupCertificateNo(getCellValue(row, 35));
+        org.setIncorporationDate(parseDate(row, 36));            // Incorporation Date*
+        org.setDateOfIssue(com.metaverse.workflow.common.util.DateUtil.dateToString(parseDate(row, 37),"MM/dd/yyyy"));            // Date Of issue*
+        org.setValidUpto(com.metaverse.workflow.common.util.DateUtil.dateToString(parseDate(row, 38),"MM/dd/yyyy"));              // Valid Upto*
+        org.setAreasOfWorking(getCellValue(row, 39));            // Areas Of Working
+        org.setOrganizationCategory(getCellValue(row, 40));      // Organization Category*
+        org.setUdyamregistrationNo(getCellValue(row, 41));// Udyam Registration Number
+        org.setDateOfRegistration(parseDate(row, 42));           // Registration Date
+        org.setNameOfTheSHG(getCellValue(row, 43));
+        org.setNatureOfStartup(getCellValue(row, 34));           // Nature Of Statup*
+        org.setGramaPanchayat(getCellValue(row, 33));            // Grama Panchayat*
 
         return org;
     }
@@ -204,23 +255,36 @@ public class ExcelHelper {
                                          Organization organization) {
 
         Participant p = new Participant();
-
+        p.setParticipantId(null);
         p.setParticipantName(getCellValue(row, 0));
-        p.setGender(firstChar(getCellValue(row, 1)));
-        p.setMobileNo(parseLong(row, 2));   // Mobile No*
+
+        String gender = getCellValue(row, 1);
+        p.setGender(gender.isEmpty() ? ' ' : gender.charAt(0));
+        p.setMobileNo(Long.valueOf(getCellValue(row, 2)));   // Mobile No*
         p.setCategory(getCellValue(row, 3));
-        p.setDisability(firstChar(getCellValue(row, 4)));
-        p.setAadharNo(parseLong(row, 5));   // Aadhaar No (12 digits)
+
+        String disability = getCellValue(row, 4);
+        p.setDisability(disability.isEmpty() ? ' ' : disability.charAt(0));
+        p.setAadharNo(Long.valueOf(getCellValue(row, 5)));   // Aadhaar No (12 digits)
         p.setEmail(getCellValue(row, 6));
         p.setDesignation(getCellValue(row, 7));
-        p.setIsParticipatedBefore(firstChar(getCellValue(row, 8)));
-        p.setPreTrainingAssessmentConducted (firstChar(getCellValue(row, 9)));
-        p.setPostTrainingAssessmentConducted(firstChar(getCellValue(row,10)));
-        p.setIsCertificateIssued(firstChar(getCellValue(row,11)));
+
+        String participated = getCellValue(row, 8);
+        p.setIsParticipatedBefore(participated.isEmpty() ? ' ' : participated.charAt(0));
+
+        String preTraining = getCellValue(row, 9);
+        p.setPreTrainingAssessmentConducted (preTraining.isEmpty() ? ' ' : preTraining.charAt(0));
+
+        String postTraining = getCellValue(row, 10);
+        p.setPostTrainingAssessmentConducted(postTraining.isEmpty() ? ' ' : postTraining.charAt(0));
+
+        String certificate = getCellValue(row, 11);
+        p.setIsCertificateIssued(certificate.isEmpty() ? ' ' : certificate.charAt(0));
+
         p.setCertificateIssueDate(parseDate(row, 12));
         p.setNeedAssessmentMethodology(getCellValue(row, 13));
         String prevPart = getCellValue(row, 8);
-        p.setPreviousParticipationDetails(prevPart.isBlank() ? null : prevPart);
+        p.setPreviousParticipationDetails(prevPart.isBlank() ? null : prevPart.charAt(0)+"");
         p.setOrganization(organization);
         p.setPrograms(Collections.singletonList(
                 programRepository.findById(programId).orElse(null)));
@@ -237,21 +301,30 @@ public class ExcelHelper {
         ParticipantTemp p = new ParticipantTemp();
 
         p.setParticipantName(getCellValue(row, 0));
-        p.setGender(firstChar(getCellValue(row, 1)));
-        p.setMobileNo(parseLong(row, 2));   // Mobile No*
+        String gender = getCellValue(row, 1);
+        p.setGender(gender.isEmpty() ? ' ' : gender.charAt(0));
+
+        p.setMobileNo(Long.valueOf(getCellValue(row, 2)));   // Mobile No*
         p.setCategory(getCellValue(row, 3));
-        p.setDisability(firstChar(getCellValue(row, 4)));
-        p.setAadharNo(parseLong(row, 5));   // Aadhaar No (12 digits)
+        String disability = getCellValue(row, 4);
+        p.setDisability(disability.isEmpty() ? ' ' : disability.charAt(0));
+
+        p.setAadharNo(Long.valueOf(getCellValue(row, 5)));   // Aadhaar No (12 digits)
         p.setEmail(getCellValue(row, 6));
         p.setDesignation(getCellValue(row, 7));
-        p.setIsParticipatedBefore(firstChar(getCellValue(row, 8)));
-        p.setPreTrainingAssessmentConducted (firstChar(getCellValue(row, 9)));
-        p.setPostTrainingAssessmentConducted(firstChar(getCellValue(row,10)));
-        p.setIsCertificateIssued(firstChar(getCellValue(row,11)));
+        String participated = getCellValue(row, 8);
+        p.setIsParticipatedBefore(participated.isEmpty() ? ' ' : participated.charAt(0));
+
+        String preTraining = getCellValue(row, 9);
+        p.setPreTrainingAssessmentConducted (preTraining.isEmpty() ? ' ' : preTraining.charAt(0));
+        String postTraining = getCellValue(row, 10);
+        p.setPostTrainingAssessmentConducted(postTraining.isEmpty() ? ' ' : postTraining.charAt(0));
+        String certificate = getCellValue(row, 11);
+        p.setIsCertificateIssued(certificate.isEmpty() ? ' ' : certificate.charAt(0));
         p.setCertificateIssueDate(parseDate(row, 12));
         p.setNeedAssessmentMethodology(getCellValue(row, 13));
         String prevPart = getCellValue(row, 8);
-        p.setPreviousParticipationDetails(prevPart.isBlank() ? null : prevPart);
+        p.setPreviousParticipationDetails(prevPart.isBlank() ? null : prevPart.charAt(0)+"");
 
         OrganizationTemp organizationTemp = createOrganizationTempFromOrganization(organization);
         p.setOrganizationTemp(organizationTemp);
@@ -271,29 +344,68 @@ public class ExcelHelper {
     }
 
     private static String getCellValue(Row row, int index) {
+        DataFormatter formatter = new DataFormatter();
         if (row == null) return "";
         Cell cell = row.getCell(index);
-        return (cell == null) ? "" : cell.toString().trim();
+        return (cell == null) ? "" : formatter.formatCellValue(cell);
     }
 
     private static Date parseDate(Row row, int index) {
         if (row == null) return null;
+
         try {
-            String val = getCellValue(row, index);
-            if (val != null && !val.isEmpty()) {
-                return DATE_FORMAT.parse(val);
+            Cell cell = row.getCell(index);
+            if (cell == null || cell.getCellType() == CellType.BLANK) return null;
+
+            switch (cell.getCellType()) {
+                case NUMERIC:
+                    if (org.apache.poi.ss.usermodel.DateUtil.isCellDateFormatted(cell)) {
+                        LocalDate localDate = cell.getDateCellValue()
+                                .toInstant()
+                                .atZone(ZoneId.systemDefault())
+                                .toLocalDate();
+                        return Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+                    }
+                    break;
+
+                case STRING:
+                    String val = cell.getStringCellValue().trim();
+                    if (!val.isEmpty()) {
+                        LocalDate localDate = LocalDate.parse(val, DATE_FORMATTER); // e.g., "dd/MM/yyyy"
+                        return Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+                    }
+                    break;
+
+                case FORMULA:
+                    FormulaEvaluator evaluator = cell.getSheet().getWorkbook()
+                            .getCreationHelper().createFormulaEvaluator();
+                    CellValue cellValue = evaluator.evaluate(cell);
+
+                    if (cellValue != null && cellValue.getCellType() == CellType.NUMERIC) {
+                        double numericValue = cellValue.getNumberValue();
+                        if (org.apache.poi.ss.usermodel.DateUtil.isValidExcelDate(numericValue)) {
+                            LocalDate localDate = org.apache.poi.ss.usermodel.DateUtil.getJavaDate(numericValue)
+                                    .toInstant()
+                                    .atZone(ZoneId.systemDefault())
+                                    .toLocalDate();
+                            return Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+                        }
+                    }
+                    break;
             }
         } catch (Exception e) {
+            e.printStackTrace(); // Optional
         }
         return null;
     }
+
 
     private static String parseStringDate(Row row, int index) {
         if (row == null) return null;
         try {
             String val = getCellValue(row, index);
             if (val != null && !val.isEmpty()) {
-                return String.valueOf(DATE_FORMAT.parse(val));
+                return String.valueOf(DATE_FORMATTER.parse(val));
             }
         } catch (Exception e) {
         }
@@ -301,13 +413,11 @@ public class ExcelHelper {
     }
 
     private OrganizationTemp createOrganizationTempFromOrganization(Organization organization) {
-        // Check if OrganizationTemp already exists for this Organization
         List<OrganizationTemp> existingOrgTemps = organizationTempRepository.findByOrganizationId(organization.getOrganizationId());
         if (!existingOrgTemps.isEmpty()) {
             return existingOrgTemps.get(0);
         }
 
-        // Create new OrganizationTemp from Organization
         OrganizationTemp orgTemp = new OrganizationTemp();
         orgTemp.setOrganizationId(organization.getOrganizationId());
         orgTemp.setOrganizationName(organization.getOrganizationName());
@@ -321,9 +431,11 @@ public class ExcelHelper {
         orgTemp.setIncorporationDate(organization.getIncorporationDate());
         orgTemp.setDateOfIssue(organization.getDateOfIssue());
         orgTemp.setValidUpto(organization.getValidUpto());
+
         orgTemp.setStateId(organization.getStateId());
         orgTemp.setDistId(organization.getDistId());
         orgTemp.setMandal(organization.getMandal());
+
         orgTemp.setTown(organization.getTown());
         orgTemp.setStreetNo(organization.getStreetNo());
         orgTemp.setHouseNo(organization.getHouseNo());
@@ -339,9 +451,8 @@ public class ExcelHelper {
         orgTemp.setNameOfTheSHG(organization.getNameOfTheSHG());
         orgTemp.setNameOfTheVO(organization.getNameOfTheVO());
         orgTemp.setGramaPanchayat(organization.getGramaPanchayat());
-        orgTemp.setSectors(organization.getSectors());
+        orgTemp.setSectors(organization.getSectors().stream().toList());
 
-        // Save and return the OrganizationTemp
         return organizationTempRepository.save(orgTemp);
     }
 }

@@ -25,6 +25,8 @@ public class ExpenditureRequestMapper {
                 .modeOfPayment(request.getModeOfPayment().toString())
                 .remarks(request.getRemarks())
                 .uploadBillUrl(request.getUploadBillUrl())
+                .checkDate(DateUtil.stringToDate(request.getCheckDate(),"dd-MM-yyyy"))
+                .checkNo(request.getCheckNo())
                 .build();
 
     }
@@ -47,6 +49,10 @@ public class ExpenditureRequestMapper {
                 .modeOfPayment(request.getModeOfPayment().toString())
                 .purpose(request.getPurpose())
                 .uploadBillUrl(request.getUploadBillUrl())
+                .checkDate(DateUtil.stringToDate(request.getCheckDate(),"dd-MM-yyyy"))
+                .checkNo(request.getCheckNo())
+                .spiuComments(null)
+                .agencyComments(null)
                 .build();
 
     }
@@ -69,6 +75,8 @@ public class ExpenditureRequestMapper {
         existing.setModeOfPayment(request.getModeOfPayment().toString());
         existing.setPurpose(request.getPurpose());
         existing.setUploadBillUrl(request.getUploadBillUrl());
+        existing.setCheckNo(request.getCheckNo());
+        existing.setCheckDate(DateUtil.stringToDate(request.getCheckDate(), "dd-MM-yyyy"));
 
 
     }
@@ -84,6 +92,8 @@ public class ExpenditureRequestMapper {
                 .headOfExpense(headOfExpense)
                 .consumedQuantity(request.getConsumedQuantity())
                 .allocatedCost(request.getAllocatedCost())
+                .spiuComments(null)
+                .agencyComments(null)
                 .build();
     }
 
@@ -106,5 +116,7 @@ public class ExpenditureRequestMapper {
         existingExpenditure.setModeOfPayment(expenditureRequest.getModeOfPayment().toString());
         existingExpenditure.setRemarks(expenditureRequest.getRemarks());
         existingExpenditure.setUploadBillUrl(expenditureRequest.getUploadBillUrl());
+        existingExpenditure.setCheckDate(DateUtil.stringToDate(expenditureRequest.getCheckDate(), "dd-MM-yyyy"));
+        existingExpenditure.setCheckNo(expenditureRequest.getCheckNo());
     }
 }

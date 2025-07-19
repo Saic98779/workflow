@@ -1,12 +1,14 @@
 package com.metaverse.workflow.expenditure.service;
 
-import com.metaverse.workflow.common.enums.PaymentType;
+import com.metaverse.workflow.enums.BillRemarksStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.Date;
+import java.util.List;
+
 @AllArgsConstructor
 @Builder
 @Setter
@@ -20,7 +22,6 @@ public class BulkTransactions {
     private String purchaseDate;
     private Integer consumedQuantity;
     private Integer availableQuantity;
-
     private String expenditureType;
     private String headOfExpense;
     private Double allocatedCost;
@@ -32,5 +33,8 @@ public class BulkTransactions {
     private String modeOfPayment;
     private String remarks;
     private String uploadBillUrl;
+    private List<String> spiuComments;
+    private List<String> agencyComments;
+    private BillRemarksStatus status;
 }
 

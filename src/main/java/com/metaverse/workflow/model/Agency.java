@@ -1,5 +1,6 @@
 package com.metaverse.workflow.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -30,7 +31,8 @@ public class Agency {
     private String email;
     @Column(name="address")
     private String address;
-    @OneToMany(mappedBy = "agency",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "agency", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
     private List<User> users;
     @OneToMany(mappedBy = "agency",cascade = CascadeType.ALL)
     private List<Location> locations;

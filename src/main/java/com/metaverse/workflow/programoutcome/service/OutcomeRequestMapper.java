@@ -486,7 +486,7 @@ public class OutcomeRequestMapper {
     public static SIDBIAspire mapSidbiAspire(SIDBIAspireRequest dto, Agency agency, Participant participant, Organization organization) {
         return SIDBIAspire.builder()
                 .applicationSubmissionDate(DateUtil.stringToDate(dto.getApplicationSubmissionDate(), DATE_FORMAT))
-                .sanctionDateUnderAspire(DateUtil.stringToDate(dto.getSanctionDateUnderAspire(), DATE_FORMAT))
+                .dateSanctionUnderAspire(DateUtil.stringToDate(dto.getDateSanctionUnderAspire(), DATE_FORMAT))
                 .fundingSupportReceived(dto.getIsFundingSupportReceived())
                 .incubationPartnerName(dto.getIncubationPartnerName())
                 .fundingType(dto.getFundingType())
