@@ -6,7 +6,10 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
@@ -23,6 +26,13 @@ public class JwtService {
 
     @Value("${jwt.expiration:86400000}") // Default: 24 hours
     private long jwtExpiration;
+
+    private final UserDetailsService userDetailsService;
+
+    public JwtService(UserDetailsService userDetailsService) {
+        this.userDetailsService = userDetailsService;
+    }
+
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -77,4 +87,17 @@ public class JwtService {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);
     }
+
+    public Authentication getAuthenticationToken(String token, UserDetails userDetails) {
+        return new UsernamePasswordAuthenticationToken(
+                userDetails,
+                null,
+                userDetails.getAuthorities()
+        );
+    }
+
+    public UserDetails loadUserByUsername(String username)  {
+        return userDetailsService.loadUserByUsername(username);
+    }
+
 }
