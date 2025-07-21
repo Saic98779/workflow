@@ -1,5 +1,6 @@
 package com.metaverse.workflow.login.controller;
 
+import com.metaverse.workflow.common.logs.ActivityLogService;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.common.util.RestControllerBase;
 import com.metaverse.workflow.exceptions.DataException;
@@ -25,6 +26,8 @@ public class LoginController {
 
     @Autowired
     LoginService loginService;
+    @Autowired
+    private ActivityLogService logService;
 
     @Operation(summary = "Get user by id", responses = {
             @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = LoginUserResponse.class))),
@@ -46,6 +49,7 @@ public class LoginController {
         WorkflowResponse response ;
         try {
             response = loginService.updateUser(userId,request);
+            logService.logs("Update","User","User Details Updating By "+request.getFirstName()+request.getLastName());
         } catch (DataException exception) {
             return RestControllerBase.error(exception);
         }
@@ -59,6 +63,7 @@ public class LoginController {
     public ResponseEntity<WorkflowResponse> createUser(@RequestBody LoginUserRequest request) {
         log.info("login controller, userId : {}", request.getMobileNo());
         WorkflowResponse response = loginService.createUser(request);
+        logService.logs("Creating","User","User Created for "+request.getFirstName()+request.getLastName());
         return ResponseEntity.ok(response);
     }
 
@@ -101,6 +106,7 @@ public class LoginController {
     @PutMapping(value = "/login/change-password", produces = {"application/json"})
     public ResponseEntity<WorkflowResponse> changePassword(@RequestBody ChangePasswordRequest request) throws DataException {
         log.info("Change password controller, userId: {}", request.getUserId());
+        logService.logs("Update", "User", "User changed password from " + request.getOldPassword() + " to " + request.getNewPassword());
         return ResponseEntity.ok(loginService.changePassword(request));
     }
 }

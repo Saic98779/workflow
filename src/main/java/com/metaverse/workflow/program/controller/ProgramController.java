@@ -1,5 +1,7 @@
 package com.metaverse.workflow.program.controller;
 
+import com.metaverse.workflow.common.constants.ProgramStatusConstants;
+import com.metaverse.workflow.common.logs.ActivityLogService;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.common.util.RestControllerBase;
 import com.metaverse.workflow.exceptions.DataException;
@@ -40,6 +42,8 @@ public class ProgramController {
     @Autowired
     OverdueProgramUpdater overdueProgramUpdater;
 
+    @Autowired
+    private ActivityLogService logService;
 
     @GetMapping("/program/sessions/{programId}")
     public ResponseEntity<?> getProgramSessionByProgramId(@PathVariable("programId") Long programId) {
@@ -59,6 +63,7 @@ public class ProgramController {
     public ResponseEntity<WorkflowResponse> createProgram(@RequestBody ProgramRequest request) {
         log.info("Program controller, title : {}", request.getProgramTitle());
         WorkflowResponse response = programService.createProgram(request);
+        logService.logs("Save","Program", ProgramStatusConstants.PROGRAM_SCHEDULED);
         return ResponseEntity.ok(response);
     }
 
@@ -73,12 +78,14 @@ public class ProgramController {
         JSONParser parser = new JSONParser();
         ProgramSessionRequest request = parser.parse(data, ProgramSessionRequest.class);
         WorkflowResponse response = programService.createProgramSession(request, files);
+        logService.logs("Save","Program Session", ProgramStatusConstants.SESSIONS_CREATED);
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/program/session/delete")
     public ResponseEntity<String> deleteSession(@RequestParam("sessionId") Long sessionId) throws ParseException {
         String response = programService.deleteProgramSession(sessionId);
+        logService.logs("Delete","Program Session", ProgramStatusConstants.SESSIONS_CREATED);
         return ResponseEntity.ok(response);
     }
 
@@ -117,12 +124,14 @@ public class ProgramController {
     public ResponseEntity<WorkflowResponse> updateProgram(@RequestBody ProgramRequest request) {
         log.info("Updating Program with ID: {}", request.getProgramId());
         WorkflowResponse response = programService.updateProgram(request);
+        logService.logs("Update","Program", ProgramStatusConstants.PROGRAM_SCHEDULED);
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/save/program/type")
     public ResponseEntity<WorkflowResponse> saveProgramTypes(@RequestBody ProgramTypeRequest request) {
         WorkflowResponse response = programService.saveProgramType(request);
+        logService.logs("Save","Program Type", ProgramStatusConstants.PROGRAM_SCHEDULED);
         return ResponseEntity.ok(response);
     }
 
@@ -152,6 +161,7 @@ public class ProgramController {
         JSONParser parser = new JSONParser();
         ProgramSessionRequest request = parser.parse(data, ProgramSessionRequest.class);
         WorkflowResponse response = programService.editProgramSession(request, files);
+        logService.logs("Update","Program Session", ProgramStatusConstants.SESSIONS_CREATED);
         return ResponseEntity.ok(response);
     }
 
@@ -167,6 +177,7 @@ public class ProgramController {
         JSONParser parser = new JSONParser();
         ProgramSessionRequest request = parser.parse(data, ProgramSessionRequest.class);
         WorkflowResponse response = programService.saveSessionImages(request, image1, image2, image3, image4, image5);
+        logService.logs("Save","Program Execution", ProgramStatusConstants.PROGRAM_EXECUTION);
         return ResponseEntity.ok(response);
     }
 
@@ -174,6 +185,7 @@ public class ProgramController {
     public ResponseEntity<WorkflowResponse> saveCollageImages(@RequestParam("programId") Long programId,
                                                               @RequestPart(value = "image", required = false) MultipartFile image) {
         WorkflowResponse response = programService.saveCollageImages(programId, image);
+        logService.logs("Save","Program Collage", "Program Collage Created");
         return ResponseEntity.ok(response);
     }
 
@@ -187,6 +199,7 @@ public class ProgramController {
         JSONParser parser = new JSONParser();
         MediaCoverageRequest request = parser.parse(data, MediaCoverageRequest.class);
         WorkflowResponse response = programService.saveMediaCoverage(request, image1, image2, image3);
+        logService.logs("Save","Program Execution Media-Coverage",ProgramStatusConstants.PROGRAM_EXECUTION);
         return ResponseEntity.ok(response);
     }
 
@@ -288,6 +301,7 @@ public class ProgramController {
     @PostMapping("/program/feedback/save")
     public ResponseEntity<WorkflowResponse> saveFeedback(@RequestBody ProgramMonitoringFeedBackRequest request)
     {
+        logService.logs("Save","Program FeedBack", "PROGRAM_IN_PROGRESS");
         return ResponseEntity.ok(programService.saveFeedback(request));
     }
     @PostMapping("/program/feedback/update/{monitorId}")
@@ -299,6 +313,7 @@ public class ProgramController {
         } catch (DataException exception) {
             return RestControllerBase.error(exception);
         }
+        logService.logs("Update","Program FeedBack", "PROGRAM_IN_PROGRESS");
         return ResponseEntity.ok(response);
     }
     @GetMapping("/program/feedback/{programId}")
@@ -331,12 +346,13 @@ public class ProgramController {
     @PostMapping(value = "/program/import", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<WorkflowResponse> importPrograms(@RequestPart("file") MultipartFile file) {
         WorkflowResponse response = programService.importProgramsFromExcel(file);
+        logService.logs("Save","Program import", ProgramStatusConstants.PROGRAM_SCHEDULED);
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("program/delete/{programId}")
     public ResponseEntity<WorkflowResponse> deleteProgram(@PathVariable Long programId) {
-
+        logService.logs("Delete","Program", ProgramStatusConstants.PROGRAM_SCHEDULED);
         return ResponseEntity.ok(programService.deleteProgramAndDependencies(programId));
     }
 
@@ -344,6 +360,7 @@ public class ProgramController {
     public ResponseEntity<ProgramUpdateResponse> updateOverdueById(@PathVariable Long id) {
         try {
             ProgramUpdateResponse response = overdueProgramUpdater.updateOverdueStatusById(id);
+            logService.logs("Update","Program Over Due", ProgramStatusConstants.PROGRAM_SCHEDULED);
             return ResponseEntity.ok(response);
         } catch (EntityNotFoundException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);

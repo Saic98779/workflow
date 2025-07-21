@@ -2,7 +2,7 @@ package com.metaverse.workflow.expenditure.service;
 
 import com.metaverse.workflow.common.enums.ExpenditureType;
 import com.metaverse.workflow.common.response.WorkflowResponse;
-import com.metaverse.workflow.enums.BillRemarksStatus;
+import com.metaverse.workflow.common.enums.BillRemarksStatus;
 import com.metaverse.workflow.exceptions.*;
 import com.metaverse.workflow.model.HeadOfExpense;
 import org.springframework.web.multipart.MultipartFile;
