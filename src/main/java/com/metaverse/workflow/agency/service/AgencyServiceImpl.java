@@ -18,6 +18,8 @@ import org.springframework.stereotype.Service;
 import com.metaverse.workflow.agency.repository.AgencyRepository;
 import com.metaverse.workflow.model.Agency;
 
+import static com.metaverse.workflow.common.constants.ProgramStatusConstants.PROGRAM_EXECUTION_UPDATED;
+
 @Service
 public class AgencyServiceImpl implements AgencyService{
 
@@ -68,5 +70,11 @@ public class AgencyServiceImpl implements AgencyService{
 		List<ProgramResponse> responses =programList!= null ? programList.stream().map(ProgramResponseMapper::map).collect(Collectors.toList()) : null ;
 		return WorkflowResponse.builder().message("Success").status(200).data(responses).build();
 	}
+
+	@Override
+	public WorkflowResponse getProgramsDistrictsAndAgency(Long id, String district) {
+		List<Program> programList = programRepository.findByAgency_AgencyIdAndLocation_DistrictAndStatus(id, district, PROGRAM_EXECUTION_UPDATED);
+		List<ProgramResponse> responses =programList!= null ? programList.stream().map(ProgramResponseMapper::map).collect(Collectors.toList()) : null ;
+		return WorkflowResponse.builder().message("Success").status(200).data(responses).build();	}
 
 }

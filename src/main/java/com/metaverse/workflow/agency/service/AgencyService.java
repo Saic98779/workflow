@@ -20,4 +20,6 @@ public interface AgencyService {
 	Agency getAgencyById(Long id);
 
 	WorkflowResponse getProgramByAgencyIdDropDown(Long agencyId);
+
+	WorkflowResponse getProgramsDistrictsAndAgency(Long id, String district);
 }

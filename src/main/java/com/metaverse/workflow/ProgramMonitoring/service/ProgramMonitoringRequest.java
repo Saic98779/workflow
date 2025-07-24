@@ -1,7 +1,12 @@
 package com.metaverse.workflow.ProgramMonitoring.service;
 
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.JoinColumn;
 import lombok.*;
 
+import java.util.Date;
 import java.util.List;
 
 @Builder
@@ -11,78 +16,65 @@ import java.util.List;
 @NoArgsConstructor
 public class
 ProgramMonitoringRequest {
-    private Long programId;
-    private Integer stepNumber;
-    private String state;
+
+    private Long agencyId;
     private String district;
-    private String startDate;
-    private String agencyName;
-    private String programType;
-    private String programName;
-    private String venueName;
-    private String hostingAgencyName;
-    private String spocName;
-    private Long spocContact;
-    private String inTime;
-    private String outTime;
+    private Long programId;
+    private String userId;
+    private Integer stepNumber;
 
-    private Integer maleParticipants;
-    private Integer femaleParticipants;
-    private Integer transGenderParticipants;
-    private Integer totalParticipants;
-    private Integer noOfSHG;
-    private Integer noOfMSME;
-    private Integer noOfStartup;
-    private Integer noOfDIC;
-    private Integer noOfIAs;
-    private Integer noOfOthers;
+    private Boolean programAgendaCirculated;
+    private Boolean programAsPerSchedule;
+    private Boolean trainingMaterialSupplied;
+    private Boolean seatingArrangementsMade;
+    private Boolean avProjectorAvailable;
+    private String howDidYouKnowAboutProgram;
 
+    private Boolean participantsMale;
+    private Boolean participantsFemale;
+    private Boolean participantsTransgender;
 
-    private Boolean timingPunctuality ;
-    private Boolean sessionContinuity;
-    private Boolean participantInterestLevel;
+    private Boolean dicRegistrationParticipated;
+    private Boolean shgRegistrationParticipated;
+    private Boolean msmeRegistrationParticipated;
+    private Boolean startupsRegistrationParticipated;
+    private List<String> noIAsParticipated;
 
-    private Boolean attendanceSheet;
-    private Boolean registrationForms;
-    private Boolean participantFeedBack;
-    private Boolean speakerFeedBack;
+    private String speaker1Name;
+    private Boolean topicAsPerSessionPlan1;
+    private Integer timeTaken1;
+    private Boolean audioVisualAidUsed1;
+    private String relevance1;
+    private Boolean sessionContinuity1;
+    private Boolean participantInteraction1;
+
+    private String speaker2Name;
+    private Boolean topicAsPerSessionPlan2;
+    private Integer timeTaken2;
+    private Boolean audioVisualAidUsed2;
+    private String relevance2;
+    private Boolean sessionContinuity2;
+    private Boolean participantInteraction2;
+
+    private String venueQuality;
+    private String accessibility;
+    private String teaSnacks;
+    private String lunch;
+    private String cannedWater;
+    private String toiletHygiene;
+    private String avEquipment;
+    private String stationary;
+
+    private Boolean relevant;
+    private Boolean enthusiast;
+    private Boolean feltUseful;
+    private Boolean futureWillingToEngage;
+
+    private Boolean qualified;
+    private Boolean experienced;
+    private Boolean certified;
+    private Boolean deliveryMethodologyGood;
+    private Boolean relevantExperience;
 
     private String overallObservation;
-    private List<PreEventChecklist> preEventChecklists;
-    private String participantKnowAboutProgram;
-    private List<ProgramDeliveryDetails> programDeliveryDetails;
-    private List<LogisticsEvaluation> logisticsEvaluations;
-
-    @Builder
-    @AllArgsConstructor
-    @Getter
-    @Setter
-    public static class PreEventChecklist {
-        private String item;
-        private Boolean status;
-        private String remarks;
-    }
-
-    @Builder
-    @AllArgsConstructor
-    @Getter
-    @Setter
-    public static class ProgramDeliveryDetails {
-        private Long programDeliveryDetailsId;
-        private String speakerName;
-        private String topicDelivered;
-        private Integer timeTaken;
-        private Boolean audioVisualUsed;
-        private String relevance;
-    }
-
-    @Builder
-    @AllArgsConstructor
-    @Getter
-    @Setter
-    public static class LogisticsEvaluation {
-        private String parameter;
-        private Integer rating;
-        private String remarks;
-    }
 }

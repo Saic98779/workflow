@@ -4,8 +4,10 @@ import com.metaverse.workflow.ProgramMonitoring.repository.ProgramMonitoringRepo
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.common.util.DateUtil;
 import com.metaverse.workflow.exceptions.DataException;
+import com.metaverse.workflow.login.repository.LoginRepository;
 import com.metaverse.workflow.model.Program;
 import com.metaverse.workflow.model.ProgramMonitoring;
+import com.metaverse.workflow.model.User;
 import com.metaverse.workflow.program.repository.ProgramRepository;
 import com.metaverse.workflow.program.service.ProgramDetailsFroFeedBack;
 import lombok.RequiredArgsConstructor;
@@ -18,14 +20,12 @@ import java.util.Optional;
 public class ProgramMonitoringServiceAdepter implements ProgramMonitoringService{
     private final ProgramMonitoringRepo programMonitoringRepo;
     private final ProgramRepository programRepository;
+    private final LoginRepository loginRepository;
 
-    public WorkflowResponse saveFeedback(ProgramMonitoringRequest request) {
-        if (programMonitoringRepo.existsByProgramId(request.getProgramId())) {
-            return WorkflowResponse.builder().status(400)
-                    .message("Feedback already exists for Program ID: " + request.getProgramId())
-                    .build();
-        }
-        ProgramMonitoring monitoring = ProgramMonitoringMapper.mapRequest(request);
+    public WorkflowResponse saveFeedback(ProgramMonitoringRequest request) throws DataException {
+        User user=loginRepository.findById(request.getUserId())
+                .orElseThrow(()->new DataException("user not found with this id "+request.getUserId(),"USER_NOT_FOUND",400));
+        ProgramMonitoring monitoring = ProgramMonitoringMapper.mapRequest(request,user);
         ProgramMonitoring savedFeedBack = programMonitoringRepo.save(monitoring);
         return WorkflowResponse.builder().status(200).message("Success")
                 .data(ProgramMonitoringMapper.mapResponse(monitoring)).build();

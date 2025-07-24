@@ -2,6 +2,7 @@ package com.metaverse.workflow.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.util.Date;
 import java.util.List;
@@ -18,58 +19,84 @@ public class ProgramMonitoring {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "program_monitoring_id")
     private Long programMonitoringId;
+    private Long agencyId;
+    private String district;
     private Long programId;
     private Integer stepNumber;
 
-    //Basic information
-    private String state;
-    private String district;
-    private Date startDate;
-    private String agencyName;
-    private String programType;
-    private String programName;
-    private String venueName; //locationName
-    private String hostingAgencyName;
-    private String spocName;
-    private Long spocContact;
-    private String inTime;
-    private String outTime;
+    private Boolean programAgendaCirculated;
+    private Boolean programAsPerSchedule;
+    private Boolean trainingMaterialSupplied;
+    private Boolean seatingArrangementsMade;
+    private Boolean avProjectorAvailable;
+    private String howDidYouKnowAboutProgram;
 
-    //Audience profile
-    private Integer maleParticipants;
-    private Integer femaleParticipants;
-    private Integer transGenderParticipants;
-    private Integer totalParticipants;
-    private Integer noOfSHG;
-    private Integer noOfMSME;
-    private Integer noOfStartup;
-    private Integer noOfDIC;
-    private Integer noOfIAs;
+    private Boolean participantsMale;
+    private Boolean participantsFemale;
+    private Boolean participantsTransgender;
+    private Boolean dicRegistrationParticipated;
+    private Boolean shgRegistrationParticipated;
+    private Boolean msmeRegistrationParticipated;
+    private Boolean startupsRegistrationParticipated;
+    @ElementCollection
+    @CollectionTable(
+            name = "no_ias_participated",
+            joinColumns = @JoinColumn(name = "program_monitoring_id")
+    )
+    private List<String> noIAsParticipated;
 
-    //PreEventChecklist
-    @OneToMany(mappedBy = "programMonitoring", cascade = CascadeType.ALL)
-    private List<PreEventChecklistNew> preEventChecklists;
-    private String participantKnowAboutProgram;
+    private String speaker1Name;
+    private Boolean topicAsPerSessionPlan1;
+    private Integer timeTaken1;
+    private Boolean audioVisualAidUsed1;
+    private String relevance1;
+    private Boolean sessionContinuity1;
+    private Boolean participantInteraction1;
 
-    //ProgramDeliveryDetails
-    @OneToMany(mappedBy = "programMonitoring", cascade = CascadeType.ALL)
-    private List<ProgramDeliveryDetailsNew> programDeliveryDetails;
+    private String speaker2Name;
+    private Boolean topicAsPerSessionPlan2;
+    private Integer timeTaken2;
+    private Boolean audioVisualAidUsed2;
+    private String relevance2;
+    private Boolean sessionContinuity2;
+    private Boolean participantInteraction2;
 
-    //programExecution
-    private Boolean timingPunctuality ;
-    private Boolean sessionContinuity;
-    private Boolean participantInterestLevel;
+    private String venueQuality;
+    private String accessibility;
+    private String teaSnacks;
+    private String lunch;
+    private String cannedWater;
+    private String toiletHygiene;
+    private String avEquipment;
+    private String stationary;
 
-    //LogisticsEvaluation
-    @OneToMany(mappedBy = "programMonitoring", cascade = CascadeType.ALL)
-    private List<LogisticsEvaluationNew> logisticsEvaluations;
+    private Boolean relevant;
+    private Boolean enthusiast;
+    private Boolean feltUseful;
+    private Boolean futureWillingToEngage;
 
-    //Document checklist
-    private Boolean attendanceSheet;
-    private Boolean registrationForms;
-    private Boolean participantFeedBack;
-    private Boolean speakerFeedBack;
-
-    //additionalRemarks/Recommendations
+    private Boolean qualified;
+    private Boolean experienced;
+    private Boolean certified;
+    private Boolean deliveryMethodologyGood;
+    private Boolean relevantExperience;
     private String overallObservation;
+    private Integer totalScore;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    @Column(insertable = true,updatable = false)
+    @CreationTimestamp
+    private Date moniteringDate;
+
+    private Integer screen1Score;
+    private Integer screen2Score;
+    private Integer screen3Score;
+    private Integer screen4Score;
+    private Integer screen5Score;
+    private Integer screen6Score;
+    private Integer screen7Score;
+
 }

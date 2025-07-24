@@ -45,11 +45,8 @@ public interface ProgramRepository extends JpaRepository<Program, Long> {
 
 
     default List<Program> getAllPrograms(Long agencyId) {
-        if (agencyId == -1) {
-            return findAllByOrderByStartDateAsc();
-        } else {
-            return findByAgency_AgencyIdOrderByStartDateAsc(agencyId);
-
-        }
+        return null;
     }
+
+    List<Program> findByAgency_AgencyIdAndLocation_DistrictAndStatus(Long id, String district, String programExecutionUpdated);
 }

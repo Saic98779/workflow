@@ -24,7 +24,7 @@ import org.springframework.context.annotation.Configuration;
         servers = {
                 @Server(
                         description = "Local ENV",
-                        url = "/workflow/api"
+                        url = "/workflow"
                 )
         },
         security = {

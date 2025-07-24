@@ -1,174 +1,126 @@
 package com.metaverse.workflow.ProgramMonitoring.service;
 
-import com.metaverse.workflow.common.util.DateUtil;
 import com.metaverse.workflow.exceptions.DataException;
 import com.metaverse.workflow.model.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
 public class ProgramMonitoringMapper {
 
-    public static ProgramMonitoring mapRequest(ProgramMonitoringRequest request) {
-        ProgramMonitoring feedback = ProgramMonitoring.builder()
-                .programId(request.getProgramId())
-                .stepNumber(request.getStepNumber())
-                .state(request.getState())
+    public static ProgramMonitoring mapRequest(ProgramMonitoringRequest request,User user) {
+        return ProgramMonitoring.builder()
+                .agencyId(request.getAgencyId())
                 .district(request.getDistrict())
-                .startDate(DateUtil.stringToDate(request.getStartDate(), "dd-MM-yyy"))
-                .agencyName(request.getAgencyName())
-                .programType(request.getProgramType())
-                .programName(request.getProgramName())
-                .venueName(request.getVenueName())
-                .hostingAgencyName(request.getHostingAgencyName())
-                .spocName(request.getSpocName())
-                .spocContact(request.getSpocContact())
-                .inTime(request.getInTime())
-                .outTime(request.getOutTime())
-
-                .maleParticipants(request.getMaleParticipants())
-                .femaleParticipants(request.getFemaleParticipants())
-                .transGenderParticipants(request.getTransGenderParticipants())
-                .totalParticipants(request.getTotalParticipants())
-                .noOfSHG(request.getNoOfSHG())
-                .noOfMSME(request.getNoOfMSME())
-                .noOfStartup(request.getNoOfStartup())
-                .noOfDIC(request.getNoOfDIC())
-                .noOfIAs(request.getNoOfIAs())
-
-                .timingPunctuality(request.getTimingPunctuality())
-                .sessionContinuity(request.getSessionContinuity())
-                .participantInterestLevel(request.getParticipantInterestLevel())
-
-                .attendanceSheet(request.getAttendanceSheet())
-                .registrationForms(request.getRegistrationForms())
-                .participantFeedBack(request.getParticipantFeedBack())
-                .speakerFeedBack(request.getSpeakerFeedBack())
-
+                .programId(request.getProgramId())
+                .user(user)
+                .stepNumber(request.getStepNumber())
+                .programAgendaCirculated(request.getProgramAgendaCirculated())
+                .programAsPerSchedule(request.getProgramAsPerSchedule())
+                .trainingMaterialSupplied(request.getTrainingMaterialSupplied())
+                .seatingArrangementsMade(request.getSeatingArrangementsMade())
+                .avProjectorAvailable(request.getAvProjectorAvailable())
+                .howDidYouKnowAboutProgram(request.getHowDidYouKnowAboutProgram())
+                .participantsMale(request.getParticipantsMale())
+                .participantsFemale(request.getParticipantsFemale())
+                .participantsTransgender(request.getParticipantsTransgender())
+                .dicRegistrationParticipated(request.getDicRegistrationParticipated())
+                .shgRegistrationParticipated(request.getShgRegistrationParticipated())
+                .msmeRegistrationParticipated(request.getMsmeRegistrationParticipated())
+                .startupsRegistrationParticipated(request.getStartupsRegistrationParticipated())
+                .noIAsParticipated(request.getNoIAsParticipated())
+                .speaker1Name(request.getSpeaker1Name())
+                .topicAsPerSessionPlan1(request.getTopicAsPerSessionPlan1())
+                .timeTaken1(request.getTimeTaken1())
+                .audioVisualAidUsed1(request.getAudioVisualAidUsed1())
+                .relevance1(request.getRelevance1())
+                .sessionContinuity1(request.getSessionContinuity1())
+                .participantInteraction1(request.getParticipantInteraction1())
+                .speaker2Name(request.getSpeaker2Name())
+                .topicAsPerSessionPlan2(request.getTopicAsPerSessionPlan2())
+                .timeTaken2(request.getTimeTaken2())
+                .audioVisualAidUsed2(request.getAudioVisualAidUsed2())
+                .relevance2(request.getRelevance2())
+                .sessionContinuity2(request.getSessionContinuity2())
+                .participantInteraction2(request.getParticipantInteraction2())
+                .venueQuality(request.getVenueQuality())
+                .accessibility(request.getAccessibility())
+                .teaSnacks(request.getTeaSnacks())
+                .lunch(request.getLunch())
+                .cannedWater(request.getCannedWater())
+                .toiletHygiene(request.getToiletHygiene())
+                .avEquipment(request.getAvEquipment())
+                .stationary(request.getStationary())
+                .relevant(request.getRelevant())
+                .enthusiast(request.getEnthusiast())
+                .feltUseful(request.getFeltUseful())
+                .futureWillingToEngage(request.getFutureWillingToEngage())
+                .qualified(request.getQualified())
+                .experienced(request.getExperienced())
+                .certified(request.getCertified())
+                .deliveryMethodologyGood(request.getDeliveryMethodologyGood())
+                .relevantExperience(request.getRelevantExperience())
                 .overallObservation(request.getOverallObservation())
-
-                .participantKnowAboutProgram(request.getParticipantKnowAboutProgram())
                 .build();
-
-        // PreEventChecklist
-        if (request.getPreEventChecklists() != null) {
-            List<PreEventChecklistNew> checklistList = request.getPreEventChecklists().stream()
-                    .map(item -> PreEventChecklistNew.builder()
-                            .item(item.getItem())
-                            .status(item.getStatus())
-                            .remarks(item.getRemarks())
-                            .programMonitoring(feedback)
-                            .build())
-                    .collect(Collectors.toList());
-            feedback.setPreEventChecklists(checklistList);
-        }
-
-        // ProgramDeliveryDetails
-        if (request.getProgramDeliveryDetails() != null) {
-            List<ProgramDeliveryDetailsNew> deliveryList = request.getProgramDeliveryDetails().stream()
-                    .map(d -> com.metaverse.workflow.model.ProgramDeliveryDetailsNew.builder()
-                            .speakerName(d.getSpeakerName())
-                            .topicDelivered(d.getTopicDelivered())
-                            .timeTaken(d.getTimeTaken())
-                            .audioVisualUsed(d.getAudioVisualUsed())
-                            .relevance(d.getRelevance())
-                            .programMonitoring(feedback)
-                            .build())
-                    .collect(Collectors.toList());
-            feedback.setProgramDeliveryDetails(deliveryList);
-        }
-
-        // LogisticsEvaluation
-        if (request.getLogisticsEvaluations() != null) {
-            List<LogisticsEvaluationNew> logisticsList = request.getLogisticsEvaluations().stream()
-                    .map(l -> LogisticsEvaluationNew.builder()
-                            .parameter(l.getParameter())
-                            .rating(l.getRating())
-                            .remarks(l.getRemarks())
-                            .programMonitoring(feedback)
-                            .build())
-                    .collect(Collectors.toList());
-            feedback.setLogisticsEvaluations(logisticsList);
-        }
-
-        return feedback;
     }
+
 
     public static ProgramMonitoringResponse mapResponse(ProgramMonitoring monitoringFeedBack) {
         return ProgramMonitoringResponse.builder()
-                .monitorId(monitoringFeedBack.getProgramMonitoringId())
-                .stepNumber(monitoringFeedBack.getStepNumber())
-                .programId(monitoringFeedBack.getProgramId())
-                .state(monitoringFeedBack.getState())
+                .programMonitoringId(monitoringFeedBack.getProgramMonitoringId())
+                .agencyId(monitoringFeedBack.getAgencyId())
                 .district(monitoringFeedBack.getDistrict())
-                .startDate(DateUtil.dateToString(monitoringFeedBack.getStartDate(), "dd-MM-yyyy"))
-                .agencyName(monitoringFeedBack.getAgencyName())
-                .programType(monitoringFeedBack.getProgramType())
-                .programName(monitoringFeedBack.getProgramName())
-                .venueName(monitoringFeedBack.getVenueName())
-                .hostingAgencyName(monitoringFeedBack.getHostingAgencyName())
-                .spocName(monitoringFeedBack.getSpocName())
-                .spocContact(monitoringFeedBack.getSpocContact())
-                .inTime(monitoringFeedBack.getInTime())
-                .outTime(monitoringFeedBack.getOutTime())
+                .programId(monitoringFeedBack.getProgramId())
+                .stepNumber(monitoringFeedBack.getStepNumber())
 
-                .maleParticipants(monitoringFeedBack.getMaleParticipants())
-                .femaleParticipants(monitoringFeedBack.getFemaleParticipants())
-                .transGenderParticipants(monitoringFeedBack.getTransGenderParticipants())
-                .totalParticipants(monitoringFeedBack.getTotalParticipants())
-                .noOfSHG(monitoringFeedBack.getNoOfSHG())
-                .noOfMSME(monitoringFeedBack.getNoOfMSME())
-                .noOfStartup(monitoringFeedBack.getNoOfStartup())
-                .noOfDIC(monitoringFeedBack.getNoOfDIC())
-                .noOfIAs(monitoringFeedBack.getNoOfIAs())
-
-                .timingPunctuality(monitoringFeedBack.getTimingPunctuality())
-                .sessionContinuity(monitoringFeedBack.getSessionContinuity())
-                .participantInterestLevel(monitoringFeedBack.getParticipantInterestLevel())
-
-                .attendanceSheet(monitoringFeedBack.getAttendanceSheet())
-                .registrationForms(monitoringFeedBack.getRegistrationForms())
-                .participantFeedBack(monitoringFeedBack.getParticipantFeedBack())
-                .speakerFeedBack(monitoringFeedBack.getSpeakerFeedBack())
-
+                .programAgendaCirculated(monitoringFeedBack.getProgramAgendaCirculated())
+                .programAsPerSchedule(monitoringFeedBack.getProgramAsPerSchedule())
+                .trainingMaterialSupplied(monitoringFeedBack.getTrainingMaterialSupplied())
+                .seatingArrangementsMade(monitoringFeedBack.getSeatingArrangementsMade())
+                .avProjectorAvailable(monitoringFeedBack.getAvProjectorAvailable())
+                .howDidYouKnowAboutProgram(monitoringFeedBack.getHowDidYouKnowAboutProgram())
+                .participantsMale(monitoringFeedBack.getParticipantsMale())
+                .participantsFemale(monitoringFeedBack.getParticipantsFemale())
+                .participantsTransgender(monitoringFeedBack.getParticipantsTransgender())
+                .dicRegistrationParticipated(monitoringFeedBack.getDicRegistrationParticipated())
+                .shgRegistrationParticipated(monitoringFeedBack.getShgRegistrationParticipated())
+                .msmeRegistrationParticipated(monitoringFeedBack.getMsmeRegistrationParticipated())
+                .startupsRegistrationParticipated(monitoringFeedBack.getStartupsRegistrationParticipated())
+                .noIAsParticipated(monitoringFeedBack.getNoIAsParticipated())
+                .speaker1Name(monitoringFeedBack.getSpeaker1Name())
+                .topicAsPerSessionPlan1(monitoringFeedBack.getTopicAsPerSessionPlan1())
+                .timeTaken1(monitoringFeedBack.getTimeTaken1())
+                .audioVisualAidUsed1(monitoringFeedBack.getAudioVisualAidUsed1())
+                .relevance1(monitoringFeedBack.getRelevance1())
+                .sessionContinuity1(monitoringFeedBack.getSessionContinuity1())
+                .participantInteraction1(monitoringFeedBack.getParticipantInteraction1())
+                .speaker2Name(monitoringFeedBack.getSpeaker2Name())
+                .topicAsPerSessionPlan2(monitoringFeedBack.getTopicAsPerSessionPlan2())
+                .timeTaken2(monitoringFeedBack.getTimeTaken2())
+                .audioVisualAidUsed2(monitoringFeedBack.getAudioVisualAidUsed2())
+                .relevance2(monitoringFeedBack.getRelevance2())
+                .sessionContinuity2(monitoringFeedBack.getSessionContinuity2())
+                .participantInteraction2(monitoringFeedBack.getParticipantInteraction2())
+                .venueQuality(monitoringFeedBack.getVenueQuality())
+                .accessibility(monitoringFeedBack.getAccessibility())
+                .teaSnacks(monitoringFeedBack.getTeaSnacks())
+                .lunch(monitoringFeedBack.getLunch())
+                .cannedWater(monitoringFeedBack.getCannedWater())
+                .toiletHygiene(monitoringFeedBack.getToiletHygiene())
+                .avEquipment(monitoringFeedBack.getAvEquipment())
+                .stationary(monitoringFeedBack.getStationary())
+                .relevant(monitoringFeedBack.getRelevant())
+                .enthusiast(monitoringFeedBack.getEnthusiast())
+                .feltUseful(monitoringFeedBack.getFeltUseful())
+                .futureWillingToEngage(monitoringFeedBack.getFutureWillingToEngage())
+                .qualified(monitoringFeedBack.getQualified())
+                .experienced(monitoringFeedBack.getExperienced())
+                .certified(monitoringFeedBack.getCertified())
+                .deliveryMethodologyGood(monitoringFeedBack.getDeliveryMethodologyGood())
+                .relevantExperience(monitoringFeedBack.getRelevantExperience())
                 .overallObservation(monitoringFeedBack.getOverallObservation())
-
-                .participantKnowAboutProgram(monitoringFeedBack.getParticipantKnowAboutProgram())
-
-                .preEventChecklists(
-                        monitoringFeedBack.getPreEventChecklists().stream()
-                                .map(pre -> ProgramMonitoringResponse.PreEventChecklist.builder()
-                                        .item(pre.getItem())
-                                        .status(pre.getStatus())
-                                        .remarks(pre.getRemarks())
-                                        .build()
-                                ).toList()
-                )
-                .programDeliveryDetails(
-                        monitoringFeedBack.getProgramDeliveryDetails().stream()
-                                .map(detail -> ProgramMonitoringResponse.ProgramDeliveryDetails.builder()
-                                        .programDeliveryDetailsId(detail.getProgramDeliveryDetailsId())
-                                        .speakerName(detail.getSpeakerName())
-                                        .topicDelivered(detail.getTopicDelivered())
-                                        .timeTaken(detail.getTimeTaken())
-                                        .audioVisualUsed(detail.getAudioVisualUsed())
-                                        .relevance(detail.getRelevance())
-                                        .build()
-                                ).toList()
-                )
-                .logisticsEvaluations(
-                        monitoringFeedBack.getLogisticsEvaluations().stream()
-                                .map(log -> ProgramMonitoringResponse.LogisticsEvaluation.builder()
-                                        .parameter(log.getParameter())
-                                        .rating(log.getRating())
-                                        .remarks(log.getRemarks())
-                                        .build()
-                                ).toList()
-                )
+                .submittedBy(monitoringFeedBack.getUser() != null ?monitoringFeedBack.getUser().getFirstName()+monitoringFeedBack.getUser().getLastName() : null)
+                .totalScore(monitoringFeedBack.getTotalScore())
                 .build();
     }
+
 
     public static void updateProgramMonitoring(ProgramMonitoring entity, ProgramMonitoringRequest request) throws DataException {
         int stepNumber = request.getStepNumber();
@@ -176,137 +128,72 @@ public class ProgramMonitoringMapper {
 
         switch (stepNumber) {
             case 1 -> {
-                entity.setProgramId(request.getProgramId());
-                entity.setState(request.getState());
-                entity.setDistrict(request.getDistrict());
-                entity.setStartDate(DateUtil.stringToDate(request.getStartDate(), "dd-MM-yyyy"));
-                entity.setAgencyName(request.getAgencyName());
-                entity.setProgramType(request.getProgramType());
-                entity.setProgramName(request.getProgramName());
-                entity.setVenueName(request.getVenueName());
-                entity.setHostingAgencyName(request.getHostingAgencyName());
-                entity.setSpocName(request.getSpocName());
-                entity.setSpocContact(request.getSpocContact());
-                entity.setInTime(request.getInTime());
-                entity.setOutTime(request.getOutTime());
+                entity.setProgramAgendaCirculated(request.getProgramAgendaCirculated());
+                entity.setProgramAsPerSchedule(request.getProgramAsPerSchedule());
+                entity.setTrainingMaterialSupplied(request.getTrainingMaterialSupplied());
+                entity.setSeatingArrangementsMade(request.getSeatingArrangementsMade());
+                entity.setAvProjectorAvailable(request.getAvProjectorAvailable());
+                entity.setHowDidYouKnowAboutProgram(request.getHowDidYouKnowAboutProgram());
+
             }
             case 2 -> {
-                entity.setMaleParticipants(request.getMaleParticipants());
-                entity.setFemaleParticipants(request.getFemaleParticipants());
-                entity.setTransGenderParticipants(request.getTransGenderParticipants());
-                entity.setTotalParticipants(request.getTotalParticipants());
-                entity.setNoOfSHG(request.getNoOfSHG());
-                entity.setNoOfMSME(request.getNoOfMSME());
-                entity.setNoOfStartup(request.getNoOfStartup());
-                entity.setNoOfDIC(request.getNoOfDIC());
-                entity.setNoOfIAs(request.getNoOfIAs());
+                entity.setParticipantsMale(request.getParticipantsMale());
+                entity.setParticipantsFemale(request.getParticipantsFemale());
+                entity.setParticipantsTransgender(request.getParticipantsTransgender());
+                entity.setDicRegistrationParticipated(request.getDicRegistrationParticipated());
+                entity.setShgRegistrationParticipated(request.getShgRegistrationParticipated());
+                entity.setMsmeRegistrationParticipated(request.getMsmeRegistrationParticipated());
+                entity.setStartupsRegistrationParticipated(request.getStartupsRegistrationParticipated());
+                entity.setNoIAsParticipated(request.getNoIAsParticipated());
+
             }
             case 3 -> {
-                List<PreEventChecklistNew> existingList = entity.getPreEventChecklists();
+                entity.setSpeaker1Name(request.getSpeaker1Name());
+                entity.setTopicAsPerSessionPlan1(request.getTopicAsPerSessionPlan1());
+                entity.setTimeTaken1(request.getTimeTaken1());
+                entity.setAudioVisualAidUsed1(request.getAudioVisualAidUsed1());
+                entity.setRelevance1(request.getRelevance1());
+                entity.setSessionContinuity1(request.getSessionContinuity1());
+                entity.setParticipantInteraction1(request.getParticipantInteraction1());
 
-                Map<String, PreEventChecklistNew> existingMap = existingList.stream()
-                        .collect(Collectors.toMap(
-                                PreEventChecklistNew::getItem,
-                                c -> c,
-                                (existing, duplicate) -> existing // Handle duplicate keys gracefully
-                        ));
-
-                List<PreEventChecklistNew> updatedList = new ArrayList<>();
-
-                for (ProgramMonitoringRequest.PreEventChecklist reqChecklist : request.getPreEventChecklists()) {
-                    PreEventChecklistNew existing = existingMap.get(reqChecklist.getItem());
-
-                    if (existing != null) {
-                        // Update existing checklist
-                        existing.setStatus(reqChecklist.getStatus());
-                        existing.setRemarks(reqChecklist.getRemarks());
-                        updatedList.add(existing);
-                    } else {
-                        // Create new checklist
-                        PreEventChecklistNew newChecklist = PreEventChecklistNew.builder()
-                                .item(reqChecklist.getItem())
-                                .status(reqChecklist.getStatus())
-                                .remarks(reqChecklist.getRemarks())
-                                .programMonitoring(entity)
-                                .build();
-                        updatedList.add(newChecklist);
-                    }
-                }
-                entity.setPreEventChecklists(updatedList);
-                entity.setParticipantKnowAboutProgram(request.getParticipantKnowAboutProgram());
             }
             case 4 -> {
-                if (request.getProgramDeliveryDetails() != null) {
-                    List<ProgramDeliveryDetailsNew> existingList = entity.getProgramDeliveryDetails();
-                    Map<Long, ProgramDeliveryDetailsNew> existingMap = existingList.stream()
-                            .filter(p -> p.getProgramDeliveryDetailsId() != null)
-                            .collect(Collectors.toMap(ProgramDeliveryDetailsNew::getProgramDeliveryDetailsId, p -> p));
+                entity.setSpeaker2Name(request.getSpeaker2Name());
+                entity.setTopicAsPerSessionPlan2(request.getTopicAsPerSessionPlan2());
+                entity.setTimeTaken2(request.getTimeTaken2());
+                entity.setAudioVisualAidUsed2(request.getAudioVisualAidUsed2());
+                entity.setRelevance2(request.getRelevance2());
+                entity.setSessionContinuity2(request.getSessionContinuity2());
+                entity.setParticipantInteraction2(request.getParticipantInteraction2());
 
-                    List<ProgramDeliveryDetailsNew> updatedList = new ArrayList<>();
 
-                    for (ProgramMonitoringRequest.ProgramDeliveryDetails req : request.getProgramDeliveryDetails()) {
-                        if (req.getProgramDeliveryDetailsId() != null && existingMap.containsKey(req.getProgramDeliveryDetailsId())) {
-
-                            ProgramDeliveryDetailsNew existing = existingMap.get(req.getProgramDeliveryDetailsId());
-                            existing.setSpeakerName(req.getSpeakerName());
-                            existing.setTopicDelivered(req.getTopicDelivered());
-                            existing.setTimeTaken(req.getTimeTaken());
-                            existing.setAudioVisualUsed(req.getAudioVisualUsed());
-                            existing.setRelevance(req.getRelevance());
-                            updatedList.add(existing);
-                            existingMap.remove(req.getProgramDeliveryDetailsId());
-                        } else {
-                            ProgramDeliveryDetailsNew newDetail = ProgramDeliveryDetailsNew.builder()
-                                    .speakerName(req.getSpeakerName())
-                                    .topicDelivered(req.getTopicDelivered())
-                                    .timeTaken(req.getTimeTaken())
-                                    .audioVisualUsed(req.getAudioVisualUsed())
-                                    .relevance(req.getRelevance())
-                                    .programMonitoring(entity)
-                                    .build();
-                            updatedList.add(newDetail);
-                        }
-                    }
-                    existingList.clear();
-                    existingList.addAll(updatedList);
-                }
             }
             case 5 -> {
-                entity.setTimingPunctuality(request.getTimingPunctuality());
-                entity.setSessionContinuity(request.getSessionContinuity());
-                entity.setParticipantInterestLevel(request.getParticipantInterestLevel());
+                entity.setVenueQuality(request.getVenueQuality());
+                entity.setAccessibility(request.getAccessibility());
+                entity.setTeaSnacks(request.getTeaSnacks());
+                entity.setLunch(request.getLunch());
+                entity.setCannedWater(request.getCannedWater());
+                entity.setToiletHygiene(request.getToiletHygiene());
+                entity.setAvEquipment(request.getAvEquipment());
+                entity.setStationary(request.getStationary());
+
             }
             case 6 -> {
-                Map<String, LogisticsEvaluationNew> existingMap = entity.getLogisticsEvaluations().stream()
-                        .collect(Collectors.toMap(LogisticsEvaluationNew::getParameter, e -> e)); // Use unique field like `parameter`
+                entity.setRelevant(request.getRelevant());
+                entity.setEnthusiast(request.getEnthusiast());
+                entity.setFeltUseful(request.getFeltUseful());
+                entity.setFutureWillingToEngage(request.getFutureWillingToEngage());
 
-                List<LogisticsEvaluationNew> updatedList = new ArrayList<>();
-
-                for (ProgramMonitoringRequest.LogisticsEvaluation reqEval : request.getLogisticsEvaluations()) {
-                    LogisticsEvaluationNew existing = existingMap.get(reqEval.getParameter());
-                    if (existing != null) {
-                        existing.setRating(reqEval.getRating());
-                        existing.setRemarks(reqEval.getRemarks());
-                        updatedList.add(existing); // Keep updated
-                        existingMap.remove(reqEval.getParameter());
-                    } else {
-                        updatedList.add(LogisticsEvaluationNew.builder()
-                                .parameter(reqEval.getParameter())
-                                .rating(reqEval.getRating())
-                                .remarks(reqEval.getRemarks())
-                                .programMonitoring(entity)
-                                .build());
-                    }
-                }
-                entity.getLogisticsEvaluations().clear();
-                entity.getLogisticsEvaluations().addAll(updatedList);
             }
 
-            case 7-> {
-                entity.setAttendanceSheet(request.getAttendanceSheet());
-                entity.setRegistrationForms(request.getRegistrationForms());
-                entity.setParticipantFeedBack(request.getParticipantFeedBack());
-                entity.setSpeakerFeedBack(request.getSpeakerFeedBack());
+            case 7 -> {
+                entity.setQualified(request.getQualified());
+                entity.setExperienced(request.getExperienced());
+                entity.setCertified(request.getCertified());
+                entity.setDeliveryMethodologyGood(request.getDeliveryMethodologyGood());
+                entity.setRelevantExperience(request.getRelevantExperience());
+
             }
             case 8 -> {
                 entity.setOverallObservation(request.getOverallObservation());

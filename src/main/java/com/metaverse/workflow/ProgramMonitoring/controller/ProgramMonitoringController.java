@@ -16,10 +16,8 @@ import org.springframework.web.bind.annotation.*;
 public class ProgramMonitoringController {
     private final ProgramMonitoringService programService;
     private final ProgramMonitoringRepo feedbackRepository;
-
     @PostMapping("/program/feedback/save")
-    public ResponseEntity<WorkflowResponse> saveFeedback(@RequestBody ProgramMonitoringRequest request)
-    {
+    public ResponseEntity<?> saveFeedback(@RequestBody ProgramMonitoringRequest request) throws DataException {
         return ResponseEntity.ok(programService.saveFeedback(request));
     }
     @PostMapping("/program/feedback/update/{monitorId}")
@@ -66,5 +64,6 @@ public class ProgramMonitoringController {
             feedbackRepository.delete(feedback);
             return ResponseEntity.ok("Program Monitoring FeedBack deleted successfully.");
         }).orElse(ResponseEntity.notFound().build());
+
     }
 }

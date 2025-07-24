@@ -209,8 +209,8 @@ public class ExpenditureController {
         }
     }
     @PutMapping("/save/remarks")
-    public ResponseEntity<?> addingRemarks(@RequestBody ExpenditureRemarksDTO remarksDTO, @RequestParam("status") BillRemarksStatus status)
-    {
+    public ResponseEntity<?> addingRemarks(@RequestBody ExpenditureRemarksDTO remarksDTO,
+                                           @RequestParam(value = "status", required = false) BillRemarksStatus status) {
         try {
             return  ResponseEntity.ok(expenditureService.addRemarkOrResponse(remarksDTO, status));
         } catch (DataException e) {
