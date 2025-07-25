@@ -3,9 +3,26 @@ package com.metaverse.workflow.ProgramMonitoring.service;
 import com.metaverse.workflow.exceptions.DataException;
 import com.metaverse.workflow.model.*;
 
+import java.util.Optional;
+
 public class ProgramMonitoringMapper {
 
-    public static ProgramMonitoring mapRequest(ProgramMonitoringRequest request,User user) {
+    public static ProgramMonitoring mapRequest(ProgramMonitoringRequest request, User user) {
+        int screen1Score = 0;
+        if (request.getProgramAgendaCirculated()) screen1Score += 2;
+        if (request.getProgramAsPerSchedule()) screen1Score += 2;
+        if (request.getTrainingMaterialSupplied()) screen1Score += 2;
+        if (request.getSeatingArrangementsMade()) screen1Score += 2;
+        if (request.getAvProjectorAvailable()) screen1Score += 2;
+        String source = request.getHowDidYouKnowAboutProgram();
+
+        if (source != null && !source.isBlank()) {
+            if (source.equals("Officials") || source.equals("Others")) {
+                screen1Score += 1;
+            } else if (source.equals("IAs") || source.equals("News paper") || source.equals("Social media")) {
+                screen1Score += 2;
+            }
+        }
         return ProgramMonitoring.builder()
                 .agencyId(request.getAgencyId())
                 .district(request.getDistrict())
@@ -58,6 +75,7 @@ public class ProgramMonitoringMapper {
                 .deliveryMethodologyGood(request.getDeliveryMethodologyGood())
                 .relevantExperience(request.getRelevantExperience())
                 .overallObservation(request.getOverallObservation())
+                .screen1Score(screen1Score)
                 .build();
     }
 
@@ -69,7 +87,6 @@ public class ProgramMonitoringMapper {
                 .district(monitoringFeedBack.getDistrict())
                 .programId(monitoringFeedBack.getProgramId())
                 .stepNumber(monitoringFeedBack.getStepNumber())
-
                 .programAgendaCirculated(monitoringFeedBack.getProgramAgendaCirculated())
                 .programAsPerSchedule(monitoringFeedBack.getProgramAsPerSchedule())
                 .trainingMaterialSupplied(monitoringFeedBack.getTrainingMaterialSupplied())
@@ -116,7 +133,7 @@ public class ProgramMonitoringMapper {
                 .deliveryMethodologyGood(monitoringFeedBack.getDeliveryMethodologyGood())
                 .relevantExperience(monitoringFeedBack.getRelevantExperience())
                 .overallObservation(monitoringFeedBack.getOverallObservation())
-                .submittedBy(monitoringFeedBack.getUser() != null ?monitoringFeedBack.getUser().getFirstName()+monitoringFeedBack.getUser().getLastName() : null)
+                .submittedBy(monitoringFeedBack.getUser() != null ? monitoringFeedBack.getUser().getFirstName() + monitoringFeedBack.getUser().getLastName() : null)
                 .totalScore(monitoringFeedBack.getTotalScore())
                 .build();
     }
@@ -128,15 +145,44 @@ public class ProgramMonitoringMapper {
 
         switch (stepNumber) {
             case 1 -> {
+                int screen1Score = 0;
+                if (Boolean.TRUE.equals(request.getProgramAgendaCirculated())) screen1Score += 2;
+                if (Boolean.TRUE.equals(request.getProgramAsPerSchedule())) screen1Score += 2;
+                if (Boolean.TRUE.equals(request.getTrainingMaterialSupplied())) screen1Score += 2;
+                if (Boolean.TRUE.equals(request.getSeatingArrangementsMade())) screen1Score += 2;
+                if (Boolean.TRUE.equals(request.getAvProjectorAvailable())) screen1Score += 2;
+                String source = request.getHowDidYouKnowAboutProgram();
+
+                if (source != null && !source.isBlank()) {
+                    if (source.equals("Officials") || source.equals("Others")) {
+                        screen1Score += 1;
+                    } else if (source.equals("IAs") || source.equals("News paper") || source.equals("Social media")) {
+                        screen1Score += 2;
+                    }
+                }
                 entity.setProgramAgendaCirculated(request.getProgramAgendaCirculated());
                 entity.setProgramAsPerSchedule(request.getProgramAsPerSchedule());
                 entity.setTrainingMaterialSupplied(request.getTrainingMaterialSupplied());
                 entity.setSeatingArrangementsMade(request.getSeatingArrangementsMade());
                 entity.setAvProjectorAvailable(request.getAvProjectorAvailable());
                 entity.setHowDidYouKnowAboutProgram(request.getHowDidYouKnowAboutProgram());
+                entity.setScreen1Score(screen1Score);
 
             }
             case 2 -> {
+                int screen2Score = 0;
+                if (Boolean.TRUE.equals(request.getParticipantsMale())) screen2Score += 2;
+                if (Boolean.TRUE.equals(request.getParticipantsFemale())) screen2Score += 3;
+                if (Boolean.TRUE.equals(request.getParticipantsTransgender())) screen2Score += 2;
+                if (Boolean.TRUE.equals(request.getDicRegistrationParticipated())) screen2Score += 1;
+
+                int noIAs = request.getNoIAsParticipated().size();
+                if (noIAs == 0) screen2Score += 0;
+                else if (noIAs <= 2) screen2Score += 1;
+                else if (noIAs <= 4) screen2Score += 2;
+                else if (noIAs <= 6) screen2Score += 3;
+                else screen2Score += 4;
+
                 entity.setParticipantsMale(request.getParticipantsMale());
                 entity.setParticipantsFemale(request.getParticipantsFemale());
                 entity.setParticipantsTransgender(request.getParticipantsTransgender());
@@ -145,9 +191,25 @@ public class ProgramMonitoringMapper {
                 entity.setMsmeRegistrationParticipated(request.getMsmeRegistrationParticipated());
                 entity.setStartupsRegistrationParticipated(request.getStartupsRegistrationParticipated());
                 entity.setNoIAsParticipated(request.getNoIAsParticipated());
+                entity.setScreen2Score(screen2Score);
 
             }
             case 3 -> {
+                int screen3Score = 0;
+                if (Boolean.TRUE.equals(request.getTopicAsPerSessionPlan1())) screen3Score += 2;
+                if (Boolean.TRUE.equals(request.getAudioVisualAidUsed1())) screen3Score += 2;
+                if (Boolean.TRUE.equals(request.getSessionContinuity1())) screen3Score += 2;
+                if (Boolean.TRUE.equals(request.getParticipantInteraction1())) screen3Score += 3;
+                int minutes = request.getTimeTaken1();
+                if (minutes < 30 || minutes > 90) {
+                    screen3Score += 1;
+                } else if (minutes > 45 && minutes <= 90) {
+                    screen3Score += 2;
+                } else if (minutes >= 30 && minutes <= 45) {
+                    screen3Score += 3;
+                }
+                screen3Score += getScore(request.getRelevance1());
+
                 entity.setSpeaker1Name(request.getSpeaker1Name());
                 entity.setTopicAsPerSessionPlan1(request.getTopicAsPerSessionPlan1());
                 entity.setTimeTaken1(request.getTimeTaken1());
@@ -155,9 +217,26 @@ public class ProgramMonitoringMapper {
                 entity.setRelevance1(request.getRelevance1());
                 entity.setSessionContinuity1(request.getSessionContinuity1());
                 entity.setParticipantInteraction1(request.getParticipantInteraction1());
+                entity.setScreen3Score(screen3Score);
+
 
             }
             case 4 -> {
+                int screen4Score = 0;
+                if (Boolean.TRUE.equals(request.getTopicAsPerSessionPlan2())) screen4Score += 2;
+                if (Boolean.TRUE.equals(request.getAudioVisualAidUsed2())) screen4Score += 2;
+                if (Boolean.TRUE.equals(request.getSessionContinuity2())) screen4Score += 2;
+                if (Boolean.TRUE.equals(request.getParticipantInteraction2())) screen4Score += 3;
+                int minutes = request.getTimeTaken2();
+                if (minutes < 30 || minutes > 90) {
+                    screen4Score += 1;
+                } else if (minutes > 45 && minutes <= 90) {
+                    screen4Score += 2;
+                } else if (minutes >= 30 && minutes <= 45) {
+                    screen4Score += 3;
+                }
+                screen4Score += getScore(request.getRelevance2());
+
                 entity.setSpeaker2Name(request.getSpeaker2Name());
                 entity.setTopicAsPerSessionPlan2(request.getTopicAsPerSessionPlan2());
                 entity.setTimeTaken2(request.getTimeTaken2());
@@ -165,10 +244,22 @@ public class ProgramMonitoringMapper {
                 entity.setRelevance2(request.getRelevance2());
                 entity.setSessionContinuity2(request.getSessionContinuity2());
                 entity.setParticipantInteraction2(request.getParticipantInteraction2());
+                entity.setScreen4Score(screen4Score);
 
 
             }
             case 5 -> {
+                int screen5Score = 0;
+                screen5Score += getScore(request.getVenueQuality());
+                screen5Score += getScore(request.getAccessibility());
+                screen5Score += getScore(request.getTeaSnacks());
+                screen5Score += getScore(request.getLunch());
+                screen5Score += getScore(request.getCannedWater());
+                screen5Score += getScore(request.getToiletHygiene());
+                screen5Score += getScore(request.getAvEquipment());
+                screen5Score += getScore(request.getStationary());
+
+                entity.setScreen5Score(screen5Score);
                 entity.setVenueQuality(request.getVenueQuality());
                 entity.setAccessibility(request.getAccessibility());
                 entity.setTeaSnacks(request.getTeaSnacks());
@@ -180,14 +271,28 @@ public class ProgramMonitoringMapper {
 
             }
             case 6 -> {
+                int screen6Score = 0;
+                if (Boolean.TRUE.equals(request.getRelevant())) screen6Score += 2;
+                if (Boolean.TRUE.equals(request.getEnthusiast())) screen6Score += 2;
+                if (Boolean.TRUE.equals(request.getFeltUseful())) screen6Score += 2;
+                if (Boolean.TRUE.equals(request.getFutureWillingToEngage())) screen6Score += 2;
+
                 entity.setRelevant(request.getRelevant());
                 entity.setEnthusiast(request.getEnthusiast());
                 entity.setFeltUseful(request.getFeltUseful());
                 entity.setFutureWillingToEngage(request.getFutureWillingToEngage());
+                entity.setScreen6Score(screen6Score);
 
             }
 
             case 7 -> {
+                int screen7Score = 0;
+                if (Boolean.TRUE.equals(request.getQualified())) screen7Score += 2;
+                if (Boolean.TRUE.equals(request.getExperienced())) screen7Score += 2;
+                if (Boolean.TRUE.equals(request.getCertified())) screen7Score += 2;
+                if (Boolean.TRUE.equals(request.getDeliveryMethodologyGood())) screen7Score += 4;
+                if (Boolean.TRUE.equals(request.getRelevantExperience())) screen7Score += 4;
+                entity.setScreen7Score(screen7Score);
                 entity.setQualified(request.getQualified());
                 entity.setExperienced(request.getExperienced());
                 entity.setCertified(request.getCertified());
@@ -201,6 +306,29 @@ public class ProgramMonitoringMapper {
             default -> {
                 throw new DataException("Invalid step number: " + stepNumber, "INVALID_STEP_NUMBER", 406);
             }
+
         }
+        int totalScore = 0;
+        totalScore += Optional.ofNullable(entity.getScreen1Score()).orElse(0);
+        totalScore += Optional.ofNullable(entity.getScreen2Score()).orElse(0);
+        totalScore += Optional.ofNullable(entity.getScreen3Score()).orElse(0);
+        totalScore += Optional.ofNullable(entity.getScreen4Score()).orElse(0);
+        totalScore += Optional.ofNullable(entity.getScreen5Score()).orElse(0);
+        totalScore += Optional.ofNullable(entity.getScreen6Score()).orElse(0);
+        totalScore += Optional.ofNullable(entity.getScreen7Score()).orElse(0);
+
+        entity.setTotalScore(totalScore);
     }
+
+    private static int getScore(String level) {
+        if (level == null) return 0;
+        return switch (level.toLowerCase()) {
+            case "high" -> 3;
+            case "medium" -> 2;
+            case "poor" -> 1;
+            case "very poor" -> 0;
+            default -> 0;
+        };
+    }
+
 }
