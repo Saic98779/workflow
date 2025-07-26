@@ -1,5 +1,6 @@
 package com.metaverse.workflow.agency.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 import com.metaverse.workflow.agency.repository.AgencyRepository;
 import com.metaverse.workflow.model.Agency;
 
+import static com.metaverse.workflow.common.constants.ProgramStatusConstants.PARTICIPANTS_ADDED;
 import static com.metaverse.workflow.common.constants.ProgramStatusConstants.PROGRAM_EXECUTION_UPDATED;
 
 @Service
@@ -73,8 +75,13 @@ public class AgencyServiceImpl implements AgencyService{
 
 	@Override
 	public WorkflowResponse getProgramsDistrictsAndAgency(Long id, String district) {
-		List<Program> programList = programRepository.findByAgency_AgencyIdAndLocation_DistrictAndStatus(id, district, PROGRAM_EXECUTION_UPDATED);
-		List<ProgramResponse> responses =programList!= null ? programList.stream().map(ProgramResponseMapper::map).collect(Collectors.toList()) : null ;
+		List<Program> programList;
+		if(district != null) {
+			programList = programRepository.findByAgency_AgencyIdAndLocation_DistrictAndStatus(id, district, PARTICIPANTS_ADDED);
+		}
+		else {
+			programList = programRepository.findByAgency_AgencyIdAndStatus(id, PARTICIPANTS_ADDED);
+		}
+		List<ProgramResponse> responses = programList != null ? programList.stream().map(ProgramResponseMapper::map).collect(Collectors.toList()) : null;
 		return WorkflowResponse.builder().message("Success").status(200).data(responses).build();	}
-
 }

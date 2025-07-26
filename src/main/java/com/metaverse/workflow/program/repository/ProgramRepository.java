@@ -49,4 +49,6 @@ public interface ProgramRepository extends JpaRepository<Program, Long> {
     }
 
     List<Program> findByAgency_AgencyIdAndLocation_DistrictAndStatus(Long id, String district, String programExecutionUpdated);
+
+    List<Program> findByAgency_AgencyIdAndStatus(Long id, String participantsAdded);
 }

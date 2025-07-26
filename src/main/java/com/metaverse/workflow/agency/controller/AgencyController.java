@@ -141,7 +141,8 @@ public class AgencyController {
     }
 
     @GetMapping("/agency/programs/dropdown")
-    public ResponseEntity<WorkflowResponse> getProgramsDistrictsAndAgency(@RequestParam Long id, @RequestParam String district) {
+    public ResponseEntity<WorkflowResponse> getProgramsDistrictsAndAgency(@RequestParam Long id,
+                                                                          @RequestParam(required = false) String district) {
         return ResponseEntity.ok(service.getProgramsDistrictsAndAgency(id,district));
     }
 
