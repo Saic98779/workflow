@@ -1,6 +1,5 @@
 package com.metaverse.workflow.agency.service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -18,9 +17,7 @@ import org.springframework.stereotype.Service;
 
 import com.metaverse.workflow.agency.repository.AgencyRepository;
 import com.metaverse.workflow.model.Agency;
-
-import static com.metaverse.workflow.common.constants.ProgramStatusConstants.PARTICIPANTS_ADDED;
-import static com.metaverse.workflow.common.constants.ProgramStatusConstants.PROGRAM_EXECUTION_UPDATED;
+import static com.metaverse.workflow.common.constants.ProgramStatusConstants.PROGRAM_SCHEDULED;
 
 @Service
 public class AgencyServiceImpl implements AgencyService{
@@ -44,7 +41,7 @@ public class AgencyServiceImpl implements AgencyService{
 		{
 			return findById.get();
 		}
-		
+
 		return null;
 	}
 
@@ -57,7 +54,7 @@ public class AgencyServiceImpl implements AgencyService{
 	@Override
 	public WorkflowResponse getAgencies() {
 		List<Agency> agencyList = agencyRepository.findAll();
-		List<AgencyResponse> response = agencyList != null ? agencyList.stream().map(agency -> AgencyResponseMapper.map(agency)).collect(Collectors.toList()) : null;
+		List<AgencyResponse> response = agencyList != null ? agencyList.stream().map(AgencyResponseMapper::map).collect(Collectors.toList()) : null;
 		return WorkflowResponse.builder().message("Success").status(200).data(response).build();
 	}
 
@@ -77,10 +74,10 @@ public class AgencyServiceImpl implements AgencyService{
 	public WorkflowResponse getProgramsDistrictsAndAgency(Long id, String district) {
 		List<Program> programList;
 		if(district != null) {
-			programList = programRepository.findByAgency_AgencyIdAndLocation_DistrictAndStatus(id, district, PARTICIPANTS_ADDED);
+			programList = programRepository.findByAgency_AgencyIdAndLocation_DistrictAndStatus(id, district, PROGRAM_SCHEDULED);
 		}
 		else {
-			programList = programRepository.findByAgency_AgencyIdAndStatus(id, PARTICIPANTS_ADDED);
+			programList = programRepository.findByAgency_AgencyIdAndStatus(id, PROGRAM_SCHEDULED);
 		}
 		List<ProgramResponse> responses = programList != null ? programList.stream().map(ProgramResponseMapper::map).collect(Collectors.toList()) : null;
 		return WorkflowResponse.builder().message("Success").status(200).data(responses).build();	}
