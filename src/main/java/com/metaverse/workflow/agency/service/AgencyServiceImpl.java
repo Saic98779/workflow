@@ -17,68 +17,70 @@ import org.springframework.stereotype.Service;
 
 import com.metaverse.workflow.agency.repository.AgencyRepository;
 import com.metaverse.workflow.model.Agency;
+
 import static com.metaverse.workflow.common.constants.ProgramStatusConstants.PROGRAM_SCHEDULED;
 
 @Service
-public class AgencyServiceImpl implements AgencyService{
+public class AgencyServiceImpl implements AgencyService {
 
-	@Autowired
-	private AgencyRepository agencyRepository;
+    @Autowired
+    private AgencyRepository agencyRepository;
 
-	@Autowired
-	private ProgramRepository programRepository;
-	
-	@Override
-	public String saveAgency(Agency agency) {
-		Agency registeredAgency = agencyRepository.save(agency);
-		return "AgencyDetails saved With id: "+registeredAgency.getAgencyId();
-	}
+    @Autowired
+    private ProgramRepository programRepository;
 
-	@Override
-	public Agency getAgencyById(Long agencyId) {
-		Optional<Agency> findById = agencyRepository.findById(agencyId);
-		if(findById.isPresent())
-		{
-			return findById.get();
-		}
+    @Override
+    public String saveAgency(Agency agency) {
+        Agency registeredAgency = agencyRepository.save(agency);
+        return "AgencyDetails saved With id: " + registeredAgency.getAgencyId();
+    }
 
-		return null;
-	}
+    @Override
+    public Agency getAgencyById(Long agencyId) {
+        Optional<Agency> findById = agencyRepository.findById(agencyId);
+        if (findById.isPresent()) {
+            return findById.get();
+        }
 
-	public Page<Program> getProgramsByAgencyIdPaginated(Long agencyId, int page, int size) {
-		Pageable pageable = PageRequest.of(page, size);
-		Page<Program> programs = programRepository.findByAgencyAgencyId(agencyId, pageable);
-		return programs;
-	}
+        return null;
+    }
 
-	@Override
-	public WorkflowResponse getAgencies() {
-		List<Agency> agencyList = agencyRepository.findAll();
-		List<AgencyResponse> response = agencyList != null ? agencyList.stream().map(AgencyResponseMapper::map).collect(Collectors.toList()) : null;
-		return WorkflowResponse.builder().message("Success").status(200).data(response).build();
-	}
+    public Page<Program> getProgramsByAgencyIdPaginated(Long agencyId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Program> programs = programRepository.findByAgencyAgencyId(agencyId, pageable);
+        return programs;
+    }
 
-	@Override
-	public List<Agency> getAllAgencies() {
-		return agencyRepository.findAll();
-	}
+    @Override
+    public WorkflowResponse getAgencies() {
+        List<Agency> agencyList = agencyRepository.findAll();
+        List<AgencyResponse> response = agencyList != null ? agencyList.stream().map(AgencyResponseMapper::map).collect(Collectors.toList()) : null;
+        return WorkflowResponse.builder().message("Success").status(200).data(response).build();
+    }
 
-	@Override
-	public WorkflowResponse getProgramByAgencyIdDropDown(Long agencyId) {
-		List<Program> programList = programRepository.findByAgencyAgencyId(agencyId);
-		List<ProgramResponse> responses =programList!= null ? programList.stream().map(ProgramResponseMapper::map).collect(Collectors.toList()) : null ;
-		return WorkflowResponse.builder().message("Success").status(200).data(responses).build();
-	}
+    @Override
+    public List<Agency> getAllAgencies() {
+        return agencyRepository.findAll();
+    }
 
-	@Override
-	public WorkflowResponse getProgramsDistrictsAndAgency(Long id, String district) {
-		List<Program> programList;
-		if(district != null) {
-			programList = programRepository.findByAgency_AgencyIdAndLocation_DistrictAndStatus(id, district, PROGRAM_SCHEDULED);
-		}
-		else {
-			programList = programRepository.findByAgency_AgencyIdAndStatus(id, PROGRAM_SCHEDULED);
-		}
-		List<ProgramResponse> responses = programList != null ? programList.stream().map(ProgramResponseMapper::map).collect(Collectors.toList()) : null;
-		return WorkflowResponse.builder().message("Success").status(200).data(responses).build();	}
+    @Override
+    public WorkflowResponse getProgramByAgencyIdDropDown(Long agencyId) {
+        List<Program> programList = programRepository.findByAgencyAgencyId(agencyId);
+        List<ProgramResponse> responses = programList != null ? programList.stream().map(ProgramResponseMapper::map).collect(Collectors.toList()) : null;
+        return WorkflowResponse.builder().message("Success").status(200).data(responses).build();
+    }
+
+    @Override
+    public WorkflowResponse getProgramsDistrictsAndAgency(Long id, String district) {
+        List<Program> programList;
+        if (district != null) {
+            programList = programRepository.findByAgency_AgencyIdAndLocation_DistrictAndStatus(id, district, PROGRAM_SCHEDULED);
+        } else {
+            programList = programRepository.findByAgency_AgencyIdAndStatus(id, PROGRAM_SCHEDULED);
+        }
+        List<ProgramResponse> responses = programList != null ? programList.stream().map(ProgramResponseMapper::map).collect(Collectors.toList()) : null;
+        if(responses == null)
+            return WorkflowResponse.builder().message("Programs Not found for this Agency").status(200).build();
+        return WorkflowResponse.builder().message("Success").status(200).data(responses).build();
+    }
 }
