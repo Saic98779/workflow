@@ -8,11 +8,17 @@ import com.metaverse.workflow.exceptions.DataException;
 import com.metaverse.workflow.model.Agency;
 import com.metaverse.workflow.model.OtherTrainingBudget;
 import com.metaverse.workflow.model.OtherTrainingExpenditure;
+import com.metaverse.workflow.model.ProgramSessionFile;
 import com.metaverse.workflow.othertrainingbudget.repository.OtherTrainingBudgetRepo;
 import com.metaverse.workflow.othertrainingbudget.repository.OtherTrainingExpenditureRepo;
+import com.metaverse.workflow.program.repository.ProgramSessionFileRepository;
+import com.metaverse.workflow.program.service.ProgramServiceAdapter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,15 +29,34 @@ public class OtherTrainingService {
     private final OtherTrainingExpenditureRepo expenditureRepo;
     private final OtherTrainingBudgetRepo budgetRepo;
     private final AgencyRepository agencyRepo;
+    private final ProgramServiceAdapter programServiceAdapter;
+    private final ProgramSessionFileRepository programSessionFileRepository;
+    private final OtherTrainingExpenditureRepo otherTrainingExpenditure;
 
-    public WorkflowResponse createExpenditure(OtherTrainingExpenditureDTO request) throws DataException {
-
+    public WorkflowResponse createExpenditure(OtherTrainingExpenditureDTO request, MultipartFile file) throws DataException {
+        List<ProgramSessionFile> sessionFiles = new ArrayList<>();
         OtherTrainingBudget trainingBudget = budgetRepo.findById(request.getBudgetId())
                 .orElseThrow(() -> new DataException("Budget Not found for this Id: " + request.getBudgetId(), "BUDGET_HEAD_NOT_FOUND", 400));
 
         OtherTrainingExpenditure expenditure = OtherTrainingMapper.toEntity(request, trainingBudget);
         trainingBudget.addExpenditure(expenditure);
-        budgetRepo.save(trainingBudget);
+        OtherTrainingBudget budgetResponse = budgetRepo.save(trainingBudget);
+        if (file != null && !file.isEmpty()) {
+            List<MultipartFile> files = Collections.singletonList(file);
+            List<String> filePaths = programServiceAdapter.storageProgramFiles(files, request.getBudgetId(), "BudgetHeadFiles");
+            sessionFiles = filePaths.stream()
+                    .map(filePath -> ProgramSessionFile.builder()
+                            .fileType("FILE")
+                            .filePath(filePath)
+                            .otherTrainingBudget(budgetResponse)
+                            .build())
+                    .toList();
+            programSessionFileRepository.saveAll(sessionFiles);
+        }
+        if(!sessionFiles.isEmpty()) {
+            expenditure.setBillPath(sessionFiles.get(0).getFilePath());
+            otherTrainingExpenditure.save(expenditure);
+        }
         return WorkflowResponse.builder()
                 .status(200)
                 .message("Expenditure saved successfully")
@@ -40,8 +65,7 @@ public class OtherTrainingService {
     }
 
 
-    public WorkflowResponse updateExpenditure(Long id, OtherTrainingExpenditureDTO dto) throws DataException {
-
+    public WorkflowResponse updateExpenditure(Long id, MultipartFile file, OtherTrainingExpenditureDTO dto) throws DataException {
         OtherTrainingExpenditure entity = expenditureRepo.findById(id)
                 .orElseThrow(() -> new DataException("Expenditure Not found for this Id:" + id, "EXPENDITURE_NOT_FOUND", 400));
         dto.setDateOfExpenditure(DateUtil.dateToString(entity.getDateOfExpenditure(), "dd-MM-yyyy"));

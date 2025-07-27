@@ -7,8 +7,10 @@ import com.metaverse.workflow.othertrainingbudget.service.OtherTrainingBudgetDTO
 import com.metaverse.workflow.othertrainingbudget.service.OtherTrainingExpenditureDTO;
 import com.metaverse.workflow.othertrainingbudget.service.OtherTrainingService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/other-training")
@@ -18,10 +20,13 @@ public class OtherTrainingController {
     private final OtherTrainingService trainingService;
 
 
-    @PostMapping("/expenditure")
-    public ResponseEntity<?> createExpenditure(@RequestBody OtherTrainingExpenditureDTO request) {
+    @PostMapping(value = "/expenditure")
+    public ResponseEntity<?> createExpenditure(
+            @RequestPart("file") MultipartFile file,
+            @RequestPart("data") OtherTrainingExpenditureDTO request
+    ) {
         try {
-            WorkflowResponse response = trainingService.createExpenditure(request);
+            WorkflowResponse response = trainingService.createExpenditure(request, file);
             return ResponseEntity.ok(response);
         } catch (DataException e) {
             return RestControllerBase.error(e);
@@ -30,9 +35,10 @@ public class OtherTrainingController {
 
 
     @PutMapping("/expenditure/{id}")
-    public ResponseEntity<?> updateExpenditure(@PathVariable Long id, @RequestBody OtherTrainingExpenditureDTO request) {
+    public ResponseEntity<?> updateExpenditure(@PathVariable Long id,   @RequestPart("file") MultipartFile file,
+                                               @RequestPart("data") OtherTrainingExpenditureDTO request) {
         try {
-            WorkflowResponse response = trainingService.updateExpenditure(id, request);
+            WorkflowResponse response = trainingService.updateExpenditure(id, file, request);
             return ResponseEntity.ok(response);
         } catch (DataException e) {
             return RestControllerBase.error(e);
