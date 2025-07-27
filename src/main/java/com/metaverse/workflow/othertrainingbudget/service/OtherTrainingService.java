@@ -8,16 +8,13 @@ import com.metaverse.workflow.exceptions.DataException;
 import com.metaverse.workflow.model.Agency;
 import com.metaverse.workflow.model.OtherTrainingBudget;
 import com.metaverse.workflow.model.OtherTrainingExpenditure;
-import com.metaverse.workflow.model.ProgramSessionFile;
 import com.metaverse.workflow.othertrainingbudget.repository.OtherTrainingBudgetRepo;
 import com.metaverse.workflow.othertrainingbudget.repository.OtherTrainingExpenditureRepo;
-import com.metaverse.workflow.program.repository.ProgramSessionFileRepository;
 import com.metaverse.workflow.program.service.ProgramServiceAdapter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,11 +27,9 @@ public class OtherTrainingService {
     private final OtherTrainingBudgetRepo budgetRepo;
     private final AgencyRepository agencyRepo;
     private final ProgramServiceAdapter programServiceAdapter;
-    private final ProgramSessionFileRepository programSessionFileRepository;
     private final OtherTrainingExpenditureRepo otherTrainingExpenditure;
 
     public WorkflowResponse createExpenditure(OtherTrainingExpenditureDTO request, MultipartFile file) throws DataException {
-        List<ProgramSessionFile> sessionFiles = new ArrayList<>();
         OtherTrainingBudget trainingBudget = budgetRepo.findById(request.getBudgetId())
                 .orElseThrow(() -> new DataException("Budget Not found for this Id: " + request.getBudgetId(), "BUDGET_HEAD_NOT_FOUND", 400));
 
@@ -67,6 +62,14 @@ public class OtherTrainingService {
         dto.setBillNo(entity.getBillNo());
         dto.setBillDate(DateUtil.dateToString(entity.getBillDate(), "dd-MM-yyyy"));
         expenditureRepo.save(entity);
+        if (file != null && !file.isEmpty()) {
+            List<MultipartFile> files = Collections.singletonList(file);
+            List<String> filePaths = programServiceAdapter.storageProgramFiles(files, dto.getBudgetId(), "BudgetHeadFiles");
+            if (!filePaths.isEmpty()) {
+                entity.setBillPath(filePaths.get(0));
+                otherTrainingExpenditure.save(entity);
+            }
+        }
         return WorkflowResponse.builder().status(200).message("Expenditure updated successfully").build();
 
     }
