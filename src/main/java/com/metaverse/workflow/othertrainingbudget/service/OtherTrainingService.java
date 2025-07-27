@@ -40,22 +40,14 @@ public class OtherTrainingService {
 
         OtherTrainingExpenditure expenditure = OtherTrainingMapper.toEntity(request, trainingBudget);
         trainingBudget.addExpenditure(expenditure);
-        OtherTrainingBudget budgetResponse = budgetRepo.save(trainingBudget);
+        budgetRepo.save(trainingBudget);
         if (file != null && !file.isEmpty()) {
             List<MultipartFile> files = Collections.singletonList(file);
             List<String> filePaths = programServiceAdapter.storageProgramFiles(files, request.getBudgetId(), "BudgetHeadFiles");
-            sessionFiles = filePaths.stream()
-                    .map(filePath -> ProgramSessionFile.builder()
-                            .fileType("FILE")
-                            .filePath(filePath)
-                            .otherTrainingBudget(budgetResponse)
-                            .build())
-                    .toList();
-            programSessionFileRepository.saveAll(sessionFiles);
-        }
-        if(!sessionFiles.isEmpty()) {
-            expenditure.setBillPath(sessionFiles.get(0).getFilePath());
-            otherTrainingExpenditure.save(expenditure);
+            if (!filePaths.isEmpty()) {
+                expenditure.setBillPath(filePaths.get(0));
+                otherTrainingExpenditure.save(expenditure);
+            }
         }
         return WorkflowResponse.builder()
                 .status(200)
