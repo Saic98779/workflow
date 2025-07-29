@@ -19,6 +19,7 @@ public class OtherTrainingMapper {
         dto.setBillPath(entity.getBillPath());
         dto.setBillNo(entity.getBillNo());
         dto.setBillDate(DateUtil.dateToString(entity.getBillDate(),"dd-MM-yyyy"));
+        dto.setBudgetId(entity.getOtherTrainingBudget().getBudgetId());
         return dto;
     }
 
