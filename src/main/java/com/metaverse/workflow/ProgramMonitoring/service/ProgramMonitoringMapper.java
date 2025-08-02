@@ -76,6 +76,7 @@ public class ProgramMonitoringMapper {
                 .relevantExperience(request.getRelevantExperience())
                 .overallObservation(request.getOverallObservation())
                 .screen1Score(screen1Score)
+                .bestPracticesIdentified(request.getBestPracticesIdentified())
                 .build();
     }
 
@@ -135,6 +136,7 @@ public class ProgramMonitoringMapper {
                 .overallObservation(monitoringFeedBack.getOverallObservation())
                 .submittedBy(monitoringFeedBack.getUser() != null ? monitoringFeedBack.getUser().getFirstName() + monitoringFeedBack.getUser().getLastName() : null)
                 .totalScore(monitoringFeedBack.getTotalScore())
+                .bestPracticesIdentified(monitoringFeedBack.getBestPracticesIdentified())
                 .build();
     }
 
@@ -250,14 +252,14 @@ public class ProgramMonitoringMapper {
             }
             case 5 -> {
                 int screen5Score = 0;
-                screen5Score += getScore(request.getVenueQuality());
-                screen5Score += getScore(request.getAccessibility());
-                screen5Score += getScore(request.getTeaSnacks());
-                screen5Score += getScore(request.getLunch());
-                screen5Score += getScore(request.getCannedWater());
-                screen5Score += getScore(request.getToiletHygiene());
-                screen5Score += getScore(request.getAvEquipment());
-                screen5Score += getScore(request.getStationary());
+                if (Boolean.TRUE.equals(request.getVenueQuality())) screen5Score += 2;
+                if (Boolean.TRUE.equals(request.getAccessibility())) screen5Score += 2;
+                if (Boolean.TRUE.equals(request.getTeaSnacks())) screen5Score += 2;
+                if (Boolean.TRUE.equals(request.getLunch())) screen5Score += 2;
+                if (Boolean.TRUE.equals(request.getCannedWater())) screen5Score += 2;
+                if (Boolean.TRUE.equals(request.getToiletHygiene())) screen5Score += 2;
+                if (Boolean.TRUE.equals(request.getAvEquipment())) screen5Score += 2;
+                if (Boolean.TRUE.equals(request.getStationary())) screen5Score += 2;
 
                 entity.setScreen5Score(screen5Score);
                 entity.setVenueQuality(request.getVenueQuality());
@@ -302,6 +304,7 @@ public class ProgramMonitoringMapper {
             }
             case 8 -> {
                 entity.setOverallObservation(request.getOverallObservation());
+                entity.setBestPracticesIdentified(request.getBestPracticesIdentified());
             }
             default -> {
                 throw new DataException("Invalid step number: " + stepNumber, "INVALID_STEP_NUMBER", 406);

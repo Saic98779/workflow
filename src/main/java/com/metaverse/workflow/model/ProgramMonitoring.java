@@ -61,14 +61,14 @@ public class ProgramMonitoring {
     private Boolean sessionContinuity2;
     private Boolean participantInteraction2;
 
-    private String venueQuality;
-    private String accessibility;
-    private String teaSnacks;
-    private String lunch;
-    private String cannedWater;
-    private String toiletHygiene;
-    private String avEquipment;
-    private String stationary;
+    private Boolean venueQuality;
+    private Boolean accessibility;
+    private Boolean teaSnacks;
+    private Boolean lunch;
+    private Boolean cannedWater;
+    private Boolean toiletHygiene;
+    private Boolean avEquipment;
+    private Boolean stationary;
 
     private Boolean relevant;
     private Boolean enthusiast;
@@ -98,5 +98,5 @@ public class ProgramMonitoring {
     private Integer screen5Score;
     private Integer screen6Score;
     private Integer screen7Score;
-
+    private List<String> bestPracticesIdentified;
 }
