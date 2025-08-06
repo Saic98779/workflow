@@ -98,5 +98,12 @@ public class ProgramMonitoring {
     private Integer screen5Score;
     private Integer screen6Score;
     private Integer screen7Score;
+
+    @ElementCollection
+    @CollectionTable(
+            name = "best_practices_identified",
+            joinColumns = @JoinColumn(name = "program_monitoring_id")
+    )
+    @Column(name = "best_practices_identified")
     private List<String> bestPracticesIdentified;
 }
