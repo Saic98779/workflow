@@ -53,6 +53,17 @@ public interface ProgramRepository extends JpaRepository<Program, Long> {
     List<Program> findByAgency_AgencyIdAndStatus(Long id, String participantsAdded);
     default Page<Program> findByAgencyAgencyStatusId(Long agencyId, Pageable pageable, String status) {
         Date today = new Date();
+        if(agencyId == -1) {
+            return switch (status) {
+                case "programsScheduled" -> findProgramScheduled(pageable);
+                case "programsInProcess" -> findProgramInProcess(today, pageable);
+                case "programsCompleted" -> findProgramsCompleted(today, pageable);
+                case "programsCompletedDataPending" -> findProgramsCompletedDataPending( today, pageable);
+                case "programsOverdue" -> findProgramOverDue(today, pageable);
+                case "programsYetToBegin" -> findProgramYetToBegin(today, pageable);
+                default -> Page.empty(pageable);
+            };
+        }
         return switch (status) {
             case "programsScheduled" -> findProgramScheduled(agencyId, today, pageable);
             case "programsInProcess" -> findProgramInProcess(agencyId, today, pageable);
@@ -81,5 +92,23 @@ public interface ProgramRepository extends JpaRepository<Program, Long> {
 
     @Query("SELECT p FROM Program p WHERE p.agency.agencyId = :agencyId AND p.startDate > :today")
     Page<Program> findProgramYetToBegin(@Param("agencyId") Long agencyId, @Param("today") Date today, Pageable pageable);
+
+    @Query("SELECT p FROM Program p")
+    Page<Program> findProgramScheduled(Pageable pageable);
+
+    @Query("SELECT p FROM Program p WHERE  p.startDate <= :today AND p.endDate >= :today")
+    Page<Program> findProgramInProcess(@Param("today") Date today, Pageable pageable);
+
+    @Query("SELECT p FROM Program p WHERE p.endDate < :today AND LOWER(p.status) = LOWER('Program Expenditure Updated')")
+    Page<Program> findProgramsCompleted(@Param("today") Date today, Pageable pageable);
+
+    @Query("SELECT p FROM Program p WHERE  p.endDate < :today AND p.status <> 'Program Expenditure Updated' AND p.participants IS NOT EMPTY")
+    Page<Program> findProgramsCompletedDataPending(@Param("today") Date today, Pageable pageable);
+
+    @Query("SELECT p FROM Program p WHERE p.endDate < :today AND p.status <> 'Program Expenditure Updated' AND p.participants IS EMPTY")
+    Page<Program> findProgramOverDue(@Param("today") Date today, Pageable pageable);
+
+    @Query("SELECT p FROM Program p WHERE  p.startDate > :today")
+    Page<Program> findProgramYetToBegin(@Param("today") Date today, Pageable pageable);
 
 }

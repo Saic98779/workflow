@@ -154,9 +154,7 @@ public class AgencyController {
     ) {
 
         Pageable pageable = PageRequest.of(page, size, getSortOrder(sort));
-        Page<Program> programPage = (id == -1)
-                ? programRepository.findAll(pageable)
-                : programRepository.findByAgencyAgencyStatusId(id, pageable,status);
+        Page<Program> programPage = programRepository.findByAgencyAgencyStatusId(id, pageable,status);
 
         for (Program program : programPage) {
             List<ProgramSession> sessions = program.getProgramSessionList();
