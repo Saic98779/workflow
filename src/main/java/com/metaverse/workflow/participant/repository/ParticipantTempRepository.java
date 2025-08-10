@@ -7,17 +7,19 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
+
 public interface ParticipantTempRepository extends JpaRepository<ParticipantTemp, Long> {
     Page<ParticipantTemp> findByPrograms_Agency_AgencyId(Long agencyId, Pageable pageable);
 
     @Query("SELECT p FROM ParticipantTemp p JOIN p.programs pr WHERE pr.programId = :programId")
     Page<ParticipantTemp> findByProgramId(Long programId, Pageable pageable);
 
-    Page<ParticipantTemp> findByHasErrorTrueAndIsDeletedFalse(Pageable pageable);
+    List<ParticipantTemp> findByHasErrorTrueAndIsDeletedFalse();
 
-    Page<ParticipantTemp> findByIsDeletedFalse(Pageable pageable);
+    List<ParticipantTemp> findByIsDeletedFalse();
 
-    Page<ParticipantTemp> findByPrograms_Agency_AgencyIdAndIsDeletedFalse(Long agencyId, Pageable pageable);
+    List<ParticipantTemp> findByPrograms_Agency_AgencyIdAndIsDeletedFalse(Long agencyId);
 
-    Page<ParticipantTemp> findByPrograms_ProgramIdAndIsDeletedFalse(Long programId, Pageable pageable);
+    List<ParticipantTemp> findByPrograms_ProgramIdAndIsDeletedFalse(Long programId);
 }

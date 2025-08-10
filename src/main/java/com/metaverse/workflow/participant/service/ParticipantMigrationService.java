@@ -6,9 +6,6 @@ import com.metaverse.workflow.participant.repository.ParticipantRepository;
 import com.metaverse.workflow.participant.repository.ParticipantTempRepository;
 import com.metaverse.workflow.program.service.ProgramResponseMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +19,8 @@ public class ParticipantMigrationService {
 
     private final ParticipantTempRepository participantTempRepository;
     private final ParticipantRepository participantRepository;
+    private final ParticipantTempResponseMapper responseMapper;
+
 
     @Transactional
     public Map<String, List<?>> migrateParticipants(List<Long> tempIds) {
@@ -70,31 +69,28 @@ public class ParticipantMigrationService {
         participantTempRepository.save(temp);
     }
 
-    public WorkflowResponse getTempProgramParticipants(Long id, Long agencyId, int page, int size, Boolean failed) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<ParticipantTemp> participantPage;
+    public WorkflowResponse getTempProgramParticipants(Long id, Long agencyId, Boolean failed) {
+        List<ParticipantTemp> participantTempList;
 
         if (failed != null && failed) {
             // Fetch only records with error and not deleted
-            participantPage = participantTempRepository.findByHasErrorTrueAndIsDeletedFalse(pageable);
+            participantTempList = participantTempRepository.findByHasErrorTrueAndIsDeletedFalse();
         } else {
             // Normal logic with isDeleted = false filter added
             if (id == -1) {
-                participantPage = participantTempRepository.findByIsDeletedFalse(pageable);
+                participantTempList = participantTempRepository.findByIsDeletedFalse();
             } else if (agencyId != null) {
-                participantPage = participantTempRepository.findByPrograms_Agency_AgencyIdAndIsDeletedFalse(agencyId, pageable);
+                participantTempList = participantTempRepository.findByPrograms_Agency_AgencyIdAndIsDeletedFalse(agencyId);
             } else {
-                participantPage = participantTempRepository.findByPrograms_ProgramIdAndIsDeletedFalse(id, pageable);
+                participantTempList = participantTempRepository.findByPrograms_ProgramIdAndIsDeletedFalse(id);
             }
         }
 
-        List<ParticipantResponse> response = ProgramResponseMapper.mapProgramTempParticipants(participantPage.getContent());
+        List<ParticipantResponse> response = ProgramResponseMapper.mapProgramTempParticipants(participantTempList);
         return WorkflowResponse.builder()
                 .status(200)
                 .message("Success")
                 .data(response)
-                .totalElements(participantPage.getTotalElements())
-                .totalPages(participantPage.getTotalPages())
                 .build();
     }
 
@@ -158,6 +154,35 @@ public class ParticipantMigrationService {
         org.setGramaPanchayat(orgTemp.getGramaPanchayat());
 
         return org;
+    }
+
+
+    public ParticipantTempResponse updateParticipantTemp(Long id, ParticipantTempUpdateRequest req) {
+        ParticipantTemp entity = participantTempRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("ParticipantTemp not found with id " + id));
+
+        if (req.getParticipantName() != null) entity.setParticipantName(req.getParticipantName());
+        if (req.getGender() != null) entity.setGender(req.getGender());
+        if (req.getCategory() != null) entity.setCategory(req.getCategory());
+        if (req.getDisability() != null) entity.setDisability(req.getDisability());
+        if (req.getAadharNo() != null) entity.setAadharNo(req.getAadharNo());
+        if (req.getMobileNo() != null) entity.setMobileNo(req.getMobileNo());
+        if (req.getEmail() != null) entity.setEmail(req.getEmail());
+        if (req.getDesignation() != null) entity.setDesignation(req.getDesignation());
+        if (req.getIsParticipatedBefore() != null) entity.setIsParticipatedBefore(req.getIsParticipatedBefore());
+        if (req.getPreviousParticipationDetails() != null) entity.setPreviousParticipationDetails(req.getPreviousParticipationDetails());
+        if (req.getPreTrainingAssessmentConducted() != null) entity.setPreTrainingAssessmentConducted(req.getPreTrainingAssessmentConducted());
+        if (req.getPostTrainingAssessmentConducted() != null) entity.setPostTrainingAssessmentConducted(req.getPostTrainingAssessmentConducted());
+        if (req.getIsCertificateIssued() != null) entity.setIsCertificateIssued(req.getIsCertificateIssued());
+        if (req.getCertificateIssueDate() != null) entity.setCertificateIssueDate(req.getCertificateIssueDate());
+        if (req.getNeedAssessmentMethodology() != null) entity.setNeedAssessmentMethodology(req.getNeedAssessmentMethodology());
+        if (req.getHasError() != null) entity.setHasError(req.getHasError());
+        if (req.getErrorMessage() != null) entity.setErrorMessage(req.getErrorMessage());
+        if (req.getIsDeleted() != null) entity.setIsDeleted(req.getIsDeleted());
+
+        ParticipantTemp savedEntity = participantTempRepository.save(entity);
+
+        return responseMapper.convertToEntity(savedEntity);
     }
 }
 
