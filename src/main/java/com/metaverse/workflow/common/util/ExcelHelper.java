@@ -85,19 +85,19 @@ public class ExcelHelper {
                     Organization organization = existingOrganizations.get(0);
                     ParticipantTemp tempParticipant = parseTempParticipant(currentRow, organization, programId);
                     tempParticipants.add(tempParticipant);
-
-                    Map<String, String> record = new HashMap<>();
-                    record.put("participantName", getCellValue(currentRow, 0));
-                    record.put("organizationName", organizationName);
-                    record.put("reason", "Organization already exists, stored in OrganizationTemp");
-                    notStoredRecords.add(record);
+//
+//                    Map<String, String> record = new HashMap<>();
+//                    record.put("participantName", getCellValue(currentRow, 0));
+//                    record.put("organizationName", organizationName);
+//                    record.put("reason", "Organization already exists, stored in OrganizationTemp");
+//                    notStoredRecords.add(record);
                 } else {
                     Organization newOrg = createOrganizationFromRow(currentRow);
                     organizationRepository.save(newOrg);
                     organizationCache.put(organizationName.toLowerCase() + "::" + organizationType, newOrg);
 
-                    Participant participant = parseParticipant(currentRow, programId, newOrg);
-                    participants.add(participant);
+                    ParticipantTemp tempParticipant = parseTempParticipant(currentRow, newOrg, programId);
+                    tempParticipants.add(tempParticipant);
                 }
 
                 if ((participants.size() + tempParticipants.size()) % batchSize == 0) {

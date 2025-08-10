@@ -29,4 +29,6 @@ public interface ParticipantRepository extends JpaRepository<Participant, Long> 
     List<Participant> findByPrograms_ProgramId(Long programId);
 
     Page<Participant> findByPrograms_Agency_AgencyId(Long agencyId, Pageable pageable);
+
+    boolean existsByParticipantNameAndOrganization_OrganizationName(String participantName, String s);
 }

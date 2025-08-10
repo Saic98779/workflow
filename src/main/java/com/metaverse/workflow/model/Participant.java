@@ -51,7 +51,7 @@ public class Participant {
 	private Date certificateIssueDate;
 	@Column(name = "need_assessment_methodology")
 	private String needAssessmentMethodology;
-	@ManyToOne(cascade = CascadeType.ALL,targetEntity = Organization.class)
+	@ManyToOne(cascade = CascadeType.PERSIST,targetEntity = Organization.class)
 	@JoinColumn(name = "organization_id",referencedColumnName = "organization_id")
 	private Organization organization;
 	@ManyToMany

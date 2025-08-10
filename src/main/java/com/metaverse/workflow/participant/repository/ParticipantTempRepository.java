@@ -12,4 +12,12 @@ public interface ParticipantTempRepository extends JpaRepository<ParticipantTemp
 
     @Query("SELECT p FROM ParticipantTemp p JOIN p.programs pr WHERE pr.programId = :programId")
     Page<ParticipantTemp> findByProgramId(Long programId, Pageable pageable);
+
+    Page<ParticipantTemp> findByHasErrorTrueAndIsDeletedFalse(Pageable pageable);
+
+    Page<ParticipantTemp> findByIsDeletedFalse(Pageable pageable);
+
+    Page<ParticipantTemp> findByPrograms_Agency_AgencyIdAndIsDeletedFalse(Long agencyId, Pageable pageable);
+
+    Page<ParticipantTemp> findByPrograms_ProgramIdAndIsDeletedFalse(Long programId, Pageable pageable);
 }

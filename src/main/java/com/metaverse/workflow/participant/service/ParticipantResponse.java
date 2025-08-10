@@ -37,5 +37,7 @@ public class ParticipantResponse {
 	private String mandal;
 	private String nameOfVO;
 	private List<String> sectorList;
-
+	private Boolean hasError;
+	private String errorMessage;
+	private Boolean isDeleted;
 }

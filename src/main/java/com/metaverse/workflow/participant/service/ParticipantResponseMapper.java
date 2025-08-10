@@ -66,6 +66,9 @@ public class ParticipantResponseMapper {
 				.mandal(participant.getOrganizationTemp() != null ? CommonUtil.districtMap.get( Integer.valueOf(participant.getOrganizationTemp().getMandal())) : null)
 				.nameOfVO(participant.getOrganizationTemp() != null ? participant.getOrganizationTemp().getNameOfTheVO() : null)
 				.sectorList(participant.getOrganizationTemp() != null ? participant.getOrganizationTemp().getSectors().stream().map(Sector::getSectorName).toList() : null)
+				.isDeleted(participant.getIsDeleted())
+				.errorMessage(participant.getErrorMessage())
+				.hasError(participant.getHasError())
 				.build();
 	}
 

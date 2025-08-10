@@ -57,6 +57,10 @@ public class ParticipantTemp {
             inverseJoinColumns = @JoinColumn(name = "program_id")
     )
     private List<Program> programs = new ArrayList<>();
+    private Boolean hasError = false;
+    private String errorMessage;
+    @Column(name = "is_deleted")
+    private Boolean isDeleted = false;
     @Column(name = "created_on",insertable = true,updatable = false)
     @CreationTimestamp
     private Date createdOn;

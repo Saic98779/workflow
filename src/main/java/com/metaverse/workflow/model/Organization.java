@@ -79,7 +79,7 @@ public class Organization {
     @Column(name="grama_panchayat")
     private String gramaPanchayat;
     @OneToMany(targetEntity = Participant.class,cascade = CascadeType.ALL,mappedBy = "organization")
-    @Column(name = "participants")
+//    @Column(name = "participants")
     private List<Participant> participants;
     @Column(name="created_on",insertable = true,updatable = false)
     @CreationTimestamp
