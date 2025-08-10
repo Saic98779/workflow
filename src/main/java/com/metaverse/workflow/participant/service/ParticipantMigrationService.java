@@ -5,6 +5,7 @@ import com.metaverse.workflow.model.*;
 import com.metaverse.workflow.participant.repository.ParticipantRepository;
 import com.metaverse.workflow.participant.repository.ParticipantTempRepository;
 import com.metaverse.workflow.program.service.ProgramResponseMapper;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -183,6 +184,13 @@ public class ParticipantMigrationService {
         ParticipantTemp savedEntity = participantTempRepository.save(entity);
 
         return responseMapper.convertToEntity(savedEntity);
+    }
+
+    public void deleteById(Long id) {
+        if (!participantTempRepository.existsById(id)) {
+            throw new EntityNotFoundException("ParticipantTemp with id " + id + " not found");
+        }
+        participantTempRepository.deleteById(id);
     }
 }
 

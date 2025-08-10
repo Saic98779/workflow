@@ -43,5 +43,10 @@ public class ParticipantMigrationController {
         return ResponseEntity.ok(updated);
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteParticipantTemp(@PathVariable Long id) {
+        migrationService.deleteById(id);
+        return ResponseEntity.ok("ParticipantTemp with ID " + id + " deleted successfully");
+    }
 }
 
