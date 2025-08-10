@@ -1,12 +1,12 @@
 package com.metaverse.workflow.participant.service;
 
 import com.metaverse.workflow.model.ParticipantTemp;
-import org.mapstruct.Mapper;
+import org.springframework.stereotype.Service;
 
-@Mapper(componentModel = "spring")
-public interface ParticipantTempResponseMapper {
+@Service
+public class ParticipantTempResponseMapper {
 
-    default ParticipantTempResponse convertToEntity(ParticipantTemp dto) {
+    ParticipantTempResponse convertToEntity(ParticipantTemp dto) {
         ParticipantTempResponse entity = new ParticipantTempResponse();
         entity.setParticipantName(dto.getParticipantName());
         entity.setGender(dto.getGender());
