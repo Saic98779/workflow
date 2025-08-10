@@ -7,6 +7,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
+
 public interface ParticipantTempRepository extends JpaRepository<ParticipantTemp, Long> {
     Page<ParticipantTemp> findByPrograms_Agency_AgencyId(Long agencyId, Pageable pageable);
 
@@ -20,4 +22,6 @@ public interface ParticipantTempRepository extends JpaRepository<ParticipantTemp
     Page<ParticipantTemp> findByPrograms_Agency_AgencyIdAndIsDeletedFalse(Long agencyId, Pageable pageable);
 
     Page<ParticipantTemp> findByPrograms_ProgramIdAndIsDeletedFalse(Long programId, Pageable pageable);
+
+    List<ParticipantTemp> findByPrograms_ProgramIdAndIsDeletedFalse(Long programId);
 }
