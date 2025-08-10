@@ -46,6 +46,7 @@ public class FileGeneratorController {
     private final GenerateCombinedExpenditureExcel combinedExpenditureExcel;
     private final GenerateProgramAllDataExcel generateProgramAllDataExcel;
     private final GenerateProgramAllDataExcelSheets programAllDataExcelSheets;
+    private final ParticipantTempExcel generateParticipantTempExcel;
 
     @GetMapping(value = "/program/pdf/{agencyId}", produces = MediaType.APPLICATION_PDF_VALUE)
     public ResponseEntity<InputStreamResource> generatePdfReport(HttpServletResponse response, @PathVariable Long agencyId) throws IOException {
@@ -241,5 +242,11 @@ public class FileGeneratorController {
         programAllDataExcelSheets.generateProgramsExcel(response);
     }
 
+    @GetMapping("/ParticipantTemp/excel/sheets/{programId}")
+    public void exportParticipantTempDetailsExcelSheets(HttpServletResponse response,@PathVariable Long programId) throws IOException, DataException {
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setHeader("Content-Disposition", "attachment; filename=Participant_Details.xlsx");
+        generateParticipantTempExcel.generateParticipantTempExcel(response,programId);
+    }
 
 }

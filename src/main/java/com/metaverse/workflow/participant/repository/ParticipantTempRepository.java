@@ -21,5 +21,7 @@ public interface ParticipantTempRepository extends JpaRepository<ParticipantTemp
 
     List<ParticipantTemp> findByPrograms_Agency_AgencyIdAndIsDeletedFalse(Long agencyId);
 
+    Page<ParticipantTemp> findByPrograms_ProgramIdAndIsDeletedFalse(Long programId, Pageable pageable);
+
     List<ParticipantTemp> findByPrograms_ProgramIdAndIsDeletedFalse(Long programId);
 }
