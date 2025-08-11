@@ -24,4 +24,7 @@ public interface ParticipantTempRepository extends JpaRepository<ParticipantTemp
     Page<ParticipantTemp> findByPrograms_ProgramIdAndIsDeletedFalse(Long programId, Pageable pageable);
 
     List<ParticipantTemp> findByPrograms_ProgramIdAndIsDeletedFalse(Long programId);
+
+    @Query("SELECT p.participantTempId FROM ParticipantTemp p JOIN p.programs pr WHERE pr.programId = :programId")
+    List<Long> findParticipantTempIdsByProgramId(Long programId);
 }

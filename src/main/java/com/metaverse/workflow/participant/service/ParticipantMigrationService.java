@@ -27,8 +27,12 @@ public class ParticipantMigrationService {
     public Map<String, List<?>> migrateParticipants(List<Long> tempIds) {
         List<Long> successes = new ArrayList<>();
         List<String> errors = new ArrayList<>();
-
-        for (Long tempId : tempIds) {
+        if (tempIds == null || tempIds.isEmpty()) {
+            errors.add("No participant IDs provided for migration.");
+            return Map.of("successes", successes, "errors", errors);
+        }
+        List<Long> existingTempIds = participantTempRepository.findParticipantTempIdsByProgramId(tempIds.get(0));
+        for (Long tempId : existingTempIds) {
             participantTempRepository.findById(tempId).ifPresentOrElse(temp -> {
                 try {
                     String orgName = temp.getOrganizationTemp() != null
