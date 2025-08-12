@@ -1,5 +1,6 @@
 package com.metaverse.workflow.program.service;
 
+import com.metaverse.workflow.ProgramMonitoring.repository.ProgramMonitoringRepo;
 import com.metaverse.workflow.activity.repository.ActivityRepository;
 import com.metaverse.workflow.activity.repository.SubActivityRepository;
 import com.metaverse.workflow.agency.repository.AgencyRepository;
@@ -106,6 +107,9 @@ public class ProgramServiceAdapter implements ProgramService {
     @PersistenceContext
     private EntityManager em;
 
+    @Autowired
+    private ProgramMonitoringRepo programMonitoringRepo;
+
     @Override
     public WorkflowResponse createProgram(ProgramRequest request) {
         Optional<Location> location = null;
@@ -170,6 +174,7 @@ public class ProgramServiceAdapter implements ProgramService {
         response = ProgramResponseMapper.mapProgramParticipants(participantPage.getContent());
         return WorkflowResponse.builder().status(200).message("Success").data(response).totalElements(participantPage.getTotalElements()).totalPages(participantPage.getTotalPages()).build();
     }
+
     @Override
     public WorkflowResponse getTempProgramParticipants(Long id, Long agencyId, int page, int size) {
         Pageable pageable;
@@ -445,8 +450,13 @@ public class ProgramServiceAdapter implements ProgramService {
 
         Program program = programRepository.findById(programId)
                 .orElseThrow(() -> new DataException("Program data not found", "PROGRAM-DATA-NOT-FOUND", 400));
-
-        return WorkflowResponse.builder().status(200).message("Success").data(ProgramSummeryMapper.map(program)).build();
+        List<ProgramMonitoring> monitoringList = programMonitoringRepo.findByProgramId(programId);
+        double monitoringScore = monitoringList.stream().mapToDouble(ProgramMonitoring::getTotalScore).sum();
+        return WorkflowResponse.builder()
+                .status(200)
+                .message("Success")
+                .data(ProgramSummeryMapper.map(program,(monitoringScore /monitoringList.size() )))
+                .build();
     }
 
     @Override

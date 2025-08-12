@@ -4,7 +4,7 @@ import com.metaverse.workflow.common.util.DateUtil;
 import com.metaverse.workflow.model.Program;
 
 public class ProgramSummeryMapper {
-    public static ProgramSummary map(Program program) {
+    public static ProgramSummary map(Program program,Double monitoringScore) {
         return ProgramSummary.builder()
                 .programName(program.getProgramTitle())
                 .agencyName(program.getAgency().getAgencyName())
@@ -77,6 +77,7 @@ public class ProgramSummeryMapper {
                                 .filter(participant -> "Department".equalsIgnoreCase(participant.getOrganization().getOrganizationType()))
                                 .count()
                 )
+                .monitoringRating(monitoringScore)
                 .build();
     }
 }
