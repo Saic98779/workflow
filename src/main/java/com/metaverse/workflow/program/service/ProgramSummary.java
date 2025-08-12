@@ -28,5 +28,6 @@ public class ProgramSummary {
     private  Long noOfStartups;
     private  Long noOfDepartment;
     private  Long noOfAspirants;
+    private Double monitoringRating;
 
 }
