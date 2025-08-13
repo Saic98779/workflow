@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ParticipantTempRepository extends JpaRepository<ParticipantTemp, Long> {
     Page<ParticipantTemp> findByPrograms_Agency_AgencyId(Long agencyId, Pageable pageable);
@@ -25,6 +26,8 @@ public interface ParticipantTempRepository extends JpaRepository<ParticipantTemp
 
     List<ParticipantTemp> findByPrograms_ProgramIdAndIsDeletedFalse(Long programId);
 
-    @Query("SELECT p.participantTempId FROM ParticipantTemp p JOIN p.programs pr WHERE pr.programId = :programId")
+    @Query("SELECT p.participantTempId FROM ParticipantTemp p JOIN p.programs pr WHERE pr.programId = :programId AND p.isDeleted = false")
     List<Long> findParticipantTempIdsByProgramId(Long programId);
+
+    ParticipantTemp findByParticipantTempId(Long id);
 }

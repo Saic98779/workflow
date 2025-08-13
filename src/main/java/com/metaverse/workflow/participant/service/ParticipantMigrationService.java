@@ -163,8 +163,7 @@ public class ParticipantMigrationService {
 
 
     public ParticipantTempResponse updateParticipantTemp(Long id, ParticipantTempUpdateRequest req) {
-        ParticipantTemp entity = participantTempRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("ParticipantTemp not found with id " + id));
+        ParticipantTemp entity = participantTempRepository.findByParticipantTempId(id);
 
         if (req.getParticipantName() != null) entity.setParticipantName(req.getParticipantName());
         if (req.getGender() != null) entity.setGender(req.getGender());
@@ -190,11 +189,13 @@ public class ParticipantMigrationService {
         return responseMapper.convertToEntity(savedEntity);
     }
 
+    @Transactional
     public void deleteById(Long id) {
         if (!participantTempRepository.existsById(id)) {
             throw new EntityNotFoundException("ParticipantTemp with id " + id + " not found");
         }
-        participantTempRepository.deleteById(id);
+        ParticipantTemp participantTemp = participantTempRepository.findByParticipantTempId(id);
+        participantTempRepository.delete(participantTemp);
     }
 }
 
