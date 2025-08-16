@@ -194,8 +194,7 @@ public class ParticipantMigrationService {
         if (!participantTempRepository.existsById(id)) {
             throw new EntityNotFoundException("ParticipantTemp with id " + id + " not found");
         }
-        ParticipantTemp participantTemp = participantTempRepository.findByParticipantTempId(id);
-        participantTempRepository.delete(participantTemp);
+        participantTempRepository.deleteById(id);
     }
 }
 
