@@ -3,6 +3,8 @@ package com.metaverse.workflow.programoutcometargets.controller;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.common.util.RestControllerBase;
 import com.metaverse.workflow.exceptions.DataException;
+import com.metaverse.workflow.programoutcometargets.dto.FinancialTargetOverAllDTO;
+import com.metaverse.workflow.programoutcometargets.dto.FinancialTargetSummaryDTO;
 import com.metaverse.workflow.programoutcometargets.service.FinancialTargetRequest;
 import com.metaverse.workflow.programoutcometargets.service.PhysicalTargetRequest;
 import com.metaverse.workflow.programoutcometargets.service.TargetService;
@@ -10,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/targets")
@@ -116,4 +120,9 @@ public class TargetController {
         }
     }
 
+    @GetMapping("financial/year/summary")
+    public FinancialTargetOverAllDTO getFinancialTargets(
+            @RequestParam("agencyId") Long agencyId) {
+        return targetService.getFinancialTargetSummary(agencyId);
+    }
 }
