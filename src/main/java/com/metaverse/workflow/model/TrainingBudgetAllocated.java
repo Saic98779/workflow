@@ -37,10 +37,10 @@ public class TrainingBudgetAllocated {
     private SubActivity subActivityId;
 
     @Column(name = "training_target")
-    private Long trainingTarget;
+    private Long trainingTarget; // training target
 
     @Column(name="budget_allocated")
-    private Double budgetAllocated;
+    private Double budgetAllocated; //financical target
 
     @CreationTimestamp
     @Column(name = "created_on", updatable = false)
