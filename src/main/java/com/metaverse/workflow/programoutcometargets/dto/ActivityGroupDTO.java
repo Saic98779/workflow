@@ -6,13 +6,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
-import java.util.Map;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
-public class FinancialTargetOverAllDTO {
-   private String overallTarget;
-   private Map<String, ActivityGroupDTO> groupedFinancialTargets;
+public class ActivityGroupDTO {
+    private List<String> financialYearHeaders;
+    private List<FinancialTargetSummaryDTO> financialYears;
 }
