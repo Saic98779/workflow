@@ -5,11 +5,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.Map;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class FinancialTargetOverAllDTO {
    private String overallTarget;
-   private List<FinancialTargetSummaryDTO> financialTargetSummaryDTO;
+   private Map<String, List<FinancialTargetSummaryDTO>> groupedFinancialTargets;
 }

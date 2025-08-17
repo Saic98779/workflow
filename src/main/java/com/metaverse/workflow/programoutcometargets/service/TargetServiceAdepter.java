@@ -191,12 +191,14 @@ public class TargetServiceAdepter implements TargetService {
 
     public FinancialTargetOverAllDTO getFinancialTargetSummary(Long agencyId) {
         FinancialTargetOverAllDTO dto = new FinancialTargetOverAllDTO();
+
+        // Convert rows to DTOs
         List<FinancialTargetSummaryDTO> collect = financialRepository.getFinancialTargetSummary(agencyId)
                 .stream()
                 .map(row -> new FinancialTargetSummaryDTO(
                         ((Number) row[0]).longValue(),
-                        (String) row[1],
-                        (String) row[2],
+                        (String) row[1],   // maybe year?
+                        (String) row[2],   // activityName
                         (String) row[3],
                         row[4] != null ? ((Number) row[4]).doubleValue() : null,
                         row[5] != null ? ((Number) row[5]).doubleValue() : null,
@@ -204,12 +206,24 @@ public class TargetServiceAdepter implements TargetService {
                         row[7] != null ? ((Number) row[7]).doubleValue() : null,
                         row[8] != null ? ((Number) row[8]).doubleValue() : null
                 ))
-                .collect(Collectors.toList());
-        dto.setFinancialTargetSummaryDTO(collect);
-        Double l =0.0;
-        for (FinancialTargetSummaryDTO f:  collect)
-            l+=f.getYearlyTarget();
-        dto.setOverallTarget(l+"");
+                .toList();
+
+        // Group by activityName
+        Map<String, List<FinancialTargetSummaryDTO>> groupedByActivity =
+                collect.stream().collect(Collectors.groupingBy(FinancialTargetSummaryDTO::getActivityName));
+
+        // Set grouped result inside DTO
+        dto.setGroupedFinancialTargets(groupedByActivity);
+
+        // Overall Target (sum of yearlyTarget)
+        Double overall = collect.stream()
+                .map(FinancialTargetSummaryDTO::getYearlyTarget)
+                .filter(Objects::nonNull)
+                .reduce(0.0, Double::sum);
+
+        dto.setOverallTarget(String.valueOf(overall));
+
         return dto;
     }
+
 }
