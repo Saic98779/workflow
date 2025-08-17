@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/TrainingAndNonTrainingProgram")
+@RequestMapping("/training-non-training/monitoring")
 public class TrainingAndNonTrainingProgramMonitoring {
 
     @Autowired
