@@ -15,6 +15,6 @@ public class FinancialTargetSummaryDTO {
     private Double q2;
     private Double q3;
     private Double q4;
-    private Double yearlyTarget;
+    private Double total;
 }
 
