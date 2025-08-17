@@ -14,7 +14,6 @@ import java.util.Date;
 @AllArgsConstructor
 @Builder
 @Table(name = "non_training_expenditure")
-// The NonTrainingExpenditure class represents expenditures related to non-training activities.
 public class NonTrainingExpenditure {
 
     @Id
