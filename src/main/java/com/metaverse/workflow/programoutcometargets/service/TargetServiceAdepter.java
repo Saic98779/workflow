@@ -206,7 +206,6 @@ public class TargetServiceAdepter implements TargetService {
                 ))
                 .collect(Collectors.toList());
 
-        // ✅ Group by activityName
         Map<String, ActivityGroupDTO> grouped = records.stream()
                 .collect(Collectors.groupingBy(
                         FinancialTargetSummaryDTO::getActivityName,
@@ -219,26 +218,21 @@ public class TargetServiceAdepter implements TargetService {
                         })
                 ));
 
-        // ✅ Calculate overall target
         Double total = records.stream()
                 .mapToDouble(f -> f.getTotal() != null ? f.getTotal() : 0.0)
                 .sum();
-
         return FinancialTargetOverAllDTO.builder()
                 .overallTarget(total.toString())
                 .groupedFinancialTargets(grouped)
                 .build();
     }
 
-    // helper to normalize years into "2024-25" format
     private String normalizeFinancialYear(String raw) {
         if (raw == null) return null;
         raw = raw.trim();
         if (raw.matches("\\d{4}-\\d{4}")) {
-            // e.g., 2024-2025 → 2024-25
             return raw.substring(0, 5) + raw.substring(7);
         }
         return raw;
     }
-
 }
