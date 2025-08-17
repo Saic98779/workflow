@@ -191,14 +191,13 @@ public class TargetServiceAdepter implements TargetService {
     }
 
     public FinancialTargetOverAllDTO getFinancialTargetSummary(Long agencyId) {
-        FinancialTargetOverAllDTO dto = new FinancialTargetOverAllDTO();
-        List<FinancialTargetSummaryDTO> collect = financialRepository.getFinancialTargetSummary(agencyId)
+        List<FinancialTargetSummaryDTO> records = financialRepository.getFinancialTargetSummary(agencyId)
                 .stream()
                 .map(row -> new FinancialTargetSummaryDTO(
                         ((Number) row[0]).longValue(),
                         (String) row[1],
                         (String) row[2],
-                        (String) row[3],
+                        normalizeFinancialYear((String) row[3]),
                         row[4] != null ? ((Number) row[4]).doubleValue() : null,
                         row[5] != null ? ((Number) row[5]).doubleValue() : null,
                         row[6] != null ? ((Number) row[6]).doubleValue() : null,
@@ -207,23 +206,27 @@ public class TargetServiceAdepter implements TargetService {
                 ))
                 .collect(Collectors.toList());
 
+        // Group by activity name
         Map<String, ActivityGroupDTO> grouped = records.stream()
                 .collect(Collectors.groupingBy(
                         FinancialTargetSummaryDTO::getActivityName,
                         Collectors.collectingAndThen(Collectors.toList(), list -> {
                             List<String> headers = list.stream()
                                     .map(FinancialTargetSummaryDTO::getFinancialYear)
+                                    .filter(Objects::nonNull)
                                     .distinct()
                                     .collect(Collectors.toList());
                             return new ActivityGroupDTO(headers, list);
                         })
                 ));
 
+        // Calculate overall total
         Double total = records.stream()
                 .mapToDouble(f -> f.getTotal() != null ? f.getTotal() : 0.0)
                 .sum();
+
         return FinancialTargetOverAllDTO.builder()
-                .overallTarget(total.toString())
+                .overallTarget(String.valueOf(total))
                 .groupedFinancialTargets(grouped)
                 .build();
     }
@@ -232,8 +235,9 @@ public class TargetServiceAdepter implements TargetService {
         if (raw == null) return null;
         raw = raw.trim();
         if (raw.matches("\\d{4}-\\d{4}")) {
-            return raw.substring(0, 5) + raw.substring(7);
+            return raw.substring(0, 4) + "-" + raw.substring(7); // Example: "2023-2024" -> "2023-24"
         }
         return raw;
     }
+
 }
