@@ -5,8 +5,6 @@ import com.metaverse.workflow.model.NonTrainingAchievement;
 import com.metaverse.workflow.model.NonTrainingActivity;
 import com.metaverse.workflow.nontraining.dto.NonTrainingProgramDto;
 
-import java.util.List;
-
 public class NonTrainingProgramMapper {
     public static NonTrainingProgramDto trainingProgramDtoMapper(NonTrainingActivity nonTrainingActivity) {
         if (nonTrainingActivity == null || nonTrainingActivity.getAchievements().isEmpty()) {
@@ -16,14 +14,11 @@ public class NonTrainingProgramMapper {
         NonTrainingAchievement ach = nonTrainingActivity.getAchievements().get(0);
 
         Double percentage = null;
-
         if (ach.getFinancialTarget() != null && ach.getFinancialTarget() > 0
                 && ach.getFinancialTargetAchievement() != null) {
 
-            // Convert Target (Crores) → Rupees
-            double targetInRupees = ach.getFinancialTarget() * 10000000; // 1 crore = 1,00,00,000 rupees
+            double targetInRupees = ach.getFinancialTarget() * 10000000;
             double expenditureInRupees = ach.getFinancialTargetAchievement();
-
             percentage = (expenditureInRupees / targetInRupees) * 100;
         }
 
