@@ -13,6 +13,6 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class TrainingAndNonTrainingDto {
-    private List<TrainingProgramDto> trainingProgramDtos;
-    private List<NonTrainingProgramDto> nonTrainingProgramDtos;
+    private List<TrainingProgramDto> trainingPrograms;
+    private List<NonTrainingProgramDto> nonTrainingPrograms;
 }

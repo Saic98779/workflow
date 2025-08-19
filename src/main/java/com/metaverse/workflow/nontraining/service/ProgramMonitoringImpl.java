@@ -17,6 +17,9 @@ public class ProgramMonitoringImpl implements  ProgramMonitoringService{
     @Override
     public TrainingAndNonTrainingDto getAllTrainingAndNonTrainings(Long agencyId) {
         List<NonTrainingActivity> byAgencyAgencyId = nonTrainingActivityRepository.findByAgency_AgencyId(agencyId);
-     return TrainingAndNonTrainingDto.builder().nonTrainingProgramDtos(byAgencyAgencyId.stream().map(NonTrainingProgramMapper::trainingProgramDtoMapper).toList()).build();
+        return TrainingAndNonTrainingDto.builder()
+                        .nonTrainingPrograms(byAgencyAgencyId.stream()
+                        .map(NonTrainingProgramMapper::trainingProgramDtoMapper)
+                        .toList()).build();
     }
 }
