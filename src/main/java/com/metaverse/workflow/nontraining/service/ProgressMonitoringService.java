@@ -4,7 +4,7 @@ import com.metaverse.workflow.nontraining.dto.ProgressMonitoringDto;
 import org.springframework.stereotype.Service;
 
 @Service
-public interface ProgramMonitoringService {
+public interface ProgressMonitoringService {
 
     ProgressMonitoringDto getAllTrainingAndNonTrainings(Long agencyId);
 }
