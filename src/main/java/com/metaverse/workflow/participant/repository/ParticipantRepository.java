@@ -31,4 +31,10 @@ public interface ParticipantRepository extends JpaRepository<Participant, Long> 
     Page<Participant> findByPrograms_Agency_AgencyId(Long agencyId, Pageable pageable);
 
     boolean existsByParticipantNameAndOrganization_OrganizationName(String participantName, String s);
+
+    @Query("SELECT DISTINCT p FROM Participant p " +
+            "JOIN p.programs pr " +
+            "JOIN pr.agency ag " +
+            "WHERE ag.agencyId = :agencyId")
+    List<Participant> findAllByAgencyId(@Param("agencyId") Long agencyId);
 }

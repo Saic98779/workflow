@@ -33,16 +33,16 @@ public class TrainingTarget {
     private String financialYear;
 
     @Column(name = "q1")
-    private Double q1;
+    private Integer q1;
 
     @Column(name = "q2")
-    private Double q2;
+    private Integer q2;
 
     @Column(name = "q3")
-    private Double q3;
+    private Integer q3;
 
     @Column(name = "q4")
-    private Double q4;
+    private Integer q4;
 
     @Column(name="created_on",insertable = true,updatable = false)
     @CreationTimestamp
