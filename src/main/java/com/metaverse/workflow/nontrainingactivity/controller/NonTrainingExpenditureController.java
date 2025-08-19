@@ -5,19 +5,22 @@ import com.metaverse.workflow.nontrainingactivity.service.NonTrainingExpenditure
 import com.metaverse.workflow.nontrainingactivity.service.NonTrainingExpenditureService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/non-training-expenditures")
+@RequestMapping("/non-training-expenditures")
 @RequiredArgsConstructor
 public class NonTrainingExpenditureController {
 
     private final NonTrainingExpenditureService service;
 
     @PostMapping
-    public WorkflowResponse create(@RequestBody NonTrainingExpenditureDTO dto) {
-        return service.create(dto);
+    public WorkflowResponse create(
+            @RequestPart("file") MultipartFile file,
+            @RequestPart NonTrainingExpenditureDTO dto) {
+        return service.create(file, dto);
     }
 
     @GetMapping

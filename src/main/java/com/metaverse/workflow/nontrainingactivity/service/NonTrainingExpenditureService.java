@@ -7,9 +7,12 @@ import com.metaverse.workflow.model.Activity;
 import com.metaverse.workflow.model.Agency;
 import com.metaverse.workflow.model.NonTrainingExpenditure;
 import com.metaverse.workflow.nontrainingactivity.repository.NonTrainingExpenditureRepo;
+import com.metaverse.workflow.program.service.ProgramServiceAdapter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,18 +23,30 @@ public class NonTrainingExpenditureService {
     private final NonTrainingExpenditureRepo repository;
     private final AgencyRepository agencyRepository;
     private final ActivityRepository activityRepository;
+    private final ProgramServiceAdapter programServiceAdapter;
 
-    public WorkflowResponse create(NonTrainingExpenditureDTO dto) {
+
+    public WorkflowResponse create(MultipartFile file, NonTrainingExpenditureDTO dto) {
         Agency agency = agencyRepository.findById(dto.getAgencyId())
                 .orElseThrow(() -> new RuntimeException("Agency not found"));
         Activity activity = activityRepository.findById(dto.getActivityId())
                 .orElseThrow(() -> new RuntimeException("Activity not found"));
 
         NonTrainingExpenditure entity = NonTrainingExpenditureMapper.toEntity(dto, agency, activity);
+        repository.save(entity);
+        if (file != null && !file.isEmpty()) {
+            List<MultipartFile> files = Collections.singletonList(file);
+            List<String> filePaths = programServiceAdapter.storageProgramFiles(files, dto.getId(), "NonTrainingExpenditureFiles");
+            if (!filePaths.isEmpty()) {
+                entity.setUploadBillUrl(filePaths.get(0));
+                entity = repository.save(entity);
+            }
+        }
+
         return WorkflowResponse.builder()
                 .status(200)
                 .message("Success")
-                .data(NonTrainingExpenditureMapper.toDTO(repository.save(entity))).build();
+                .data(NonTrainingExpenditureMapper.toDTO(entity)).build();
     }
 
     public List<NonTrainingExpenditureDTO> getAll() {

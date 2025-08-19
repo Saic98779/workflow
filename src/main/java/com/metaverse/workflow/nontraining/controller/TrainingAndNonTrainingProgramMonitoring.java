@@ -8,13 +8,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/training-non-training/monitoring")
+@RequestMapping("/progress/monitoring")
 public class TrainingAndNonTrainingProgramMonitoring {
 
     @Autowired
     private ProgramMonitoringService programMonitoringService;
 
-    @GetMapping(path = "/program/monitor")
+    @GetMapping
     public ResponseEntity<?> getAgencyProgramMonitor(Long agencyId){
         return ResponseEntity.ok(programMonitoringService.getAllTrainingAndNonTrainings(agencyId));
     }
