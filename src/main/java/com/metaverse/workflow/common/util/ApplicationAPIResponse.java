@@ -18,6 +18,7 @@ public class ApplicationAPIResponse<T> {
     private T data;
     private Object code;
     private String message;
+    private int status;
     private boolean success;
     private LocalDateTime timestamp;
 

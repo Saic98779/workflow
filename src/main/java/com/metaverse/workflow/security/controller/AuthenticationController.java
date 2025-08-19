@@ -1,7 +1,11 @@
 package com.metaverse.workflow.security.controller;
 
+import com.metaverse.workflow.agency.repository.AgencyRepository;
 import com.metaverse.workflow.common.enums.UserRole;
+import com.metaverse.workflow.common.response.WorkflowResponse;
+import com.metaverse.workflow.common.util.ApplicationAPIResponse;
 import com.metaverse.workflow.login.repository.LoginRepository;
+import com.metaverse.workflow.model.Agency;
 import com.metaverse.workflow.model.User;
 import com.metaverse.workflow.security.dto.AuthenticationRequest;
 import com.metaverse.workflow.security.dto.AuthenticationResponse;
@@ -35,38 +39,48 @@ public class AuthenticationController {
     private final LoginRepository loginRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    private final AgencyRepository agencyRepository;
 
     @PostMapping("/register")
     @Operation(summary = "Register a new user")
-    public ResponseEntity<AuthenticationResponse> register(@RequestBody RegisterRequest request) {
+    public ResponseEntity<ApplicationAPIResponse<AuthenticationResponse>> register(@RequestBody RegisterRequest request) {
         log.info("Registering new user with email: {}", request.getEmail());
-        
-        // Check if user already exists
+
         if (loginRepository.findByEmail(request.getEmail()).isPresent()) {
-            log.warn("User with email {} already exists", request.getEmail());
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body(
+                    ApplicationAPIResponse.<AuthenticationResponse>builder()
+                            .status(400)
+                            .message("User with email already exists")
+                            .data(null)
+                            .build()
+            );
         }
 
-        // Create new user
-        User user = User.builder()
+        Optional<Agency> agency = agencyRepository.findById(request.getAgencyId());
+        if (request.getAgencyId() != null && agency.isEmpty()) {
+            return ResponseEntity.badRequest().body(
+                    ApplicationAPIResponse.<AuthenticationResponse>builder()
+                            .status(400)
+                            .message("Invalid Agency")
+                            .data(null)
+                            .build()
+            );
+        }
+
+        User savedUser = loginRepository.save(User.builder()
                 .userId(request.getEmail())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
+                .agency(agency.get())
                 .gender(request.getGender())
                 .mobileNo(request.getMobileNo())
-                .address(request.getAddress())
                 .userRole(request.getUserRole().name())
                 .attempts(0)
                 .status("ACTIVE")
-                .build();
+                .build());
 
-        // Save user
-        User savedUser = loginRepository.save(user);
-        log.info("User registered successfully: {}", savedUser.getEmail());
-
-        // Generate JWT token
         String token = jwtService.generateToken(
                 org.springframework.security.core.userdetails.User.builder()
                         .username(savedUser.getEmail())
@@ -75,25 +89,34 @@ public class AuthenticationController {
                         .build()
         );
 
-        // Return response
+        AuthenticationResponse authResponse = AuthenticationResponse.builder()
+                .token(token)
+                .message("User registered successfully")
+                .userId(savedUser.getUserId())
+                .agencyId(agency.get().getAgencyId())
+                .email(savedUser.getEmail())
+                .firstName(savedUser.getFirstName())
+                .lastName(savedUser.getLastName())
+                .gender(savedUser.getGender())
+                .mobileNo(savedUser.getMobileNo())
+                .userRole(UserRole.valueOf(savedUser.getUserRole()))
+                .agencyName(agency.map(Agency::getAgencyName).orElse(null))
+                .build();
+
         return ResponseEntity.ok(
-                AuthenticationResponse.builder()
-                        .token(token)
-                        .userId(savedUser.getUserId())
-                        .email(savedUser.getEmail())
-                        .firstName(savedUser.getFirstName())
-                        .lastName(savedUser.getLastName())
-                        .userRole(UserRole.valueOf(savedUser.getUserRole()))
+                ApplicationAPIResponse.<AuthenticationResponse>builder()
+                        .status(200)
+                        .message("Success")
+                        .data(authResponse)
                         .build()
         );
     }
 
     @PostMapping("/login")
     @Operation(summary = "Authenticate a user")
-    public ResponseEntity<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest request) {
+    public ResponseEntity<ApplicationAPIResponse<AuthenticationResponse>> authenticate(@RequestBody AuthenticationRequest request) {
         log.info("Authenticating user with email: {}", request.getEmail());
         try {
-            // Authenticate user
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             request.getEmail(),
@@ -101,31 +124,42 @@ public class AuthenticationController {
                     )
             );
 
-            // Get authenticated user
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-            
-            // Get user from database
+
             User user = loginRepository.findByEmail(userDetails.getUsername())
                     .orElseThrow(() -> new RuntimeException("User not found"));
 
-            // Generate JWT token
             String token = jwtService.generateToken(userDetails);
             log.info("User authenticated successfully: {}", user.getEmail());
 
-            // Return response
-            return ResponseEntity.ok(
-                    AuthenticationResponse.builder()
-                            .token(token)
-                            .userId(user.getUserId())
-                            .email(user.getEmail())
-                            .firstName(user.getFirstName())
-                            .lastName(user.getLastName())
-                            .userRole(UserRole.valueOf(user.getUserRole()))
-                            .build()
-            );
+            AuthenticationResponse userData = AuthenticationResponse.builder()
+                    .token(token)
+                    .userId(user.getUserId())
+                    .email(user.getEmail())
+                    .firstName(user.getFirstName())
+                    .lastName(user.getLastName())
+                    .gender(user.getGender())
+                    .mobileNo(user.getMobileNo())
+                    .userRole(UserRole.valueOf(user.getUserRole()))
+                    .build();
+
+            ApplicationAPIResponse<AuthenticationResponse> response = ApplicationAPIResponse.<AuthenticationResponse>builder()
+                    .status(200)
+                    .message("Success")
+                    .data(userData)
+                    .build();
+
+            return ResponseEntity.ok(response);
+
         } catch (Exception e) {
             log.error("Authentication failed for user {}: {}", request.getEmail(), e.getMessage());
-            return ResponseEntity.status(403).build();
+            ApplicationAPIResponse<AuthenticationResponse> errorResponse = ApplicationAPIResponse.<AuthenticationResponse>builder()
+                    .status(403)
+                    .message("Authentication failed")
+                    .data(null)
+                    .build();
+            return ResponseEntity.status(403).body(errorResponse);
         }
     }
+
 }

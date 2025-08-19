@@ -29,7 +29,7 @@ public class ProgramScheduleTracker {
     @Column(name = "previous_date")
     private Date previousDate;
 
-    @Column(name="reason_for_reschedule",length = 1000)
+    @Column(name="reason_for_reschedule",length = 1024)
     private String reasonForReschedule;
 
     @Column(name = "created_on",updatable = false,insertable = true)
