@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/progress/monitoring")
-public class TrainingAndNonTrainingProgramMonitoring {
+public class ProgressMonitoringController {
 
     @Autowired
     private ProgramMonitoringService programMonitoringService;
