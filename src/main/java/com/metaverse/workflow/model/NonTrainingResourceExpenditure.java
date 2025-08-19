@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
+import java.util.Date;
 
 @Data
 @Entity
@@ -32,5 +32,5 @@ public class NonTrainingResourceExpenditure {
     private String paymentForMonth;
 
     @Column(name = "date_of_payment", nullable = false)
-    private LocalDate dateOfPayment;
+    private Date dateOfPayment;
 }
