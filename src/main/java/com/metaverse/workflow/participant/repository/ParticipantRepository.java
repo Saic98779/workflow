@@ -37,4 +37,11 @@ public interface ParticipantRepository extends JpaRepository<Participant, Long> 
             "JOIN pr.agency ag " +
             "WHERE ag.agencyId = :agencyId")
     List<Participant> findAllByAgencyId(@Param("agencyId") Long agencyId);
+
+    @Query("SELECT pr.activityId, COUNT(DISTINCT p) " +
+            "FROM Participant p " +
+            "JOIN p.programs pr " +
+            "WHERE pr.agency.agencyId = :agencyId " +
+            "GROUP BY pr.activityId")
+    List<Object[]> countParticipantsByAgencyGroupedByActivity(@Param("agencyId") Long agencyId);
 }

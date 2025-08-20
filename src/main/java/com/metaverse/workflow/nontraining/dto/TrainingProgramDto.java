@@ -14,4 +14,8 @@ public class TrainingProgramDto {
     private String trainingActivity;
     private String trainingSubActivity;
     private Long trainingTarget;
+    private Long trainingAchievement;
+    private Double trainingPercentage;
+    private Long expenditure;
+    private Double expenditurePercentage;
 }
