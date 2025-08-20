@@ -23,11 +23,11 @@ public class TrainingTarget {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "agency_id", nullable = false)
-    private Agency agencyId;
+    private Agency agency;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "activity_id", nullable = false)
-    private Activity activityId;
+    private Activity activity;
 
     @Column(name = "financial_year")
     private String financialYear;

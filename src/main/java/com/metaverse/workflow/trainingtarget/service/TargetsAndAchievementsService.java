@@ -5,5 +5,5 @@ import com.metaverse.workflow.trainingtarget.dtos.TargetsAndAchievementsResponse
 import java.util.List;
 
 public interface TargetsAndAchievementsService {
-    List<TargetsAndAchievementsResponseDto> getTargetsAndAchievements(Long agencyId);
+    List<TargetsAndAchievementsResponseDto> getTargetsAndAchievements(String year, Long agencyId);
 }

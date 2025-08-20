@@ -5,19 +5,18 @@ import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.exceptions.DataException;
 import com.metaverse.workflow.model.TrainingTarget;
 import com.metaverse.workflow.trainingtarget.repository.TrainingTargetRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-public class TrainingTargetImpl implements TrainingTargetService {
+@RequiredArgsConstructor
+public class TrainingTargetServiceImpl implements TrainingTargetService {
 
-    @Autowired
-    private TrainingTargetRepository trainingTargetRepository;
+    private final TrainingTargetRepository trainingTargetRepository;
 
-    @Autowired
-    private AgencyRepository agencyRepository;
+    private final AgencyRepository agencyRepository;
 
     @Override
     public WorkflowResponse getTrainingTargetsByAgencyId(Long agencyId) throws DataException {
@@ -29,7 +28,7 @@ public class TrainingTargetImpl implements TrainingTargetService {
         }
         else if(!agencyRepository.existsById(agencyId))return WorkflowResponse.builder().status(400).message("agency not found").build();
         else{
-            targets = trainingTargetRepository.findByAgencyId_AgencyId(agencyId);
+            targets = trainingTargetRepository.findByAgency_AgencyId(agencyId);
             if (targets.isEmpty()) return WorkflowResponse.builder().status(400).message("Targets  not assigned for this agency").build();
         }
 

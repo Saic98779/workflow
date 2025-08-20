@@ -5,11 +5,14 @@ import com.metaverse.workflow.nontraining.dto.TrainingProgramDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
 public class TrainingProgramMapper {
+
 
     public TrainingProgramDto trainingProgramDtoMapper(
             TrainingBudgetAllocated trainingBudgetAllocated,
@@ -19,15 +22,24 @@ public class TrainingProgramMapper {
         long achievedCount = activityToCount.getOrDefault(activityId, 0L);
 
         Long target = trainingBudgetAllocated.getTrainingTarget();
-        Double percentage = (target != null && target > 0)
+        double percentage = (target != null && target > 0)
                 ? (achievedCount * 100.0) / target
                 : 0.0;
 
         Double expenditure = activityToExpenditure.getOrDefault(activityId, 0.0);
         Double budget = trainingBudgetAllocated.getBudgetAllocated();
-        Double expenditurePercentage = (budget != null && budget > 0)
+        double expenditurePercentage = (budget != null && budget > 0)
                 ? (expenditure * 100.0) / budget
                 : 0.0;
+
+        // Round to 2 decimals
+        percentage = BigDecimal.valueOf(percentage)
+                .setScale(2, RoundingMode.HALF_UP)
+                .doubleValue();
+
+        expenditurePercentage = BigDecimal.valueOf(expenditurePercentage)
+                .setScale(2, RoundingMode.HALF_UP)
+                .doubleValue();
 
         return TrainingProgramDto.builder()
                 .trainingBudgetAllocatedId(trainingBudgetAllocated.getTrainingBudgetAllocatedId())

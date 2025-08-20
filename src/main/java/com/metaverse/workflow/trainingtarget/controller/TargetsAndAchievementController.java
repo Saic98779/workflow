@@ -4,10 +4,7 @@ import com.metaverse.workflow.trainingtarget.dtos.TargetsAndAchievementsResponse
 import com.metaverse.workflow.trainingtarget.service.TargetsAndAchievementsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -19,8 +16,8 @@ public class TargetsAndAchievementController {
     private final TargetsAndAchievementsService trainingAndAchievementsService;
 
     @GetMapping("/agency/{agencyId}")
-    public ResponseEntity<?> getAllTrainingTargets(@PathVariable("agencyId") Long agencyId) {
-        List<TargetsAndAchievementsResponseDto> response = trainingAndAchievementsService.getTargetsAndAchievements(agencyId);
+    public ResponseEntity<?> getAllTrainingTargets(@RequestParam String year, @PathVariable("agencyId") Long agencyId) {
+        List<TargetsAndAchievementsResponseDto> response = trainingAndAchievementsService.getTargetsAndAchievements(year, agencyId);
         return ResponseEntity.ok(response);
     }
 }

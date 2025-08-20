@@ -8,5 +8,7 @@ import java.util.List;
 
 @Repository
 public interface TrainingTargetRepository extends JpaRepository<TrainingTarget, Long> {
-    List<TrainingTarget> findByAgencyId_AgencyId(Long agencyId);
+    List<TrainingTarget> findByAgency_AgencyIdAndFinancialYear(Long agencyId, String financialYear);
+
+    List<TrainingTarget> findByAgency_AgencyId(Long agencyId);
 }
