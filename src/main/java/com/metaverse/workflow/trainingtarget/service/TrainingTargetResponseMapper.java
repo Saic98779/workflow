@@ -27,32 +27,6 @@ public class TrainingTargetResponseMapper {
 
         List<String> headers = responses.stream()
                 .map(TrainingTargetResponse::getFinancialYear)
-                .map(year -> {
-                    if (year == null || year.isBlank()) {
-                        return "N/A"; // fallback
-                    }
-
-                    try {
-                        if (year.contains("-")) {
-                            // e.g. "2025-26" or "2025-2026"
-                            String[] parts = year.split("-");
-                            int start = Integer.parseInt(parts[0].trim());
-
-                            // Handle "2025-26" → "2025-2026"
-                            int end = parts[1].trim().length() == 2
-                                    ? Integer.parseInt(parts[0].substring(0, 2) + parts[1].trim()) // "25" → "2025"
-                                    : Integer.parseInt(parts[1].trim());
-
-                            return start + "-" + end;
-                        } else {
-                            // Just "2025" → "2025-2026"
-                            int start = Integer.parseInt(year.trim());
-                            return start + "-" + (start + 1);
-                        }
-                    } catch (NumberFormatException e) {
-                        return year; // fallback if parsing fails
-                    }
-                })
                 .distinct()
                 .toList();
 
@@ -66,7 +40,4 @@ public class TrainingTargetResponseMapper {
                 .financialYear(responses)
                 .build();
     }
-
-
-
 }
