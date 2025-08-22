@@ -92,7 +92,7 @@ public class NonTrainingExpenditureService {
         existing.setName(resourceDto.getName() != null ? resourceDto.getName() : existing.getName());
         existing.setDesignation(resourceDto.getDesignation() != null ? resourceDto.getDesignation() : existing.getDesignation());
         existing.setRelevantExperience(resourceDto.getRelevantExperience() != null ? resourceDto.getRelevantExperience() : existing.getRelevantExperience());
-        existing.setEducationalQualifications(resourceDto.getEducationalQualifications() != null ? resourceDto.getEducationalQualifications() : existing.getEducationalQualifications());
+        existing.setEducationalQualifications(resourceDto.getEducationalQualification() != null ? resourceDto.getEducationalQualification() : existing.getEducationalQualifications());
         existing.setDateOfJoining(
                 resourceDto.getDateOfJoining() != null
                         ? DateUtil.stringToDate(resourceDto.getDateOfJoining(), "dd-MM-yyyy")

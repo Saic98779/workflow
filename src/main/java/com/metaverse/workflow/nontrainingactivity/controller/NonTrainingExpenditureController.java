@@ -20,7 +20,7 @@ public class NonTrainingExpenditureController extends RestControllerBase {
 
     private final NonTrainingExpenditureService service;
 
-    @PostMapping("/expenditure")
+    @PostMapping
     public ResponseEntity<?> create(@RequestBody NonTrainingExpenditureDTO dto) {
         try {
             WorkflowResponse response = service.create(dto);
@@ -30,7 +30,7 @@ public class NonTrainingExpenditureController extends RestControllerBase {
         }
     }
 
-    @GetMapping("/expenditure/all")
+    @GetMapping("/all")
     public ResponseEntity<?> getAll() {
         List<NonTrainingExpenditureDTO> expenditures = service.getAll();
         return ResponseEntity.ok(
@@ -42,7 +42,7 @@ public class NonTrainingExpenditureController extends RestControllerBase {
         );
     }
 
-    @GetMapping("/expenditure/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<?> getById(@PathVariable Long id) {
         try {
             NonTrainingExpenditureDTO dto = service.getById(id);
@@ -58,7 +58,7 @@ public class NonTrainingExpenditureController extends RestControllerBase {
         }
     }
 
-    @PutMapping("/expenditure/update/{id}")
+    @PutMapping("/update/{id}")
     public ResponseEntity<?> update(@PathVariable Long id, @RequestBody NonTrainingExpenditureDTO dto) {
         try {
             NonTrainingExpenditureDTO updated = service.update(id, dto);
@@ -74,7 +74,7 @@ public class NonTrainingExpenditureController extends RestControllerBase {
         }
     }
 
-    @DeleteMapping("/expenditure/delete/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id) {
         try {
             service.delete(id);
@@ -109,7 +109,7 @@ public class NonTrainingExpenditureController extends RestControllerBase {
         }
     }
 
-    @PostMapping("/resource/expenditure")
+    @PostMapping("/non-training/expenditure/resource")
     public ResponseEntity<?> saveResourceExpenditure(@RequestBody NonTrainingResourceExpenditureDTO expenditureDto) {
         try {
             return ResponseEntity.ok(service.saveResourceExpenditure(expenditureDto));
@@ -118,7 +118,7 @@ public class NonTrainingExpenditureController extends RestControllerBase {
         }
     }
 
-    @PutMapping("/resource/expenditure/update/{expenditureId}")
+    @PutMapping("/resource/update/{expenditureId}")
     public ResponseEntity<?> updateResourceExpenditure(@PathVariable Long expenditureId,
                                                        @RequestBody NonTrainingResourceExpenditureDTO expenditureDto) {
         try {

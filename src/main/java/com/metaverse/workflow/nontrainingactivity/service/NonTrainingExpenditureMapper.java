@@ -54,7 +54,7 @@ public class NonTrainingExpenditureMapper {
         entity.setName(dto.getName());
         entity.setDesignation(dto.getDesignation());
         entity.setRelevantExperience(dto.getRelevantExperience());
-        entity.setEducationalQualifications(dto.getEducationalQualifications());
+        entity.setEducationalQualifications(dto.getEducationalQualification());
         entity.setDateOfJoining(DateUtil.stringToDate(dto.getDateOfJoining(),"dd-MM-yyyy"));
         entity.setMonthlySal(dto.getMonthlySal());
         entity.setBankName(dto.getBankName());
@@ -71,7 +71,7 @@ public class NonTrainingExpenditureMapper {
         entity.setName(dto.getName());
         entity.setDesignation(dto.getDesignation());
         entity.setRelevantExperience(dto.getRelevantExperience());
-        entity.setEducationalQualifications(dto.getEducationalQualifications());
+        entity.setEducationalQualification(dto.getEducationalQualifications());
         entity.setDateOfJoining(DateUtil.dateToString(dto.getDateOfJoining(),"dd-MM-yyyy"));
         entity.setMonthlySal(dto.getMonthlySal());
         entity.setBankName(dto.getBankName());

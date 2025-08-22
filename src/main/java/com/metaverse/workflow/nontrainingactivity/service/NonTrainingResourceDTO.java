@@ -9,7 +9,7 @@ public class NonTrainingResourceDTO {
     private String name;
     private String designation;
     private Double relevantExperience;
-    private String educationalQualifications;
+    private String educationalQualification;
     private String dateOfJoining;
     private Double monthlySal;
     private String bankName;
