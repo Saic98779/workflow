@@ -1,0 +1,15 @@
+package com.metaverse.workflow.nontraining.dto;
+
+import lombok.Builder;
+import lombok.Data;
+
+@Data
+@Builder
+public class PhysicalFinancialDto {
+    private Long nonTrainingAchievementId;
+    private Long nonTrainingActivityId;
+    private Double physicalTarget;
+    private String physicalTargetAchievement;
+    private Double financialTarget;
+    private Double financialTargetAchievement;
+}

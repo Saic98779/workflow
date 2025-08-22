@@ -9,6 +9,7 @@ import com.metaverse.workflow.model.Participant;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Date;
 import java.util.List;
 
 public interface ParticipantRepository extends JpaRepository<Participant, Long> {
@@ -31,4 +32,22 @@ public interface ParticipantRepository extends JpaRepository<Participant, Long> 
     Page<Participant> findByPrograms_Agency_AgencyId(Long agencyId, Pageable pageable);
 
     boolean existsByParticipantNameAndOrganization_OrganizationName(String participantName, String s);
+
+    @Query("SELECT DISTINCT p FROM Participant p " +
+            "JOIN p.programs pr " +
+            "JOIN pr.agency ag " +
+            "WHERE ag.agencyId = :agencyId " +
+            "AND pr.createdOn BETWEEN :startDate AND :endDate")
+    List<Participant> findAllByAgencyIdAndProgramCreatedOnBetween(
+            @Param("agencyId") Long agencyId,
+            @Param("startDate") Date startDate,
+            @Param("endDate") Date endDate);
+
+
+    @Query("SELECT pr.activityId, COUNT(DISTINCT p) " +
+            "FROM Participant p " +
+            "JOIN p.programs pr " +
+            "WHERE pr.agency.agencyId = :agencyId " +
+            "GROUP BY pr.activityId")
+    List<Object[]> countParticipantsByAgencyGroupedByActivity(@Param("agencyId") Long agencyId);
 }

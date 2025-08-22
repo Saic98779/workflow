@@ -111,4 +111,5 @@ public interface ProgramRepository extends JpaRepository<Program, Long> {
     @Query("SELECT p FROM Program p WHERE  p.startDate > :today")
     Page<Program> findProgramYetToBegin(@Param("today") Date today, Pageable pageable);
 
+    List<Program> findByStartDateBetweenOrderByStartDateAsc(Date startDate, Date endDate);
 }

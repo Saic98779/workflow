@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.web.bind.annotation.BindParam;
 
 import java.util.List;
 
@@ -12,7 +11,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class TrainingAndNonTrainingDto {
-    private List<TrainingProgramDto> trainingProgramDtos;
-    private List<NonTrainingProgramDto> nonTrainingProgramDtos;
+public class ProgressMonitoringDto {
+    private List<TrainingProgramDto> trainingPrograms;
+    private List<NonTrainingProgramDto> nonTrainingPrograms;
 }

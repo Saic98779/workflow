@@ -15,7 +15,6 @@ import java.util.List;
 @Builder
 @Getter
 @Setter
-
 @Table(name="agency")
 public class Agency {
 
