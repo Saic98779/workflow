@@ -1,14 +1,13 @@
 package com.metaverse.workflow.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import net.minidev.json.annotate.JsonIgnore;
 
 import java.util.Date;
 
-@Data
+@Setter
+@Getter
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
@@ -21,6 +20,7 @@ public class NonTrainingResourceExpenditure {
     @Column(name = "non_training_resource_expenditure_id")
     private Long nonTrainingResourceExpenditureId;
 
+    @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "resource_id", nullable = false)
     private NonTrainingResource nonTrainingResource;

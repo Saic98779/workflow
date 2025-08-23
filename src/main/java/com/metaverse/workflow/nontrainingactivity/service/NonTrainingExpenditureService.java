@@ -1,11 +1,11 @@
 package com.metaverse.workflow.nontrainingactivity.service;
 
-import com.metaverse.workflow.activity.repository.ActivityRepository;
 import com.metaverse.workflow.agency.repository.AgencyRepository;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.common.util.DateUtil;
 import com.metaverse.workflow.exceptions.DataException;
 import com.metaverse.workflow.model.*;
+import com.metaverse.workflow.nontraining.repository.NonTrainingActivityRepository;
 import com.metaverse.workflow.nontrainingactivity.repository.NonTrainingExpenditureRepo;
 import com.metaverse.workflow.nontrainingactivity.repository.NonTrainingResourceExpenditureRepo;
 import com.metaverse.workflow.nontrainingactivity.repository.ResourceRepo;
@@ -21,14 +21,14 @@ public class NonTrainingExpenditureService {
 
     private final NonTrainingExpenditureRepo repository;
     private final AgencyRepository agencyRepository;
-    private final ActivityRepository activityRepository;
+    private final NonTrainingActivityRepository nonTrainingActivityRepository;
     private final ResourceRepo resourceRepo;
     private final NonTrainingResourceExpenditureRepo resourceExpenditureRepo;
 
     public WorkflowResponse create(NonTrainingExpenditureDTO dto) throws DataException {
         Agency agency = agencyRepository.findById(dto.getAgencyId())
                 .orElseThrow(() -> new DataException("Agency not found","AGENCY_NOT_FOUND",400));
-        Activity activity = activityRepository.findById(dto.getActivityId())
+        NonTrainingActivity activity = nonTrainingActivityRepository.findById(dto.getNonTrainingActivityId())
                 .orElseThrow(() -> new DataException("Activity not found","ACTIVITY_NOT_FOUND",400));
 
         NonTrainingExpenditure entity = NonTrainingExpenditureMapper.toEntity(dto, agency, activity);
@@ -57,7 +57,7 @@ public class NonTrainingExpenditureService {
 
         Agency agency = agencyRepository.findById(dto.getAgencyId())
                 .orElseThrow(() -> new DataException("Agency not found","AGENCY_NOT_FOUND",400));
-        Activity activity = activityRepository.findById(dto.getActivityId())
+        NonTrainingActivity activity = nonTrainingActivityRepository.findById(dto.getNonTrainingActivityId())
                 .orElseThrow(() -> new DataException("Activity not found","ACTIVITY_NOT_FOUND",400));
 
         NonTrainingExpenditure updated = NonTrainingExpenditureMapper.toEntity(dto, agency, activity);
@@ -70,8 +70,11 @@ public class NonTrainingExpenditureService {
                 .orElseThrow(() -> new DataException("Expenditure not found","EXPENDITURE_NOT_FOUND",400));
         repository.deleteById(id);
     }
-    public WorkflowResponse saveResource(NonTrainingResourceDTO resource) {
-        NonTrainingResource nonTrainingResource = NonTrainingExpenditureMapper.mapToResource(resource);
+    public WorkflowResponse saveResource(NonTrainingResourceDTO resource) throws DataException {
+        NonTrainingActivity activity = nonTrainingActivityRepository.findById(resource.getNonTrainingActivityId())
+                .orElseThrow(() -> new DataException("Activity not found","ACTIVITY_NOT_FOUND",400));
+
+        NonTrainingResource nonTrainingResource = NonTrainingExpenditureMapper.mapToResource(resource,activity);
         return WorkflowResponse.builder()
                 .message("success")
                 .status(200)
@@ -173,6 +176,53 @@ public class NonTrainingExpenditureService {
                 .message("Expenditure deleted successfully with id " + expenditureId)
                 .build();
     }
+
+    public WorkflowResponse getResourceByNonTrainingActivity(Long nonTrainingActivityId) throws DataException {
+        List<NonTrainingResource> resourceList=resourceRepo.findByNonTrainingActivity_ActivityId(nonTrainingActivityId)
+                .orElseThrow(() -> new DataException("Resource not found with this activity id " + nonTrainingActivityId,"RESOURCE_NOT_FOUND",400));
+        return WorkflowResponse.builder().status(200)
+                .message("success")
+                .data(resourceList.stream().map(NonTrainingExpenditureMapper::mapToResourceResForDropdown).toList())
+                .build();
+    }
+
+    public WorkflowResponse getAllResourceByNonTrainingActivityId(Long nonTrainingActivityId) throws DataException {
+        List<NonTrainingResource> resourceList=resourceRepo.findByNonTrainingActivity_ActivityId(nonTrainingActivityId)
+                .orElseThrow(() -> new DataException("Resource not found with this activity id " + nonTrainingActivityId,"RESOURCE_NOT_FOUND",400));
+        return WorkflowResponse.builder().status(200)
+                .message("success")
+                .data(resourceList.stream().map(NonTrainingExpenditureMapper::mapToResourceRes).toList())
+                .build();
+    }
+
+    public WorkflowResponse getAllExpenditureByNonTrainingActivityId(Long nonTrainingActivityId) throws DataException {
+        List<NonTrainingExpenditure> expenditureList=repository.findByNonTrainingActivity_ActivityId(nonTrainingActivityId)
+                .orElseThrow(() -> new DataException("Expenditure not found with this activity id " + nonTrainingActivityId,"EXPENDITURE_NOT_FOUND",400));
+        return WorkflowResponse.builder().status(200)
+                .message("success")
+                .data(expenditureList.stream().map(NonTrainingExpenditureMapper::toDTO).toList())
+                .build();
+    }
+    public WorkflowResponse getAllResourceExpenditureByNonTrainingActivityId(Long nonTrainingActivityId) throws DataException {
+        List<NonTrainingResource> resourceList = resourceRepo.findByNonTrainingActivity_ActivityId(nonTrainingActivityId)
+                .orElseThrow(() -> new DataException(
+                        "Resource not found with this activity id " + nonTrainingActivityId,
+                        "RESOURCE_NOT_FOUND",
+                        400));
+
+        List<NonTrainingResourceExpenditureDTO> allExpendituresDto =
+                resourceList.stream()
+                        .flatMap(resource -> resource.getNonTrainingResourceExpenditures().stream())
+                        .map(NonTrainingExpenditureMapper::mapToResourceExpenditureResponse) // <-- convert entity → DTO
+                        .collect(Collectors.toList());
+
+        return WorkflowResponse.builder()
+                .status(200)
+                .message("success")
+                .data(allExpendituresDto)
+                .build();
+    }
+
 
 
 }

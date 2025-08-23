@@ -7,10 +7,10 @@ public class NonTrainingExpenditureMapper {
     public static NonTrainingExpenditureDTO toDTO(NonTrainingExpenditure entity) {
         NonTrainingExpenditureDTO dto = new NonTrainingExpenditureDTO();
         dto.setId(entity.getId());
-        dto.setPaymentDate(entity.getPaymentDate());
+        dto.setPaymentDate(DateUtil.dateToString(entity.getPaymentDate(),"dd-MM-yyy"));
         dto.setExpenditureAmount(entity.getExpenditureAmount());
         dto.setBillNo(entity.getBillNo());
-        dto.setBillDate(entity.getBillDate());
+        dto.setBillDate(DateUtil.dateToString(entity.getBillDate(),"dd-MM-yyy"));
         dto.setPayeeName(entity.getPayeeName());
         dto.setAccountNumber(entity.getAccountNumber());
         dto.setBankName(entity.getBankName());
@@ -19,20 +19,18 @@ public class NonTrainingExpenditureMapper {
         dto.setTransactionId(entity.getTransactionId());
         dto.setPurpose(entity.getPurpose());
         dto.setUploadBillUrl(entity.getUploadBillUrl());
-        dto.setCreatedOn(entity.getCreatedOn());
-        dto.setUpdatedOn(entity.getUpdatedOn());
         return dto;
     }
 
-    public static NonTrainingExpenditure toEntity(NonTrainingExpenditureDTO dto, Agency agency, Activity activity) {
+    public static NonTrainingExpenditure toEntity(NonTrainingExpenditureDTO dto, Agency agency, NonTrainingActivity activity) {
         NonTrainingExpenditure entity = new NonTrainingExpenditure();
         entity.setId(dto.getId());
         entity.setAgency(agency);
-        entity.setActivityId(activity);
-        entity.setPaymentDate(dto.getPaymentDate());
+        entity.setNonTrainingActivity(activity);
+        entity.setPaymentDate(DateUtil.stringToDate(dto.getPaymentDate(),"dd-MM-yyyy"));
         entity.setExpenditureAmount(dto.getExpenditureAmount());
         entity.setBillNo(dto.getBillNo());
-        entity.setBillDate(dto.getBillDate());
+        entity.setBillDate(DateUtil.stringToDate(dto.getBillDate(),"dd-MM-yyyy"));
         entity.setPayeeName(dto.getPayeeName());
         entity.setAccountNumber(dto.getAccountNumber());
         entity.setBankName(dto.getBankName());
@@ -41,13 +39,11 @@ public class NonTrainingExpenditureMapper {
         entity.setTransactionId(dto.getTransactionId());
         entity.setPurpose(dto.getPurpose());
         entity.setUploadBillUrl(dto.getUploadBillUrl());
-        entity.setCreatedOn(dto.getCreatedOn());
-        entity.setUpdatedOn(dto.getUpdatedOn());
         return entity;
     }
 
 
-    public static NonTrainingResource mapToResource(NonTrainingResourceDTO dto) {
+    public static NonTrainingResource mapToResource(NonTrainingResourceDTO dto,NonTrainingActivity nonTrainingActivity) {
         if (dto == null) return null;
 
         NonTrainingResource entity = new NonTrainingResource();
@@ -60,6 +56,7 @@ public class NonTrainingExpenditureMapper {
         entity.setBankName(dto.getBankName());
         entity.setIfscCode(dto.getIfscCode());
         entity.setAccountNo(dto.getAccountNo());
+        entity.setNonTrainingActivity(nonTrainingActivity);
         return entity;
     }
 
@@ -77,6 +74,7 @@ public class NonTrainingExpenditureMapper {
         entity.setBankName(dto.getBankName());
         entity.setIfscCode(dto.getIfscCode());
         entity.setAccountNo(dto.getAccountNo());
+        entity.setExpenditures(dto.getNonTrainingResourceExpenditures().stream().map(NonTrainingExpenditureMapper::mapToResourceExpenditureResponse).toList());
         return entity;
     }
 
@@ -102,6 +100,17 @@ public class NonTrainingExpenditureMapper {
         dto.setPaymentForMonth(entity.getPaymentForMonth());
         dto.setDateOfPayment(DateUtil.dateToString(entity.getDateOfPayment(),"dd-MM-yyyy"));
         return dto;
+    }
+    public static  NonTrainingResourceDTO mapToResourceResForDropdown(NonTrainingResource  nonTrainingResource)
+    {
+        if(nonTrainingResource == null) return null;
+        NonTrainingResourceDTO resource = new NonTrainingResourceDTO();
+        resource.setResourceId(nonTrainingResource.getResourceId());
+        resource.setName(nonTrainingResource.getName());
+        resource.setBankName(nonTrainingResource.getBankName());
+        resource.setAccountNo(nonTrainingResource.getAccountNo());
+        return resource;
+
     }
 
 

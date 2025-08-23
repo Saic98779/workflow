@@ -8,7 +8,6 @@ import lombok.Data;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -55,4 +54,8 @@ public class NonTrainingResource {
 
     @OneToMany(mappedBy = "nonTrainingResource", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<NonTrainingResourceExpenditure> nonTrainingResourceExpenditures = new ArrayList<>();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "activity_id", nullable = false)
+    private NonTrainingActivity nonTrainingActivity;
 }

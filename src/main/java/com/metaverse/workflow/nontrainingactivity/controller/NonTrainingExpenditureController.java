@@ -7,6 +7,7 @@ import com.metaverse.workflow.nontrainingactivity.service.NonTrainingExpenditure
 import com.metaverse.workflow.nontrainingactivity.service.NonTrainingExpenditureService;
 import com.metaverse.workflow.nontrainingactivity.service.NonTrainingResourceDTO;
 import com.metaverse.workflow.nontrainingactivity.service.NonTrainingResourceExpenditureDTO;
+import jakarta.websocket.server.PathParam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -91,7 +92,12 @@ public class NonTrainingExpenditureController extends RestControllerBase {
 
     @PostMapping("/resource")
     public ResponseEntity<?> saveResource(@RequestBody NonTrainingResourceDTO resourceDto) {
-        return ResponseEntity.ok(service.saveResource(resourceDto));
+        try {
+            return ResponseEntity.ok(service.saveResource(resourceDto));
+        } catch (DataException e) {
+            return error(e);
+        }
+
     }
 
     @PutMapping("/resource/update/{id}")
@@ -124,7 +130,7 @@ public class NonTrainingExpenditureController extends RestControllerBase {
         try {
             return ResponseEntity.ok(service.updateResourceExpenditure(expenditureId, expenditureDto));
         } catch (DataException e) {
-            return error(e);
+            return RestControllerBase.error(e);
         }
     }
 
@@ -133,7 +139,47 @@ public class NonTrainingExpenditureController extends RestControllerBase {
         try {
             return ResponseEntity.ok(service.deleteResourceExpenditure(expenditureId));
         } catch (DataException e) {
-            return error(e);
+            return RestControllerBase.error(e);
+        }
+    }
+    @GetMapping("/resources/non-training-activity")
+    public ResponseEntity<?> getResourceFroDropdown(@PathParam("nonTrainingActivityId") Long nonTrainingActivityId)
+    {
+        try {
+            return ResponseEntity.ok(service.getResourceByNonTrainingActivity(nonTrainingActivityId));
+        }catch (DataException e)
+        {
+            return RestControllerBase.error(e);
+        }
+    }
+    @GetMapping("/all/resources")
+    public ResponseEntity<?> getResourceByActivity(@PathParam("nonTrainingActivityId") Long nonTrainingActivityId)
+    {
+        try {
+            return ResponseEntity.ok(service.getAllResourceByNonTrainingActivityId(nonTrainingActivityId));
+        }catch (DataException e)
+        {
+            return RestControllerBase.error(e);
+        }
+    }
+    @GetMapping("/all/expenditures")
+    public ResponseEntity<?> getExpenditureByActivity(@PathParam("nonTrainingActivityId") Long nonTrainingActivityId)
+    {
+        try {
+            return ResponseEntity.ok(service.getAllExpenditureByNonTrainingActivityId(nonTrainingActivityId));
+        }catch (DataException e)
+        {
+            return RestControllerBase.error(e);
+        }
+    }
+    @GetMapping("/all/resource/expenditures")
+    public ResponseEntity<?> getResourceExpenditureByActivity(@PathParam("nonTrainingActivityId") Long nonTrainingActivityId)
+    {
+        try {
+            return ResponseEntity.ok(service.getAllResourceExpenditureByNonTrainingActivityId(nonTrainingActivityId));
+        }catch (DataException e)
+        {
+            return RestControllerBase.error(e);
         }
     }
 }
