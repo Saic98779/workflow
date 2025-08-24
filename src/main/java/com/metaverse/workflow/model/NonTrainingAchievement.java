@@ -35,8 +35,27 @@ public class NonTrainingAchievement {
     @Column(name = "financial_target")
     private Double financialTarget;
 
+    @Column(name = "financial_year")
+    private String financialYear;
+
+    @Column(name = "q1_achievement")
+    private String q1Achievement;
+
+    @Column(name = "q2_achievement")
+    private String q2Achievement;
+
+    @Column(name = "q3_achievement")
+    private String q3Achievement;
+
+    @Column(name = "q4_achievement")
+    private String q4Achievement;
+
     @Column(name = "financial_target_achievement")
     private Double financialTargetAchievement;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "non_training_target_id", nullable = false)
+    private NonTrainingTargets nonTrainingTarget;
 
     @CreationTimestamp
     @Column(name = "created_on", updatable = false)
