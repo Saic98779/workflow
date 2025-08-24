@@ -99,6 +99,8 @@ public class NonTrainingExpenditureMapper {
         dto.setAmount(entity.getAmount());
         dto.setPaymentForMonth(entity.getPaymentForMonth());
         dto.setDateOfPayment(DateUtil.dateToString(entity.getDateOfPayment(),"dd-MM-yyyy"));
+        dto.setResourceId(entity.getNonTrainingResource().getResourceId());
+        dto.setResourceName(entity.getNonTrainingResource().getName());
         return dto;
     }
     public static  NonTrainingResourceDTO mapToResourceResForDropdown(NonTrainingResource  nonTrainingResource)
@@ -109,9 +111,9 @@ public class NonTrainingExpenditureMapper {
         resource.setName(nonTrainingResource.getName());
         resource.setBankName(nonTrainingResource.getBankName());
         resource.setAccountNo(nonTrainingResource.getAccountNo());
+        resource.setIfscCode(nonTrainingResource.getIfscCode());
         return resource;
 
     }
-
 
 }

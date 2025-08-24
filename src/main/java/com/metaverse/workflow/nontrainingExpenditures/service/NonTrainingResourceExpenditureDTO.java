@@ -8,4 +8,5 @@ public class NonTrainingResourceExpenditureDTO {
     private String paymentForMonth;
     private String dateOfPayment;
     private Long resourceId;
+    private String resourceName;
 }
