@@ -1,14 +1,19 @@
 package com.metaverse.workflow.nontraining.service;
 
-
 import com.metaverse.workflow.model.NonTrainingAchievement;
 import com.metaverse.workflow.model.NonTrainingActivity;
 import com.metaverse.workflow.nontraining.dto.NonTrainingProgramDto;
+import com.metaverse.workflow.trainingandnontrainingtarget.repository.OutcomeRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
-import java.util.List;
-
+@Service
+@RequiredArgsConstructor
 public class NonTrainingProgramMapper {
-    public static NonTrainingProgramDto trainingProgramDtoMapper(NonTrainingActivity nonTrainingActivity) {
+
+    private final OutcomeRepository outcomeRepository;
+
+    public NonTrainingProgramDto trainingProgramDtoMapper(NonTrainingActivity nonTrainingActivity, Long agencyId) {
         if (nonTrainingActivity == null || nonTrainingActivity.getAchievements().isEmpty()) {
             return null;
         }
@@ -27,17 +32,25 @@ public class NonTrainingProgramMapper {
             percentage = (expenditureInRupees / targetInRupees) * 100;
         }
 
+        // handle physical achievement logic separately
+        String physicalAchievement;
+//        if (ach.getPhysicalTargetAchievement().equals("1")) {
+//            physicalAchievement = ach.getPhysicalTargetAchievement();
+//        } else {
+//            physicalAchievement = String.valueOf(outcomeRepository.getTotalOutcomesByAgency(agencyId));
+//        }
+
+        physicalAchievement = ach.getPhysicalTargetAchievement();
+
         return NonTrainingProgramDto.builder()
                 .nonTrainingActivity(nonTrainingActivity.getActivityName())
                 .physicalTarget(ach.getPhysicalTarget())
-                .applicable("Not Initiated".equalsIgnoreCase(ach.getPhysicalTargetAchievement()) ? "Not Applicable" : "100.00%")
-                .physicalAchievement(ach.getPhysicalTargetAchievement())
+                .applicable("Not Initiated".equalsIgnoreCase(String.valueOf(ach.getPhysicalTargetAchievement()))
+                        ? "Not Applicable" : "100.00%")
+                .physicalAchievement(String.valueOf(physicalAchievement))
                 .financialTarget(ach.getFinancialTarget())
                 .financialExpenditure(ach.getFinancialTargetAchievement())
                 .percentage(percentage)
                 .build();
     }
-
-
-
 }

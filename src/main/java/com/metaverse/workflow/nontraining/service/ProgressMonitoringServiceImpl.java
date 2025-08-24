@@ -22,13 +22,10 @@ import java.util.stream.Collectors;
 public class ProgressMonitoringServiceImpl implements ProgressMonitoringService {
 
     private final NonTrainingActivityRepository nonTrainingActivityRepository;
-
     private final TrainingBudgetAllocatedRepository trainingBudgetAllocatedRepository;
-
     private final ParticipantRepository participantRepository;
-
-    private final TrainingProgramMapper trainingProgramMapper;
-
+    private final TrainingProgramMapper trainingProgramMapper;   // for Training
+    private final NonTrainingProgramMapper nonTrainingProgramMapper; // ✅ add this
     private final ProgramExpenditureRepository programExpenditureRepository;
 
     @Override
@@ -44,7 +41,6 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
 
         List<Object[]> expenditure = programExpenditureRepository.sumExpenditureByAgencyGroupedByActivity(agencyId);
 
-
         Map<Long, Long> activityToCount = results.stream()
                 .collect(Collectors.toMap(
                         r -> (Long) r[0],   // activityId
@@ -56,7 +52,6 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
                         row -> (Long) row[0],   // activityId
                         row -> (Double) row[1]  // sum of cost
                 ));
-
 
         List<NonTrainingActivity> nonTrainingActivities =
                 Optional.ofNullable(nonTrainingActivityRepository.findByAgency_AgencyId(agencyId))
@@ -71,7 +66,7 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
 
         List<NonTrainingProgramDto> nonTrainingPrograms =
                 nonTrainingActivities.stream()
-                        .map(NonTrainingProgramMapper::trainingProgramDtoMapper)
+                        .map(activity -> nonTrainingProgramMapper.trainingProgramDtoMapper(activity, agencyId))
                         .toList();
 
         return ProgressMonitoringDto.builder()
@@ -79,5 +74,4 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
                 .trainingPrograms(trainingPrograms)
                 .build();
     }
-
 }
