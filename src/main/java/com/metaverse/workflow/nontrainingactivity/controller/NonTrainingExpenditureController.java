@@ -124,7 +124,7 @@ public class NonTrainingExpenditureController extends RestControllerBase {
         }
     }
 
-    @PutMapping("/resource/update/{expenditureId}")
+    @PutMapping("/resource-expenditure/update/{expenditureId}")
     public ResponseEntity<?> updateResourceExpenditure(@PathVariable Long expenditureId,
                                                        @RequestBody NonTrainingResourceExpenditureDTO expenditureDto) {
         try {
