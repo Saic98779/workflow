@@ -1,7 +1,6 @@
 package com.metaverse.workflow.trainingandnontrainingtarget.controller;
 
 import com.metaverse.workflow.trainingandnontrainingtarget.dtos.NonTrainingTargetsAndAchievementsResponse;
-import com.metaverse.workflow.trainingandnontrainingtarget.dtos.TrainingTargetsAndAchievementsResponse;
 import com.metaverse.workflow.trainingandnontrainingtarget.service.NonTrainingTargetsAndAchievementsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
