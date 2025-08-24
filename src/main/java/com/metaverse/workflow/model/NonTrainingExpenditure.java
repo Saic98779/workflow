@@ -27,7 +27,7 @@ public class NonTrainingExpenditure {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "activity_id", nullable = false)
-    private Activity activityId;
+    private NonTrainingActivity nonTrainingActivity;
 
     @Column(name = "payment_date")
     private Date paymentDate;

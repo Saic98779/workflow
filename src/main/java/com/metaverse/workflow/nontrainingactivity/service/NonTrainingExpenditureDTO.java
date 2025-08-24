@@ -7,11 +7,11 @@ import java.util.Date;
 public class NonTrainingExpenditureDTO {
     private Long id;
     private Long agencyId;
-    private Long activityId;
-    private Date paymentDate;
+    private Long nonTrainingActivityId;
+    private String paymentDate;
     private Double expenditureAmount;
     private String billNo;
-    private Date billDate;
+    private String billDate;
     private String payeeName;
     private String accountNumber;
     private String bankName;
@@ -20,7 +20,6 @@ public class NonTrainingExpenditureDTO {
     private String transactionId;
     private String purpose;
     private String uploadBillUrl;
-    private String createdOn;
-    private String updatedOn;
+
 
 }
