@@ -1,7 +1,5 @@
 package com.metaverse.workflow.nontraining.controller;
 
-
-
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.model.NonTrainingAchievement;
 import com.metaverse.workflow.nontraining.dto.NonTrainingActivityDto;
@@ -82,6 +80,5 @@ public class ProgressMonitoringController {
                     .body(new WorkflowResponse(404, "Activity not present", "", 0, 0));
         }
         return ResponseEntity.ok(allActivitiesByAgency);
-
     }
 }

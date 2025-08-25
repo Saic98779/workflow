@@ -6,16 +6,12 @@ import lombok.Data;
 @Data
 @Builder
 public class TrainingProgramDto {
-    private Long trainingBudgetAllocatedId;
     private String agency;
     private String activity;
-    private String subActivityId;
     private Double budgetAllocated;
-    private String trainingActivity;
-    private String trainingSubActivity;
     private Long trainingTarget;
     private Long trainingAchievement;
-    private Double trainingPercentage;
-    private Long expenditure;
+    private double trainingPercentage;
+    private Double expenditure;
     private Double expenditurePercentage;
 }

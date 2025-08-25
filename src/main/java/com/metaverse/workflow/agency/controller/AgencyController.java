@@ -183,4 +183,44 @@ public class AgencyController {
                         .build()
         );
     }
+
+    @GetMapping("/agency/programs/district/{district}")
+    public ResponseEntity<WorkflowResponse> getProgramsByDistrict(
+            @PathVariable String district,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "programId,desc") String sort
+    ) {
+        Pageable pageable = PageRequest.of(page, size, getSortOrder(sort));
+        Page<Program> programPage = programRepository.getProgramsByDistrict(district, pageable);
+
+        // Filter program session files
+        for (Program program : programPage) {
+            List<ProgramSession> sessions = program.getProgramSessionList();
+            if (sessions != null) {
+                for (ProgramSession session : sessions) {
+                    List<ProgramSessionFile> filteredFiles = session.getProgramSessionFileList()
+                            .stream()
+                            .filter(file -> "FILE".equalsIgnoreCase(file.getFileType()))
+                            .collect(Collectors.toList());
+                    session.setProgramSessionFileList(filteredFiles);
+                }
+            }
+        }
+
+        List<ProgramResponse> response = programPage.getContent().stream()
+                .map(ProgramResponseMapper::mapProgram)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(
+                WorkflowResponse.builder()
+                        .status(200)
+                        .message("Success")
+                        .data(response)
+                        .totalElements(programPage.getTotalElements())
+                        .totalPages(programPage.getTotalPages())
+                        .build()
+        );
+    }
+
 }

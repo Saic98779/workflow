@@ -21,4 +21,20 @@ public interface NonTrainingExpenditureRepository extends JpaRepository<NonTrain
                                                          @Param("startDate") Date startDate,
                                                          @Param("endDate") Date endDate);
 
+    @Query("SELECT pe.nonTrainingActivity.id, SUM(COALESCE(pe.expenditureAmount, 0)) " +
+            "FROM NonTrainingExpenditure pe " +
+            "WHERE pe.agency.agencyId = :agencyId " +
+            "GROUP BY pe.nonTrainingActivity.id")
+    List<Object[]> sumExpenditureByAgencyGroupedByActivity(@Param("agencyId") Long agencyId);
+
+    @Query("SELECT SUM(nte.expenditureAmount) FROM NonTrainingExpenditure nte " +
+            "WHERE nte.agency.agencyId = :agencyId ")
+    Double sumExpenditureByAgency(@Param("agencyId") Long agencyId);
+
+    @Query("SELECT SUM(nte.expenditureAmount) FROM NonTrainingExpenditure nte " +
+            "WHERE nte.agency.agencyId = :agencyId " +
+            "AND nte.nonTrainingActivity.activityId = :activityId")
+    Double sumExpenditureByAgencyAndActivity(@Param("agencyId") Long agencyId,
+                                                         @Param("activityId") Long activityId);
+
 }

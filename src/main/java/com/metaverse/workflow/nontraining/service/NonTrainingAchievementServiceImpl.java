@@ -33,10 +33,7 @@ public class NonTrainingAchievementServiceImpl implements NonTrainingAchievement
                 .orElseThrow(() -> new EntityNotFoundException(
                         "Non Training Achievement not found with id " + updatedRequest.getNonTrainingAchievementId()
                 ));
-
-        existing.setPhysicalTarget(updatedRequest.getPhysicalTarget());
         existing.setPhysicalTargetAchievement(updatedRequest.getPhysicalTargetAchievement());
-        existing.setFinancialTarget(updatedRequest.getFinancialTarget());
         existing.setFinancialTargetAchievement(updatedRequest.getFinancialTargetAchievement());
         NonTrainingAchievement saved = nonTrainingAchievementRepository.save(existing);
         return Optional.of(saved);

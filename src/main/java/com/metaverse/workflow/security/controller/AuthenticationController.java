@@ -137,6 +137,7 @@ public class AuthenticationController {
                     .userId(user.getUserId())
                     .email(user.getEmail())
                     .agencyId(user.getAgency() != null ? user.getAgency().getAgencyId() : null)
+                    .agencyName(user.getAgency() != null ? user.getAgency().getAgencyName() : null)
                     .firstName(user.getFirstName())
                     .lastName(user.getLastName())
                     .gender(user.getGender())

@@ -11,9 +11,7 @@ public class NonTrainingAchievementMapper {
          return PhysicalFinancialDto.builder().nonTrainingAchievementId(nonTrainingAchievement.getNonTrainingAchievementId())
                   .nonTrainingActivityId(nonTrainingAchievement.getNonTrainingActivity().getActivityId())
                   .physicalTargetAchievement(nonTrainingAchievement.getPhysicalTargetAchievement())
-                  .physicalTarget(nonTrainingAchievement.getPhysicalTarget())
                   .financialTargetAchievement(nonTrainingAchievement.getFinancialTargetAchievement())
-                  .financialTarget(nonTrainingAchievement.getFinancialTarget())
                   .build();
       }else {
           return null;

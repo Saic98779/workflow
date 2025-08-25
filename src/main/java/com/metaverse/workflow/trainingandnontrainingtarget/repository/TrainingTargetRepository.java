@@ -11,4 +11,6 @@ public interface TrainingTargetRepository extends JpaRepository<TrainingTargets,
     List<TrainingTargets> findByAgency_AgencyIdAndFinancialYear(Long agencyId, String financialYear);
 
     List<TrainingTargets> findByAgency_AgencyId(Long agencyId);
+
+    List<TrainingTargets> findByActivity_Agency_AgencyId(Long agencyId);
 }

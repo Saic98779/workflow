@@ -26,14 +26,8 @@ public class NonTrainingAchievement {
     @JoinColumn(name = "activity_id", nullable = false)
     private NonTrainingActivity nonTrainingActivity;
 
-    @Column(name = "physical_target")
-    private Double physicalTarget;
-
     @Column(name = "physical_target_achievement")
     private String physicalTargetAchievement;
-
-    @Column(name = "financial_target")
-    private Double financialTarget;
 
     @Column(name = "financial_year")
     private String financialYear;

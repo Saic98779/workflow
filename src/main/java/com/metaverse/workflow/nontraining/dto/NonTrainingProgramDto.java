@@ -11,10 +11,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class NonTrainingProgramDto {
     private String nonTrainingActivity;
-    private String nonTrainingSubActivity;
-    private Double physicalTarget;
+    private Integer physicalTarget;
     private String physicalAchievement;
-    private String applicable;
     private Double financialTarget;
     private Double financialExpenditure;
     private Double percentage;
