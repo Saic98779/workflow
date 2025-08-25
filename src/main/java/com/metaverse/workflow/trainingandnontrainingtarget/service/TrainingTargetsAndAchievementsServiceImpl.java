@@ -2,8 +2,10 @@ package com.metaverse.workflow.trainingandnontrainingtarget.service;
 
 import com.metaverse.workflow.expenditure.repository.ProgramExpenditureRepository;
 import com.metaverse.workflow.model.Participant;
+import com.metaverse.workflow.model.Program;
 import com.metaverse.workflow.model.TrainingTargets;
 import com.metaverse.workflow.participant.repository.ParticipantRepository;
+import com.metaverse.workflow.program.repository.ProgramRepository;
 import com.metaverse.workflow.trainingandnontrainingtarget.dtos.TrainingTargetsAndAchievementsResponse;
 import com.metaverse.workflow.trainingandnontrainingtarget.repository.TrainingTargetRepository;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +15,8 @@ import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -21,13 +25,14 @@ public class TrainingTargetsAndAchievementsServiceImpl implements TrainingTarget
     private final TrainingTargetRepository trainingTargetRepository;
     private final ParticipantRepository participantRepository;
     private final ProgramExpenditureRepository programExpenditureRepository;
+    private final ProgramRepository programRepository;
 
     public List<TrainingTargetsAndAchievementsResponse> getTargetsAndAchievements(String financialYear, Long agencyId) {
 
         Date[] range = getFinancialYearRange(financialYear);
 
-        List<Participant> participants =
-                participantRepository.findAllByAgencyIdAndProgramCreatedOnBetween(
+        List<Program> programs =
+                programRepository.findProgramsWithParticipantsByAgencyAndDateRange(
                         agencyId,
                         range[0], // 2025-04-01
                         range[1]  // 2026-03-31
@@ -91,7 +96,7 @@ public class TrainingTargetsAndAchievementsServiceImpl implements TrainingTarget
 
 // Totals
             dto.setTotalFinancialTarget(
-                    (int)(t.getQ1Budget() + t.getQ2Budget() + t.getQ3Budget() + t.getQ4Budget())
+                    (int) (t.getQ1Budget() + t.getQ2Budget() + t.getQ3Budget() + t.getQ4Budget())
             );
 
             dto.setTotalFinancialAchieved(
@@ -102,27 +107,22 @@ public class TrainingTargetsAndAchievementsServiceImpl implements TrainingTarget
             );
 
 
-            // Achievements per quarter
-            int achievedQ1 = (int) participants.stream()
-                    .filter(p -> belongsToActivity(p, t))
-                    .filter(p -> getFinancialQuarter(p.getCreatedOn()) == 1)
-                    .count();
-
-            int achievedQ2 = (int) participants.stream()
-                    .filter(p -> belongsToActivity(p, t))
-                    .filter(p -> getFinancialQuarter(p.getCreatedOn()) == 2)
-                    .count();
-
-            int achievedQ3 = (int) participants.stream()
-                    .filter(p -> belongsToActivity(p, t))
-                    .filter(p -> getFinancialQuarter(p.getCreatedOn()) == 3)
-                    .count();
-
-            int achievedQ4 = (int) participants.stream()
-                    .filter(p -> belongsToActivity(p, t))
-                    .filter(p -> getFinancialQuarter(p.getCreatedOn()) == 4)
-                    .count();
-
+            Map<Integer, Long> achievedPerQuarter = programs.stream()
+                    .filter(pr -> pr.getActivityId().equals(t.getActivity().getActivityId()))
+                    .collect(Collectors.groupingBy(
+                            pr -> getFinancialQuarter(pr.getStartDate()), // or pr.getEndDate()
+                            Collectors.mapping(Program::getProgramId, Collectors.toSet()) // unique programs
+                    ))
+                    .entrySet().stream()
+                    .collect(Collectors.toMap(
+                            Map.Entry::getKey,
+                            e -> (long) e.getValue().size() // count unique programIds
+                    ));
+            // Retrieve counts safely (defaulting to 0 if missing)
+            int achievedQ1 = achievedPerQuarter.getOrDefault(1, 0L).intValue();
+            int achievedQ2 = achievedPerQuarter.getOrDefault(2, 0L).intValue();
+            int achievedQ3 = achievedPerQuarter.getOrDefault(3, 0L).intValue();
+            int achievedQ4 = achievedPerQuarter.getOrDefault(4, 0L).intValue();
             // Set totals
             dto.setAchievedQ1(achievedQ1);
             dto.setAchievedQ2(achievedQ2);
@@ -131,18 +131,13 @@ public class TrainingTargetsAndAchievementsServiceImpl implements TrainingTarget
             dto.setTotalTarget(t.getQ1Target() + t.getQ2Target() + t.getQ3Target() + t.getQ4Target());
             dto.setTotalAchieved(achievedQ1 + achievedQ2 + achievedQ3 + achievedQ4);
             dto.setTotalFinancialTarget(
-                    (int)(t.getQ1Budget() + t.getQ2Budget() + t.getQ3Budget() + t.getQ4Budget())
+                    (int) (t.getQ1Budget() + t.getQ2Budget() + t.getQ3Budget() + t.getQ4Budget())
             );
-            if(finQ1 !=null && finQ2 !=null && finQ3 !=null && finQ4 !=null) {
+            if (finQ1 != null && finQ2 != null && finQ3 != null && finQ4 != null) {
                 dto.setTotalFinancialAchieved(finQ1 + finQ2 + finQ3 + finQ4);
             }
             return dto;
         }).toList();
-    }
-
-    private boolean belongsToActivity(Participant p, TrainingTargets t) {
-        return p.getPrograms().stream()
-                .anyMatch(pr -> pr.getActivityId().equals(t.getActivity().getActivityId()));
     }
 
     /**
@@ -159,19 +154,19 @@ public class TrainingTargetsAndAchievementsServiceImpl implements TrainingTarget
         return 4;                                 // Q4: Jan–Mar
     }
 
-        public static Date[] getFinancialYearRange(String financialYear) {
-            // financialYear format: "YYYY-YYYY", e.g., "2025-2026"
-            String[] parts = financialYear.split("-");
-            int startYear = Integer.parseInt(parts[0]);
-            int endYear   = Integer.parseInt(parts[1]);
+    public static Date[] getFinancialYearRange(String financialYear) {
+        // financialYear format: "YYYY-YYYY", e.g., "2025-2026"
+        String[] parts = financialYear.split("-");
+        int startYear = Integer.parseInt(parts[0]);
+        int endYear = Integer.parseInt(parts[1]);
 
-            LocalDate start = LocalDate.of(startYear, 4, 1);   // FY starts April 1st
-            LocalDate end   = LocalDate.of(endYear, 3, 31);    // FY ends March 31st
+        LocalDate start = LocalDate.of(startYear, 4, 1);   // FY starts April 1st
+        LocalDate end = LocalDate.of(endYear, 3, 31);    // FY ends March 31st
 
-            return new Date[] {
-                    java.sql.Date.valueOf(start),
-                    java.sql.Date.valueOf(end)
-            };
-        }
+        return new Date[]{
+                java.sql.Date.valueOf(start),
+                java.sql.Date.valueOf(end)
+        };
+    }
 }
 

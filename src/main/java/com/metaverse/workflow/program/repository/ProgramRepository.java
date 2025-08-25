@@ -126,4 +126,16 @@ public interface ProgramRepository extends JpaRepository<Program, Long> {
             "GROUP BY pr.activityId")
     List<Object[]> countProgramsWithParticipantsByActivity(@Param("agencyId") Long agencyId);
 
+    @Query("SELECT DISTINCT pr " +
+            "FROM Program pr " +
+            "JOIN pr.participants p " +
+            "WHERE pr.agency.agencyId = :agencyId " +
+            "AND pr.startDate >= :startDate " +
+            "AND pr.endDate <= :endDate")
+    List<Program> findProgramsWithParticipantsByAgencyAndDateRange(
+            @Param("agencyId") Long agencyId,
+            @Param("startDate") Date startDate,
+            @Param("endDate") Date endDate);
+
+
 }

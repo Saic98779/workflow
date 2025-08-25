@@ -33,15 +33,25 @@ public interface ParticipantRepository extends JpaRepository<Participant, Long> 
 
     boolean existsByParticipantNameAndOrganization_OrganizationName(String participantName, String s);
 
+//    @Query("SELECT DISTINCT p FROM Participant p " +
+//            "JOIN p.programs pr " +
+//            "JOIN pr.agency ag " +
+//            "WHERE ag.agencyId = :agencyId " +
+//            "AND pr.createdOn BETWEEN :startDate AND :endDate")
+//    List<Participant> findAllByAgencyIdAndProgramCreatedOnBetween(
+//            @Param("agencyId") Long agencyId,
+//            @Param("startDate") Date startDate,
+//            @Param("endDate") Date endDate);
+
     @Query("SELECT DISTINCT p FROM Participant p " +
             "JOIN p.programs pr " +
-            "JOIN pr.agency ag " +
-            "WHERE ag.agencyId = :agencyId " +
-            "AND pr.createdOn BETWEEN :startDate AND :endDate")
-    List<Participant> findAllByAgencyIdAndProgramCreatedOnBetween(
+            "WHERE pr.agency.agencyId = :agencyId " +
+            "AND pr.endDate BETWEEN :startDate AND :endDate")
+    List<Participant> findByAgencyAndProgramEndDateBetween(
             @Param("agencyId") Long agencyId,
             @Param("startDate") Date startDate,
             @Param("endDate") Date endDate);
+
 
 
     @Query("SELECT pr.activityId, COUNT(DISTINCT p) " +
