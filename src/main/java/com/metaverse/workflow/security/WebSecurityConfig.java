@@ -88,7 +88,12 @@ public class WebSecurityConfig {
                         .authenticationEntryPoint(authenticationEntryPoint)
                         .accessDeniedHandler(accessDeniedHandler)
                 )
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .sessionManagement(session -> session
+                        .invalidSessionUrl("/login?session-expired") // redirect when session expires
+                        .maximumSessions(1) // Allow only 1 active session
+                        .maxSessionsPreventsLogin(true) // Prevent new login if a session already exists
+                        .expiredUrl("/login?session-expired")        // redirect if session expires due to new login
+                )
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(exceptionHandlerFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
