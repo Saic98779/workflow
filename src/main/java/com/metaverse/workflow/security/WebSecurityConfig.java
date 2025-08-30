@@ -4,13 +4,11 @@ import com.metaverse.workflow.security.config.CustomAccessDeniedHandler;
 import com.metaverse.workflow.security.config.CustomAuthenticationEntryPoint;
 import com.metaverse.workflow.security.config.ExceptionHandlerFilter;
 import com.metaverse.workflow.security.filter.JwtAuthenticationFilter;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -19,7 +17,6 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -42,17 +39,12 @@ public class WebSecurityConfig {
     private final CustomAuthenticationEntryPoint authenticationEntryPoint;
     private final CustomAccessDeniedHandler accessDeniedHandler;
     private final ExceptionHandlerFilter exceptionHandlerFilter;
-    
-    @Value("${server.servlet.context-path:/}")
-    private String contextPath;
 
     @Bean
-    @Order(Ordered.HIGHEST_PRECEDENCE)
-    CorsConfigurationSource  corsConfigurationSource() {
+    CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOriginPatterns(List.of(
                 "https://metaverseedu.in",
-                "https://metaverseedu.in/*",
                 "http://localhost:*"
         ));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
@@ -60,39 +52,37 @@ public class WebSecurityConfig {
         config.setAllowCredentials(true);
         config.setExposedHeaders(List.of("Authorization"));
         config.setMaxAge(3600L);
+
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return source;
     }
 
-    // security chain
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                // CORS is already handled by the corsFilter; keeping this is harmless
                 .csrf(csrf -> csrf.disable())
-                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // use the correct bean
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                         .requestMatchers("/auth/**", "/workflow/auth/**").permitAll()
-                        .requestMatchers(
-                                "/swagger-ui/**",
-                                "/v3/api-docs/**",
-                                "/tihcl/api/swagger-ui/**",
-                                "/tihcl/api/v3/api-docs/**"
-                        ).permitAll()
                         .requestMatchers("/auth/register/**").permitAll()
                         .anyRequest().authenticated()
                 )
-                .exceptionHandling(exception -> exception
+                .exceptionHandling(exceptions -> exceptions
                         .authenticationEntryPoint(authenticationEntryPoint)
                         .accessDeniedHandler(accessDeniedHandler)
                 )
                 .sessionManagement(session -> session
-                        .invalidSessionUrl("/login?session-expired") // redirect when session expires
-                        .maximumSessions(1) // Allow only 1 active session
-                        .maxSessionsPreventsLogin(true) // Prevent new login if a session already exists
-                        .expiredUrl("/login?session-expired")        // redirect if session expires due to new login
+                        .maximumSessions(1)
+                        .maxSessionsPreventsLogin(true)
+                        .expiredSessionStrategy(event -> {
+                            HttpServletResponse response = event.getResponse();
+                            response.setContentType("application/json");
+                            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                            response.getWriter().write("{\"code\":\"SESSION_EXPIRED\",\"message\":\"Another user is already logged in with these credentials.\",\"success\":false}");
+                        })
                 )
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(exceptionHandlerFilter, UsernamePasswordAuthenticationFilter.class)
@@ -114,3 +104,4 @@ public class WebSecurityConfig {
         return config.getAuthenticationManager();
     }
 }
+
