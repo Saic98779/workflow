@@ -1,18 +1,18 @@
-package com.metaverse.workflow.nontrainingExpenditures.service;
+package com.metaverse.workflow.nontrainingExpenditures.Dto;
 
-import lombok.AllArgsConstructor;
+import com.metaverse.workflow.nontrainingExpenditures.service.NonTrainingResourceExpenditureDTO;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.util.List;
+
 @Data
 @Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class NonTrainingResourceDTO {
+public class StaffDto {
+
+    private Long id;
+    private String nameOfTheStaff;
     private Long resourceId;
-    private String name;
     private String designation;
     private Double relevantExperience;
     private String educationalQualification;
@@ -23,4 +23,6 @@ public class NonTrainingResourceDTO {
     private String accountNo;
     private List<NonTrainingResourceExpenditureDTO> expenditures;
     private Long nonTrainingActivityId;
+    private Long nonTrainingSubActivityId;
+
 }

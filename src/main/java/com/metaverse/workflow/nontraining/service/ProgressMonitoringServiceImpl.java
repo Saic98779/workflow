@@ -83,7 +83,7 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
                 .orElse(Collections.emptyList());
 
         List<TrainingTargets> trainingTargetsList = trainingTargetRepository.findByAgency_AgencyId(agencyId);
-
+/*
         // Map activityId -> total training targets
         Map<Long, Long> activityIdToTotalTargetsMap = trainingTargetsList.stream()
                 .filter(tt -> tt.getActivity() != null && tt.getActivity().getActivityId() != null)
@@ -158,8 +158,8 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
                     );
                 })
                 .toList();
-
-
+*/
+/*
         // Build NonTrainingProgramDto list (unique per non-training activity)
         List<NonTrainingProgramDto> nonTrainingPrograms = nonActivityIdToTotalTargetsMap.keySet().stream()
                 .map(activityId -> {
@@ -177,10 +177,10 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
                 })
                 .toList();
 
-
+*/
         return ProgressMonitoringDto.builder()
-                .nonTrainingPrograms(nonTrainingPrograms)
-                .trainingPrograms(trainingPrograms)
+                .nonTrainingPrograms(null) //  replaced with null   actual variable. nonTrainingPrograms
+                .trainingPrograms(null) //replaced with null   actual variable : trainingPrograms
                 .build();
     }
 

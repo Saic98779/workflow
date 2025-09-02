@@ -1,6 +1,7 @@
 package com.metaverse.workflow.nontrainingExpenditures.repository;
 
 import com.metaverse.workflow.model.NonTrainingExpenditure;
+import com.metaverse.workflow.model.TravelAndTransport;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -36,5 +37,7 @@ public interface NonTrainingExpenditureRepository extends JpaRepository<NonTrain
             "AND nte.nonTrainingActivity.activityId = :activityId")
     Double sumExpenditureByAgencyAndActivity(@Param("agencyId") Long agencyId,
                                                          @Param("activityId") Long activityId);
+
+//    List<NonTrainingExpenditure> findByNonTrainingSubActivity_SubActivityId(Long subActivityId);
 
 }

@@ -34,4 +34,9 @@ public class ProgramSessionFile {
     @ManyToOne
     @JoinColumn(name = "budget_id")
     private OtherTrainingBudget otherTrainingBudget;
+
+    @ManyToOne
+    @JoinColumn(name = "travel_and_transport")
+    private TravelAndTransport travelAndTransport;
+
 }
