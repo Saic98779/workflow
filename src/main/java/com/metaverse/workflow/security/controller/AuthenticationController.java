@@ -56,15 +56,18 @@ public class AuthenticationController {
             );
         }
 
-        Optional<Agency> agency = agencyRepository.findById(request.getAgencyId());
-        if (request.getAgencyId() != null && agency.isEmpty()) {
-            return ResponseEntity.badRequest().body(
-                    ApplicationAPIResponse.<AuthenticationResponse>builder()
-                            .status(400)
-                            .message("Invalid Agency")
-                            .data(null)
-                            .build()
-            );
+        Optional<Agency> agency = Optional.empty();
+        if(null != request.getAgencyId()) {
+            agency = agencyRepository.findById(request.getAgencyId());
+            if (request.getAgencyId() != null && agency.isEmpty()) {
+                return ResponseEntity.badRequest().body(
+                        ApplicationAPIResponse.<AuthenticationResponse>builder()
+                                .status(400)
+                                .message("Invalid Agency")
+                                .data(null)
+                                .build()
+                );
+            }
         }
 
         User savedUser = loginRepository.save(User.builder()
@@ -73,7 +76,7 @@ public class AuthenticationController {
                 .password(passwordEncoder.encode(request.getPassword()))
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
-                .agency(agency.get())
+                .agency(agency.isPresent() ? agency.get() : null)
                 .gender(request.getGender())
                 .mobileNo(request.getMobileNo())
                 .userRole(request.getUserRole().name())
@@ -93,7 +96,7 @@ public class AuthenticationController {
                 .token(token)
                 .message("User registered successfully")
                 .userId(savedUser.getUserId())
-                .agencyId(agency.get().getAgencyId())
+                .agencyId(agency.isPresent() ? agency.get().getAgencyId() : null)
                 .email(savedUser.getEmail())
                 .firstName(savedUser.getFirstName())
                 .lastName(savedUser.getLastName())

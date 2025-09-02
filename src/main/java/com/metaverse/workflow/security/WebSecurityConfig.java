@@ -77,17 +77,17 @@ public class WebSecurityConfig {
                         .authenticationEntryPoint(authenticationEntryPoint)
                         .accessDeniedHandler(accessDeniedHandler)
                 )
-                .sessionManagement(session -> session
-                        .maximumSessions(1) // one per user
-                        .maxSessionsPreventsLogin(false) // if true → second login blocked, if false → first login invalidated
-                        .expiredSessionStrategy(event -> {
-                            HttpServletResponse response = event.getResponse();
-                            response.setContentType("application/json");
-                            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-                            response.getWriter().write("{\"code\":\"SESSION_EXPIRED\",\"message\":\"Another user is already logged in with these credentials.\",\"success\":false}");
-                        })
-                        .sessionRegistry(sessionRegistry()) // 🔑 important
-                )
+//                .sessionManagement(session -> session
+//                        .maximumSessions(1) // one per user
+//                        .maxSessionsPreventsLogin(false) // if true → second login blocked, if false → first login invalidated
+//                        .expiredSessionStrategy(event -> {
+//                            HttpServletResponse response = event.getResponse();
+//                            response.setContentType("application/json");
+//                            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+//                            response.getWriter().write("{\"code\":\"SESSION_EXPIRED\",\"message\":\"Another user is already logged in with these credentials.\",\"success\":false}");
+//                        })
+//                        .sessionRegistry(sessionRegistry()) //
+//                )
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(exceptionHandlerFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
