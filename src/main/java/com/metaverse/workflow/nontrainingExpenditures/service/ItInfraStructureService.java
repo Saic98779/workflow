@@ -41,8 +41,9 @@ public class ItInfraStructureService {
     }
 
     public List<NonTrainingExpenditureDto> getBySubActivityId(Long subActivityId) {
-        return expenditureRepo.findByNonTrainingSubActivity_SubActivityId(subActivityId)
-                .stream().map(this::convertToDto).collect(Collectors.toList());
+//        return expenditureRepo.findByNonTrainingSubActivity_SubActivityId(subActivityId)
+//                .stream().map(this::convertToDto).collect(Collectors.toList());
+        return null;
     }
 
     private NonTrainingExpenditureDto convertToDto(NonTrainingExpenditure entity) {

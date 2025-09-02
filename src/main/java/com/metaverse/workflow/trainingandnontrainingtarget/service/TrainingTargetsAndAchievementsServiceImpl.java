@@ -43,7 +43,7 @@ public class TrainingTargetsAndAchievementsServiceImpl implements TrainingTarget
 
         return targets.stream().map(t -> {
             TrainingTargetsAndAchievementsResponse dto = new TrainingTargetsAndAchievementsResponse();
-            dto.setActivityName(t.getActivity().getActivityName());
+//            dto.setActivityName(t.getActivity().getActivityName());
             dto.setFinancialYear(t.getFinancialYear());
             dto.setTrainingTargetQ1(t.getQ1Target());
             dto.setTrainingTargetQ2(t.getQ2Target());
@@ -58,49 +58,54 @@ public class TrainingTargetsAndAchievementsServiceImpl implements TrainingTarget
             Date[] fyRange = getFinancialYearRange(financialYear);
 
 // Q1: Apr–Jun
-            Double finQ1 = programExpenditureRepository.sumExpenditureByAgencyAndActivityAndDateRange(
+  /*          Double finQ1 = programExpenditureRepository.sumExpenditureByAgencyAndActivityAndDateRange(
                     agencyId, t.getActivity().getActivityId(),
                     java.sql.Date.valueOf(LocalDate.of(Integer.parseInt(financialYear.split("-")[0]), 4, 1)),
                     java.sql.Date.valueOf(LocalDate.of(Integer.parseInt(financialYear.split("-")[0]), 6, 30))
             );
             dto.setFinancialAchievedQ1(finQ1 != null ? finQ1 : 0.0);
-
+*/
 // Q2: Jul–Sep
-            Double finQ2 = programExpenditureRepository.sumExpenditureByAgencyAndActivityAndDateRange(
+           /* Double finQ2 = programExpenditureRepository.sumExpenditureByAgencyAndActivityAndDateRange(
                     agencyId, t.getActivity().getActivityId(),
                     java.sql.Date.valueOf(LocalDate.of(Integer.parseInt(financialYear.split("-")[0]), 7, 1)),
                     java.sql.Date.valueOf(LocalDate.of(Integer.parseInt(financialYear.split("-")[0]), 9, 30))
             );
             dto.setFinancialAchievedQ2(finQ2 != null ? finQ2 : 0.0);
-
+*/
 // Q3: Oct–Dec
-            Double finQ3 = programExpenditureRepository.sumExpenditureByAgencyAndActivityAndDateRange(
+ /*           Double finQ3 = programExpenditureRepository.sumExpenditureByAgencyAndActivityAndDateRange(
                     agencyId, t.getActivity().getActivityId(),
                     java.sql.Date.valueOf(LocalDate.of(Integer.parseInt(financialYear.split("-")[0]), 10, 1)),
                     java.sql.Date.valueOf(LocalDate.of(Integer.parseInt(financialYear.split("-")[0]), 12, 31))
             );
             dto.setFinancialAchievedQ3(finQ3 != null ? finQ3 : 0.0);
-
+*/
 // Q4: Jan–Mar (next year)
+/*
             Double finQ4 = programExpenditureRepository.sumExpenditureByAgencyAndActivityAndDateRange(
                     agencyId, t.getActivity().getActivityId(),
                     java.sql.Date.valueOf(LocalDate.of(Integer.parseInt(financialYear.split("-")[1]), 1, 1)),
                     java.sql.Date.valueOf(LocalDate.of(Integer.parseInt(financialYear.split("-")[1]), 3, 31))
             );
             dto.setFinancialAchievedQ4(finQ4 != null ? finQ4 : 0.0);
+*/
 
 // Totals
             dto.setTotalFinancialTarget(
                     (int)(t.getQ1Budget() + t.getQ2Budget() + t.getQ3Budget() + t.getQ4Budget())
             );
 
+/*
             dto.setTotalFinancialAchieved(
                     ((finQ1 != null ? finQ1 : 0.0) +
                             (finQ2 != null ? finQ2 : 0.0) +
                             (finQ3 != null ? finQ3 : 0.0) +
                             (finQ4 != null ? finQ4 : 0.0))
             );
+*/
 
+/*
 
             // Achievements per quarter
             int achievedQ1 = (int) participants.stream()
@@ -133,17 +138,18 @@ public class TrainingTargetsAndAchievementsServiceImpl implements TrainingTarget
             dto.setTotalFinancialTarget(
                     (int)(t.getQ1Budget() + t.getQ2Budget() + t.getQ3Budget() + t.getQ4Budget())
             );
-            if(finQ1 !=null && finQ2 !=null && finQ3 !=null && finQ4 !=null) {
+*/
+           /* if(finQ1 !=null && finQ2 !=null && finQ3 !=null && finQ4 !=null) {
                 dto.setTotalFinancialAchieved(finQ1 + finQ2 + finQ3 + finQ4);
-            }
+            }*/
             return dto;
         }).toList();
     }
 
-    private boolean belongsToActivity(Participant p, TrainingTargets t) {
+   /* private boolean belongsToActivity(Participant p, TrainingTargets t) {
         return p.getPrograms().stream()
                 .anyMatch(pr -> pr.getActivityId().equals(t.getActivity().getActivityId()));
-    }
+    }*/
 
     /**
      * Convert createdOn -> Financial Quarter (Apr–Mar)

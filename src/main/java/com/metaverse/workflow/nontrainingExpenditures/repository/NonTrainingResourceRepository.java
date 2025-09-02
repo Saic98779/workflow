@@ -9,5 +9,5 @@ import java.util.List;
 
 @Repository
 public interface NonTrainingResourceRepository extends JpaRepository<NonTrainingResource,Long> {
-    List<NonTrainingResource> findByNonTrainingSubActivity_SubActivityId(Long subActivityId);
+//    List<NonTrainingResource> findByNonTrainingSubActivity_SubActivityId(Long subActivityId);
 }

@@ -2,13 +2,19 @@ package com.metaverse.workflow.nontrainingExpenditures.service;
 
 
 import com.metaverse.workflow.common.enums.PaymentType;
+import com.metaverse.workflow.common.fileservice.StorageService;
+import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.model.NonTrainingSubActivity;
+import com.metaverse.workflow.model.ProgramSessionFile;
 import com.metaverse.workflow.model.TravelAndTransport;
 import com.metaverse.workflow.nontrainingExpenditures.Dto.TravelAndTransportDto;
 import com.metaverse.workflow.nontrainingExpenditures.repository.NonTrainingSubActivityRepository;
 import com.metaverse.workflow.nontrainingExpenditures.repository.TravelAndTransportRepository;
+import com.metaverse.workflow.program.repository.ProgramSessionFileRepository;
+import com.metaverse.workflow.program.service.ProgramSessionFileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -20,22 +26,36 @@ public class TravelAndTransportService {
 
     private final TravelAndTransportRepository travelRepo;
     private final NonTrainingSubActivityRepository subActivityRepo;
+    private final StorageService storageService;
+    private final ProgramSessionFileRepository programSessionFileRepository;
 
+    public WorkflowResponse saveTravel(TravelAndTransportDto dto, MultipartFile file) {
 
-    public TravelAndTransportDto saveTravel(TravelAndTransportDto dto) {
+        try {
+            NonTrainingSubActivity subActivity = subActivityRepo.findById(dto.getNonTrainingSubActivityId())
+                    .orElseThrow(() -> new RuntimeException("NonTrainingSubActivity not found with id " + dto.getNonTrainingSubActivityId()));
 
+            TravelAndTransport entity = convertToEntity(dto);
+            entity.setNonTrainingSubActivity(subActivity);
+            TravelAndTransport saved = travelRepo.save(entity);
 
-        NonTrainingSubActivity subActivity = subActivityRepo.findById(dto.getNonTrainingSubActivityId())
-                .orElseThrow(() -> new RuntimeException("NonTrainingSubActivity not found with id " + dto.getNonTrainingSubActivityId()));
+            if (file != null && !file.isEmpty()) {
+                String filePath = this.storageTravelAndTransportFiles(file, saved.getTravelTransportId(), "TravelAndTransport");
+                saved.setBillInvoicePath(filePath);
+                travelRepo.save(saved);
+                programSessionFileRepository.save(ProgramSessionFile.builder()
+                        .fileType("File")
+                        .filePath(filePath)
+                        .travelAndTransport(saved)
+                        .build());
+            }
+            return WorkflowResponse.builder().data(convertToDto(saved)).message("Saved").status(200).build();
 
-        TravelAndTransport entity = convertToEntity(dto);
-        entity.setNonTrainingSubActivity(subActivity);
+        } catch (RuntimeException e) {
+            return WorkflowResponse.builder().message(e.getMessage()).status(400).build();
+        }
 
-
-        TravelAndTransport saved = travelRepo.save(entity);
-        return convertToDto(saved);
     }
-
 
     public List<TravelAndTransportDto> getBySubActivityId(Long subActivityId) {
         return travelRepo.findByNonTrainingSubActivity_SubActivityId(subActivityId)
@@ -71,6 +91,8 @@ public class TravelAndTransportService {
         existing.setIfscCode(dto.getIfscCode());
         existing.setPurpose(dto.getPurpose());
         existing.setBillInvoicePath(dto.getBillInvoicePath());
+
+
 
         if (dto.getNonTrainingSubActivityId() != null) {
             NonTrainingSubActivity subActivity = subActivityRepo.findById(dto.getNonTrainingSubActivityId())
@@ -126,5 +148,10 @@ public class TravelAndTransportService {
         entity.setBillInvoicePath(dto.getBillInvoicePath());
 
         return entity;
+    }
+
+    public String storageTravelAndTransportFiles(MultipartFile file, Long TravelAndTransportId, String folderName) {
+            String filePath = storageService.travelAndTransportStore(file, TravelAndTransportId, folderName);
+        return  filePath;
     }
 }

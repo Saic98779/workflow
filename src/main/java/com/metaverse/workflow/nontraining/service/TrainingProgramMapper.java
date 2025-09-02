@@ -14,7 +14,7 @@ public class TrainingProgramMapper {
             TrainingTargets trainingTargets, Long totalTargets, Double totalBudget, Long achievedCount, Double financialExpenditure) {
 
         return TrainingProgramDto.builder()
-                .activity(trainingTargets.getActivity().getActivityName())
+                .activity(trainingTargets.getSubActivity().getSubActivityName())
                 .agency(trainingTargets.getAgency().getAgencyName())
                 .budgetAllocated(totalBudget)
                 .expenditure(financialExpenditure)

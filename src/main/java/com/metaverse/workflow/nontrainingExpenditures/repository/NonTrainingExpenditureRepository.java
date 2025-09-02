@@ -38,6 +38,6 @@ public interface NonTrainingExpenditureRepository extends JpaRepository<NonTrain
     Double sumExpenditureByAgencyAndActivity(@Param("agencyId") Long agencyId,
                                                          @Param("activityId") Long activityId);
 
-    List<NonTrainingExpenditure> findByNonTrainingSubActivity_SubActivityId(Long subActivityId);
+//    List<NonTrainingExpenditure> findByNonTrainingSubActivity_SubActivityId(Long subActivityId);
 
 }
