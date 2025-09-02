@@ -34,7 +34,7 @@ public class FileSystemStorageService implements StorageService {
     }
 
     @Override
-    public String store(MultipartFile file, Long programId, String folderName) {
+    public String  store(MultipartFile file, Long programId, String folderName) {
         String path;
         try {
             if (file.isEmpty()) {
@@ -148,6 +148,35 @@ public class FileSystemStorageService implements StorageService {
         catch (IOException e) {
             throw new StorageException("Could not initialize storage", e);
         }
+    }
+
+    @Override
+    public String travelAndTransportStore(MultipartFile file, Long travelAndTransportId, String folderName) {
+        String path;
+        try {
+            if (file.isEmpty()) {
+                throw new StorageException("Failed to store empty file.");
+            }
+            Files.createDirectories(Paths.get(properties.getLocation() + travelAndTransportId + "/"+ folderName + "/"));
+            this.rootLocation = Paths.get(properties.getLocation() + travelAndTransportId + "/"+ folderName + "/");
+            Path destinationFile = this.rootLocation.resolve(
+                            Paths.get(file.getOriginalFilename()))
+                    .normalize().toAbsolutePath();
+            if (!destinationFile.getParent().equals(this.rootLocation.toAbsolutePath())) {
+                // This is a security check
+                throw new StorageException(
+                        "Cannot store file outside current directory.");
+            }
+            try (InputStream inputStream = file.getInputStream()) {
+                Files.copy(inputStream, destinationFile,
+                        StandardCopyOption.REPLACE_EXISTING);
+                path = destinationFile.toAbsolutePath().toString();
+            }
+        }
+        catch (IOException e) {
+            throw new StorageException("Failed to store file.", e);
+        }
+        return path;
     }
 
 }

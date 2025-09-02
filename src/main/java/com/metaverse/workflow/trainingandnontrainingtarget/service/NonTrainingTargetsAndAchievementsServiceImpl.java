@@ -38,7 +38,7 @@ public class NonTrainingTargetsAndAchievementsServiceImpl implements NonTraining
 
         return targets.stream().map(t -> {
             NonTrainingTargetsAndAchievementsResponse dto = new NonTrainingTargetsAndAchievementsResponse();
-            dto.setActivityName(t.getNonTrainingActivity().getActivityName());
+//            dto.setActivityName(t.getNonTrainingActivity().getActivityName());
             dto.setFinancialYear(t.getFinancialYear());
             dto.setTrainingTargetQ1(t.getQ1Target());
             dto.setTrainingTargetQ2(t.getQ2Target());
@@ -52,7 +52,7 @@ public class NonTrainingTargetsAndAchievementsServiceImpl implements NonTraining
 
             // Financial Achievements per quarter
             Date[] fyRange = getFinancialYearRange(financialYear);
-
+/*
 // Q1: Apr–Jun
             Double finQ1 = nonTrainingExpenditureRepository.sumExpenditureByAgencyAndActivityAndDateRange(
                     agencyId, t.getNonTrainingActivity().getActivityId(),
@@ -97,7 +97,7 @@ public class NonTrainingTargetsAndAchievementsServiceImpl implements NonTraining
                             (finQ4 != null ? finQ4 : 0.0))
             );
 
-
+*/
             // Set totals
             dto.setAchievedQ1(t.getAchievements().stream().map(NonTrainingAchievement::getQ1Achievement).findFirst().orElse("Yet to Begin"));
             dto.setAchievedQ2(t.getAchievements().stream().map(NonTrainingAchievement::getQ2Achievement).findFirst().orElse("Yet to Begin"));
@@ -111,9 +111,9 @@ public class NonTrainingTargetsAndAchievementsServiceImpl implements NonTraining
                     dto.getTotalFinancialTarget() == 0 ? 0.0 :
                             Math.round((dto.getTotalFinancialAchieved() / dto.getTotalFinancialTarget()) * 100 * 100.0) / 100.0
             );
-            if (finQ1 != null && finQ2 != null && finQ3 != null && finQ4 != null) {
+           /* if (finQ1 != null && finQ2 != null && finQ3 != null && finQ4 != null) {
                 dto.setTotalFinancialAchieved(finQ1 + finQ2 + finQ3 + finQ4);
-            }
+            }*/
             return dto;
         }).toList();
     }

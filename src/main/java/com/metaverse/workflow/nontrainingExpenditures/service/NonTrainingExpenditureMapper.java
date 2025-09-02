@@ -26,7 +26,7 @@ public class NonTrainingExpenditureMapper {
         NonTrainingExpenditure entity = new NonTrainingExpenditure();
         entity.setId(dto.getId());
         entity.setAgency(agency);
-        entity.setNonTrainingActivity(activity);
+//        entity.setNonTrainingActivity(activity);
         entity.setPaymentDate(DateUtil.stringToDate(dto.getPaymentDate(),"dd-MM-yyyy"));
         entity.setExpenditureAmount(dto.getExpenditureAmount());
         entity.setBillNo(dto.getBillNo());
@@ -56,7 +56,7 @@ public class NonTrainingExpenditureMapper {
         entity.setBankName(dto.getBankName());
         entity.setIfscCode(dto.getIfscCode());
         entity.setAccountNo(dto.getAccountNo());
-        entity.setNonTrainingActivity(nonTrainingActivity);
+//        entity.setNonTrainingActivity(nonTrainingActivity);
         return entity;
     }
 

@@ -16,7 +16,7 @@ public class TrainingTargetResponseMapper {
                 .q4(request.getQ4Target())
                 .yearlyTarget(request.getQ1Target() + request.getQ2Target() + request.getQ3Target() + request.getQ4Target())
                 .agencyName(request.getAgency().getAgencyName())
-                .activityName(request.getActivity().getActivityName())
+//                .activityName(request.getActivity().getActivityName())
                 .build();
     }
 

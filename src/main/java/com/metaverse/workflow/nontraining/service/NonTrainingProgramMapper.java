@@ -19,15 +19,15 @@ public class NonTrainingProgramMapper {
 
     public NonTrainingProgramDto nonTrainingProgramDtoMapper(NonTrainingTargets nonTrainingTargets, Long totalTargets, Double totalBudget, double financialExpenditure) {
 
-        NonTrainingActivity nonTrainingActivity = nonTrainingTargets.getNonTrainingActivity();
+//        NonTrainingActivity nonTrainingActivity = nonTrainingTargets.getNonTrainingActivity();
 
-        NonTrainingAchievement nonTrainingAchievement = nonTrainingActivity.getAchievements().stream()
+        /*NonTrainingAchievement nonTrainingAchievement = nonTrainingActivity.getAchievements().stream()
                 .filter(ach -> ach.getNonTrainingActivity().getActivityId()
                         .equals(nonTrainingActivity.getActivityId()))
                 .findFirst()
                 .orElse(null);
-
-        return NonTrainingProgramDto.builder()
+*/
+        return null; /* NonTrainingProgramDto.builder()
                 .nonTrainingActivity(nonTrainingActivity.getActivityName())
                 .physicalTarget(totalTargets != null ? totalTargets.intValue() : 0)
                 .physicalAchievement((nonTrainingAchievement != null ? nonTrainingAchievement.getPhysicalTargetAchievement() : null) != null ?
@@ -35,6 +35,6 @@ public class NonTrainingProgramMapper {
                 .financialTarget(totalBudget)
                 .financialExpenditure(financialExpenditure)
                 .percentage(Math.round(financialExpenditure / totalBudget * 100 * 1000.0) / 1000.0)
-                .build();
+                .build();*/
     }
 }

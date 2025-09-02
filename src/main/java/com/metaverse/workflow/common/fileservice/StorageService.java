@@ -21,4 +21,6 @@ public interface StorageService {
     Resource loadAsResource(String filename);
 
     void deleteAll(List<String> filePaths);
+
+     String travelAndTransportStore(MultipartFile file, Long travelAndTransportId, String folderName);
 }
