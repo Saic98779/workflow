@@ -39,4 +39,8 @@ public class ProgramSessionFile {
     @JoinColumn(name = "travel_and_transport")
     private TravelAndTransport travelAndTransport;
 
+    @ManyToOne
+    @JoinColumn(name = "non_training_expenditure")
+    private NonTrainingExpenditure nonTrainingExpenditure;
+
 }

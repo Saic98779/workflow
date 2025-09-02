@@ -1,6 +1,7 @@
 package com.metaverse.workflow.nontrainingExpenditures.service;
 
 import com.metaverse.workflow.agency.repository.AgencyRepository;
+import com.metaverse.workflow.common.fileservice.StorageService;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.common.util.DateUtil;
 import com.metaverse.workflow.exceptions.DataException;
@@ -8,9 +9,12 @@ import com.metaverse.workflow.model.*;
 import com.metaverse.workflow.nontraining.repository.NonTrainingActivityRepository;
 import com.metaverse.workflow.nontrainingExpenditures.repository.NonTrainingExpenditureRepository;
 import com.metaverse.workflow.nontrainingExpenditures.repository.NonTrainingResourceExpenditureRepo;
+import com.metaverse.workflow.nontrainingExpenditures.repository.NonTrainingSubActivityRepository;
 import com.metaverse.workflow.nontrainingExpenditures.repository.ResourceRepo;
+import com.metaverse.workflow.program.repository.ProgramSessionFileRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,21 +26,41 @@ public class NonTrainingExpenditureService {
 
     private final NonTrainingExpenditureRepository repository;
     private final AgencyRepository agencyRepository;
-    private final NonTrainingActivityRepository nonTrainingActivityRepository;
+    private final NonTrainingSubActivityRepository nonTrainingSubActivityRepository;
     private final ResourceRepo resourceRepo;
     private final NonTrainingResourceExpenditureRepo resourceExpenditureRepo;
+    private final StorageService storageService;
+    private final ProgramSessionFileRepository programSessionFileRepository;
+    private final NonTrainingActivityRepository nonTrainingActivityRepository;
 
-    public WorkflowResponse create(NonTrainingExpenditureDTO dto) throws DataException {
+    public WorkflowResponse create(NonTrainingExpenditureDTO dto, MultipartFile file) throws DataException {
         Agency agency = agencyRepository.findById(dto.getAgencyId())
                 .orElseThrow(() -> new DataException("Agency not found","AGENCY_NOT_FOUND",400));
-        NonTrainingActivity activity = nonTrainingActivityRepository.findById(dto.getNonTrainingActivityId())
+        NonTrainingSubActivity subActivity = nonTrainingSubActivityRepository.findById(dto.getNonTrainingSubActivityId())
                 .orElseThrow(() -> new DataException("Activity not found","ACTIVITY_NOT_FOUND",400));
 
-        NonTrainingExpenditure entity = NonTrainingExpenditureMapper.toEntity(dto, agency, activity);
+        NonTrainingActivity activity = nonTrainingActivityRepository.findById(dto.getNonTrainingSubActivityId())
+                .orElseThrow(() -> new DataException("Activity not found","ACTIVITY_NOT_FOUND",400));
+
+
+        NonTrainingExpenditure entity = NonTrainingExpenditureMapper.toEntity(dto, agency, activity, subActivity);
+        NonTrainingExpenditure save = repository.save(entity);
+
+        if (file != null && !file.isEmpty()) {
+            String filePath = this.storageFiles(file, save.getId(), "TravelAndTransport");
+            save.setUploadBillUrl(filePath);
+            repository.save(save);
+            programSessionFileRepository.save(ProgramSessionFile.builder()
+                    .fileType("File")
+                    .filePath(filePath)
+                    .nonTrainingExpenditure(save)
+                    .build());
+        }
+
         return WorkflowResponse.builder()
                 .status(200)
                 .message("Success")
-                .data(NonTrainingExpenditureMapper.toDTO(repository.save(entity))).build();
+                .data(NonTrainingExpenditureMapper.toDTO(save)).build();
     }
 
     public List<NonTrainingExpenditureDTO> getAll() {
@@ -58,10 +82,14 @@ public class NonTrainingExpenditureService {
 
         Agency agency = agencyRepository.findById(dto.getAgencyId())
                 .orElseThrow(() -> new DataException("Agency not found","AGENCY_NOT_FOUND",400));
-        NonTrainingActivity activity = nonTrainingActivityRepository.findById(dto.getNonTrainingActivityId())
+        NonTrainingSubActivity subActivity = nonTrainingSubActivityRepository.findById(dto.getNonTrainingSubActivityId())
                 .orElseThrow(() -> new DataException("Activity not found","ACTIVITY_NOT_FOUND",400));
 
-        NonTrainingExpenditure updated = NonTrainingExpenditureMapper.toEntity(dto, agency, activity);
+        NonTrainingActivity activity = nonTrainingActivityRepository.findById(dto.getNonTrainingSubActivityId())
+                .orElseThrow(() -> new DataException("Activity not found","ACTIVITY_NOT_FOUND",400));
+
+
+        NonTrainingExpenditure updated = NonTrainingExpenditureMapper.toEntity(dto, agency, activity,  subActivity);
         updated.setId(existing.getId());
         return NonTrainingExpenditureMapper.toDTO(repository.save(updated));
     }
@@ -72,7 +100,7 @@ public class NonTrainingExpenditureService {
         repository.deleteById(id);
     }
     public WorkflowResponse saveResource(NonTrainingResourceDTO resource) throws DataException {
-        NonTrainingActivity activity = nonTrainingActivityRepository.findById(resource.getNonTrainingActivityId())
+        NonTrainingSubActivity activity = nonTrainingSubActivityRepository.findById(resource.getNonTrainingActivityId())
                 .orElseThrow(() -> new DataException("Activity not found","ACTIVITY_NOT_FOUND",400));
 
         NonTrainingResource nonTrainingResource = NonTrainingExpenditureMapper.mapToResource(resource,activity);
@@ -227,7 +255,10 @@ public class NonTrainingExpenditureService {
                 .data(allExpendituresDto)
                 .build();
     }
-
+    public String storageFiles(MultipartFile file, Long TravelAndTransportId, String folderName) {
+        String filePath = storageService.travelAndTransportStore(file, TravelAndTransportId, folderName);
+        return  filePath;
+    }
 
 
 }

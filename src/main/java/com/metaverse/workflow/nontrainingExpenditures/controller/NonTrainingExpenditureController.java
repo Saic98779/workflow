@@ -1,16 +1,22 @@
 package com.metaverse.workflow.nontrainingExpenditures.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.common.util.RestControllerBase;
 import com.metaverse.workflow.exceptions.DataException;
+import com.metaverse.workflow.nontrainingExpenditures.Dto.TravelAndTransportDto;
 import com.metaverse.workflow.nontrainingExpenditures.service.NonTrainingExpenditureDTO;
 import com.metaverse.workflow.nontrainingExpenditures.service.NonTrainingExpenditureService;
 import com.metaverse.workflow.nontrainingExpenditures.service.NonTrainingResourceDTO;
 import com.metaverse.workflow.nontrainingExpenditures.service.NonTrainingResourceExpenditureDTO;
 import jakarta.websocket.server.PathParam;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -21,13 +27,19 @@ public class NonTrainingExpenditureController extends RestControllerBase {
 
     private final NonTrainingExpenditureService service;
 
-    @PostMapping
-    public ResponseEntity<?> create(@RequestBody NonTrainingExpenditureDTO dto) {
+    @PostMapping(path = "/save",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> create(@RequestPart("dto") String dto,@RequestPart(value = "file", required = false) MultipartFile file) {
         try {
-            WorkflowResponse response = service.create(dto);
+            ObjectMapper objectMapper = new ObjectMapper();
+            NonTrainingExpenditureDTO nonTrainingExpenditureDTO = objectMapper.readValue(dto, NonTrainingExpenditureDTO.class);
+            WorkflowResponse response = service.create(nonTrainingExpenditureDTO,file);
             return ResponseEntity.ok(response);
         } catch (DataException e) {
             return error(e);
+        } catch (JsonMappingException e) {
+            throw new RuntimeException(e);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
         }
     }
 
