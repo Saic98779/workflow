@@ -12,6 +12,7 @@ import com.metaverse.workflow.nontrainingExpenditures.repository.ResourceRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -178,8 +179,9 @@ public class NonTrainingExpenditureService {
     }
 
     public WorkflowResponse getResourceByNonTrainingActivity(Long nonTrainingActivityId) throws DataException {
-        List<NonTrainingResource> resourceList=resourceRepo.findByNonTrainingActivity_ActivityId(nonTrainingActivityId)
-                .orElseThrow(() -> new DataException("Resource not found with this activity id " + nonTrainingActivityId,"RESOURCE_NOT_FOUND",400));
+        List<NonTrainingResource> resourceList =  new ArrayList<>();
+//        List<NonTrainingResource> resourceList=resourceRepo.findByNonTrainingActivity_ActivityId(nonTrainingActivityId)
+//                .orElseThrow(() -> new DataException("Resource not found with this activity id " + nonTrainingActivityId,"RESOURCE_NOT_FOUND",400));
         return WorkflowResponse.builder().status(200)
                 .message("success")
                 .data(resourceList.stream().map(NonTrainingExpenditureMapper::mapToResourceResForDropdown).toList())
@@ -187,8 +189,9 @@ public class NonTrainingExpenditureService {
     }
 
     public WorkflowResponse getAllResourceByNonTrainingActivityId(Long nonTrainingActivityId) throws DataException {
-        List<NonTrainingResource> resourceList=resourceRepo.findByNonTrainingActivity_ActivityId(nonTrainingActivityId)
-                .orElseThrow(() -> new DataException("Resource not found with this activity id " + nonTrainingActivityId,"RESOURCE_NOT_FOUND",400));
+        List<NonTrainingResource> resourceList =  new ArrayList<>();
+//        List<NonTrainingResource> resourceList=resourceRepo.findByNonTrainingActivity_ActivityId(nonTrainingActivityId)
+//                .orElseThrow(() -> new DataException("Resource not found with this activity id " + nonTrainingActivityId,"RESOURCE_NOT_FOUND",400));
         return WorkflowResponse.builder().status(200)
                 .message("success")
                 .data(resourceList.stream().map(NonTrainingExpenditureMapper::mapToResourceRes).toList())
@@ -196,19 +199,21 @@ public class NonTrainingExpenditureService {
     }
 
     public WorkflowResponse getAllExpenditureByNonTrainingActivityId(Long nonTrainingActivityId) throws DataException {
-        List<NonTrainingExpenditure> expenditureList=repository.findByNonTrainingActivity_ActivityId(nonTrainingActivityId)
-                .orElseThrow(() -> new DataException("Expenditure not found with this activity id " + nonTrainingActivityId,"EXPENDITURE_NOT_FOUND",400));
+        List<NonTrainingExpenditure> expenditureList = new ArrayList<>();
+//        List<NonTrainingExpenditure> expenditureList=repository.findByNonTrainingActivity_ActivityId(nonTrainingActivityId)
+//                .orElseThrow(() -> new DataException("Expenditure not found with this activity id " + nonTrainingActivityId,"EXPENDITURE_NOT_FOUND",400));
         return WorkflowResponse.builder().status(200)
                 .message("success")
                 .data(expenditureList.stream().map(NonTrainingExpenditureMapper::toDTO).toList())
                 .build();
     }
     public WorkflowResponse getAllResourceExpenditureByNonTrainingActivityId(Long nonTrainingActivityId) throws DataException {
-        List<NonTrainingResource> resourceList = resourceRepo.findByNonTrainingActivity_ActivityId(nonTrainingActivityId)
-                .orElseThrow(() -> new DataException(
-                        "Resource not found with this activity id " + nonTrainingActivityId,
-                        "RESOURCE_NOT_FOUND",
-                        400));
+        List<NonTrainingResource> resourceList = new ArrayList<>();
+//        List<NonTrainingResource> resourceList = resourceRepo.findByNonTrainingActivity_ActivityId(nonTrainingActivityId)
+//                .orElseThrow(() -> new DataException(
+//                        "Resource not found with this activity id " + nonTrainingActivityId,
+//                        "RESOURCE_NOT_FOUND",
+//                        400));
 
         List<NonTrainingResourceExpenditureDTO> allExpendituresDto =
                 resourceList.stream()

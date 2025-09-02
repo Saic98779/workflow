@@ -8,6 +8,7 @@ import com.metaverse.workflow.trainingandnontrainingtarget.repository.TrainingTa
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -21,14 +22,14 @@ public class TrainingTargetServiceImpl implements TrainingTargetService {
     @Override
     public WorkflowResponse getTrainingTargetsByAgencyId(Long agencyId) throws DataException {
 
-        List<TrainingTargets> targets;
+        List<TrainingTargets> targets = new ArrayList<>();
         if(agencyId==-1) {
             targets = trainingTargetRepository.findAll();
             if(targets.isEmpty()) return WorkflowResponse.builder().status(400).message("Target Data not found").build();
         }
         else if(!agencyRepository.existsById(agencyId))return WorkflowResponse.builder().status(400).message("agency not found").build();
         else{
-            targets = trainingTargetRepository.findByAgency_AgencyId(agencyId);
+//            targets = trainingTargetRepository.findByAgency_AgencyId(agencyId);
             if (targets.isEmpty()) return WorkflowResponse.builder().status(400).message("Targets  not assigned for this agency").build();
         }
 

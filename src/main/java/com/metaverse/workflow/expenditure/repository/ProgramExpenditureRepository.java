@@ -18,19 +18,19 @@ public interface ProgramExpenditureRepository extends JpaRepository<ProgramExpen
     List<ProgramExpenditure> findByAgency_AgencyIdAndProgram_ProgramId(Long agencyId,Long programId);
     void deleteByProgramProgramId(Long programId);
 
-    @Query("SELECT pe.activity.activityId, SUM(pe.cost) " +
-            "FROM ProgramExpenditure pe " +
-            "WHERE pe.agency.agencyId = :agencyId " +
-            "GROUP BY pe.activity.activityId")
-    List<Object[]> sumExpenditureByAgencyGroupedByActivity(@Param("agencyId") Long agencyId);
-
-    @Query("SELECT SUM(pe.cost) FROM ProgramExpenditure pe " +
-            "WHERE pe.agency.agencyId = :agencyId " +
-            "AND pe.activity.activityId = :activityId " +
-            "AND pe.billDate BETWEEN :startDate AND :endDate")
-    Double sumExpenditureByAgencyAndActivityAndDateRange(@Param("agencyId") Long agencyId,
-                                                         @Param("activityId") Long activityId,
-                                                         @Param("startDate") Date startDate,
-                                                         @Param("endDate") Date endDate);
+//    @Query("SELECT pe.activity.activityId, SUM(pe.cost) " +
+//            "FROM ProgramExpenditure pe " +
+//            "WHERE pe.agency.agencyId = :agencyId " +
+//            "GROUP BY pe.activity.activityId")
+//    List<Object[]> sumExpenditureByAgencyGroupedByActivity(@Param("agencyId") Long agencyId);
+//
+//    @Query("SELECT SUM(pe.cost) FROM ProgramExpenditure pe " +
+//            "WHERE pe.agency.agencyId = :agencyId " +
+//            "AND pe.activity.activityId = :activityId " +
+//            "AND pe.billDate BETWEEN :startDate AND :endDate")
+//    Double sumExpenditureByAgencyAndActivityAndDateRange(@Param("agencyId") Long agencyId,
+//                                                         @Param("activityId") Long activityId,
+//                                                         @Param("startDate") Date startDate,
+//                                                         @Param("endDate") Date endDate);
 
 }

@@ -42,13 +42,13 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
                         programRepository.countProgramsWithParticipantsByActivity(agencyId))
                 .orElse(Collections.emptyList());
 
-        List<Object[]> expenditure = Optional.ofNullable(
-                        programExpenditureRepository.sumExpenditureByAgencyGroupedByActivity(agencyId))
-                .orElse(Collections.emptyList());
-
-        List<Object[]> nonTrainingExpenditure = Optional.ofNullable(
-                        nonTrainingExpenditureRepository.sumExpenditureByAgencyGroupedByActivity(agencyId))
-                .orElse(Collections.emptyList());
+//        List<Object[]> expenditure = Optional.ofNullable(
+//                        programExpenditureRepository.sumExpenditureByAgencyGroupedByActivity(agencyId))
+//                .orElse(Collections.emptyList());
+//
+//        List<Object[]> nonTrainingExpenditure = Optional.ofNullable(
+//                        nonTrainingExpenditureRepository.sumExpenditureByAgencyGroupedByActivity(agencyId))
+//                .orElse(Collections.emptyList());
 
         // Map activityId -> program count
         Map<Long, Long> activityCountByPrograms = programsCountWithOneParticipant.stream()
@@ -59,30 +59,30 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
                 ));
 
         // Map activityId -> expenditure
-        Map<Long, Double> expenditureByActivity = expenditure.stream()
-                .filter(row -> row[0] != null && row[1] != null)
-                .collect(Collectors.toMap(
-                        row -> (Long) row[0],   // activityId
-                        row -> (Double) row[1]  // sum of cost
-                ));
-
-        Map<Long, Double> nonTrainingExpenditureByActivity = nonTrainingExpenditure.stream()
-                .filter(row -> row[0] != null && row[1] != null)
-                .collect(Collectors.toMap(
-                        row -> (Long) row[0],   // non-training activityId
-                        row -> (Double) row[1]  // sum of cost
-                ));
+//        Map<Long, Double> expenditureByActivity = expenditure.stream()
+//                .filter(row -> row[0] != null && row[1] != null)
+//                .collect(Collectors.toMap(
+//                        row -> (Long) row[0],   // activityId
+//                        row -> (Double) row[1]  // sum of cost
+//                ));
+//
+//        Map<Long, Double> nonTrainingExpenditureByActivity = nonTrainingExpenditure.stream()
+//                .filter(row -> row[0] != null && row[1] != null)
+//                .collect(Collectors.toMap(
+//                        row -> (Long) row[0],   // non-training activityId
+//                        row -> (Double) row[1]  // sum of cost
+//                ));
 
         // Fetch targets
-        List<NonTrainingTargets> nonTrainingTargets = Optional.ofNullable(
-                        nonTrainingTargetRepository.findByNonTrainingActivity_Agency_AgencyId(agencyId))
-                .orElse(Collections.emptyList());
+//        List<NonTrainingTargets> nonTrainingTargets = Optional.ofNullable(
+//                        nonTrainingTargetRepository.findByNonTrainingActivity_Agency_AgencyId(agencyId))
+//                .orElse(Collections.emptyList());
 
-        List<TrainingTargets> trainingTargets = Optional.ofNullable(
-                        trainingTargetRepository.findByActivity_Agency_AgencyId(agencyId))
-                .orElse(Collections.emptyList());
+//        List<TrainingTargets> trainingTargets = Optional.ofNullable(
+//                        trainingTargetRepository.findByActivity_Agency_AgencyId(agencyId))
+//                .orElse(Collections.emptyList());
 
-        List<TrainingTargets> trainingTargetsList = trainingTargetRepository.findByAgency_AgencyId(agencyId);
+//        List<TrainingTargets> trainingTargetsList = trainingTargetRepository.findByAgency_AgencyId(agencyId);
 /*
         // Map activityId -> total training targets
         Map<Long, Long> activityIdToTotalTargetsMap = trainingTargetsList.stream()

@@ -8,7 +8,7 @@ import java.util.List;
 
 @Repository
 public interface NonTrainingAchievementRepository extends JpaRepository<NonTrainingAchievement,Long> {
-     NonTrainingAchievement findByNonTrainingActivity_activityId(Long activityId);
+//     NonTrainingAchievement findByNonTrainingActivity_activityId(Long activityId);
 
     List<NonTrainingAchievement> findByNonTrainingActivity_Agency_AgencyId(Long agencyId);
 }

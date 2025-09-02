@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -28,9 +29,10 @@ public class NonTrainingTargetsAndAchievementsServiceImpl implements NonTraining
     public List<NonTrainingTargetsAndAchievementsResponse> getTargetsAndAchievements(String financialYear, Long agencyId) {
         Date[] range = getFinancialYearRange(financialYear);
 
+        List<NonTrainingTargets> targets = new ArrayList<>();
         // Targets for this agency + FY
-        List<NonTrainingTargets> targets = nonTrainingTargetRepository
-                .findByNonTrainingActivity_Agency_AgencyIdAndFinancialYear(agencyId, financialYear);
+//        List<NonTrainingTargets> targets = nonTrainingTargetRepository
+//                .findByNonTrainingActivity_Agency_AgencyIdAndFinancialYear(agencyId, financialYear);
 
         if (targets.isEmpty()) {
             throw new RuntimeException("No targets found for agency " + agencyId + " in FY " + financialYear);
