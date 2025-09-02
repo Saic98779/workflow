@@ -8,6 +8,11 @@ public class NonTrainingExpenditureMapper {
         NonTrainingExpenditureDTO dto = new NonTrainingExpenditureDTO();
         dto.setId(entity.getId());
         dto.setPaymentDate(DateUtil.dateToString(entity.getPaymentDate(),"dd-MM-yyy"));
+        dto.setNonTrainingSubActivityId(entity.getNonTrainingSubActivity().getSubActivityId());
+        dto.setNonTrainingActivityId(entity.getNonTrainingActivity().getActivityId());
+        dto.setAgencyId(entity.getAgency().getAgencyId());
+        dto.setCategory(entity.getCategory());
+        dto.setDateOfPurchase(entity.getDateOfPurchase());
         dto.setExpenditureAmount(entity.getExpenditureAmount());
         dto.setBillNo(entity.getBillNo());
         dto.setBillDate(DateUtil.dateToString(entity.getBillDate(),"dd-MM-yyy"));
@@ -22,11 +27,14 @@ public class NonTrainingExpenditureMapper {
         return dto;
     }
 
-    public static NonTrainingExpenditure toEntity(NonTrainingExpenditureDTO dto, Agency agency, NonTrainingActivity activity) {
+    public static NonTrainingExpenditure toEntity(NonTrainingExpenditureDTO dto, Agency agency, NonTrainingActivity activity, NonTrainingSubActivity subActivity) {
         NonTrainingExpenditure entity = new NonTrainingExpenditure();
         entity.setId(dto.getId());
         entity.setAgency(agency);
-//        entity.setNonTrainingActivity(activity);
+        entity.setNonTrainingSubActivity(subActivity);
+        entity.setNonTrainingActivity(activity);
+        entity.setCategory(dto.getCategory());
+        entity.setDateOfPurchase(dto.getDateOfPurchase());
         entity.setPaymentDate(DateUtil.stringToDate(dto.getPaymentDate(),"dd-MM-yyyy"));
         entity.setExpenditureAmount(dto.getExpenditureAmount());
         entity.setBillNo(dto.getBillNo());
@@ -43,7 +51,7 @@ public class NonTrainingExpenditureMapper {
     }
 
 
-    public static NonTrainingResource mapToResource(NonTrainingResourceDTO dto,NonTrainingActivity nonTrainingActivity) {
+    public static NonTrainingResource mapToResource(NonTrainingResourceDTO dto,NonTrainingSubActivity nonTrainingsubActivity) {
         if (dto == null) return null;
 
         NonTrainingResource entity = new NonTrainingResource();

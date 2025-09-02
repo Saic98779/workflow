@@ -7,6 +7,9 @@ public class NonTrainingExpenditureDTO {
     private Long id;
     private Long agencyId;
     private Long nonTrainingActivityId;
+    private Long nonTrainingSubActivityId;
+    private String dateOfPurchase;
+    private String category;
     private String paymentDate;
     private Double expenditureAmount;
     private String billNo;
