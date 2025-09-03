@@ -34,6 +34,9 @@ public class NonTrainingActivity {
     @OneToMany(mappedBy = "nonTrainingActivity", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<NonTrainingAchievement> achievements = new ArrayList<>();
 
+    @OneToMany(mappedBy = "nonTrainingActivity", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<NonTrainingSubActivity> subActivities = new ArrayList<>();
+
     @CreationTimestamp
     private Date createdOn;
 
