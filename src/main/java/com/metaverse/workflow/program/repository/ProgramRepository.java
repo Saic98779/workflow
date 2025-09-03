@@ -118,12 +118,13 @@ public interface ProgramRepository extends JpaRepository<Program, Long> {
             "AND p.endDate >= CURRENT_DATE")
     Page<Program> getProgramsByDistrict(@Param("district") String district,
                                         Pageable pageable);
-
-    @Query("SELECT pr.activityId, COUNT(DISTINCT pr) " +
+    @Query("SELECT pr.subActivityId, COUNT(DISTINCT pr) " +
             "FROM Program pr " +
-            "JOIN pr.participants p " +      // only programs with at least 1 participant
+            "JOIN pr.participants p " +
             "WHERE pr.agency.agencyId = :agencyId " +
-            "GROUP BY pr.activityId")
-    List<Object[]> countProgramsWithParticipantsByActivity(@Param("agencyId") Long agencyId);
+            "GROUP BY pr.subActivityId")
+    List<Object[]> countProgramsWithParticipantsBySubActivity(@Param("agencyId") Long agencyId);
+
+
 
 }

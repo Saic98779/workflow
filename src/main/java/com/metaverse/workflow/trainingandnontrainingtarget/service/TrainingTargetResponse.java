@@ -16,9 +16,9 @@ public class TrainingTargetResponse {
     private String agencyName;
     private String activityName;
     private String financialYear;
-    private Integer q1;
-    private Integer q2;
-    private Integer q3;
-    private Integer q4;
-    private Integer yearlyTarget;
+    private Long q1;
+    private Long q2;
+    private Long q3;
+    private Long q4;
+    private Long yearlyTarget;
 }

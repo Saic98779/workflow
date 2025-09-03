@@ -1,7 +1,9 @@
 package com.metaverse.workflow.nontraining.service;
 
 import com.metaverse.workflow.expenditure.repository.ProgramExpenditureRepository;
-import com.metaverse.workflow.model.*;
+import com.metaverse.workflow.model.NonTrainingTargets;
+import com.metaverse.workflow.model.TrainingTargets;
+import com.metaverse.workflow.model.TargetsBase;
 import com.metaverse.workflow.nontraining.dto.NonTrainingProgramDto;
 import com.metaverse.workflow.nontraining.dto.ProgressMonitoringDto;
 import com.metaverse.workflow.nontraining.dto.TrainingProgramDto;
@@ -20,7 +22,7 @@ import java.util.stream.Collectors;
 public class ProgressMonitoringServiceImpl implements ProgressMonitoringService {
 
     private final ProgramRepository programRepository;
-    private final TrainingProgramMapper trainingProgramMapper;   // for Training
+    private final TrainingProgramMapper trainingProgramMapper;
     private final NonTrainingProgramMapper nonTrainingProgramMapper;
     private final ProgramExpenditureRepository programExpenditureRepository;
     private final NonTrainingExpenditureRepository nonTrainingExpenditureRepository;
@@ -29,160 +31,127 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
 
     @Override
     public ProgressMonitoringDto getAllTrainingAndNonTrainings(Long agencyId) {
-
         if (agencyId == null) {
             return ProgressMonitoringDto.builder()
-                    .nonTrainingPrograms(Collections.emptyList())
-                    .trainingPrograms(Collections.emptyList())
+                    .trainingPrograms(List.of())
+                    .nonTrainingPrograms(List.of())
                     .build();
         }
 
-        // Fetch program counts and expenditures
-        List<Object[]> programsCountWithOneParticipant = Optional.ofNullable(
-                        programRepository.countProgramsWithParticipantsByActivity(agencyId))
-                .orElse(Collections.emptyList());
+        // --- Programs & Expenditure ---
+        Map<Long, Long> programCounts = toLongMap(
+                programRepository.countProgramsWithParticipantsBySubActivity(agencyId)
+        );
+        Map<Long, Double> trainingExp = toDoubleMap(
+                programExpenditureRepository.sumExpenditureByAgencyGroupedBySubActivity(agencyId)
+        );
+        Map<Long, Double> nonTrainingExp = toDoubleMap(
+                nonTrainingExpenditureRepository.sumExpenditureByAgencyGroupedBySubActivity(agencyId)
+        );
 
-        List<Object[]> expenditure = Optional.ofNullable(
-                        programExpenditureRepository.sumExpenditureByAgencyGroupedBySubActivity(agencyId))
-                .orElse(Collections.emptyList());
+        // --- Training summary ---
+        Map<Long, TargetSummary<TrainingTargets>> trainingSummary =
+                buildSummary(trainingTargetRepository.findByAgency_AgencyId(agencyId),
+                        t -> t.getSubActivity() != null ? t.getSubActivity().getSubActivityId() : null);
 
-        List<Object[]> nonTrainingExpenditure = Optional.ofNullable(
-                        nonTrainingExpenditureRepository.sumExpenditureByAgencyGroupedBySubActivity(agencyId))
-                .orElse(Collections.emptyList());
-
-        // Map activityId -> program count
-        Map<Long, Long> activityCountByPrograms = programsCountWithOneParticipant.stream()
-                .filter(r -> r[0] != null && r[1] != null)
-                .collect(Collectors.toMap(
-                        r -> (Long) r[0],   // activityId
-                        r -> (Long) r[1]    // count
-                ));
-
-        // Map activityId -> expenditure
-        Map<Long, Double> expenditureByActivity = expenditure.stream()
-                .filter(row -> row[0] != null && row[1] != null)
-                .collect(Collectors.toMap(
-                        row -> (Long) row[0],   // activityId
-                        row -> (Double) row[1]  // sum of cost
-                ));
-
-        Map<Long, Double> nonTrainingExpenditureByActivity = nonTrainingExpenditure.stream()
-                .filter(row -> row[0] != null && row[1] != null)
-                .collect(Collectors.toMap(
-                        row -> (Long) row[0],   // non-training activityId
-                        row -> (Double) row[1]  // sum of cost
-                ));
-
-        // Fetch targets (updated to use nonTrainingSubActivity)
-        List<NonTrainingTargets> nonTrainingTargets = Optional.ofNullable(
-                        nonTrainingTargetRepository.findByNonTrainingSubActivity_NonTrainingActivity_Agency_AgencyId(agencyId))
-                .orElse(Collections.emptyList());
-
-
-        List<TrainingTargets> trainingTargetsList = trainingTargetRepository.findByAgency_AgencyId(agencyId);
-
-        // Map activityId -> total training targets
-        Map<Long, Long> activityIdToTotalTargetsMap = trainingTargetsList.stream()
-                .filter(tt -> tt.getSubActivity() != null && tt.getSubActivity() != null)
-                .collect(Collectors.groupingBy(
-                        tt -> tt.getSubActivity().getSubActivityId(),
-                        Collectors.summingLong(tt -> {
-                            long q1 = tt.getQ1Target() != null ? tt.getQ1Target() : 0;
-                            long q2 = tt.getQ2Target() != null ? tt.getQ2Target() : 0;
-                            long q3 = tt.getQ3Target() != null ? tt.getQ3Target() : 0;
-                            long q4 = tt.getQ4Target() != null ? tt.getQ4Target() : 0;
-                            return q1 + q2 + q3 + q4;
-                        })
-                ));
-
-        // Map activityId -> total training budget
-        Map<Long, Double> activityIdToTotalBudgetMap = trainingTargetsList.stream()
-                .filter(tt -> tt.getSubActivity() != null && tt.getSubActivity().getSubActivityId() != null)
-                .collect(Collectors.groupingBy(
-                        tt -> tt.getSubActivity().getSubActivityId(),
-                        Collectors.summingDouble(tt -> {
-                            double q1 = tt.getQ1Budget() != null ? tt.getQ1Budget() : 0;
-                            double q2 = tt.getQ2Budget() != null ? tt.getQ2Budget() : 0;
-                            double q3 = tt.getQ3Budget() != null ? tt.getQ3Budget() : 0;
-                            double q4 = tt.getQ4Budget() != null ? tt.getQ4Budget() : 0;
-                            return q1 + q2 + q3 + q4;
-                        })
-                ));
-
-        // Map non-training activityId -> total targets (via subActivity → activity)
-        Map<Long, Long> nonActivityIdToTotalTargetsMap = nonTrainingTargets.stream()
-                .filter(tt -> tt.getNonTrainingSubActivity() != null
-                        && tt.getNonTrainingSubActivity().getNonTrainingActivity() != null
-                        && tt.getNonTrainingSubActivity().getNonTrainingActivity().getActivityId() != null)
-                .collect(Collectors.groupingBy(
-                        tt -> tt.getNonTrainingSubActivity().getNonTrainingActivity().getActivityId(),
-                        Collectors.summingLong(tt -> {
-                            long q1 = tt.getQ1Target() != null ? tt.getQ1Target() : 0;
-                            long q2 = tt.getQ2Target() != null ? tt.getQ2Target() : 0;
-                            long q3 = tt.getQ3Target() != null ? tt.getQ3Target() : 0;
-                            long q4 = tt.getQ4Target() != null ? tt.getQ4Target() : 0;
-                            return q1 + q2 + q3 + q4;
-                        })
-                ));
-
-        // Map non-training activityId -> total budget (via subActivity → activity)
-        Map<Long, Double> nonActivityIdToTotalBudgetMap = nonTrainingTargets.stream()
-                .filter(tt -> tt.getNonTrainingSubActivity() != null
-                        && tt.getNonTrainingSubActivity().getNonTrainingActivity() != null
-                        && tt.getNonTrainingSubActivity().getNonTrainingActivity().getActivityId() != null)
-                .collect(Collectors.groupingBy(
-                        tt -> tt.getNonTrainingSubActivity().getNonTrainingActivity().getActivityId(),
-                        Collectors.summingDouble(tt -> {
-                            double q1 = tt.getQ1Budget() != null ? tt.getQ1Budget() : 0;
-                            double q2 = tt.getQ2Budget() != null ? tt.getQ2Budget() : 0;
-                            double q3 = tt.getQ3Budget() != null ? tt.getQ3Budget() : 0;
-                            double q4 = tt.getQ4Budget() != null ? tt.getQ4Budget() : 0;
-                            return q1 + q2 + q3 + q4;
-                        })
-                ));
-
-        // Build TrainingProgramDto list (unique per activity)
-        List<TrainingProgramDto> trainingPrograms = activityIdToTotalTargetsMap.keySet().stream()
-                .map(activityId -> {
-                    Long achievedCount = Optional.ofNullable(activityCountByPrograms.get(activityId)).orElse(0L);
-                    Double trainingExpenditure = Optional.ofNullable(expenditureByActivity.get(activityId)).orElse(0.0);
-
-                    return trainingProgramMapper.trainingProgramDtoMapper(
-                            Objects.requireNonNull(trainingTargetsList.stream()
-                                    .filter(tt -> tt.getSubActivity() != null && tt.getSubActivity().getSubActivityId().equals(activityId))
-                                    .findFirst()
-                                    .orElse(null)), // representative TrainingTarget
-                            activityIdToTotalTargetsMap.get(activityId),
-                            activityIdToTotalBudgetMap.get(activityId),
-                            achievedCount,
-                            trainingExpenditure
-                    );
-                })
+        List<TrainingProgramDto> trainingPrograms = trainingSummary.entrySet().stream()
+                .map(e -> trainingProgramMapper.trainingProgramDtoMapper(
+                        e.getValue().representative,
+                        e.getValue().totalTargets,
+                        e.getValue().totalBudget,
+                        programCounts.getOrDefault(e.getKey(), 0L),
+                        trainingExp.getOrDefault(e.getKey(), 0.0)
+                ))
                 .toList();
 
-        // Build NonTrainingProgramDto list (unique per non-training activity)
-        List<NonTrainingProgramDto> nonTrainingPrograms = nonActivityIdToTotalTargetsMap.keySet().stream()
-                .map(activityId -> {
-                    Double nonTrainingExpenditure1 = Optional.ofNullable(nonTrainingExpenditureByActivity.get(activityId)).orElse(0.0);
+        // --- Non-training summary ---
+        Map<Long, TargetSummary<NonTrainingTargets>> nonTrainingSummary =
+                buildSummary(nonTrainingTargetRepository
+                                .findByNonTrainingSubActivity_NonTrainingActivity_Agency_AgencyId(agencyId),
+                        t -> (t.getNonTrainingSubActivity() != null &&
+                                t.getNonTrainingSubActivity().getNonTrainingActivity() != null)
+                                ? t.getNonTrainingSubActivity().getNonTrainingActivity().getActivityId()
+                                : null);
 
-                    return nonTrainingProgramMapper.nonTrainingProgramDtoMapper(
-                            Objects.requireNonNull(nonTrainingTargets.stream()
-                                    .filter(nt -> nt.getNonTrainingSubActivity() != null
-                                            && nt.getNonTrainingSubActivity().getNonTrainingActivity() != null
-                                            && nt.getNonTrainingSubActivity().getNonTrainingActivity().getActivityId().equals(activityId))
-                                    .findFirst()
-                                    .orElse(null)), // representative NonTrainingTarget
-                            nonActivityIdToTotalTargetsMap.get(activityId),
-                            nonActivityIdToTotalBudgetMap.get(activityId),
-                            nonTrainingExpenditure1
-                    );
-                })
+        List<NonTrainingProgramDto> nonTrainingPrograms = nonTrainingSummary.entrySet().stream()
+                .map(e -> nonTrainingProgramMapper.nonTrainingProgramDtoMapper(
+                        e.getValue().representative,
+                        e.getValue().totalTargets,
+                        e.getValue().totalBudget,
+                        nonTrainingExp.getOrDefault(e.getKey(), 0.0)
+                ))
                 .toList();
 
         return ProgressMonitoringDto.builder()
-                .nonTrainingPrograms(nonTrainingPrograms)
                 .trainingPrograms(trainingPrograms)
+                .nonTrainingPrograms(nonTrainingPrograms)
                 .build();
     }
 
+    // --- Helpers ---
+    private Map<Long, Long> toLongMap(List<Object[]> rows) {
+        return Optional.ofNullable(rows).orElse(List.of()).stream()
+                .filter(r -> r[0] != null && r[1] != null)
+                .collect(Collectors.toMap(
+                        r -> (Long) r[0],
+                        r -> (Long) r[1],
+                        Long::sum
+                ));
+    }
+
+    private Map<Long, Double> toDoubleMap(List<Object[]> rows) {
+        return Optional.ofNullable(rows).orElse(List.of()).stream()
+                .filter(r -> r[0] != null && r[1] != null)
+                .collect(Collectors.toMap(
+                        r -> (Long) r[0],
+                        r -> (Double) r[1],
+                        Double::sum
+                ));
+    }
+
+    private <T extends TargetsBase> Map<Long, TargetSummary<T>> buildSummary(
+            List<T> targets, java.util.function.Function<T, Long> idExtractor) {
+
+        return Optional.ofNullable(targets).orElse(List.of()).stream()
+                .map(t -> new AbstractMap.SimpleEntry<>(idExtractor.apply(t), t))
+                .filter(e -> e.getKey() != null)
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        e -> new TargetSummary<>(e.getValue()),
+                        TargetSummary::merge
+                ));
+    }
+
+    // --- Inner helper class ---
+    private static class TargetSummary<T extends TargetsBase> {
+        final T representative;
+        long totalTargets;
+        double totalBudget;
+
+        TargetSummary(T target) {
+            this.representative = target;
+            this.totalTargets = sumTargets(target);
+            this.totalBudget = sumBudgets(target);
+        }
+
+        static <T extends TargetsBase> TargetSummary<T> merge(TargetSummary<T> a, TargetSummary<T> b) {
+            a.totalTargets += b.totalTargets;
+            a.totalBudget += b.totalBudget;
+            return a; // keep first representative
+        }
+
+        private static long sumTargets(TargetsBase t) {
+            return Optional.ofNullable(t.getQ1Target()).orElse(0L)
+                    + Optional.ofNullable(t.getQ2Target()).orElse(0L)
+                    + Optional.ofNullable(t.getQ3Target()).orElse(0L)
+                    + Optional.ofNullable(t.getQ4Target()).orElse(0L);
+        }
+
+        private static double sumBudgets(TargetsBase t) {
+            return Optional.ofNullable(t.getQ1Budget()).orElse(0.0)
+                    + Optional.ofNullable(t.getQ2Budget()).orElse(0.0)
+                    + Optional.ofNullable(t.getQ3Budget()).orElse(0.0)
+                    + Optional.ofNullable(t.getQ4Budget()).orElse(0.0);
+        }
+    }
 }
