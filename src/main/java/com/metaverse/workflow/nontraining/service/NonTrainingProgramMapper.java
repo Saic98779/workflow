@@ -47,6 +47,7 @@ public class NonTrainingProgramMapper {
 
         return NonTrainingProgramDto.builder()
                 .nonTrainingActivity(activityName)
+                .nonTrainingSubActivity(subActivity != null ? subActivity.getActivityName() : null)
                 .physicalTarget(totalTargets != null ? totalTargets.intValue() : 0)
                 .physicalAchievement(String.valueOf(physicalAchievement))
                 .financialTarget(totalBudget != null ? totalBudget : 0.0)

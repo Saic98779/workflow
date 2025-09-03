@@ -14,13 +14,10 @@ import com.metaverse.workflow.trainingandnontrainingtarget.repository.TrainingTa
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Service for retrieving progress monitoring data for training and non-training programs.
- * Fetches program counts, expenditures, and target summaries by agency.
- */
 @Service
 @RequiredArgsConstructor
 public class ProgressMonitoringServiceImpl implements ProgressMonitoringService {
@@ -34,21 +31,9 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
     private final TrainingTargetRepository trainingTargetRepository;
     private final NonTrainingResourceRepository nonTrainingResourcesRepository;
 
-    /**
-     * Get all training and non-training program summaries for a given agency.
-     * @param agencyId Agency ID to fetch data for
-     * @return ProgressMonitoringDto containing training and non-training summaries
-     */
     @Override
     public ProgressMonitoringDto getAllTrainingAndNonTrainings(Long agencyId) {
-        if (agencyId == null) {
-            return ProgressMonitoringDto.builder()
-                    .trainingPrograms(List.of())
-                    .nonTrainingPrograms(List.of())
-                    .build();
-        }
-
-        // --- Programs & Expenditure ---
+        // --- Fetch all necessary data once ---
         Map<Long, Long> programCounts = ProgressMonitoringUtils.toLongMap(
                 programRepository.countProgramsWithParticipantsBySubActivity(agencyId)
         );
@@ -61,54 +46,60 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
                 nonTrainingExpenditureRepository.sumExpenditureByAgencyGroupedBySubActivity(agencyId)
         );
 
-        // --- Training summary ---
+        // --- Training Programs ---
         Map<Long, ProgressMonitoringUtils.TargetSummary<TrainingTargets>> trainingSummary =
-                ProgressMonitoringUtils.buildSummary(trainingTargetRepository.findByAgency_AgencyId(agencyId),
-                        t -> t.getSubActivity() != null ? t.getSubActivity().getSubActivityId() : null);
+                ProgressMonitoringUtils.buildSummary(
+                        trainingTargetRepository.findByAgency_AgencyId(agencyId),
+                        t -> t.getSubActivity() != null ? t.getSubActivity().getSubActivityId() : null
+                );
 
-        List<TrainingProgramDto> trainingPrograms = trainingSummary.entrySet().stream()
-                .map(e -> trainingProgramMapper.trainingProgramDtoMapper(
-                        e.getValue().representative,
-                        e.getValue().totalTargets,
-                        e.getValue().totalBudget,
-                        programCounts.getOrDefault(e.getKey(), 0L),
-                        trainingExp.getOrDefault(e.getKey(), 0.0)
-                ))
-                .toList();
+        List<TrainingProgramDto> trainingPrograms = new ArrayList<>();
+        trainingSummary.forEach((key, summary) -> trainingPrograms.add(
+                trainingProgramMapper.trainingProgramDtoMapper(
+                        summary.representative,
+                        summary.totalTargets,
+                        summary.totalBudget,
+                        programCounts.getOrDefault(key, 0L),
+                        trainingExp.getOrDefault(key, 0.0)
+                )
+        ));
 
-        // --- Non-training summary ---
+        // --- Non-Training Programs ---
         Map<Long, ProgressMonitoringUtils.TargetSummary<NonTrainingTargets>> nonTrainingSummary =
-                ProgressMonitoringUtils.buildSummary(nonTrainingTargetRepository
+                ProgressMonitoringUtils.buildSummary(
+                        nonTrainingTargetRepository
                                 .findByNonTrainingSubActivity_NonTrainingActivity_Agency_AgencyId(agencyId),
-                        t -> (t.getNonTrainingSubActivity() != null &&
-                                t.getNonTrainingSubActivity().getNonTrainingActivity() != null)
+                        t -> t.getNonTrainingSubActivity() != null &&
+                                t.getNonTrainingSubActivity().getNonTrainingActivity() != null
                                 ? t.getNonTrainingSubActivity().getNonTrainingActivity().getActivityId()
-                                : null);
+                                : null
+                );
 
-        List<NonTrainingProgramDto> nonTrainingPrograms = nonTrainingSummary.entrySet().stream()
-                .map(e -> {
-                    NonTrainingTargets target = e.getValue().representative;
-                    double expenditure;
-            // If activity is Contingency Fund, read from NonTrainingResources
-                    if (target.getNonTrainingSubActivity() != null &&
-                            "Contingency Fund".equalsIgnoreCase(
-                                    target.getNonTrainingSubActivity().getNonTrainingActivity().getActivityName()
-                            )) {
-                        expenditure = nonTrainingResourcesRepository
-                                .sumExpenditureByActivityName(
-                                        target.getNonTrainingSubActivity().getNonTrainingActivity().getActivityName()
-                                );
-                    } else {
-                        expenditure = nonTrainingExp.getOrDefault(e.getKey(), 0.0);
-                    }
-                    return nonTrainingProgramMapper.nonTrainingProgramDtoMapper(
+        List<NonTrainingProgramDto> nonTrainingPrograms = new ArrayList<>();
+        nonTrainingSummary.forEach((key, summary) -> {
+            NonTrainingTargets target = summary.representative;
+            double expenditure = nonTrainingExp.getOrDefault(key, 0.0);
+
+            if (target.getNonTrainingSubActivity() != null &&
+                    "Contingency Fund".equalsIgnoreCase(
+                            target.getNonTrainingSubActivity().getNonTrainingActivity().getActivityName()
+                    )) {
+                Double resourceExp = nonTrainingResourcesRepository
+                        .sumExpenditureByActivityName(
+                                target.getNonTrainingSubActivity().getNonTrainingActivity().getActivityName()
+                        );
+                expenditure = resourceExp != null ? resourceExp : 0.0;
+            }
+
+            nonTrainingPrograms.add(
+                    nonTrainingProgramMapper.nonTrainingProgramDtoMapper(
                             target,
-                            e.getValue().totalTargets,
-                            e.getValue().totalBudget,
+                            summary.totalTargets,
+                            summary.totalBudget,
                             expenditure
-                    );
-                })
-                .toList();
+                    )
+            );
+        });
 
         return ProgressMonitoringDto.builder()
                 .trainingPrograms(trainingPrograms)

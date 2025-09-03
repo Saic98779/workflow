@@ -9,6 +9,7 @@ public class TrainingProgramDto {
     private String agency;
     private String activity;
     private String subActivity;
+    private Long subActivityId;
     private Double budgetAllocated;
     private Long trainingTarget;
     private Long trainingAchievement;
