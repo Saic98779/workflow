@@ -25,7 +25,7 @@ public class NonTrainingTargets {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "sub_activity_id", nullable = false)
-    private NonTrainingSubActivity nonTrainingActivity;
+    private NonTrainingSubActivity nonTrainingSubActivity;
 
     @Column(name = "financial_year")
     private String financialYear;

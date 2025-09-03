@@ -8,6 +8,7 @@ import lombok.Data;
 public class TrainingProgramDto {
     private String agency;
     private String activity;
+    private String subActivity;
     private Double budgetAllocated;
     private Long trainingTarget;
     private Long trainingAchievement;

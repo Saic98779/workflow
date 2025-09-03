@@ -36,13 +36,12 @@ public class Activity {
     @JoinColumn(name = "agency_id")
     private Agency agency;
 
-    @ManyToMany(cascade = CascadeType.PERSIST)
+    @OneToMany
     @JoinTable(
             name = "activity_sub_activity",
             joinColumns = @JoinColumn(name = "activity_id"),
             inverseJoinColumns = @JoinColumn(name = "sub_activity_id")
-    )  @JsonManagedReference
+    )
     private List<SubActivity> subActivities;
-
 
 }

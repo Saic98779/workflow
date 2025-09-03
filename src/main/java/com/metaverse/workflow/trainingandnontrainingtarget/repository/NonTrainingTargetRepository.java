@@ -9,7 +9,7 @@ import java.util.List;
 
 @Repository
 public interface NonTrainingTargetRepository extends JpaRepository<NonTrainingTargets, Long> {
-//    List<NonTrainingTargets> findByNonTrainingActivity_Agency_AgencyIdAndFinancialYear(Long agencyId, String financialYear);
-//
-//    List<NonTrainingTargets> findByNonTrainingActivity_Agency_AgencyId(Long agencyId);
+
+    List<NonTrainingTargets> findByNonTrainingSubActivity_NonTrainingActivity_Agency_AgencyId(Long agencyId);
 }
+

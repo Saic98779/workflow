@@ -29,7 +29,7 @@ public class ProgressMonitoringController {
     @Autowired
     private NonTrainingActivityService nonTrainingActivityService;
 
-    @GetMapping
+    @GetMapping("/aleap")
     public ResponseEntity<?> getAgencyProgramMonitor(Long agencyId){
         return ResponseEntity.ok(progressMonitoringService.getAllTrainingAndNonTrainings(agencyId));
     }

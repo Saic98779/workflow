@@ -42,13 +42,13 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
                         programRepository.countProgramsWithParticipantsByActivity(agencyId))
                 .orElse(Collections.emptyList());
 
-//        List<Object[]> expenditure = Optional.ofNullable(
-//                        programExpenditureRepository.sumExpenditureByAgencyGroupedByActivity(agencyId))
-//                .orElse(Collections.emptyList());
-//
-//        List<Object[]> nonTrainingExpenditure = Optional.ofNullable(
-//                        nonTrainingExpenditureRepository.sumExpenditureByAgencyGroupedByActivity(agencyId))
-//                .orElse(Collections.emptyList());
+        List<Object[]> expenditure = Optional.ofNullable(
+                        programExpenditureRepository.sumExpenditureByAgencyGroupedBySubActivity(agencyId))
+                .orElse(Collections.emptyList());
+
+        List<Object[]> nonTrainingExpenditure = Optional.ofNullable(
+                        nonTrainingExpenditureRepository.sumExpenditureByAgencyGroupedBySubActivity(agencyId))
+                .orElse(Collections.emptyList());
 
         // Map activityId -> program count
         Map<Long, Long> activityCountByPrograms = programsCountWithOneParticipant.stream()
@@ -59,36 +59,33 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
                 ));
 
         // Map activityId -> expenditure
-//        Map<Long, Double> expenditureByActivity = expenditure.stream()
-//                .filter(row -> row[0] != null && row[1] != null)
-//                .collect(Collectors.toMap(
-//                        row -> (Long) row[0],   // activityId
-//                        row -> (Double) row[1]  // sum of cost
-//                ));
-//
-//        Map<Long, Double> nonTrainingExpenditureByActivity = nonTrainingExpenditure.stream()
-//                .filter(row -> row[0] != null && row[1] != null)
-//                .collect(Collectors.toMap(
-//                        row -> (Long) row[0],   // non-training activityId
-//                        row -> (Double) row[1]  // sum of cost
-//                ));
+        Map<Long, Double> expenditureByActivity = expenditure.stream()
+                .filter(row -> row[0] != null && row[1] != null)
+                .collect(Collectors.toMap(
+                        row -> (Long) row[0],   // activityId
+                        row -> (Double) row[1]  // sum of cost
+                ));
 
-        // Fetch targets
-//        List<NonTrainingTargets> nonTrainingTargets = Optional.ofNullable(
-//                        nonTrainingTargetRepository.findByNonTrainingActivity_Agency_AgencyId(agencyId))
-//                .orElse(Collections.emptyList());
+        Map<Long, Double> nonTrainingExpenditureByActivity = nonTrainingExpenditure.stream()
+                .filter(row -> row[0] != null && row[1] != null)
+                .collect(Collectors.toMap(
+                        row -> (Long) row[0],   // non-training activityId
+                        row -> (Double) row[1]  // sum of cost
+                ));
 
-//        List<TrainingTargets> trainingTargets = Optional.ofNullable(
-//                        trainingTargetRepository.findByActivity_Agency_AgencyId(agencyId))
-//                .orElse(Collections.emptyList());
+        // Fetch targets (updated to use nonTrainingSubActivity)
+        List<NonTrainingTargets> nonTrainingTargets = Optional.ofNullable(
+                        nonTrainingTargetRepository.findByNonTrainingSubActivity_NonTrainingActivity_Agency_AgencyId(agencyId))
+                .orElse(Collections.emptyList());
 
-//        List<TrainingTargets> trainingTargetsList = trainingTargetRepository.findByAgency_AgencyId(agencyId);
-/*
+
+        List<TrainingTargets> trainingTargetsList = trainingTargetRepository.findByAgency_AgencyId(agencyId);
+
         // Map activityId -> total training targets
         Map<Long, Long> activityIdToTotalTargetsMap = trainingTargetsList.stream()
-                .filter(tt -> tt.getActivity() != null && tt.getActivity().getActivityId() != null)
+                .filter(tt -> tt.getSubActivity() != null && tt.getSubActivity() != null)
                 .collect(Collectors.groupingBy(
-                        tt -> tt.getActivity().getActivityId(),
+                        tt -> tt.getSubActivity().getSubActivityId(),
                         Collectors.summingLong(tt -> {
                             long q1 = tt.getQ1Target() != null ? tt.getQ1Target() : 0;
                             long q2 = tt.getQ2Target() != null ? tt.getQ2Target() : 0;
@@ -100,9 +97,9 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
 
         // Map activityId -> total training budget
         Map<Long, Double> activityIdToTotalBudgetMap = trainingTargetsList.stream()
-                .filter(tt -> tt.getActivity() != null && tt.getActivity().getActivityId() != null)
+                .filter(tt -> tt.getSubActivity() != null && tt.getSubActivity().getSubActivityId() != null)
                 .collect(Collectors.groupingBy(
-                        tt -> tt.getActivity().getActivityId(),
+                        tt -> tt.getSubActivity().getSubActivityId(),
                         Collectors.summingDouble(tt -> {
                             double q1 = tt.getQ1Budget() != null ? tt.getQ1Budget() : 0;
                             double q2 = tt.getQ2Budget() != null ? tt.getQ2Budget() : 0;
@@ -112,11 +109,13 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
                         })
                 ));
 
-        // Map non-training activityId -> total targets
+        // Map non-training activityId -> total targets (via subActivity → activity)
         Map<Long, Long> nonActivityIdToTotalTargetsMap = nonTrainingTargets.stream()
-                .filter(tt -> tt.getNonTrainingActivity() != null && tt.getNonTrainingActivity().getActivityId() != null)
+                .filter(tt -> tt.getNonTrainingSubActivity() != null
+                        && tt.getNonTrainingSubActivity().getNonTrainingActivity() != null
+                        && tt.getNonTrainingSubActivity().getNonTrainingActivity().getActivityId() != null)
                 .collect(Collectors.groupingBy(
-                        tt -> tt.getNonTrainingActivity().getActivityId(),
+                        tt -> tt.getNonTrainingSubActivity().getNonTrainingActivity().getActivityId(),
                         Collectors.summingLong(tt -> {
                             long q1 = tt.getQ1Target() != null ? tt.getQ1Target() : 0;
                             long q2 = tt.getQ2Target() != null ? tt.getQ2Target() : 0;
@@ -126,11 +125,13 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
                         })
                 ));
 
-        // Map non-training activityId -> total budget
+        // Map non-training activityId -> total budget (via subActivity → activity)
         Map<Long, Double> nonActivityIdToTotalBudgetMap = nonTrainingTargets.stream()
-                .filter(tt -> tt.getNonTrainingActivity() != null && tt.getNonTrainingActivity().getActivityId() != null)
+                .filter(tt -> tt.getNonTrainingSubActivity() != null
+                        && tt.getNonTrainingSubActivity().getNonTrainingActivity() != null
+                        && tt.getNonTrainingSubActivity().getNonTrainingActivity().getActivityId() != null)
                 .collect(Collectors.groupingBy(
-                        tt -> tt.getNonTrainingActivity().getActivityId(),
+                        tt -> tt.getNonTrainingSubActivity().getNonTrainingActivity().getActivityId(),
                         Collectors.summingDouble(tt -> {
                             double q1 = tt.getQ1Budget() != null ? tt.getQ1Budget() : 0;
                             double q2 = tt.getQ2Budget() != null ? tt.getQ2Budget() : 0;
@@ -148,9 +149,9 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
 
                     return trainingProgramMapper.trainingProgramDtoMapper(
                             Objects.requireNonNull(trainingTargetsList.stream()
-                                    .filter(tt -> tt.getActivity() != null && tt.getActivity().getActivityId().equals(activityId))
+                                    .filter(tt -> tt.getSubActivity() != null && tt.getSubActivity().getSubActivityId().equals(activityId))
                                     .findFirst()
-                                    .orElse(null)), // representative TrainingTarget for meta info (agency, activity)
+                                    .orElse(null)), // representative TrainingTarget
                             activityIdToTotalTargetsMap.get(activityId),
                             activityIdToTotalBudgetMap.get(activityId),
                             achievedCount,
@@ -158,8 +159,7 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
                     );
                 })
                 .toList();
-*/
-/*
+
         // Build NonTrainingProgramDto list (unique per non-training activity)
         List<NonTrainingProgramDto> nonTrainingPrograms = nonActivityIdToTotalTargetsMap.keySet().stream()
                 .map(activityId -> {
@@ -167,9 +167,11 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
 
                     return nonTrainingProgramMapper.nonTrainingProgramDtoMapper(
                             Objects.requireNonNull(nonTrainingTargets.stream()
-                                    .filter(nt -> nt.getNonTrainingActivity() != null && nt.getNonTrainingActivity().getActivityId().equals(activityId))
+                                    .filter(nt -> nt.getNonTrainingSubActivity() != null
+                                            && nt.getNonTrainingSubActivity().getNonTrainingActivity() != null
+                                            && nt.getNonTrainingSubActivity().getNonTrainingActivity().getActivityId().equals(activityId))
                                     .findFirst()
-                                    .orElse(null)), // representative NonTrainingTarget for meta info
+                                    .orElse(null)), // representative NonTrainingTarget
                             nonActivityIdToTotalTargetsMap.get(activityId),
                             nonActivityIdToTotalBudgetMap.get(activityId),
                             nonTrainingExpenditure1
@@ -177,10 +179,9 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
                 })
                 .toList();
 
-*/
         return ProgressMonitoringDto.builder()
-                .nonTrainingPrograms(null) //  replaced with null   actual variable. nonTrainingPrograms
-                .trainingPrograms(null) //replaced with null   actual variable : trainingPrograms
+                .nonTrainingPrograms(nonTrainingPrograms)
+                .trainingPrograms(trainingPrograms)
                 .build();
     }
 

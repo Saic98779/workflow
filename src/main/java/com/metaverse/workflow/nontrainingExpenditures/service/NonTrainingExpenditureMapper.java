@@ -9,7 +9,7 @@ public class NonTrainingExpenditureMapper {
         dto.setId(entity.getId());
         dto.setPaymentDate(DateUtil.dateToString(entity.getPaymentDate(),"dd-MM-yyy"));
         dto.setNonTrainingSubActivityId(entity.getNonTrainingSubActivity().getSubActivityId());
-        dto.setNonTrainingActivityId(entity.getNonTrainingActivity().getActivityId());
+        dto.setNonTrainingActivityId(entity.getNonTrainingSubActivity().getSubActivityId());
         dto.setAgencyId(entity.getAgency().getAgencyId());
         dto.setCategory(entity.getCategory());
         dto.setDateOfPurchase(entity.getDateOfPurchase());
@@ -32,7 +32,6 @@ public class NonTrainingExpenditureMapper {
         entity.setId(dto.getId());
         entity.setAgency(agency);
         entity.setNonTrainingSubActivity(subActivity);
-        entity.setNonTrainingActivity(activity);
         entity.setCategory(dto.getCategory());
         entity.setDateOfPurchase(dto.getDateOfPurchase());
         entity.setPaymentDate(DateUtil.stringToDate(dto.getPaymentDate(),"dd-MM-yyyy"));
