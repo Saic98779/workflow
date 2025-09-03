@@ -46,6 +46,7 @@ public class NonTrainingExpenditureMapper {
         entity.setTransactionId(dto.getTransactionId());
         entity.setPurpose(dto.getPurpose());
         entity.setUploadBillUrl(dto.getUploadBillUrl());
+        entity.setNonTrainingActivity(activity);
         return entity;
     }
 
@@ -108,6 +109,7 @@ public class NonTrainingExpenditureMapper {
         dto.setDateOfPayment(DateUtil.dateToString(entity.getDateOfPayment(),"dd-MM-yyyy"));
         dto.setResourceId(entity.getNonTrainingResource().getResourceId());
         dto.setResourceName(entity.getNonTrainingResource().getName());
+        dto.setUploadBillUrl(entity.getUploadBillUrl());
         return dto;
     }
     public static  NonTrainingResourceDTO mapToResourceResForDropdown(NonTrainingResource  nonTrainingResource)

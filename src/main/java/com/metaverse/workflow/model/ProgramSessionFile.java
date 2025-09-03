@@ -43,4 +43,8 @@ public class ProgramSessionFile {
     @JoinColumn(name = "non_training_expenditure")
     private NonTrainingExpenditure nonTrainingExpenditure;
 
+    @ManyToOne
+    @JoinColumn(name = "non_training_resource_expenditure_id")
+    private NonTrainingResourceExpenditure nonTrainingResourceExpenditure;
+
 }

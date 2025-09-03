@@ -9,4 +9,5 @@ public class NonTrainingResourceExpenditureDTO {
     private String dateOfPayment;
     private Long resourceId;
     private String resourceName;
+    private String uploadBillUrl;
 }

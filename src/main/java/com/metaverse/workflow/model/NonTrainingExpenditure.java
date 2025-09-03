@@ -29,6 +29,10 @@ public class NonTrainingExpenditure {
     @JoinColumn(name = "sub_activity_id", nullable = false)
     private NonTrainingSubActivity nonTrainingSubActivity;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "activity_id", nullable = false)
+    private NonTrainingActivity nonTrainingActivity;
+
     private String dateOfPurchase;
 
     private String category;
