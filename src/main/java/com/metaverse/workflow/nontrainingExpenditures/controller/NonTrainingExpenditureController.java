@@ -6,10 +6,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.common.util.RestControllerBase;
 import com.metaverse.workflow.exceptions.DataException;
-import com.metaverse.workflow.nontrainingExpenditures.service.NonTrainingExpenditureDTO;
-import com.metaverse.workflow.nontrainingExpenditures.service.NonTrainingExpenditureService;
-import com.metaverse.workflow.nontrainingExpenditures.service.NonTrainingResourceDTO;
-import com.metaverse.workflow.nontrainingExpenditures.service.NonTrainingResourceExpenditureDTO;
+import com.metaverse.workflow.nontraining.dto.NonTrainingSubActivityDto;
+import com.metaverse.workflow.nontraining.service.NonTrainingActivityService;
+import com.metaverse.workflow.nontrainingExpenditures.service.*;
 import jakarta.websocket.server.PathParam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -25,6 +24,7 @@ import java.util.List;
 public class NonTrainingExpenditureController extends RestControllerBase {
 
     private final NonTrainingExpenditureService service;
+    private final NonTrainingActivityService nonTrainingActivityService;
 
     @PostMapping(path = "/save",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> create(@RequestPart("dto") String dto,@RequestPart(value = "file", required = false) MultipartFile file) {
@@ -197,6 +197,15 @@ public class NonTrainingExpenditureController extends RestControllerBase {
         }catch (DataException e)
         {
             return RestControllerBase.error(e);
+        }
+    }
+
+    @GetMapping(path = "/getAll/subActivities/{activityId}")
+    public ResponseEntity<?> getActivityWiseSubActivities(@PathVariable Long activityId) {
+        try {
+            return ResponseEntity.ok(nonTrainingActivityService.getAllSubActivitiesList(activityId));
+        }catch (Exception e){
+          return ResponseEntity.status(400).body(WorkflowResponse.builder().status(400).message("Activity Id not found").build());
         }
     }
 }
