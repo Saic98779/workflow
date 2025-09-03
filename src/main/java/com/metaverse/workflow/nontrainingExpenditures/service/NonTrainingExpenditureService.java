@@ -206,10 +206,10 @@ public class NonTrainingExpenditureService {
                 .build();
     }
 
-    public WorkflowResponse getResourceByNonTrainingActivity(Long nonTrainingActivityId) throws DataException {
-        List<NonTrainingResource> resourceList =  new ArrayList<>();
-//        List<NonTrainingResource> resourceList=resourceRepo.findByNonTrainingActivity_ActivityId(nonTrainingActivityId)
-//                .orElseThrow(() -> new DataException("Resource not found with this activity id " + nonTrainingActivityId,"RESOURCE_NOT_FOUND",400));
+    public WorkflowResponse getResourceByNonTrainingSubActivity(Long nonTrainingActivityId) throws DataException {
+        List<NonTrainingResource> resourceList;
+         resourceList=resourceRepo.findByNonTrainingSubActivity_SubActivityId(nonTrainingActivityId)
+                .orElseThrow(() -> new DataException("Resource not found with this activity id " + nonTrainingActivityId,"RESOURCE_NOT_FOUND",400));
         return WorkflowResponse.builder().status(200)
                 .message("success")
                 .data(resourceList.stream().map(NonTrainingExpenditureMapper::mapToResourceResForDropdown).toList())
@@ -217,31 +217,29 @@ public class NonTrainingExpenditureService {
     }
 
     public WorkflowResponse getAllResourceByNonTrainingActivityId(Long nonTrainingActivityId) throws DataException {
-        List<NonTrainingResource> resourceList =  new ArrayList<>();
-//        List<NonTrainingResource> resourceList=resourceRepo.findByNonTrainingActivity_ActivityId(nonTrainingActivityId)
-//                .orElseThrow(() -> new DataException("Resource not found with this activity id " + nonTrainingActivityId,"RESOURCE_NOT_FOUND",400));
+        List<NonTrainingResource> resourceList=resourceRepo.findByNonTrainingSubActivity_SubActivityId(nonTrainingActivityId)
+                .orElseThrow(() -> new DataException("Resource not found with this activity id " + nonTrainingActivityId,"RESOURCE_NOT_FOUND",400));
         return WorkflowResponse.builder().status(200)
                 .message("success")
                 .data(resourceList.stream().map(NonTrainingExpenditureMapper::mapToResourceRes).toList())
                 .build();
     }
 
-    public WorkflowResponse getAllExpenditureByNonTrainingActivityId(Long nonTrainingActivityId) throws DataException {
-        List<NonTrainingExpenditure> expenditureList = new ArrayList<>();
-//        List<NonTrainingExpenditure> expenditureList=repository.findByNonTrainingActivity_ActivityId(nonTrainingActivityId)
-//                .orElseThrow(() -> new DataException("Expenditure not found with this activity id " + nonTrainingActivityId,"EXPENDITURE_NOT_FOUND",400));
+    public WorkflowResponse getAllExpenditureByNonTrainingActivityId(Long nonTrainingSubActivityId) throws DataException {
+        List<NonTrainingExpenditure> expenditureList=repository.findByNonTrainingSubActivity_SubActivityId(nonTrainingSubActivityId)
+                .orElseThrow(() -> new DataException("Expenditure not found with this activity id " + nonTrainingSubActivityId,"EXPENDITURE_NOT_FOUND",400));
         return WorkflowResponse.builder().status(200)
                 .message("success")
                 .data(expenditureList.stream().map(NonTrainingExpenditureMapper::toDTO).toList())
                 .build();
     }
-    public WorkflowResponse getAllResourceExpenditureByNonTrainingActivityId(Long nonTrainingActivityId) throws DataException {
-        List<NonTrainingResource> resourceList = new ArrayList<>();
-//        List<NonTrainingResource> resourceList = resourceRepo.findByNonTrainingActivity_ActivityId(nonTrainingActivityId)
-//                .orElseThrow(() -> new DataException(
-//                        "Resource not found with this activity id " + nonTrainingActivityId,
-//                        "RESOURCE_NOT_FOUND",
-//                        400));
+    public WorkflowResponse getAllResourceExpenditureByNonTrainingActivityId(Long nonTrainingSubActivityId) throws DataException {
+
+        List<NonTrainingResource> resourceList = resourceRepo.findByNonTrainingSubActivity_SubActivityId(nonTrainingSubActivityId)
+                .orElseThrow(() -> new DataException(
+                        "Resource not found with this activity id " + nonTrainingSubActivityId,
+                        "RESOURCE_NOT_FOUND",
+                        400));
 
         List<NonTrainingResourceExpenditureDTO> allExpendituresDto =
                 resourceList.stream()

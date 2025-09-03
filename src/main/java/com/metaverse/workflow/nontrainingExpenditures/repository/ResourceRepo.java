@@ -7,5 +7,5 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ResourceRepo extends JpaRepository<NonTrainingResource,Long> {
-//    Optional<List<NonTrainingResource>> findByNonTrainingActivity_ActivityId(Long activityId);
+   Optional<List<NonTrainingResource>> findByNonTrainingSubActivity_SubActivityId(Long subActivityId);
 }

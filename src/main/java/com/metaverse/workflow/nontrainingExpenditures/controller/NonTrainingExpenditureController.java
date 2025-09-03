@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.common.util.RestControllerBase;
 import com.metaverse.workflow.exceptions.DataException;
-import com.metaverse.workflow.nontrainingExpenditures.Dto.TravelAndTransportDto;
 import com.metaverse.workflow.nontrainingExpenditures.service.NonTrainingExpenditureDTO;
 import com.metaverse.workflow.nontrainingExpenditures.service.NonTrainingExpenditureService;
 import com.metaverse.workflow.nontrainingExpenditures.service.NonTrainingResourceDTO;
@@ -158,7 +157,7 @@ public class NonTrainingExpenditureController extends RestControllerBase {
     public ResponseEntity<?> getResourceFroDropdown(@PathParam("nonTrainingActivityId") Long nonTrainingActivityId)
     {
         try {
-            return ResponseEntity.ok(service.getResourceByNonTrainingActivity(nonTrainingActivityId));
+            return ResponseEntity.ok(service.getResourceByNonTrainingSubActivity(nonTrainingActivityId));
         }catch (DataException e)
         {
             return RestControllerBase.error(e);
