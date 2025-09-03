@@ -153,14 +153,26 @@ public class NonTrainingExpenditureService {
                 .build();
     }
 
-    public WorkflowResponse saveResourceExpenditure(NonTrainingResourceExpenditureDTO resourceExpenditureDTO) throws DataException {
+    public WorkflowResponse saveResourceExpenditure(NonTrainingResourceExpenditureDTO resourceExpenditureDTO, MultipartFile file) throws DataException {
         NonTrainingResource nonTrainingResource = resourceRepo.findById(resourceExpenditureDTO.getResourceId())
                 .orElseThrow(() -> new DataException("Resource not found with id " + resourceExpenditureDTO.getResourceId(),"RESOURCE_NOT_FOUND",400));
         NonTrainingResourceExpenditure expenditure=NonTrainingExpenditureMapper.mapToResourceExpenditure(resourceExpenditureDTO,nonTrainingResource);
+        NonTrainingResourceExpenditure save=  resourceExpenditureRepo.save(expenditure);
+        if (file != null && !file.isEmpty()) {
+            String filePath = this.storageFiles(file, save.getNonTrainingResourceExpenditureId(), "NotTrainingResourceExpenditure");
+            save.setUploadBillUrl(filePath);
+            resourceExpenditureRepo.save(save);
+            programSessionFileRepository.save(ProgramSessionFile.builder()
+                    .fileType("File")
+                    .filePath(filePath)
+                    .nonTrainingResourceExpenditure(save)
+                    .build());
+        }
+
         return WorkflowResponse.builder()
                 .message("success")
                 .status(200)
-                .data(NonTrainingExpenditureMapper.mapToResourceExpenditureResponse(resourceExpenditureRepo.save(expenditure)))
+                .data(NonTrainingExpenditureMapper.mapToResourceExpenditureResponse(save))
                 .build();
     }
 
@@ -254,7 +266,7 @@ public class NonTrainingExpenditureService {
                 .build();
     }
     public String storageFiles(MultipartFile file, Long TravelAndTransportId, String folderName) {
-        String filePath = storageService.travelAndTransportStore(file, TravelAndTransportId, folderName);
+        String filePath = storageService.store(file, TravelAndTransportId, folderName);
         return  filePath;
     }
 

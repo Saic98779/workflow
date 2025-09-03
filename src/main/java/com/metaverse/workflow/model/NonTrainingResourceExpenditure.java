@@ -13,7 +13,8 @@ import java.util.Date;
 @AllArgsConstructor
 @Builder
 @Table(name = "non_training_resource_expenditure")
-public class NonTrainingResourceExpenditure {
+public class
+NonTrainingResourceExpenditure {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -33,4 +34,6 @@ public class NonTrainingResourceExpenditure {
 
     @Column(name = "date_of_payment", nullable = false)
     private Date dateOfPayment;
+
+    private String uploadBillUrl;
 }

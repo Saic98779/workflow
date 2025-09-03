@@ -126,12 +126,18 @@ public class NonTrainingExpenditureController extends RestControllerBase {
         }
     }
 
-    @PostMapping("/non-training/expenditure/resource")
-    public ResponseEntity<?> saveResourceExpenditure(@RequestBody NonTrainingResourceExpenditureDTO expenditureDto) {
+    @PostMapping(path="/non-training/expenditure/resource",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> saveResourceExpenditure(@RequestPart String expenditureDto,@RequestPart(value = "file", required = false) MultipartFile file) {
         try {
-            return ResponseEntity.ok(service.saveResourceExpenditure(expenditureDto));
+            ObjectMapper objectMapper = new ObjectMapper();
+            NonTrainingResourceExpenditureDTO resourceExpenditureDTO = objectMapper.readValue(expenditureDto, NonTrainingResourceExpenditureDTO.class);
+            return ResponseEntity.ok(service.saveResourceExpenditure(resourceExpenditureDTO,file));
         } catch (DataException e) {
             return error(e);
+        } catch (JsonMappingException e) {
+            throw new RuntimeException(e);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
         }
     }
 
