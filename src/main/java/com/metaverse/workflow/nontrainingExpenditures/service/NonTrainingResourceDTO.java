@@ -1,5 +1,6 @@
 package com.metaverse.workflow.nontrainingExpenditures.service;
 
+import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,5 +23,9 @@ public class NonTrainingResourceDTO {
     private String ifscCode;
     private String accountNo;
     private List<NonTrainingResourceExpenditureDTO> expenditures;
+    private Long nonTrainingSubActivityId;
     private Long nonTrainingActivityId;
+    private String methodOfSelection;
+    private String sector;
+    private String nameOfTheCompany;
 }

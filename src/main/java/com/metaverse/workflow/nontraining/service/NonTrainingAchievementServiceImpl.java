@@ -16,9 +16,9 @@ public class NonTrainingAchievementServiceImpl implements NonTrainingAchievement
     private NonTrainingAchievementRepository nonTrainingAchievementRepository;
 
     @Override
-    public PhysicalFinancialDto getPhysicalFinancial(Long activityId) {
-        NonTrainingAchievement physicalFinancialData = null;
-//        NonTrainingAchievement physicalFinancialData = nonTrainingAchievementRepository.findByNonTrainingActivity_activityId(activityId);
+    public PhysicalFinancialDto getPhysicalFinancial(Long subActivityId) {
+
+        NonTrainingAchievement physicalFinancialData = nonTrainingAchievementRepository.findByNonTrainingSubActivity_SubActivityId(subActivityId);
         if (physicalFinancialData != null)
             return NonTrainingAchievementMapper.PhysicalFinancialDtoMapper(physicalFinancialData);
         return null;

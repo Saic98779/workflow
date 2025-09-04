@@ -16,7 +16,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -100,14 +99,16 @@ public class NonTrainingExpenditureService {
         repository.deleteById(id);
     }
     public WorkflowResponse saveResource(NonTrainingResourceDTO resource) throws DataException {
-        NonTrainingSubActivity activity = nonTrainingSubActivityRepository.findById(resource.getNonTrainingActivityId())
+        NonTrainingSubActivity subActivity = nonTrainingSubActivityRepository.findById(resource.getNonTrainingSubActivityId())
+                .orElseThrow(() -> new DataException("Sub Activity not found","SUB_ACTIVITY_NOT_FOUND",400));
+        NonTrainingActivity activity = nonTrainingActivityRepository.findById(resource.getNonTrainingActivityId())
                 .orElseThrow(() -> new DataException("Activity not found","ACTIVITY_NOT_FOUND",400));
 
-        NonTrainingResource nonTrainingResource = NonTrainingExpenditureMapper.mapToResource(resource,activity);
+        NonTrainingResource nonTrainingResource = NonTrainingExpenditureMapper.mapToResource(resource,subActivity,activity);
         return WorkflowResponse.builder()
                 .message("success")
                 .status(200)
-                .data(resourceRepo.save(nonTrainingResource))
+                .data(NonTrainingExpenditureMapper.mapToResourceRes(resourceRepo.save(nonTrainingResource)))
                 .build();
     }
 

@@ -34,17 +34,17 @@ public class ProgressMonitoringController {
         return ResponseEntity.ok(progressMonitoringService.getAllTrainingAndNonTrainings(agencyId));
     }
 
-    @GetMapping(path = "non-training/physical/financial/{activityId}")
-    public ResponseEntity<?> getPhysicalFinancial(Long activityId){
-        PhysicalFinancialDto physicalFinancial = nonTrainingAchievementService.getPhysicalFinancial(activityId);
+    @GetMapping(path = "non-training/physical/financial/{subActivityId}")
+    public ResponseEntity<?> getPhysicalFinancial(Long subActivityId){
+        PhysicalFinancialDto physicalFinancial = nonTrainingAchievementService.getPhysicalFinancial(subActivityId);
         if(physicalFinancial != null){
             return ResponseEntity.ofNullable(WorkflowResponse.builder().data(physicalFinancial)
                     .message("SUCCESS")
                     .status(200)
                     .build());
         }
-        return ResponseEntity.status(400).body(WorkflowResponse.builder().data(null)
-                .message("FAILURE")
+        return ResponseEntity.ofNullable(WorkflowResponse.builder().data(null)
+                .message("Data not Exist for this sub activity ")
                 .status(400)
                 .build());
     }
