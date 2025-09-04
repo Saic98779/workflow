@@ -43,8 +43,13 @@ public class TravelAndTransportController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteTravel(@PathVariable("id") Long id) {
-        travelService.deleteById(id);
-        return ResponseEntity.ok("TravelAndTransport with id " + id + " deleted successfully");
+        try {
+            travelService.deleteById(id);
+            return ResponseEntity.ok("TravelAndTransport with id " + id + " deleted successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(400).body(e.getMessage());
+        }
+
     }
 
     @PutMapping("/{id}")

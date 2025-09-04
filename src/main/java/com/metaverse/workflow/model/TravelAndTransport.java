@@ -35,6 +35,6 @@ public class TravelAndTransport {
     private String billInvoicePath;
 
     @JoinColumn(name = "subActivityId")
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     private NonTrainingSubActivity nonTrainingSubActivity;
 }

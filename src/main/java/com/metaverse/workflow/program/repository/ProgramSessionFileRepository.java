@@ -1,8 +1,12 @@
 package com.metaverse.workflow.program.repository;
 
 import com.metaverse.workflow.model.ProgramSessionFile;
+import com.metaverse.workflow.model.TravelAndTransport;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -28,4 +32,10 @@ public interface ProgramSessionFileRepository extends JpaRepository<ProgramSessi
     List<ProgramSessionFile> findByProgramSession_Program_ProgramId(Long programId);
 
     void deleteByProgramProgramId(Long programId);
+
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM TravelAndTransport t WHERE t.travelTransportId = :id")
+    void deleteByTravelTransportId(@Param("id") Long id);
+
 }

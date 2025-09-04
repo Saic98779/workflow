@@ -70,6 +70,7 @@ public class TravelAndTransportService {
             throw new RuntimeException("TravelAndTransport not found with id " + travelTransportId);
         }
         travelRepo.deleteById(travelTransportId);
+        programSessionFileRepository.deleteByTravelTransportId(travelTransportId);
     }
 
     public TravelAndTransportDto updateTravel(Long id, TravelAndTransportDto dto) {
