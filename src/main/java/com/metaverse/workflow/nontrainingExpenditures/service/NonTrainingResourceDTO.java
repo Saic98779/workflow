@@ -22,5 +22,6 @@ public class NonTrainingResourceDTO {
     private String ifscCode;
     private String accountNo;
     private List<NonTrainingResourceExpenditureDTO> expenditures;
+    private Long nonTrainingSubActivityId;
     private Long nonTrainingActivityId;
 }

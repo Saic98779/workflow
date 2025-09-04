@@ -26,6 +26,11 @@ public class NonTrainingAchievement {
     @JoinColumn(name = "activity_id", nullable = false)
     private NonTrainingActivity nonTrainingActivity;
 
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "sub_activity_id", nullable = false)
+    private NonTrainingSubActivity nonTrainingSubActivity;
+
+
     @Column(name = "physical_target_achievement")
     private String physicalTargetAchievement;
 

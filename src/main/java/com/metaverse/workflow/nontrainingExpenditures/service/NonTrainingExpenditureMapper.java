@@ -7,7 +7,7 @@ public class NonTrainingExpenditureMapper {
     public static NonTrainingExpenditureDTO toDTO(NonTrainingExpenditure entity) {
         NonTrainingExpenditureDTO dto = new NonTrainingExpenditureDTO();
         dto.setId(entity.getId());
-        dto.setPaymentDate(DateUtil.dateToString(entity.getPaymentDate(),"dd-MM-yyy"));
+        dto.setPaymentDate(DateUtil.dateToString(entity.getPaymentDate(), "dd-MM-yyy"));
         dto.setNonTrainingSubActivityId(entity.getNonTrainingSubActivity().getSubActivityId());
         dto.setNonTrainingActivityId(entity.getNonTrainingSubActivity().getSubActivityId());
         dto.setAgencyId(entity.getAgency().getAgencyId());
@@ -15,7 +15,7 @@ public class NonTrainingExpenditureMapper {
         dto.setDateOfPurchase(entity.getDateOfPurchase());
         dto.setExpenditureAmount(entity.getExpenditureAmount());
         dto.setBillNo(entity.getBillNo());
-        dto.setBillDate(DateUtil.dateToString(entity.getBillDate(),"dd-MM-yyy"));
+        dto.setBillDate(DateUtil.dateToString(entity.getBillDate(), "dd-MM-yyy"));
         dto.setPayeeName(entity.getPayeeName());
         dto.setAccountNumber(entity.getAccountNumber());
         dto.setBankName(entity.getBankName());
@@ -34,10 +34,10 @@ public class NonTrainingExpenditureMapper {
         entity.setNonTrainingSubActivity(subActivity);
         entity.setCategory(dto.getCategory());
         entity.setDateOfPurchase(dto.getDateOfPurchase());
-        entity.setPaymentDate(DateUtil.stringToDate(dto.getPaymentDate(),"dd-MM-yyyy"));
+        entity.setPaymentDate(DateUtil.stringToDate(dto.getPaymentDate(), "dd-MM-yyyy"));
         entity.setExpenditureAmount(dto.getExpenditureAmount());
         entity.setBillNo(dto.getBillNo());
-        entity.setBillDate(DateUtil.stringToDate(dto.getBillDate(),"dd-MM-yyyy"));
+        entity.setBillDate(DateUtil.stringToDate(dto.getBillDate(), "dd-MM-yyyy"));
         entity.setPayeeName(dto.getPayeeName());
         entity.setAccountNumber(dto.getAccountNumber());
         entity.setBankName(dto.getBankName());
@@ -51,7 +51,7 @@ public class NonTrainingExpenditureMapper {
     }
 
 
-    public static NonTrainingResource mapToResource(NonTrainingResourceDTO dto,NonTrainingSubActivity nonTrainingsubActivity) {
+    public static NonTrainingResource mapToResource(NonTrainingResourceDTO dto, NonTrainingSubActivity nonTrainingsubActivity,NonTrainingActivity nonTrainingActivity) {
         if (dto == null) return null;
 
         NonTrainingResource entity = new NonTrainingResource();
@@ -59,12 +59,13 @@ public class NonTrainingExpenditureMapper {
         entity.setDesignation(dto.getDesignation());
         entity.setRelevantExperience(dto.getRelevantExperience());
         entity.setEducationalQualifications(dto.getEducationalQualification());
-        entity.setDateOfJoining(DateUtil.stringToDate(dto.getDateOfJoining(),"dd-MM-yyyy"));
+        entity.setDateOfJoining(DateUtil.stringToDate(dto.getDateOfJoining(), "dd-MM-yyyy"));
         entity.setMonthlySal(dto.getMonthlySal());
         entity.setBankName(dto.getBankName());
         entity.setIfscCode(dto.getIfscCode());
         entity.setAccountNo(dto.getAccountNo());
-//        entity.setNonTrainingActivity(nonTrainingActivity);
+        entity.setNonTrainingSubActivity(nonTrainingsubActivity);
+        entity.setNonTrainingActivity(nonTrainingActivity);
         return entity;
     }
 
@@ -77,7 +78,7 @@ public class NonTrainingExpenditureMapper {
         entity.setDesignation(dto.getDesignation());
         entity.setRelevantExperience(dto.getRelevantExperience());
         entity.setEducationalQualification(dto.getEducationalQualifications());
-        entity.setDateOfJoining(DateUtil.dateToString(dto.getDateOfJoining(),"dd-MM-yyyy"));
+        entity.setDateOfJoining(DateUtil.dateToString(dto.getDateOfJoining(), "dd-MM-yyyy"));
         entity.setMonthlySal(dto.getMonthlySal());
         entity.setBankName(dto.getBankName());
         entity.setIfscCode(dto.getIfscCode());
@@ -86,17 +87,15 @@ public class NonTrainingExpenditureMapper {
         return entity;
     }
 
-    public static NonTrainingResourceExpenditure mapToResourceExpenditure(NonTrainingResourceExpenditureDTO dto,NonTrainingResource resource) {
+    public static NonTrainingResourceExpenditure mapToResourceExpenditure(NonTrainingResourceExpenditureDTO dto, NonTrainingResource resource) {
         if (dto == null) return null;
         NonTrainingResourceExpenditure entity = new NonTrainingResourceExpenditure();
         entity.setAmount(dto.getAmount());
         entity.setPaymentForMonth(dto.getPaymentForMonth());
-        entity.setDateOfPayment(DateUtil.stringToDate(dto.getDateOfPayment(),"dd-MM-yyyy"));
+        entity.setDateOfPayment(DateUtil.stringToDate(dto.getDateOfPayment(), "dd-MM-yyyy"));
         entity.setNonTrainingResource(resource);
         return entity;
     }
-
-
 
 
     public static NonTrainingResourceExpenditureDTO mapToResourceExpenditureResponse(NonTrainingResourceExpenditure entity) {
@@ -106,15 +105,15 @@ public class NonTrainingExpenditureMapper {
         dto.setNonTrainingResourceExpenditureId(entity.getNonTrainingResourceExpenditureId());
         dto.setAmount(entity.getAmount());
         dto.setPaymentForMonth(entity.getPaymentForMonth());
-        dto.setDateOfPayment(DateUtil.dateToString(entity.getDateOfPayment(),"dd-MM-yyyy"));
+        dto.setDateOfPayment(DateUtil.dateToString(entity.getDateOfPayment(), "dd-MM-yyyy"));
         dto.setResourceId(entity.getNonTrainingResource().getResourceId());
         dto.setResourceName(entity.getNonTrainingResource().getName());
         dto.setUploadBillUrl(entity.getUploadBillUrl());
         return dto;
     }
-    public static  NonTrainingResourceDTO mapToResourceResForDropdown(NonTrainingResource  nonTrainingResource)
-    {
-        if(nonTrainingResource == null) return null;
+
+    public static NonTrainingResourceDTO mapToResourceResForDropdown(NonTrainingResource nonTrainingResource) {
+        if (nonTrainingResource == null) return null;
         NonTrainingResourceDTO resource = new NonTrainingResourceDTO();
         resource.setResourceId(nonTrainingResource.getResourceId());
         resource.setName(nonTrainingResource.getName());
