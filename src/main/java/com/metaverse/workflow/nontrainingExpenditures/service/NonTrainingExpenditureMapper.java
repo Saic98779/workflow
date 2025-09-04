@@ -66,24 +66,30 @@ public class NonTrainingExpenditureMapper {
         entity.setAccountNo(dto.getAccountNo());
         entity.setNonTrainingSubActivity(nonTrainingsubActivity);
         entity.setNonTrainingActivity(nonTrainingActivity);
+        entity.setSector(dto.getSector());
+        entity.setMethodOfSelection(dto.getMethodOfSelection());
+        entity.setNameOfTheCompany(dto.getNameOfTheCompany());
         return entity;
     }
 
-    public static NonTrainingResourceDTO mapToResourceRes(NonTrainingResource dto) {
-        if (dto == null) return null;
+    public static NonTrainingResourceDTO mapToResourceRes(NonTrainingResource resource) {
+        if (resource == null) return null;
 
         NonTrainingResourceDTO entity = new NonTrainingResourceDTO();
-        entity.setResourceId(dto.getResourceId());
-        entity.setName(dto.getName());
-        entity.setDesignation(dto.getDesignation());
-        entity.setRelevantExperience(dto.getRelevantExperience());
-        entity.setEducationalQualification(dto.getEducationalQualifications());
-        entity.setDateOfJoining(DateUtil.dateToString(dto.getDateOfJoining(), "dd-MM-yyyy"));
-        entity.setMonthlySal(dto.getMonthlySal());
-        entity.setBankName(dto.getBankName());
-        entity.setIfscCode(dto.getIfscCode());
-        entity.setAccountNo(dto.getAccountNo());
-        entity.setExpenditures(dto.getNonTrainingResourceExpenditures().stream().map(NonTrainingExpenditureMapper::mapToResourceExpenditureResponse).toList());
+        entity.setResourceId(resource.getResourceId());
+        entity.setName(resource.getName());
+        entity.setDesignation(resource.getDesignation());
+        entity.setRelevantExperience(resource.getRelevantExperience());
+        entity.setEducationalQualification(resource.getEducationalQualifications());
+        entity.setDateOfJoining(DateUtil.dateToString(resource.getDateOfJoining(), "dd-MM-yyyy"));
+        entity.setMonthlySal(resource.getMonthlySal());
+        entity.setBankName(resource.getBankName());
+        entity.setIfscCode(resource.getIfscCode());
+        entity.setAccountNo(resource.getAccountNo());
+        entity.setExpenditures(resource.getNonTrainingResourceExpenditures().stream().map(NonTrainingExpenditureMapper::mapToResourceExpenditureResponse).toList());
+        entity.setSector(resource.getSector());
+        entity.setMethodOfSelection(resource.getMethodOfSelection());
+        entity.setNameOfTheCompany(resource.getNameOfTheCompany());
         return entity;
     }
 

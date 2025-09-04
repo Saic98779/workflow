@@ -49,7 +49,7 @@ public class NonTrainingResource {
     @Column(name = "ifsc_code", length = 20)
     private String ifscCode;
 
-    @Column(name = "account_no", unique = true, length = 30)
+    @Column(name = "account_no", length = 30)
     private String accountNo;
 
     @OneToMany(mappedBy = "nonTrainingResource", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -62,4 +62,13 @@ public class NonTrainingResource {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "activity_id", nullable = false)
     private NonTrainingActivity nonTrainingActivity;
+
+    @Column(name = "method_of_selection")
+    private String methodOfSelection;
+
+    @Column(name = "sector")
+    private String sector;
+
+    @Column(name = "name_of_the_company")
+    private String nameOfTheCompany;
 }
