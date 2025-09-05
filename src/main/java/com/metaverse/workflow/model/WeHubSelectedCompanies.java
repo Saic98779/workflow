@@ -54,4 +54,8 @@ public class WeHubSelectedCompanies {
 
     @Column(name = "updated_on")
     private Date updatedOn;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "organization_id")
+    private Organization organization;
 }
