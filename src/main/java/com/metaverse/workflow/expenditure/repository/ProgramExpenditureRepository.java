@@ -24,4 +24,5 @@ public interface ProgramExpenditureRepository extends JpaRepository<ProgramExpen
             "WHERE pe.agency.agencyId = :agencyId " +
             "GROUP BY pe.subActivity.subActivityId")
     List<Object[]> sumExpenditureByAgencyGroupedBySubActivity(@Param("agencyId") Long agencyId);
+    Iterable<ProgramExpenditure> findBySubActivity_SubActivityIdInAndAgency_AgencyId(Iterable<Long> subActivityListIDs,Long agencyId);
 }
