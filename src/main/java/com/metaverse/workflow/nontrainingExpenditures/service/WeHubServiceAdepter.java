@@ -12,12 +12,16 @@ import com.metaverse.workflow.nontrainingExpenditures.repository.WeHubHandholdin
 import com.metaverse.workflow.nontrainingExpenditures.repository.WeHubSDGRepository;
 import com.metaverse.workflow.nontrainingExpenditures.repository.WeHubSelectedCompaniesRepository;
 import com.metaverse.workflow.organization.repository.OrganizationRepository;
+import com.metaverse.workflow.organization.service.OrganizationResponse;
+import com.metaverse.workflow.organization.service.OrganizationResponseMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @RequiredArgsConstructor
 @Service
@@ -110,6 +114,24 @@ public class WeHubServiceAdepter implements WeHubService {
                 .data(WeHubMapper.toResponse(entity))
                 .build();
     }
+
+    @Override
+    public WorkflowResponse getSelectedOrganization() {
+        List<WeHubSelectedCompanies> companies = weHubSelectedCompaniesRepository.findAll();
+
+        List<Organization> organizations = companies.stream()
+                .map(WeHubSelectedCompanies::getOrganization)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+        List<OrganizationResponse> responses = OrganizationResponseMapper.mapOrganization(organizations);
+
+        return WorkflowResponse.builder()
+                .status(200)
+                .message("Organizations fetched successfully")
+                .data(responses)
+                .build();
+    }
+
 
     @Override
     public WorkflowResponse createHandholding(WeHubHandholdingRequest request) throws DataException {

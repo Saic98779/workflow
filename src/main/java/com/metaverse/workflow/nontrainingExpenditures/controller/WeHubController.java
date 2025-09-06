@@ -189,4 +189,9 @@ public class WeHubController {
             );
         }
     }
+    @GetMapping("/selected-organizations")
+    public WorkflowResponse getSelectedOrganization()
+    {
+        return service.getSelectedOrganization();
+    }
 }
