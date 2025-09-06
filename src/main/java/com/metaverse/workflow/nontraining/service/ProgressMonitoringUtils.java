@@ -57,12 +57,12 @@ public class ProgressMonitoringUtils {
      * Holds summary information for targets (total targets, total budget).
      */
     public static class TargetSummary<T extends TargetsBase> {
-        public final T representative;
+        public final T activityName;
         public long totalTargets;
         public double totalBudget;
 
         public TargetSummary(T target) {
-            this.representative = target;
+            this.activityName = target;
             this.totalTargets = sumTargets(target);
             this.totalBudget = sumBudgets(target);
         }

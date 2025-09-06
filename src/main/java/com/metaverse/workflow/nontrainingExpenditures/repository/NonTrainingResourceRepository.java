@@ -10,13 +10,15 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface NonTrainingResourceRepository extends JpaRepository<NonTrainingResource, Long> {
 
-
     @Query("SELECT COALESCE(SUM(ntrEx.amount), 0) " +
             "FROM NonTrainingResource ntr " +
             "JOIN ntr.nonTrainingResourceExpenditures ntrEx " +
             "JOIN ntr.nonTrainingSubActivity ntsa " +
             "JOIN ntsa.nonTrainingActivity nta " +
-            "WHERE nta.activityName = :activityName")
-    Double sumExpenditureByActivityName(@Param("activityName") String activityName);
+            "WHERE nta.activityId = :activityId " +
+            "AND ntsa.subActivityId = :subActivityId")
+    Double sumExpenditureByActivityAndSubActivity(@Param("activityId") Long activityId,
+                                                  @Param("subActivityId") Long subActivityId);
+
 }
 

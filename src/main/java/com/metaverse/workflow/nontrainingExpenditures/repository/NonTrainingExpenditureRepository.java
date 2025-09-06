@@ -16,5 +16,6 @@ public interface NonTrainingExpenditureRepository extends JpaRepository<NonTrain
             "WHERE nt.agency.agencyId = :agencyId " +
             "GROUP BY nt.nonTrainingSubActivity.subActivityId")
     List<Object[]> sumExpenditureByAgencyGroupedBySubActivity(@Param("agencyId") Long agencyId);
+
     Optional<List<NonTrainingExpenditure>> findByNonTrainingSubActivity_SubActivityId(Long subActivityId);
 }

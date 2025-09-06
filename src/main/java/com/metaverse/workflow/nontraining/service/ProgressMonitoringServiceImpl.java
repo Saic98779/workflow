@@ -2,7 +2,6 @@ package com.metaverse.workflow.nontraining.service;
 
 import com.metaverse.workflow.ProgramMonitoring.service.SubActivityParticipantCountDTO;
 import com.metaverse.workflow.activity.repository.ActivityRepository;
-import com.metaverse.workflow.agency.repository.AgencyRepository;
 import com.metaverse.workflow.expenditure.repository.ProgramExpenditureRepository;
 import com.metaverse.workflow.model.*;
 import com.metaverse.workflow.nontraining.dto.NonTrainingProgramDto;
@@ -10,21 +9,18 @@ import com.metaverse.workflow.nontraining.dto.ProgressMonitoringDto;
 import com.metaverse.workflow.nontraining.dto.TrainingProgramDto;
 import com.metaverse.workflow.nontrainingExpenditures.repository.NonTrainingExpenditureRepository;
 import com.metaverse.workflow.nontrainingExpenditures.repository.NonTrainingResourceRepository;
-import com.metaverse.workflow.program.repository.ProgramRepository;
+import com.metaverse.workflow.nontrainingExpenditures.repository.TravelAndTransportRepository;
 import com.metaverse.workflow.trainingandnontrainingtarget.repository.NonTrainingTargetRepository;
 import com.metaverse.workflow.trainingandnontrainingtarget.repository.TrainingTargetRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class ProgressMonitoringServiceImpl implements ProgressMonitoringService {
 
-    private final ProgramRepository programRepository;
-    private final TrainingProgramMapper trainingProgramMapper;
     private final NonTrainingProgramMapper nonTrainingProgramMapper;
     private final ProgramExpenditureRepository programExpenditureRepository;
     private final NonTrainingExpenditureRepository nonTrainingExpenditureRepository;
@@ -32,65 +28,127 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
     private final TrainingTargetRepository trainingTargetRepository;
     private final NonTrainingResourceRepository nonTrainingResourcesRepository;
     private final ActivityRepository activityRepository;
+    private final TravelAndTransportRepository travelAndTransportRepository;
+
+    /*
+        --- Non-Training Programs ---
+        1. Fetch all non-training targets for the given agency and group them by activity.
+        2. Sum up the expenditures for each sub-activity under the agency.
+        3. For each activity, calculate total targets, total budget, and total expenditure.
+        4. Handle special case for "Contingency Fund" by fetching expenditure from resources repository.
+        5. Combine all the data into NonTrainingProgramDto objects and return the summary.
+     */
 
     @Override
-    public ProgressMonitoringDto getAllTrainingAndNonTrainings(Long agencyId) {
-        // --- Fetch all necessary data once ---
-        Map<Long, Long> programCounts = ProgressMonitoringUtils.toLongMap(
-                programRepository.countProgramsWithParticipantsBySubActivity(agencyId)
-        );
+    public ProgressMonitoringDto getAllNonTrainingsSummary(Long agencyId) {
+        List<NonTrainingProgramDto> nonTrainingPrograms = new ArrayList<>();
 
-        Map<Long, Double> trainingExp = ProgressMonitoringUtils.toDoubleMap(
-                programExpenditureRepository.sumExpenditureByAgencyGroupedBySubActivity(agencyId)
-        );
-
+        // --- Non-Training Programs ---
         Map<Long, Double> nonTrainingExp = ProgressMonitoringUtils.toDoubleMap(
                 nonTrainingExpenditureRepository.sumExpenditureByAgencyGroupedBySubActivity(agencyId)
         );
 
-        // --- Training Programs ---
-        Map<Long, ProgressMonitoringUtils.TargetSummary<TrainingTargets>> trainingSummary =
-                ProgressMonitoringUtils.buildSummary(
-                        trainingTargetRepository.findByAgency_AgencyId(agencyId),
-                        t -> t.getSubActivity() != null ? t.getSubActivity().getSubActivityId() : null
-                );
-
-        List<TrainingProgramDto> trainingPrograms = new ArrayList<>();
-        trainingSummary.forEach((key, summary) -> trainingPrograms.add(
-                trainingProgramMapper.trainingProgramDtoMapper(
-                        summary.representative,
-                        (double) summary.totalTargets,
-                        summary.totalBudget,
-                        programCounts.getOrDefault(key, 0L),
-                        trainingExp.getOrDefault(key, 0.0)
-                )
-        ));
-
-        // --- Non-Training Programs ---
         Map<Long, ProgressMonitoringUtils.TargetSummary<NonTrainingTargets>> nonTrainingSummary =
                 ProgressMonitoringUtils.buildSummary(
                         nonTrainingTargetRepository
                                 .findByNonTrainingSubActivity_NonTrainingActivity_Agency_AgencyId(agencyId),
-                        t -> t.getNonTrainingSubActivity() != null &&
-                                t.getNonTrainingSubActivity().getNonTrainingActivity() != null
-                                ? t.getNonTrainingSubActivity().getNonTrainingActivity().getActivityId()
+                        t -> t.getNonTrainingSubActivity() != null
+                                ? t.getNonTrainingSubActivity().getSubActivityId()
                                 : null
                 );
 
-        List<NonTrainingProgramDto> nonTrainingPrograms = new ArrayList<>();
         nonTrainingSummary.forEach((key, summary) -> {
-            NonTrainingTargets target = summary.representative;
+            NonTrainingTargets target = summary.activityName;
             double expenditure = nonTrainingExp.getOrDefault(key, 0.0);
 
             if (target.getNonTrainingSubActivity() != null &&
-                    "Contingency Fund".equalsIgnoreCase(
-                            target.getNonTrainingSubActivity().getNonTrainingActivity().getActivityName()
-                    )) {
-                Double resourceExp = nonTrainingResourcesRepository
-                        .sumExpenditureByActivityName(
-                                target.getNonTrainingSubActivity().getNonTrainingActivity().getActivityName()
-                        );
-                expenditure = resourceExp != null ? resourceExp : 0.0;
+                    target.getNonTrainingSubActivity().getNonTrainingActivity() != null) {
+
+                String activityName = target.getNonTrainingSubActivity()
+                        .getNonTrainingActivity()
+                        .getActivityName()
+                        .trim();
+
+                String subActivityName = target.getNonTrainingSubActivity()
+                        .getSubActivityName()
+                        .trim();
+
+                // Normalize to lower case for safe comparison
+                String activityKey = activityName.toLowerCase();
+                String subActivityKey = subActivityName.toLowerCase();
+
+                switch (activityKey) {
+                    case "staff" -> {
+                        // Handle staff differently per sub-activity if needed
+                        switch (subActivityKey) {
+                            case "staff - ceo", "staff - designers", "staff - project manager", "interns for certifications", "r&d" -> {
+                                System.out.println("Fetching Staff expenditure (" + subActivityName + ") from resources repository");
+                                Double resourceExp = nonTrainingResourcesRepository
+                                        .sumExpenditureByActivityAndSubActivity(
+                                                target.getNonTrainingSubActivity().getNonTrainingActivity().getActivityId(),
+                                                target.getNonTrainingSubActivity().getSubActivityId()
+                                        );
+                                expenditure = resourceExp != null ? resourceExp : 0.0;
+                            }
+                            default -> {
+                                System.out.println("Default Staff handling for: " + subActivityName);
+                                expenditure = nonTrainingExp.getOrDefault(key, 0.0);
+                            }
+                        }
+                    }
+
+                    case "contingency fund" -> {
+                        System.out.println("Fetching " + activityName + " expenditure from resources repository");
+                        Double resourceExp = nonTrainingResourcesRepository
+                                .sumExpenditureByActivityAndSubActivity(
+                                        target.getNonTrainingSubActivity().getNonTrainingActivity().getActivityId(),
+                                        target.getNonTrainingSubActivity().getSubActivityId()
+                                );
+                        expenditure = resourceExp != null ? resourceExp : 0.0;
+                    }
+
+                    case "project team", "setting up call center services for validation" -> {
+                        // All treated as Staff
+                        System.out.println("Fetching Staff expenditure (" + activityName + " - " + subActivityName + ")");
+                        switch (subActivityKey) {
+                            case "staff", "technology firm" -> {
+                                Double resourceExp = nonTrainingResourcesRepository
+                                        .sumExpenditureByActivityAndSubActivity(
+                                                target.getNonTrainingSubActivity().getNonTrainingActivity().getActivityId(),
+                                                target.getNonTrainingSubActivity().getSubActivityId()
+                                        );
+                                expenditure = resourceExp != null ? resourceExp : 0.0;
+                            }
+                        }
+                    }
+
+                    case "hiring of technology platform" -> {
+                        // Map to Technology firm
+                        System.out.println("Fetching Technology firm expenditure");
+                        Double resourceExp = nonTrainingResourcesRepository
+                                .sumExpenditureByActivityAndSubActivity(
+                                        target.getNonTrainingSubActivity().getNonTrainingActivity().getActivityId(),
+                                        target.getNonTrainingSubActivity().getSubActivityId()
+                                );
+                        expenditure = resourceExp != null ? resourceExp : 0.0;
+                    }
+
+
+                    case "travel & transport" -> {
+                        System.out.println("Fetching Travel & Transport expenditure for " + subActivityName);
+                        Double resourceExp = travelAndTransportRepository
+                                .sumTravelAndTransportByActivityAndSubActivity(
+                                        target.getNonTrainingSubActivity().getNonTrainingActivity().getActivityId(),
+                                        target.getNonTrainingSubActivity().getSubActivityId()
+                                );
+                        expenditure = resourceExp != null ? resourceExp : 0.0;
+                    }
+
+                    default -> {
+                        System.out.println("Using default expenditure from nonTrainingExp map for " + activityName + " - " + subActivityName);
+                        expenditure = nonTrainingExp.getOrDefault(key, 0.0);
+                    }
+                }
             }
 
             nonTrainingPrograms.add(
@@ -104,10 +162,22 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
         });
 
         return ProgressMonitoringDto.builder()
-                .trainingPrograms(trainingPrograms)
                 .nonTrainingPrograms(nonTrainingPrograms)
                 .build();
     }
+
+
+
+
+    /*
+        --- Training Programs ---
+        1. Fetch all activities for the given agency.
+        2. For each activity, fetch its sub-activities and map their names.
+        3. Fetch training targets for these sub-activities and sum them up.
+        4. Fetch participant counts for these sub-activities.
+        5. Fetch program expenditures for these sub-activities and sum them up.
+        6. Combine all the data into TrainingProgramDto objects and return the list.
+     */
 
     @Override
     public List<TrainingProgramDto> getAllTrainingProgressMonitoringProgress(Long agencyId) {

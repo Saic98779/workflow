@@ -9,6 +9,6 @@ import java.util.List;
 @Service
 public interface ProgressMonitoringService {
 
-    ProgressMonitoringDto getAllTrainingAndNonTrainings(Long agencyId);
+    ProgressMonitoringDto getAllNonTrainingsSummary(Long agencyId);
     List<TrainingProgramDto> getAllTrainingProgressMonitoringProgress(Long agencyId);
 }

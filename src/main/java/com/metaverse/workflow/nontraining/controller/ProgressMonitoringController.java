@@ -30,10 +30,18 @@ public class ProgressMonitoringController {
     @Autowired
     private NonTrainingActivityService nonTrainingActivityService;
 
-    @GetMapping("/aleap")
+    @GetMapping("/non-training-targets")
     public ResponseEntity<?> getAgencyProgramMonitor(Long agencyId){
-        return ResponseEntity.ok(progressMonitoringService.getAllTrainingAndNonTrainings(agencyId));
+        return ResponseEntity.ok(progressMonitoringService.getAllNonTrainingsSummary(agencyId));
     }
+
+
+    @GetMapping("/training-targets")
+    public ResponseEntity<?> getProgramMonitor(Long agencyId){
+        List<TrainingProgramDto> allTrainingProgressMonitoringProgress = progressMonitoringService.getAllTrainingProgressMonitoringProgress(agencyId);
+        return ResponseEntity.ok(allTrainingProgressMonitoringProgress);
+    }
+
 
     @GetMapping(path = "non-training/physical/financial/{subActivityId}")
     public ResponseEntity<?> getPhysicalFinancial(@PathVariable Long subActivityId){
@@ -81,11 +89,5 @@ public class ProgressMonitoringController {
                     .body(new WorkflowResponse(404, "Activity not present", "", 0, 0));
         }
         return ResponseEntity.ok(allActivitiesByAgency);
-    }
-
-    @GetMapping("/training-targets")
-    public ResponseEntity<?> getProgramMonitor(Long agencyId){
-        List<TrainingProgramDto> allTrainingProgressMonitoringProgress = progressMonitoringService.getAllTrainingProgressMonitoringProgress(agencyId);
-        return ResponseEntity.ok(allTrainingProgressMonitoringProgress);
     }
 }
