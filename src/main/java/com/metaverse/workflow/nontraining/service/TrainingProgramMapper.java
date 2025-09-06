@@ -11,7 +11,7 @@ public class TrainingProgramMapper {
 
 
     public TrainingProgramDto trainingProgramDtoMapper(
-            TrainingTargets trainingTargets, Long totalTargets, Double totalBudget, Long achievedCount, Double financialExpenditure) {
+            TrainingTargets trainingTargets, Double totalTargets, Double totalBudget, Long achievedCount, Double financialExpenditure) {
 
         return TrainingProgramDto.builder()
                 .activity(trainingTargets.getSubActivity().getActivity().getActivityName())

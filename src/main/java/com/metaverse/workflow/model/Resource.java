@@ -39,7 +39,7 @@ public class Resource {
     @Column(name="specialization")
     private String specialization;
   
-    @Column(name="brief_description")
+    @Column(name="brief_description", length = 1000)
     private String briefDescription;
 
     @Column(name="is_vip")
