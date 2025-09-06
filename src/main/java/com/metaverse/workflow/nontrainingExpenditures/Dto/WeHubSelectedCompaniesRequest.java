@@ -2,8 +2,6 @@ package com.metaverse.workflow.nontrainingExpenditures.Dto;
 
 import lombok.Data;
 
-import java.time.LocalDate;
-
 
 @Data
 public class WeHubSelectedCompaniesRequest {
@@ -17,5 +15,6 @@ public class WeHubSelectedCompaniesRequest {
     private String cohortName;
     private String baselineAssessmentDate;
     private Long subActivityId;
+    private Long organizationId;
 }
 
