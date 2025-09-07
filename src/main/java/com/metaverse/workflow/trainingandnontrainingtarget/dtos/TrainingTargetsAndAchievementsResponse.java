@@ -5,6 +5,7 @@ import lombok.Data;
 @Data
 public class TrainingTargetsAndAchievementsResponse {
     private String activityName;
+    private String subActivityName;
     private String financialYear;
     private Long trainingTargetQ1; // Physical Training target for Q1
     private Long trainingTargetQ2;
@@ -24,7 +25,7 @@ public class TrainingTargetsAndAchievementsResponse {
     private Double financialAchievedQ4;
     private Integer totalFinancialTarget;
     private Double totalFinancialAchieved;
-    private Integer totalTarget;
+    private Long totalTarget;
     private Integer totalAchieved;
     private Double physicalExpenditurePercentage;
     private Double financialExpenditurePercentage;
