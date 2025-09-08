@@ -32,7 +32,7 @@ public class NIMSMECentralDataMapper {
         entity.setVerified(request.getVerified());
         entity.setCheckNo(request.getCheckNo());
         entity.setCheckDate(DateUtil.covertStringToDate(request.getCheckDate()));
-        entity.setUploadBillUrl(request.getUploadBillUrl());
+
 
         return entity;
     }

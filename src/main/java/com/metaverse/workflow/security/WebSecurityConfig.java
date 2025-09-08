@@ -71,6 +71,33 @@ public class WebSecurityConfig {
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                         .requestMatchers("/auth/**", "/workflow/auth/**").permitAll()
                         .requestMatchers("/auth/register/**").permitAll()
+                        .requestMatchers("/program/pdf/**").permitAll()
+                        .requestMatchers("/program/session/pdf/**").permitAll()
+                        .requestMatchers("/program/attendance/pdf/**").permitAll()
+                        .requestMatchers("/program/participant/pdf/**").permitAll()
+                        .requestMatchers("/program/summary/pdf/**").permitAll()
+
+                        .requestMatchers("/program/excel").permitAll()
+                        .requestMatchers("/organization/excel").permitAll()
+                        .requestMatchers("/location/excel/**").permitAll()
+                        .requestMatchers("/resource/excel/**").permitAll()
+                        .requestMatchers("/program/summery/excel/**").permitAll()
+                        .requestMatchers("/export-program-expenditure").permitAll()
+                        .requestMatchers("/programs-status/**").permitAll()
+                        .requestMatchers("/programs-participant-status/**").permitAll()
+                        .requestMatchers("/trg/calender/agency-wise/**").permitAll()
+                        .requestMatchers("/trg/calender/district-wise").permitAll()
+                        .requestMatchers("/trg/calender/date-wise").permitAll()
+                        .requestMatchers("/combined/expenditure/excel/**").permitAll()
+                        .requestMatchers("/program/excel/**").permitAll()
+                        .requestMatchers("/program/excel/sheets").permitAll()
+                        .requestMatchers("/ParticipantTemp/excel/sheets/**").permitAll()
+                        .requestMatchers(
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**",
+                                "/workflow/swagger-ui/**",
+                                "/workflow/v3/api-docs/**"
+                        ).permitAll()
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(exceptions -> exceptions
