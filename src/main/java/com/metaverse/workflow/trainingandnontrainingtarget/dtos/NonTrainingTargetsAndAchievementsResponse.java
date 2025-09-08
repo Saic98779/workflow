@@ -15,10 +15,10 @@ public class NonTrainingTargetsAndAchievementsResponse {
     private Double financialTargetQ2;
     private Double financialTargetQ3;
     private Double financialTargetQ4;
-    private Integer achievedQ1;     // Achieved for Q1
-    private Integer achievedQ2;
-    private Integer achievedQ3;
-    private Integer achievedQ4;
+    private String achievedQ1;     // Achieved for Q1
+    private String achievedQ2;
+    private String achievedQ3;
+    private String achievedQ4;
     private Double financialAchievedQ1;
     private Double financialAchievedQ2;
     private Double financialAchievedQ3;

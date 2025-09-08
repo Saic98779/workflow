@@ -30,26 +30,4 @@ public interface NonTrainingExpenditureRepository extends JpaRepository<NonTrain
             @Param("subActivityId") Long subActivityId,
             @Param("startDate") Date startDate,
             @Param("endDate") Date endDate);
-
-    @Query("""
-        SELECT 
-            pe.nonTrainingSubActivity.subActivityId as subActivityId,
-            CASE 
-                WHEN MONTH(pe.billDate) BETWEEN 4 AND 6 THEN 1
-                WHEN MONTH(pe.billDate) BETWEEN 7 AND 9 THEN 2
-                WHEN MONTH(pe.billDate) BETWEEN 10 AND 12 THEN 3
-                ELSE 4
-            END as quarter,
-            SUM(pe.expenditureAmount)
-        FROM NonTrainingExpenditure pe
-        WHERE pe.agency.agencyId = :agencyId
-          AND pe.billDate BETWEEN :startDate AND :endDate
-        GROUP BY pe.nonTrainingSubActivity.subActivityId, quarter
-    """)
-    List<Object[]> sumExpenditureBySubActivityAndQuarter(
-            @Param("agencyId") Long agencyId,
-            @Param("startDate") Date startDate,
-            @Param("endDate") Date endDate
-    );
-
 }

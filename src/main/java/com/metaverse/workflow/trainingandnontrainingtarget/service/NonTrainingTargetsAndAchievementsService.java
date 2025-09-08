@@ -7,5 +7,4 @@ import java.util.List;
 
 public interface NonTrainingTargetsAndAchievementsService {
     List<NonTrainingTargetsAndAchievementsResponse> getTargetsAndAchievements(String year, Long agencyId);
-    List<NonTrainingTargetsAndAchievementsResponse> getTargetsAndAchievementsHI(String financialYear, Long agencyId);
     }
