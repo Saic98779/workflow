@@ -51,4 +51,8 @@ public class ProgramSessionFile {
     @JoinColumn(name = "benchmarking_study_id")
     private BenchmarkingStudy benchmarkingStudy;
 
+    @ManyToOne
+    @JoinColumn(name = "central_data_id")
+    private NIMSMECentralData nimsmeCentralData;
+
 }
