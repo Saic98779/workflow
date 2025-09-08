@@ -5,11 +5,12 @@ import lombok.Data;
 @Data
 public class NonTrainingTargetsAndAchievementsResponse {
     private String activityName;
+    private String subActivityName;
     private String financialYear;
-    private Integer trainingTargetQ1; // Physical Training target for Q1
-    private Integer trainingTargetQ2;
-    private Integer trainingTargetQ3;
-    private Integer trainingTargetQ4;
+    private Long trainingTargetQ1; // Physical Training target for Q1
+    private Long trainingTargetQ2;
+    private Long trainingTargetQ3;
+    private Long trainingTargetQ4;
     private Double financialTargetQ1;
     private Double financialTargetQ2;
     private Double financialTargetQ3;
@@ -24,7 +25,7 @@ public class NonTrainingTargetsAndAchievementsResponse {
     private Double financialAchievedQ4;
     private Integer totalFinancialTarget;
     private Double totalFinancialAchieved;
-    private Integer totalTarget;
+    private Long totalTarget;
     private Integer totalAchieved;
     private String physicalExpenditurePercentage;
     private Double financialExpenditurePercentage;

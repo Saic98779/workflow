@@ -47,7 +47,7 @@ public class NonTrainingExpenditureService {
         NonTrainingExpenditure save = repository.save(entity);
 
         if (file != null && !file.isEmpty()) {
-            String filePath = this.storageFiles(file, save.getId(), "TravelAndTransport");
+            String filePath = this.storageFiles(file, save.getId(), "NonTrainingExpenditure");
             save.setUploadBillUrl(filePath);
             repository.save(save);
             programSessionFileRepository.save(ProgramSessionFile.builder()

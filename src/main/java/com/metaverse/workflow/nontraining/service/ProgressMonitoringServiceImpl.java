@@ -204,7 +204,9 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
 
         List<TrainingTargets> allById = trainingTargetRepository.findBySubActivity_SubActivityIdInAndAgency_AgencyId(longs,agencyId);
         for (TrainingTargets targets : allById) {
-            target.put(targets.getSubActivity().getSubActivityId(),  (targets.getQ1Target() + targets.getQ2Target() + targets.getQ3Target() + targets.getQ4Target()));
+            Long subActivityId = targets.getSubActivity().getSubActivityId();
+            long total = targets.getQ1Target() + targets.getQ2Target() + targets.getQ3Target() + targets.getQ4Target();
+            target.merge(subActivityId, total, Long::sum);
         }
         List<SubActivityParticipantCountDTO> participantCountByAgencyId = activityRepository.findProgramCountByAgencyId(agencyId);
 
