@@ -4,6 +4,7 @@ import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.model.NonTrainingAchievement;
 import com.metaverse.workflow.nontraining.dto.NonTrainingActivityDto;
 import com.metaverse.workflow.nontraining.dto.PhysicalFinancialDto;
+import com.metaverse.workflow.nontraining.dto.TrainingProgramDto;
 import com.metaverse.workflow.nontraining.service.NonTrainingAchievementService;
 import com.metaverse.workflow.nontraining.service.NonTrainingActivityService;
 import com.metaverse.workflow.nontraining.service.ProgressMonitoringService;
@@ -29,13 +30,21 @@ public class ProgressMonitoringController {
     @Autowired
     private NonTrainingActivityService nonTrainingActivityService;
 
-    @GetMapping("/aleap")
+    @GetMapping("/non-training-targets")
     public ResponseEntity<?> getAgencyProgramMonitor(Long agencyId){
-        return ResponseEntity.ok(progressMonitoringService.getAllTrainingAndNonTrainings(agencyId));
+        return ResponseEntity.ok(progressMonitoringService.getAllNonTrainingsSummary(agencyId));
     }
 
+
+    @GetMapping("/training-targets")
+    public ResponseEntity<?> getProgramMonitor(Long agencyId){
+        List<TrainingProgramDto> allTrainingProgressMonitoringProgress = progressMonitoringService.getAllTrainingProgressMonitoringProgress(agencyId);
+        return ResponseEntity.ok(allTrainingProgressMonitoringProgress);
+    }
+
+
     @GetMapping(path = "non-training/physical/financial/{subActivityId}")
-    public ResponseEntity<?> getPhysicalFinancial(Long subActivityId){
+    public ResponseEntity<?> getPhysicalFinancial(@PathVariable Long subActivityId){
         PhysicalFinancialDto physicalFinancial = nonTrainingAchievementService.getPhysicalFinancial(subActivityId);
         if(physicalFinancial != null){
             return ResponseEntity.ofNullable(WorkflowResponse.builder().data(physicalFinancial)

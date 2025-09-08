@@ -22,15 +22,16 @@ public class NonTrainingProgramMapper {
      */
     public NonTrainingProgramDto nonTrainingProgramDtoMapper(NonTrainingTargets nonTrainingTargets, Long totalTargets, Double totalBudget, double financialExpenditure) {
 
-        NonTrainingActivity subActivity = nonTrainingTargets.getNonTrainingSubActivity().getNonTrainingActivity();
-        String activityName = subActivity != null ? subActivity.getActivityName() : "Unknown";
+        NonTrainingActivity nonTrainingActivity = nonTrainingTargets.getNonTrainingSubActivity().getNonTrainingActivity();
+        String subActivityName = nonTrainingTargets.getNonTrainingSubActivity().getSubActivityName();
+        String activityName = nonTrainingActivity != null ? nonTrainingActivity.getActivityName() : "Unknown";
 
         // Get the achievement for the related activity, if available
         NonTrainingAchievement achievement = null;
-        if (subActivity != null && subActivity.getAchievements() != null) {
-            achievement = subActivity.getAchievements().stream()
+        if (nonTrainingActivity != null && nonTrainingActivity.getAchievements() != null) {
+            achievement = nonTrainingActivity.getAchievements().stream()
                     .filter(ach -> ach.getNonTrainingActivity().getActivityId()
-                            .equals(subActivity.getActivityId()))
+                            .equals(nonTrainingActivity.getActivityId()))
                     .findFirst()
                     .orElse(null);
         }
@@ -47,7 +48,7 @@ public class NonTrainingProgramMapper {
 
         return NonTrainingProgramDto.builder()
                 .nonTrainingActivity(activityName)
-                .nonTrainingSubActivity(subActivity != null ? subActivity.getActivityName() : null)
+                .nonTrainingSubActivity(nonTrainingActivity != null ? subActivityName : null)
                 .physicalTarget(totalTargets != null ? totalTargets.intValue() : 0)
                 .physicalAchievement(String.valueOf(physicalAchievement))
                 .financialTarget(totalBudget != null ? totalBudget : 0.0)

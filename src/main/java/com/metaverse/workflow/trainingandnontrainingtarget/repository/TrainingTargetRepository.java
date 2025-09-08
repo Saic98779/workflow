@@ -14,5 +14,6 @@ public interface TrainingTargetRepository extends JpaRepository<TrainingTargets,
 
     // fetch all by agency
     List<TrainingTargets> findByAgency_AgencyId(Long agencyId);
+    List<TrainingTargets> findBySubActivity_SubActivityIdInAndAgency_AgencyId(Iterable<Long> subActivityId, Long agencyId);
 }
 

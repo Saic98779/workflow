@@ -12,6 +12,5 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class ProgressMonitoringDto {
-    private List<TrainingProgramDto> trainingPrograms;
     private List<NonTrainingProgramDto> nonTrainingPrograms;
 }

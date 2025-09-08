@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Date;
 import java.util.List;
 
 public interface ProgramExpenditureRepository extends JpaRepository<ProgramExpenditure,Long> {
@@ -19,9 +20,17 @@ public interface ProgramExpenditureRepository extends JpaRepository<ProgramExpen
 
     void deleteByProgramProgramId(Long programId);
 
-    @Query("SELECT pe.subActivity.subActivityId, SUM(pe.cost) " +
-            "FROM ProgramExpenditure pe " +
+    @Query("SELECT SUM(pe.cost) FROM ProgramExpenditure pe " +
             "WHERE pe.agency.agencyId = :agencyId " +
-            "GROUP BY pe.subActivity.subActivityId")
-    List<Object[]> sumExpenditureByAgencyGroupedBySubActivity(@Param("agencyId") Long agencyId);
+            "AND pe.subActivity.subActivityId = :subActivityId " +
+            "AND pe.billDate BETWEEN :startDate AND :endDate")
+    Double sumExpenditureByAgencyAndSubActivityAndDateRange(
+            @Param("agencyId") Long agencyId,
+            @Param("subActivityId") Long subActivityId,
+            @Param("startDate") Date startDate,
+            @Param("endDate") Date endDate
+    );
+
+
+    Iterable<ProgramExpenditure> findBySubActivity_SubActivityIdInAndAgency_AgencyId(Iterable<Long> subActivityListIDs,Long agencyId);
 }
