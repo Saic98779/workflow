@@ -12,6 +12,7 @@ public interface WeHubService {
     WorkflowResponse getBySubActivityId(Long subActivityId) throws DataException;
     WorkflowResponse delete(Long candidateId) throws DataException;
     WorkflowResponse getById(Long candidateId) throws DataException;
+    WorkflowResponse getSelectedOrganization();
 
     WorkflowResponse createHandholding(WeHubHandholdingRequest request) throws DataException;
     WorkflowResponse updateHandholding(Long handholdingId, WeHubHandholdingRequest request) throws DataException;

@@ -42,4 +42,7 @@ public interface ProgramSessionFileRepository extends JpaRepository<ProgramSessi
 
     void deleteByNonTrainingExpenditure_Id(Long id);
 
+    void deleteByBenchmarkingStudy_BenchmarkingStudyId(Long id);
+
+    void deleteByNimsmeCentralData_CentralDataId(Long centralDataId);
 }
