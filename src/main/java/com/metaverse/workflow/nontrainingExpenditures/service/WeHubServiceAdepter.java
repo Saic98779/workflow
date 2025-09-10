@@ -57,13 +57,13 @@ public class WeHubServiceAdepter implements WeHubService {
                 .orElseThrow(() ->new DataException("Selected Company not found","SELECTED_COMPANY_NOT_FOUND",400));
 
         entity.setUdhyamDpiitRegistrationNo(request.getUdhyamDpiitRegistrationNo());
-        entity.setApplicationReceivedDate(DateUtil.stringToDate(request.getApplicationReceivedDate(), "dd-MM-yyyy"));
+        entity.setApplicationReceivedDate(DateUtil.covertStringToDate(request.getApplicationReceivedDate()));
         entity.setApplicationSource(request.getApplicationSource());
-        entity.setShortlistingDate(DateUtil.stringToDate(request.getShortlistingDate(), "dd-MM-yyyy"));
-        entity.setNeedAssessmentDate(DateUtil.stringToDate(request.getNeedAssessmentDate(), "dd-MM-yyyy"));
+        entity.setShortlistingDate(DateUtil.covertStringToDate(request.getShortlistingDate()));
+        entity.setNeedAssessmentDate(DateUtil.covertStringToDate(request.getNeedAssessmentDate()));
         entity.setCandidateFinalised(request.getCandidateFinalised());
         entity.setCohortName(request.getCohortName());
-        entity.setBaselineAssessmentDate(DateUtil.stringToDate(request.getBaselineAssessmentDate(), "dd-MM-yyyy"));
+        entity.setBaselineAssessmentDate(DateUtil.covertStringToDate(request.getBaselineAssessmentDate()));
 
         WeHubSelectedCompanies updatedEntity =  weHubSelectedCompaniesRepository.save(entity);
         return WorkflowResponse.builder()
@@ -252,7 +252,7 @@ public class WeHubServiceAdepter implements WeHubService {
          entity.setAdoptionStatus(request.getAdoptionStatus());
         entity.setTechnologyAdopted(request.getTechnologyAdopted());
         entity.setEnvCompCert(request.getEnvCompCert());
-        entity.setDateOfCert(DateUtil.stringToDate(request.getDateOfCert(),"dd-MM-yyyy"));
+        entity.setDateOfCert(DateUtil.covertStringToDate(request.getDateOfCert()));
 
         WeHubSDG updatedEntity = weHubSDGRepository.save(entity);
 

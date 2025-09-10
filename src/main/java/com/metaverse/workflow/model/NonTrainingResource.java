@@ -46,10 +46,10 @@ public class NonTrainingResource {
     @Column(name = "bank_name")
     private String bankName;
 
-    @Column(name = "ifsc_code", length = 20)
+    @Column(name = "ifsc_code")
     private String ifscCode;
 
-    @Column(name = "account_no", length = 30)
+    @Column(name = "account_no")
     private String accountNo;
 
     @OneToMany(mappedBy = "nonTrainingResource", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -71,4 +71,10 @@ public class NonTrainingResource {
 
     @Column(name = "name_of_the_company")
     private String nameOfTheCompany;
+
+    @Column(name = "created_on", updatable = false)
+    private String createdOn;
+
+    @Column(name = "updated_on", insertable = false, updatable = true)
+    private String updatedOn;
 }

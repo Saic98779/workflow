@@ -36,4 +36,10 @@ NonTrainingResourceExpenditure {
     private Date dateOfPayment;
 
     private String uploadBillUrl;
+
+    @Column(name = "created_on", updatable = false)
+    private String createdOn;
+
+    @Column(name = "updated_on", insertable = false, updatable = true)
+    private String updatedOn;
 }

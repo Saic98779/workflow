@@ -34,10 +34,10 @@ public class NonTrainingExpenditureMapper {
         entity.setNonTrainingSubActivity(subActivity);
         entity.setCategory(dto.getCategory());
         entity.setDateOfPurchase(dto.getDateOfPurchase());
-        entity.setPaymentDate(DateUtil.stringToDate(dto.getPaymentDate(), "dd-MM-yyyy"));
+        entity.setPaymentDate(DateUtil.covertStringToDate(dto.getPaymentDate()));
         entity.setExpenditureAmount(dto.getExpenditureAmount());
         entity.setBillNo(dto.getBillNo());
-        entity.setBillDate(DateUtil.stringToDate(dto.getBillDate(), "dd-MM-yyyy"));
+        entity.setBillDate(DateUtil.covertStringToDate(dto.getBillDate()));
         entity.setPayeeName(dto.getPayeeName());
         entity.setAccountNumber(dto.getAccountNumber());
         entity.setBankName(dto.getBankName());
@@ -59,7 +59,7 @@ public class NonTrainingExpenditureMapper {
         entity.setDesignation(dto.getDesignation());
         entity.setRelevantExperience(dto.getRelevantExperience());
         entity.setEducationalQualifications(dto.getEducationalQualification());
-        entity.setDateOfJoining(DateUtil.stringToDate(dto.getDateOfJoining(), "dd-MM-yyyy"));
+        entity.setDateOfJoining(DateUtil.covertStringToDate(dto.getDateOfJoining()));
         entity.setMonthlySal(dto.getMonthlySal());
         entity.setBankName(dto.getBankName());
         entity.setIfscCode(dto.getIfscCode());
@@ -98,7 +98,7 @@ public class NonTrainingExpenditureMapper {
         NonTrainingResourceExpenditure entity = new NonTrainingResourceExpenditure();
         entity.setAmount(dto.getAmount());
         entity.setPaymentForMonth(dto.getPaymentForMonth());
-        entity.setDateOfPayment(DateUtil.stringToDate(dto.getDateOfPayment(), "dd-MM-yyyy"));
+        entity.setDateOfPayment(DateUtil.covertStringToDate(dto.getDateOfPayment()));
         entity.setNonTrainingResource(resource);
         return entity;
     }

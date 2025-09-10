@@ -42,7 +42,7 @@ public class NonTrainingResourceExpenditureService {
                 .nonTrainingResourceExpenditureId(dto.getNonTrainingResourceExpenditureId())
                 .amount(dto.getAmount())
                 .paymentForMonth(dto.getPaymentForMonth())
-                .dateOfPayment(DateUtil.stringToDate(dto.getDateOfPayment(),"dd-MM-yyyy")).build();
+                .dateOfPayment(DateUtil.covertStringToDate(dto.getDateOfPayment())).build();
     }
 
 }
