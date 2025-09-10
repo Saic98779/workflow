@@ -37,4 +37,10 @@ public class TravelAndTransport {
     @JoinColumn(name = "subActivityId")
     @ManyToOne
     private NonTrainingSubActivity nonTrainingSubActivity;
+
+    @Column(name = "created_on", updatable = false)
+    private String createdOn;
+
+    @Column(name = "updated_on", insertable = false, updatable = true)
+    private String updatedOn;
 }
