@@ -1,12 +1,15 @@
 package com.metaverse.workflow.nontraining.service;
 
 import com.metaverse.workflow.model.NonTrainingAchievement;
+import com.metaverse.workflow.model.NonTrainingTargets;
 import com.metaverse.workflow.nontraining.dto.PhysicalFinancialDto;
 import com.metaverse.workflow.nontraining.repository.NonTrainingAchievementRepository;
+import com.metaverse.workflow.trainingandnontrainingtarget.repository.NonTrainingTargetRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -15,12 +18,16 @@ public class NonTrainingAchievementServiceImpl implements NonTrainingAchievement
     @Autowired
     private NonTrainingAchievementRepository nonTrainingAchievementRepository;
 
+    @Autowired
+    private NonTrainingTargetRepository nonTrainingTargetRepository;
+
     @Override
     public PhysicalFinancialDto getPhysicalFinancial(Long subActivityId) {
 
         NonTrainingAchievement physicalFinancialData = nonTrainingAchievementRepository.findByNonTrainingSubActivity_SubActivityId(subActivityId);
+        List<NonTrainingTargets>  physicalFinancialTargets= nonTrainingTargetRepository.findByNonTrainingSubActivity_subActivityId(subActivityId);
         if (physicalFinancialData != null)
-            return NonTrainingAchievementMapper.PhysicalFinancialDtoMapper(physicalFinancialData);
+            return NonTrainingAchievementMapper.PhysicalFinancialDtoMapper(physicalFinancialData,physicalFinancialTargets);
         return null;
     }
 

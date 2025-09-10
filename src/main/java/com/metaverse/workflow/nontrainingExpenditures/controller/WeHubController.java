@@ -4,18 +4,32 @@ package com.metaverse.workflow.nontrainingExpenditures.controller;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.common.util.RestControllerBase;
 import com.metaverse.workflow.exceptions.DataException;
+import com.metaverse.workflow.nontrainingExpenditures.Dto.CorpusDebitFinancing;
 import com.metaverse.workflow.nontrainingExpenditures.Dto.WeHubHandholdingRequest;
 import com.metaverse.workflow.nontrainingExpenditures.Dto.WeHubSDGRequest;
 import com.metaverse.workflow.nontrainingExpenditures.Dto.WeHubSelectedCompaniesRequest;
 import com.metaverse.workflow.nontrainingExpenditures.service.WeHubService;
 import jakarta.websocket.server.PathParam;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestTemplate;
+
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 public class WeHubController {
     private final WeHubService service;
+
+    @Value("${tihcl.corpus.key}")
+    private String API_KEY;
+
     @PostMapping("/save")
     public ResponseEntity<?> create(@RequestBody WeHubSelectedCompaniesRequest request) {
         try {
@@ -189,9 +203,32 @@ public class WeHubController {
             );
         }
     }
+
     @GetMapping("/selected-organizations")
     public WorkflowResponse getSelectedOrganization()
     {
         return service.getSelectedOrganization();
+    }
+
+    @GetMapping("/corpusDebitFinancing")
+    public ResponseEntity corpusDebitFinancing() {
+
+        RestTemplate restTemplate = new RestTemplate();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("x-api-key", API_KEY);
+
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+        try {
+            ResponseEntity<List> response = restTemplate.exchange(
+                    "https://tihcl.com/tihcl/api/tihcl/corpusDebitFinancing",
+                    HttpMethod.GET,
+                    entity,
+                    List.class
+            );
+            return response;
+        } catch (RestClientException e) {
+         return ResponseEntity.status(400).body(e.getMessage());
+        }
     }
 }

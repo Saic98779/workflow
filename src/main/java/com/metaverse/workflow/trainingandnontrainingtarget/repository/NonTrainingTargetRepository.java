@@ -13,6 +13,7 @@ import java.util.List;
 public interface NonTrainingTargetRepository extends JpaRepository<NonTrainingTargets, Long> {
 
     List<NonTrainingTargets> findByNonTrainingSubActivity_NonTrainingActivity_Agency_AgencyId(Long agencyId);
+    List<NonTrainingTargets> findByNonTrainingSubActivity_subActivityId(Long subActivityId);
 
 
     @Query("SELECT tt " +
