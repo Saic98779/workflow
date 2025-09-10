@@ -18,9 +18,9 @@ public class BenchmarkingStudyMapper {
         entity.setThrustSectorName(request.getThrustSectorName());
         entity.setNameOfTheClusterMapped(request.getNameOfTheClusterMapped());
         entity.setNameOfTheMSMEVisited(request.getNameOfTheMSMEVisited());
-        entity.setDateOfVisit(DateUtil.stringToDate(request.getDateOfVisit(), DATE_PATTERN));
-        entity.setPaymentDate(DateUtil.stringToDate(request.getPaymentDate(), DATE_PATTERN));
-        entity.setBillDate(DateUtil.stringToDate(request.getBillDate(), DATE_PATTERN));
+        entity.setDateOfVisit(DateUtil.covertStringToDate(request.getDateOfVisit()));
+        entity.setPaymentDate(DateUtil.covertStringToDate(request.getPaymentDate()));
+        entity.setBillDate(DateUtil.covertStringToDate(request.getBillDate()));
         entity.setExpenditureAmount(request.getExpenditureAmount());
         entity.setBillNo(request.getBillNo());
         entity.setPayeeName(request.getPayeeName());
@@ -33,7 +33,7 @@ public class BenchmarkingStudyMapper {
         entity.setUploadBillUrl(request.getUploadBillUrl());
         entity.setModeOfTravel(request.getModeOfTravel());
         entity.setNameOfTheMSMEVisited(request.getNameOfTheMSMEVisited());
-        entity.setReportSubmissionDate(DateUtil.stringToDate(request.getReportSubmissionDate(), DATE_PATTERN));
+        entity.setReportSubmissionDate(DateUtil.covertStringToDate(request.getReportSubmissionDate()));
         entity.setNonTrainingSubActivity(nonTrainingSubActivity);
         return entity;
     }
@@ -73,9 +73,9 @@ public class BenchmarkingStudyMapper {
         entity.setNameOfTheClusterMapped(request.getNameOfTheClusterMapped() != null ? request.getNameOfTheClusterMapped() : entity.getNameOfTheClusterMapped());
         entity.setNameOfTheMSMEVisited(request.getNameOfTheMSMEVisited() != null ? request.getNameOfTheMSMEVisited() : entity.getNameOfTheMSMEVisited());
 
-        entity.setDateOfVisit(request.getDateOfVisit() != null ? DateUtil.stringToDate(request.getDateOfVisit(), DATE_PATTERN) : entity.getDateOfVisit());
-        entity.setPaymentDate(request.getPaymentDate() != null ? DateUtil.stringToDate(request.getPaymentDate(), DATE_PATTERN) : entity.getPaymentDate());
-        entity.setBillDate(request.getBillDate() != null ? DateUtil.stringToDate(request.getBillDate(), DATE_PATTERN) : entity.getBillDate());
+        entity.setDateOfVisit(request.getDateOfVisit() != null ? DateUtil.covertStringToDate(request.getDateOfVisit()) : entity.getDateOfVisit());
+        entity.setPaymentDate(request.getPaymentDate() != null ? DateUtil.covertStringToDate(request.getPaymentDate()) : entity.getPaymentDate());
+        entity.setBillDate(request.getBillDate() != null ? DateUtil.covertStringToDate(request.getBillDate()) : entity.getBillDate());
 
         entity.setExpenditureAmount(request.getExpenditureAmount() != null ? request.getExpenditureAmount() : entity.getExpenditureAmount());
         entity.setBillNo(request.getBillNo() != null ? request.getBillNo() : entity.getBillNo());
@@ -88,7 +88,7 @@ public class BenchmarkingStudyMapper {
         entity.setPurpose(request.getPurpose() != null ? request.getPurpose() : entity.getPurpose());
         entity.setUploadBillUrl(request.getUploadBillUrl() != null ? request.getUploadBillUrl() : entity.getUploadBillUrl());
         entity.setModeOfTravel(request.getModeOfTravel() != null ? request.getModeOfTravel() : entity.getModeOfTravel());
-        entity.setReportSubmissionDate(request.getReportSubmissionDate() != null ? DateUtil.stringToDate(request.getReportSubmissionDate(), DATE_PATTERN) : entity.getReportSubmissionDate());
+        entity.setReportSubmissionDate(request.getReportSubmissionDate() != null ? DateUtil.covertStringToDate(request.getReportSubmissionDate()) : entity.getReportSubmissionDate());
 
         return entity;
     }

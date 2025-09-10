@@ -9,13 +9,13 @@ public class WeHubMapper {
     public static WeHubSelectedCompanies toEntity(WeHubSelectedCompaniesRequest dto, NonTrainingSubActivity subActivity,Organization organization) {
         return WeHubSelectedCompanies.builder()
                 .udhyamDpiitRegistrationNo(dto.getUdhyamDpiitRegistrationNo())
-                .applicationReceivedDate(DateUtil.stringToDate(dto.getApplicationReceivedDate(), "dd-MM-yyyy"))
+                .applicationReceivedDate(DateUtil.covertStringToDate(dto.getApplicationReceivedDate()))
                 .applicationSource(dto.getApplicationSource())
-                .shortlistingDate(DateUtil.stringToDate(dto.getShortlistingDate(), "dd-MM-yyyy"))
-                .needAssessmentDate(DateUtil.stringToDate(dto.getNeedAssessmentDate(), "dd-MM-yyyy"))
+                .shortlistingDate(DateUtil.covertStringToDate(dto.getShortlistingDate()))
+                .needAssessmentDate(DateUtil.covertStringToDate(dto.getNeedAssessmentDate()))
                 .candidateFinalised(dto.getCandidateFinalised())
                 .cohortName(dto.getCohortName())
-                .baselineAssessmentDate(DateUtil.stringToDate(dto.getBaselineAssessmentDate(), "dd-MM-yyyy"))
+                .baselineAssessmentDate(DateUtil.covertStringToDate(dto.getBaselineAssessmentDate()))
                 .nonTrainingSubActivity(subActivity)
                 .organization(organization)
                 .build();
@@ -46,26 +46,26 @@ public class WeHubMapper {
         WeHubHandholding entity = new WeHubHandholding();
         entity.setOrganization(organization);
         entity.setStatusProductDiversification(dto.getStatusProductDiversification());
-        entity.setDateSupportReceived(DateUtil.stringToDate(dto.getDateSupportReceived(), DATE_PATTERN));
+        entity.setDateSupportReceived(DateUtil.covertStringToDate(dto.getDateSupportReceived()));
         entity.setIprName(dto.getIprName());
-        entity.setIprFilingDate(DateUtil.stringToDate(dto.getIprFilingDate(), DATE_PATTERN));
+        entity.setIprFilingDate(DateUtil.covertStringToDate(dto.getIprFilingDate()));
         entity.setStatusTrademarkFiling(dto.getStatusTrademarkFiling());
-        entity.setTrademarkFilingDate(DateUtil.stringToDate(dto.getTrademarkFilingDate(), DATE_PATTERN));
+        entity.setTrademarkFilingDate(DateUtil.covertStringToDate(dto.getTrademarkFilingDate()));
         entity.setStatusInventoryManagement(dto.getStatusInventoryManagement());
-        entity.setInventoryAdoptionDate(DateUtil.stringToDate(dto.getInventoryAdoptionDate(), DATE_PATTERN));
+        entity.setInventoryAdoptionDate(DateUtil.covertStringToDate(dto.getInventoryAdoptionDate()));
         entity.setLeanName(dto.getLeanName());
-        entity.setLeanAdoptionDate(DateUtil.stringToDate(dto.getLeanAdoptionDate(), DATE_PATTERN));
+        entity.setLeanAdoptionDate(DateUtil.covertStringToDate(dto.getLeanAdoptionDate()));
         entity.setNewMachineryAdoption(dto.getNewMachineryAdoption());
-        entity.setEstablishmentDate(DateUtil.stringToDate(dto.getEstablishmentDate(), DATE_PATTERN));
+        entity.setEstablishmentDate(DateUtil.covertStringToDate(dto.getEstablishmentDate()));
         entity.setStatusTechnologyRedesign(dto.getStatusTechnologyRedesign());
-        entity.setTechnologyRedesignDate(DateUtil.stringToDate(dto.getTechnologyRedesignDate(), DATE_PATTERN));
+        entity.setTechnologyRedesignDate(DateUtil.covertStringToDate(dto.getTechnologyRedesignDate()));
         entity.setStatusDigitalSolution(dto.getStatusDigitalSolution());
-        entity.setDigitalSolutionDate(DateUtil.stringToDate(dto.getDigitalSolutionDate(), DATE_PATTERN));
+        entity.setDigitalSolutionDate(DateUtil.covertStringToDate(dto.getDigitalSolutionDate()));
         entity.setInnovativeProcessName(dto.getInnovativeProcessName());
-        entity.setInnovativeProcessDate(DateUtil.stringToDate(dto.getInnovativeProcessDate(), DATE_PATTERN));
+        entity.setInnovativeProcessDate(DateUtil.covertStringToDate(dto.getInnovativeProcessDate()));
         entity.setSkillTrainingName(dto.getSkillTrainingName());
         entity.setSkillTrainingPerson(dto.getSkillTrainingPerson());
-        entity.setSkillTrainingDate(DateUtil.stringToDate(dto.getSkillTrainingDate(), DATE_PATTERN));
+        entity.setSkillTrainingDate(DateUtil.covertStringToDate(dto.getSkillTrainingDate()));
         entity.setNonTrainingSubActivity(subActivity);
 
         return entity;
@@ -114,7 +114,7 @@ public class WeHubMapper {
         entity.setAdoptionStatus(dto.getAdoptionStatus());
         entity.setTechnologyAdopted(dto.getTechnologyAdopted());
         entity.setEnvCompCert(dto.getEnvCompCert());
-        entity.setDateOfCert(DateUtil.stringToDate(dto.getDateOfCert(),DATE_PATTERN));
+        entity.setDateOfCert(DateUtil.covertStringToDate(dto.getDateOfCert()));
         return entity;
     }
 
