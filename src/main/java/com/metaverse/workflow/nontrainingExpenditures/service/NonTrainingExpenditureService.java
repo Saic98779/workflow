@@ -85,7 +85,7 @@ public class NonTrainingExpenditureService {
         NonTrainingSubActivity subActivity = nonTrainingSubActivityRepository.findById(dto.getNonTrainingSubActivityId())
                 .orElseThrow(() -> new DataException("Activity not found", "ACTIVITY_NOT_FOUND", 400));
 
-        NonTrainingActivity activity = nonTrainingActivityRepository.findById(dto.getNonTrainingSubActivityId())
+        NonTrainingActivity activity = nonTrainingActivityRepository.findById(dto.getNonTrainingActivityId())
                 .orElseThrow(() -> new DataException("Activity not found", "ACTIVITY_NOT_FOUND", 400));
 
 

@@ -65,12 +65,16 @@ public class TravelAndTransportService {
     }
 
 
-    public void deleteById(Long travelTransportId) {
+    public WorkflowResponse deleteById(Long travelTransportId) {
         if (!travelRepo.existsById(travelTransportId)) {
             throw new RuntimeException("TravelAndTransport not found with id " + travelTransportId);
         }
         travelRepo.deleteById(travelTransportId);
         programSessionFileRepository.deleteByTravelTransportId(travelTransportId);
+        return WorkflowResponse.builder()
+                .message("TravelAndTransport Deleted Successfully")
+                .status(200)
+                .build();
     }
 
     public TravelAndTransportDto updateTravel(Long id, TravelAndTransportDto dto) {
