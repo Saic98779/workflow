@@ -35,27 +35,21 @@ public class TravelAndTransportController {
 
     @GetMapping("/{subActivityId}")
     public ResponseEntity<?> getByActivityId(@PathVariable Long subActivityId) {
-        if(subActivityId != null){
+        if (subActivityId != null) {
             return ResponseEntity.ok(WorkflowResponse.builder().data(travelService.getBySubActivityId(subActivityId)).message("SUCCESS").status(200).build());
         }
         return ResponseEntity.ok(WorkflowResponse.builder().message("FAILURE").status(200).build());
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteTravel(@PathVariable("id") Long id) {
-        try {
-            travelService.deleteById(id);
-            return ResponseEntity.ok("TravelAndTransport with id " + id + " deleted successfully");
-        } catch (Exception e) {
-            return ResponseEntity.status(400).body(e.getMessage());
-        }
-
+    public WorkflowResponse deleteTravel(@PathVariable("id") Long id) {
+        return travelService.deleteById(id);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<?> updateTravel(@PathVariable("id") Long id, @RequestBody TravelAndTransportDto dto) {
 
-        try{
+        try {
             TravelAndTransportDto updated = travelService.updateTravel(id, dto);
             return ResponseEntity.ok(updated);
         } catch (RuntimeException e) {
