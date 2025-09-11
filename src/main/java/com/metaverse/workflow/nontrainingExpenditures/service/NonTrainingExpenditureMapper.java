@@ -24,6 +24,8 @@ public class NonTrainingExpenditureMapper {
         dto.setTransactionId(entity.getTransactionId());
         dto.setPurpose(entity.getPurpose());
         dto.setUploadBillUrl(entity.getUploadBillUrl());
+        dto.setCheckNo(entity.getCheckNo());
+        dto.setCheckDate(DateUtil.dateToString(entity.getCheckDate(),"dd-MM-YYYY"));
         return dto;
     }
 
@@ -47,6 +49,8 @@ public class NonTrainingExpenditureMapper {
         entity.setPurpose(dto.getPurpose());
         entity.setUploadBillUrl(dto.getUploadBillUrl());
         entity.setNonTrainingActivity(activity);
+        entity.setCheckNo(dto.getCheckNo());
+        entity.setCheckDate(DateUtil.covertStringToDate(dto.getCheckDate()));
         return entity;
     }
 

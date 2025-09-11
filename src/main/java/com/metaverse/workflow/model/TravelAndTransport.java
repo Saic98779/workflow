@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.Date;
 
 @Data
 @AllArgsConstructor
@@ -33,7 +34,8 @@ public class TravelAndTransport {
     private String ifscCode;
     private String purpose;
     private String billInvoicePath;
-
+    private String checkNo;
+    private Date checkDate;
     @JoinColumn(name = "subActivityId")
     @ManyToOne
     private NonTrainingSubActivity nonTrainingSubActivity;

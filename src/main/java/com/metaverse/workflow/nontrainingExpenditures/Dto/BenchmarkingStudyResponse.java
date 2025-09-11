@@ -24,4 +24,6 @@ public class BenchmarkingStudyResponse {
     private String nameOfTheBestPerformingState;
     private String reportSubmissionDate;
     private String modeOfTravel;
+    private String checkNo;
+    private String checkDate;
 }

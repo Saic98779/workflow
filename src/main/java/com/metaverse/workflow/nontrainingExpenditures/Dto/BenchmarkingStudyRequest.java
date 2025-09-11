@@ -27,5 +27,7 @@ public class BenchmarkingStudyRequest {
     private String reportSubmissionDate;
     private String modeOfTravel;
     private Long nonTrainingSubActivityId;
+    private String checkNo;
+    private String checkDate;
 }
 

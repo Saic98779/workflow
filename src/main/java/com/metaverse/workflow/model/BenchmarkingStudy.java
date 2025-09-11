@@ -83,4 +83,10 @@ public class BenchmarkingStudy {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sub_activity_id")
     private NonTrainingSubActivity nonTrainingSubActivity;
+
+    @Column(name = "check_no")
+    private String checkNo;
+
+    @Column(name = "check_date")
+    private Date checkDate;
 }

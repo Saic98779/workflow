@@ -22,6 +22,8 @@ public class NonTrainingExpenditureDTO {
     private String transactionId;
     private String purpose;
     private String uploadBillUrl;
+    private String checkNo;
+    private String checkDate;
 
 
 }

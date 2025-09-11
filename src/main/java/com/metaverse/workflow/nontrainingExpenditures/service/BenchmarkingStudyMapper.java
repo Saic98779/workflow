@@ -35,6 +35,8 @@ public class BenchmarkingStudyMapper {
         entity.setNameOfTheMSMEVisited(request.getNameOfTheMSMEVisited());
         entity.setReportSubmissionDate(DateUtil.covertStringToDate(request.getReportSubmissionDate()));
         entity.setNonTrainingSubActivity(nonTrainingSubActivity);
+        entity.setCheckNo(request.getCheckNo());
+        entity.setCheckDate(DateUtil.covertStringToDate(request.getCheckDate()));
         return entity;
     }
 
@@ -62,10 +64,12 @@ public class BenchmarkingStudyMapper {
         response.setModeOfTravel(entity.getModeOfTravel());
         response.setNameOfTheBestPerformingState(entity.getNameOfTheBestPerformingState());
         response.setReportSubmissionDate(DateUtil.dateToString(entity.getReportSubmissionDate(), DATE_PATTERN));
-
+        response.setCheckNo(entity.getCheckNo());
+        response.setCheckDate(DateUtil.dateToString(entity.getCheckDate(), "dd-MM-yyyy"));
         return response;
     }
-    public static BenchmarkingStudy mapToUpdateBenchmarkingStudy(BenchmarkingStudy entity,BenchmarkingStudyRequest request) {
+
+    public static BenchmarkingStudy mapToUpdateBenchmarkingStudy(BenchmarkingStudy entity, BenchmarkingStudyRequest request) {
 
         if (request == null) return entity;
 
@@ -89,7 +93,8 @@ public class BenchmarkingStudyMapper {
         entity.setUploadBillUrl(request.getUploadBillUrl() != null ? request.getUploadBillUrl() : entity.getUploadBillUrl());
         entity.setModeOfTravel(request.getModeOfTravel() != null ? request.getModeOfTravel() : entity.getModeOfTravel());
         entity.setReportSubmissionDate(request.getReportSubmissionDate() != null ? DateUtil.covertStringToDate(request.getReportSubmissionDate()) : entity.getReportSubmissionDate());
-
+        entity.setCheckNo(request.getCheckNo() != null ? request.getCheckNo() : null);
+        entity.setCheckDate(request.getCheckDate() != null ? DateUtil.covertStringToDate(request.getCheckDate()) : null);
         return entity;
     }
 
