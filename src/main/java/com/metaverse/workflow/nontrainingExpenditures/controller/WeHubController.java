@@ -4,31 +4,28 @@ package com.metaverse.workflow.nontrainingExpenditures.controller;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.common.util.RestControllerBase;
 import com.metaverse.workflow.exceptions.DataException;
+import com.metaverse.workflow.login.service.AuthRequest;
 import com.metaverse.workflow.nontrainingExpenditures.Dto.CorpusDebitFinancing;
 import com.metaverse.workflow.nontrainingExpenditures.Dto.WeHubHandholdingRequest;
 import com.metaverse.workflow.nontrainingExpenditures.Dto.WeHubSDGRequest;
 import com.metaverse.workflow.nontrainingExpenditures.Dto.WeHubSelectedCompaniesRequest;
 import com.metaverse.workflow.nontrainingExpenditures.service.WeHubService;
+import jakarta.mail.Header;
 import jakarta.websocket.server.PathParam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
 public class WeHubController {
     private final WeHubService service;
-
-    @Value("${tihcl.corpus.key}")
-    private String API_KEY;
 
     @PostMapping("/save")
     public ResponseEntity<?> create(@RequestBody WeHubSelectedCompaniesRequest request) {
@@ -211,22 +208,38 @@ public class WeHubController {
     }
 
     @GetMapping("/corpusDebitFinancing")
-    public ResponseEntity corpusDebitFinancing() {
+    public ResponseEntity<?> corpusDebitFinancing() {
 
         RestTemplate restTemplate = new RestTemplate();
+        String url = "https://tihcl.com/tihcl/api/tihcl/corpusDebitFinancing";
+        String loginUrl= "https://tihcl.com/tihcl/api/auth/login";
 
         HttpHeaders headers = new HttpHeaders();
-        headers.set("x-api-key", API_KEY);
+        headers.setContentType(MediaType.APPLICATION_JSON);
 
-        HttpEntity<String> entity = new HttpEntity<>(headers);
+        HttpEntity<AuthRequest> entity = new HttpEntity<>(new AuthRequest("executive1@gmail.com","Password@123"),headers);
+
         try {
-            ResponseEntity<List> response = restTemplate.exchange(
-                    "https://tihcl.com/tihcl/api/tihcl/corpusDebitFinancing",
-                    HttpMethod.GET,
+            ResponseEntity<Map> response = restTemplate.exchange(
+                    loginUrl,
+                    HttpMethod.POST,
                     entity,
+                    Map.class
+            );
+            String token = (String) response.getBody().get("token");
+
+            HttpHeaders corpusHeaders = new HttpHeaders();
+            corpusHeaders.setBearerAuth(token);
+
+            HttpEntity<Void> corpusEntity = new HttpEntity<>(corpusHeaders);
+
+            ResponseEntity<List> corpusResponse = restTemplate.exchange(
+                    url,
+                    HttpMethod.GET,
+                    corpusEntity,
                     List.class
             );
-            return response;
+            return corpusResponse;
         } catch (RestClientException e) {
          return ResponseEntity.status(400).body(e.getMessage());
         }
