@@ -79,4 +79,10 @@ public class NonTrainingExpenditure {
     @Column(name = "updated_on", insertable = false, updatable = true)
     private String updatedOn;
 
+    @Column(name = "check_no")
+    private String checkNo;
+
+    @Column(name = "check_date")
+    private Date checkDate;
+
 }

@@ -4,6 +4,7 @@ package com.metaverse.workflow.nontrainingExpenditures.service;
 import com.metaverse.workflow.common.enums.PaymentType;
 import com.metaverse.workflow.common.fileservice.StorageService;
 import com.metaverse.workflow.common.response.WorkflowResponse;
+import com.metaverse.workflow.common.util.DateUtil;
 import com.metaverse.workflow.model.NonTrainingSubActivity;
 import com.metaverse.workflow.model.ProgramSessionFile;
 import com.metaverse.workflow.model.TravelAndTransport;
@@ -128,6 +129,8 @@ public class TravelAndTransportService {
         dto.setIfscCode(entity.getIfscCode());
         dto.setPurpose(entity.getPurpose());
         dto.setBillInvoicePath(entity.getBillInvoicePath());
+        dto.setCheckNo(entity.getCheckNo());
+        dto.setCheckDate(DateUtil.dateToString(entity.getCheckDate(),"dd-MM-yyyy"));
         dto.setNonTrainingSubActivityId(entity.getNonTrainingSubActivity() != null
                 ? entity.getNonTrainingSubActivity().getSubActivityId() : null);
         return dto;
@@ -151,6 +154,8 @@ public class TravelAndTransportService {
         entity.setIfscCode(dto.getIfscCode());
         entity.setPurpose(dto.getPurpose());
         entity.setBillInvoicePath(dto.getBillInvoicePath());
+        entity.setCheckNo(dto.getCheckNo());
+        entity.setCheckDate(DateUtil.covertStringToDate(dto.getCheckDate()));
 
         return entity;
     }

@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.Date;
 
 @Data
 @AllArgsConstructor
@@ -28,4 +29,7 @@ public class TravelAndTransportDto {
     private String purpose;
     private String billInvoicePath;
     private Long nonTrainingSubActivityId;
+    private String checkNo;
+    private String checkDate;
+
 }
