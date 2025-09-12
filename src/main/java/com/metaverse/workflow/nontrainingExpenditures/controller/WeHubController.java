@@ -211,8 +211,8 @@ public class WeHubController {
     public ResponseEntity<?> corpusDebitFinancing() {
 
         RestTemplate restTemplate = new RestTemplate();
-        String url = "https://tihcl.com/tihcl/api/tihcl/corpusDebitFinancing";
-        String loginUrl= "https://tihcl.com/tihcl/api/auth/login";
+        String url = "http://localhost:8080/tihcl/api/tihcl/corpusDebitFinancing";
+        String loginUrl= "http://localhost:8080/tihcl/api/auth/login";
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
