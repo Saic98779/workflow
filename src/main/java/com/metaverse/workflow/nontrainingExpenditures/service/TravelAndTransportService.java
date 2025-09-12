@@ -71,7 +71,6 @@ public class TravelAndTransportService {
             throw new RuntimeException("TravelAndTransport not found with id " + travelTransportId);
         }
         travelRepo.deleteById(travelTransportId);
-        programSessionFileRepository.deleteByTravelTransportId(travelTransportId);
         return WorkflowResponse.builder()
                 .message("TravelAndTransport Deleted Successfully")
                 .status(200)

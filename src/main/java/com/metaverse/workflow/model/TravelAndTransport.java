@@ -7,7 +7,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -39,6 +41,11 @@ public class TravelAndTransport {
     @JoinColumn(name = "subActivityId")
     @ManyToOne
     private NonTrainingSubActivity nonTrainingSubActivity;
+
+    @OneToMany(mappedBy = "travelAndTransport",
+            cascade = CascadeType.ALL,   // delete children automatically
+            orphanRemoval = true)        // remove orphans
+    private List<ProgramSessionFile> programSessionFiles = new ArrayList<>();
 
     @Column(name = "created_on", updatable = false)
     private String createdOn;

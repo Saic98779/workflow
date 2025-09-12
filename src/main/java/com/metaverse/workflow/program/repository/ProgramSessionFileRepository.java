@@ -33,11 +33,6 @@ public interface ProgramSessionFileRepository extends JpaRepository<ProgramSessi
 
     void deleteByProgramProgramId(Long programId);
 
-    @Modifying
-    @Transactional
-    @Query("DELETE FROM TravelAndTransport t WHERE t.travelTransportId = :id")
-    void deleteByTravelTransportId(@Param("id") Long id);
-
     void deleteByNonTrainingResourceExpenditure_NonTrainingResourceExpenditureId(Long id);
 
     void deleteByNonTrainingExpenditure_Id(Long id);
