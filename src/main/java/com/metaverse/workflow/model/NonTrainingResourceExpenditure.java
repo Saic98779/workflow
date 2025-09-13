@@ -3,6 +3,8 @@ package com.metaverse.workflow.model;
 import jakarta.persistence.*;
 import lombok.*;
 import net.minidev.json.annotate.JsonIgnore;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.util.Date;
 
@@ -38,8 +40,10 @@ NonTrainingResourceExpenditure {
     private String uploadBillUrl;
 
     @Column(name = "created_on", updatable = false)
-    private String createdOn;
+    @CreationTimestamp
+    private Date createdOn;
 
     @Column(name = "updated_on", insertable = false, updatable = true)
-    private String updatedOn;
+    @UpdateTimestamp
+    private Date updatedOn;
 }

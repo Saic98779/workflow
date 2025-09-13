@@ -7,6 +7,8 @@ import lombok.Data;
 
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -72,9 +74,12 @@ public class NonTrainingResource {
     @Column(name = "name_of_the_company")
     private String nameOfTheCompany;
 
-    @Column(name = "created_on", updatable = false)
-    private String createdOn;
+    @Column(name="created_on",insertable = true,updatable = false)
+    @CreationTimestamp
+    private Date createdOn;
 
-    @Column(name = "updated_on", insertable = false, updatable = true)
-    private String updatedOn;
+    @Column(name="updated_on",insertable = false,updatable = true)
+    @UpdateTimestamp
+    private Date updatedOn;
+
 }
