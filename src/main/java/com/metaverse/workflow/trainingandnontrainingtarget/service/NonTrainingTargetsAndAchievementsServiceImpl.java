@@ -47,15 +47,15 @@ public class NonTrainingTargetsAndAchievementsServiceImpl implements NonTraining
             dto.setSubActivityName(t.getNonTrainingSubActivity().getSubActivityName());
             dto.setFinancialYear(t.getFinancialYear());
 
-            dto.setTrainingTargetQ1(t.getQ1Target() != null ? t.getQ1Target() : 0);
-            dto.setTrainingTargetQ2(t.getQ2Target() != null ? t.getQ2Target() : 0);
-            dto.setTrainingTargetQ3(t.getQ3Target() != null ? t.getQ3Target() : 0);
-            dto.setTrainingTargetQ4(t.getQ4Target() != null ? t.getQ4Target() : 0);
+            dto.setTrainingTargetQ1(t.getQ1Target() != null ? t.getQ1Target() : 0L);
+            dto.setTrainingTargetQ2(t.getQ2Target() != null ? t.getQ2Target() : 0L);
+            dto.setTrainingTargetQ3(t.getQ3Target() != null ? t.getQ3Target() : 0L);
+            dto.setTrainingTargetQ4(t.getQ4Target() != null ? t.getQ4Target() : 0L);
 
-            dto.setFinancialTargetQ1(t.getQ1Budget() != null ? t.getQ1Budget() : 0);
-            dto.setFinancialTargetQ2(t.getQ2Budget() != null ? t.getQ2Budget() : 0);
-            dto.setFinancialTargetQ3(t.getQ3Budget() != null ? t.getQ3Budget() : 0);
-            dto.setFinancialTargetQ4(t.getQ4Budget() != null ? t.getQ4Budget() : 0);
+            dto.setFinancialTargetQ1(t.getQ1Budget() != null ? t.getQ1Budget() : 0.0);
+            dto.setFinancialTargetQ2(t.getQ2Budget() != null ? t.getQ2Budget() : 0.0);
+            dto.setFinancialTargetQ3(t.getQ3Budget() != null ? t.getQ3Budget() : 0.0);
+            dto.setFinancialTargetQ4(t.getQ4Budget() != null ? t.getQ4Budget() : 0.0);
 
             dto.setPhysicalExpenditurePercentage("Not Applicable"); // Not applicable for Non-Training
 
