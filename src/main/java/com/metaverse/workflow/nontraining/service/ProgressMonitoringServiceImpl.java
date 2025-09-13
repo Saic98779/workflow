@@ -7,14 +7,20 @@ import com.metaverse.workflow.model.*;
 import com.metaverse.workflow.nontraining.dto.NonTrainingProgramDto;
 import com.metaverse.workflow.nontraining.dto.ProgressMonitoringDto;
 import com.metaverse.workflow.nontraining.dto.TrainingProgramDto;
+import com.metaverse.workflow.nontraining.repository.NonTrainingAchievementRepository;
+import com.metaverse.workflow.nontraining.repository.NonTrainingActivityRepository;
+import com.metaverse.workflow.nontrainingExpenditures.Dto.CorpusDebitFinancing;
+import com.metaverse.workflow.nontrainingExpenditures.repository.ListingOnNSERepository;
 import com.metaverse.workflow.nontrainingExpenditures.repository.NonTrainingExpenditureRepository;
 import com.metaverse.workflow.nontrainingExpenditures.repository.NonTrainingResourceRepository;
 import com.metaverse.workflow.nontrainingExpenditures.repository.TravelAndTransportRepository;
+import com.metaverse.workflow.nontrainingExpenditures.service.WeHubService;
 import com.metaverse.workflow.trainingandnontrainingtarget.repository.NonTrainingTargetRepository;
 import com.metaverse.workflow.trainingandnontrainingtarget.repository.TrainingTargetRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 @Service
@@ -29,6 +35,12 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
     private final NonTrainingResourceRepository nonTrainingResourcesRepository;
     private final ActivityRepository activityRepository;
     private final TravelAndTransportRepository travelAndTransportRepository;
+
+    private final WeHubService service;
+
+    private final NonTrainingActivityRepository nonTrainingActivityRepository;
+    private final NonTrainingAchievementRepository nonTrainingAchievementRepository;
+    private final ListingOnNSERepository listingOnNSERepository;
 
     /*
         --- Non-Training Programs ---
@@ -250,5 +262,101 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
 
     private static void addOrUpdate(Map<Long, Double> map, Long key, Double value) {
         map.merge(key, value, Double::sum);
+    }
+
+
+    public List<NonTrainingProgramDto> nonTrainingProgressMonitoring(Long agencyId) {
+
+        List<NonTrainingProgramDto> nonTrainingProgramDtoList = new ArrayList<>();
+
+        List<NonTrainingActivity> byAgencyAgencyId =
+                nonTrainingActivityRepository.findByAgency_AgencyId(agencyId);
+
+        for (NonTrainingActivity activity : byAgencyAgencyId) {
+            System.out.println(activity.getActivityName());
+            long activityId = activity.getActivityId();
+
+            switch ((int) activityId) {
+                case 13 -> { // Corpus fund
+                    List<NonTrainingSubActivity> subActivities = activity.getSubActivities();
+
+                    for (NonTrainingSubActivity subActivity : subActivities) {
+                        NonTrainingProgramDto nonTrainingProgramDto = new NonTrainingProgramDto(); // create a fresh object for each row
+                        nonTrainingProgramDto.setNonTrainingActivity(activity.getActivityName());  // Activity name
+                        nonTrainingProgramDto.setNonTrainingSubActivity(subActivity.getSubActivityName());
+
+                        long subActivityId = subActivity.getSubActivityId();
+                        NonTrainingAchievement achievement =
+                                nonTrainingAchievementRepository.findByNonTrainingSubActivity_SubActivityId(subActivityId);
+
+                        if (achievement != null) {
+                            nonTrainingProgramDto.setPhysicalTarget(
+                                    Integer.valueOf(achievement.getPhysicalTargetAchievement()));
+                            nonTrainingProgramDto.setFinancialTarget(achievement.getFinancialTargetAchievement());
+                        } else {
+
+                            nonTrainingProgramDto.setPhysicalTarget(0);
+                            nonTrainingProgramDto.setFinancialTarget(0.0);
+                        }
+
+                        Object[] objects = progressMonitoringSubActivityWiseAchievements(subActivityId);
+                        nonTrainingProgramDto.setPhysicalAchievement((String) objects[0]);
+                        nonTrainingProgramDto.setFinancialExpenditure((double) objects[1]);
+
+                        nonTrainingProgramDtoList.add(nonTrainingProgramDto);
+                    }
+                }
+                case 16,17,18 -> {
+
+                    return null;
+                }
+            }
+        }
+        return nonTrainingProgramDtoList;
+    }
+
+
+
+    public Object[]  progressMonitoringSubActivityWiseAchievements(Long subActivityId){
+        NonTrainingProgramDto nonTrainingProgramDto = new NonTrainingProgramDto();
+        long  subActivityId1 = subActivityId;
+        switch ((int)subActivityId1){
+            // TIHCL sub activities
+            case 67 -> { // 67  Corpus-Debt Financing
+                List<CorpusDebitFinancing> list = service.corpusDebitFinancing();
+                if(list.isEmpty()){
+                    nonTrainingProgramDto.setFinancialExpenditure(0.0);
+                }
+                Double financialAchieved  = list.stream().mapToDouble(r -> r.getTotalSanctionedAmount()).sum();
+                 String.valueOf(list.size());
+                Object[] objects = {String.valueOf(list.size()), financialAchieved};
+                return objects;
+            }
+            case 76 -> { // 76 Corpus-Listing on NSE
+                Optional<List<ListingOnNSE>>  corpusListingOnNSE= listingOnNSERepository.findByNonTrainingSubActivity_SubActivityId(subActivityId);
+                if(corpusListingOnNSE.isPresent()){
+                    List<ListingOnNSE> listingOnNSES = corpusListingOnNSE.get();
+                    Double financialAchieved  = listingOnNSES.stream().mapToDouble(r -> r.getAmountOfLoanProvided()).sum();
+                    Object[] objects = {String.valueOf(listingOnNSES.size()), financialAchieved};
+                    return objects;
+                }else {
+                    Object[] objects = {String.valueOf(0), 0.0};
+                    return objects;
+                }
+            }
+            // coi sub activities
+            case 16 -> { // Staff  : Resource table
+
+            }
+            case 17 -> { // Technology firm : Expenditure
+
+
+            }
+            case 18 -> { // Staff - Call center Agency : Expenditure
+
+            }
+        }
+        return new Object[]{String.valueOf(0), 0.0};
+
     }
 }

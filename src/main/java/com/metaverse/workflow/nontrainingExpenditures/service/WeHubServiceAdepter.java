@@ -3,7 +3,9 @@ package com.metaverse.workflow.nontrainingExpenditures.service;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.common.util.DateUtil;
 import com.metaverse.workflow.exceptions.DataException;
+import com.metaverse.workflow.login.service.AuthRequest;
 import com.metaverse.workflow.model.*;
+import com.metaverse.workflow.nontrainingExpenditures.Dto.CorpusDebitFinancing;
 import com.metaverse.workflow.nontrainingExpenditures.Dto.WeHubHandholdingRequest;
 import com.metaverse.workflow.nontrainingExpenditures.Dto.WeHubSDGRequest;
 import com.metaverse.workflow.nontrainingExpenditures.Dto.WeHubSelectedCompaniesRequest;
@@ -15,10 +17,16 @@ import com.metaverse.workflow.organization.repository.OrganizationRepository;
 import com.metaverse.workflow.organization.service.OrganizationResponse;
 import com.metaverse.workflow.organization.service.OrganizationResponseMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -27,6 +35,14 @@ import java.util.stream.Stream;
 @Service
 @Transactional
 public class WeHubServiceAdepter implements WeHubService {
+
+
+    @Value("${tihcl.username}")
+    private  String userName;
+
+    @Value("${tihcl.password}")
+    private String password;
+
 
     private final WeHubSelectedCompaniesRepository weHubSelectedCompaniesRepository;
     private final NonTrainingSubActivityRepository subActivityRepository;
@@ -302,6 +318,47 @@ public class WeHubServiceAdepter implements WeHubService {
                 .data(WeHubMapper.mapToEeHubSDGRes(entity))
                 .build();
     }
+
+
+    @Override
+    public List<CorpusDebitFinancing> corpusDebitFinancing() {
+
+        RestTemplate restTemplate = new RestTemplate();
+        String url = "https://tihcl.com/tihcl/api/tihcl/corpusDebitFinancing";
+        String loginUrl= "https://tihcl.com/tihcl/api/auth/login";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<AuthRequest> entity = new HttpEntity<>(new AuthRequest(userName,password),headers);
+
+        try {
+            ResponseEntity<Map> response = restTemplate.exchange(
+                    loginUrl,
+                    HttpMethod.POST,
+                    entity,
+                    Map.class
+            );
+            String token = (String) response.getBody().get("token");
+
+            HttpHeaders corpusHeaders = new HttpHeaders();
+            corpusHeaders.setBearerAuth(token);
+
+            HttpEntity<Void> corpusEntity = new HttpEntity<>(corpusHeaders);
+
+            ResponseEntity<List<CorpusDebitFinancing>> corpusResponse = restTemplate.exchange(
+                    url,
+                    HttpMethod.GET,
+                    corpusEntity,
+                    new ParameterizedTypeReference<List<CorpusDebitFinancing>>(){}
+            );
+            return  corpusResponse.getBody();
+        } catch (RestClientException e) {
+            System.err.println(e.getMessage());
+            return   List.of();
+        }
+    }
+
 
 
 }
