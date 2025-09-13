@@ -83,4 +83,16 @@ public class ProgramStatusController {
     public WorkflowResponse getProgramsStatusSummery(@PathVariable Long agencyId) {
         return programService.getProgramStatusSummery(agencyId);
     }
+    @GetMapping("/new/{agencyId}")
+    public WorkflowResponse getProgramsByStatus(@PathVariable Long agencyId,
+                                                @RequestParam List<String> statuses) {
+
+        List<Program> programs = new ArrayList<>();
+        for (String status : statuses) {
+            programs.addAll(programRepository.findByAgencyAgencyIdAndStatus(agencyId, status));
+        }
+        List<ProgramResponse> response = programs != null ? programs.stream().map(ProgramResponseMapper::map).collect(Collectors.toList()) : null;
+        return WorkflowResponse.builder().message("Success").status(200).data(response).build();
+
+    }
 }
