@@ -36,7 +36,7 @@ public class ProgramSessionFile {
     private OtherTrainingBudget otherTrainingBudget;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "travel_and_transport", nullable = false) // FK column
+    @JoinColumn(name = "travel_and_transport", nullable = true) // FK column
     private TravelAndTransport travelAndTransport;
 
     @ManyToOne
