@@ -1,5 +1,6 @@
 package com.metaverse.workflow.nontraining.service;
 
+import com.metaverse.workflow.nontraining.dto.NonTrainingProgramDto;
 import com.metaverse.workflow.nontraining.dto.ProgressMonitoringDto;
 import com.metaverse.workflow.nontraining.dto.TrainingProgramDto;
 import org.springframework.stereotype.Service;
@@ -11,4 +12,6 @@ public interface ProgressMonitoringService {
 
     ProgressMonitoringDto getAllNonTrainingsSummary(Long agencyId);
     List<TrainingProgramDto> getAllTrainingProgressMonitoringProgress(Long agencyId);
+    List<NonTrainingProgramDto> nonTrainingProgressMonitoring(Long AgencyId);
+
 }

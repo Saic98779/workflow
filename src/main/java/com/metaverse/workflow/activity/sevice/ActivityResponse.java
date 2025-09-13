@@ -17,6 +17,6 @@ public class ActivityResponse {
     private String activityName;
     private String agencyName;
     private Long agencyId;
-    private List<SubActivity> subActivities;
+    private List<SubActivityResponse> subActivities;
 
 }

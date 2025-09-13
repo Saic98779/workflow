@@ -2,9 +2,12 @@ package com.metaverse.workflow.nontrainingExpenditures.service;
 
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.exceptions.DataException;
+import com.metaverse.workflow.nontrainingExpenditures.Dto.CorpusDebitFinancing;
 import com.metaverse.workflow.nontrainingExpenditures.Dto.WeHubHandholdingRequest;
 import com.metaverse.workflow.nontrainingExpenditures.Dto.WeHubSDGRequest;
 import com.metaverse.workflow.nontrainingExpenditures.Dto.WeHubSelectedCompaniesRequest;
+
+import java.util.List;
 
 public interface WeHubService {
     WorkflowResponse create(WeHubSelectedCompaniesRequest request) throws DataException;
@@ -26,5 +29,5 @@ public interface WeHubService {
     WorkflowResponse deleteWeHubSDG(Long weHubSDGId) throws DataException;
     WorkflowResponse getWeHubSDGById(Long weHubSDGId) throws DataException;
 
-
+    List<CorpusDebitFinancing> corpusDebitFinancing();
 }

@@ -53,7 +53,7 @@ public class ProgramStatusController {
                 !status.equals(ProgramStatusConstants.ATTENDANCE_MARKED) &&
                 !status.equals(ProgramStatusConstants.PROGRAM_EXECUTION_UPDATED) &&
                 !status.equals(ProgramStatusConstants.PROGRAM_EXECUTION) &&
-        !status.equals(ProgramStatusConstants.PROGRAM_EXPENDITURE_UPDATED);
+                !status.equals(ProgramStatusConstants.PROGRAM_EXPENDITURE_UPDATED);
     }
 
     @GetMapping("/{agencyId}")
@@ -62,8 +62,7 @@ public class ProgramStatusController {
         List<Program> programs = new ArrayList<>();
         if (isValidStatus(status)) {
             return WorkflowResponse.builder().message("Invalid status value." + status).status(HttpStatus.INTERNAL_SERVER_ERROR.value()).data(status).build();
-        }
-        else {
+        } else {
             if (ProgramStatusConstants.PROGRAM_EXECUTION.equalsIgnoreCase(status)) {
                 List<String> statuses = Arrays.asList(
                         ProgramStatusConstants.SESSIONS_CREATED,
@@ -71,16 +70,27 @@ public class ProgramStatusController {
                         ProgramStatusConstants.ATTENDANCE_MARKED
                 );
                 programs = programRepository.findByAgencyAgencyIdAndStatusIn(agencyId, statuses);
-            }
-            else {
-               programs = programRepository.findByAgencyAgencyIdAndStatus(agencyId, status);
+            } else {
+                programs = programRepository.findByAgencyAgencyIdAndStatus(agencyId, status);
             }
             List<ProgramResponse> response = programs != null ? programs.stream().map(ProgramResponseMapper::map).collect(Collectors.toList()) : null;
             return WorkflowResponse.builder().message("Success").status(200).data(response).build();
         }
     }
+
     @GetMapping("/summary/{agencyId}")
     public WorkflowResponse getProgramsStatusSummery(@PathVariable Long agencyId) {
         return programService.getProgramStatusSummery(agencyId);
+    }
+
+    @GetMapping("/status-list/{agencyId}")
+    public WorkflowResponse getProgramsByStatus(@PathVariable Long agencyId,
+                                                @RequestParam List<String> statuses) {
+
+        List<Program> programs = programRepository.findByAgencyAgencyIdAndStatusIn(agencyId, statuses);
+
+        List<ProgramResponse> response = programs != null ? programs.stream().map(ProgramResponseMapper::map).collect(Collectors.toList()) : null;
+        return WorkflowResponse.builder().message("Success").status(200).data(response).build();
+
     }
 }
