@@ -11,7 +11,12 @@ public class ActivityResponseMapper {
                 .activityName(activity.getActivityName())
                 .agencyId(activity.getAgency().getAgencyId())
                 .agencyName(activity.getAgency().getAgencyName())
-                .subActivities(activity.getSubActivities())
+                .subActivities(activity.getSubActivities().stream().map(sub ->
+                        SubActivityResponse.builder()
+                                .subActivityId(sub.getSubActivityId())
+                                .subActivityName(sub.getSubActivityName())
+                                .activityName(sub.getActivity().getActivityName())
+                                .build()).toList())
                 .build();
         return response;
     }
