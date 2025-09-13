@@ -209,6 +209,15 @@ public class WeHubController {
 
     @GetMapping("/corpusDebitFinancing")
     public ResponseEntity<?> corpusDebitFinancing() {
+        RestTemplate restTemplate = new RestTemplate();
+        String url = "https://tihcl.com/tihcl/api/tihcl/corpusDebitFinancing";
+        String loginUrl= "https://tihcl.com/tihcl/api/auth/login";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<AuthRequest> entity = new HttpEntity<>(new AuthRequest("executive1@gmail.com","Password@123"),headers);
+
         try {
             return ResponseEntity.ok(WorkflowResponse.builder().status(200).message("fetched").data(service.corpusDebitFinancing()));
         } catch (RestClientException e) {
