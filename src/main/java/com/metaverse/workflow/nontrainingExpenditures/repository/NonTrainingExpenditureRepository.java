@@ -30,4 +30,19 @@ public interface NonTrainingExpenditureRepository extends JpaRepository<NonTrain
             @Param("subActivityId") Long subActivityId,
             @Param("startDate") Date startDate,
             @Param("endDate") Date endDate);
+
+    @Query(value = """
+    SELECT COUNT(nte.id)
+    FROM non_training_expenditure nte
+    JOIN non_training_sub_activity ntsa ON nte.sub_activity_id = ntsa.sub_activity_id
+    WHERE ntsa.sub_activity_id = :subActivityId
+      AND nte.created_on BETWEEN :startDate AND :endDate
+""", nativeQuery = true)
+    Long countRegistrationsBySubActivityAndDateRange(
+            @Param("subActivityId") Long subActivityId,
+            @Param("startDate") Date startDate,
+            @Param("endDate") Date endDate
+    );
+
+
 }

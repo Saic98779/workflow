@@ -32,7 +32,7 @@ public class ProgressMonitoringController {
 
     @GetMapping("/non-training-targets")
     public ResponseEntity<?> getAgencyProgramMonitor(Long agencyId){
-        return ResponseEntity.ok(progressMonitoringService.getAllNonTrainingsSummary(agencyId));
+        return ResponseEntity.ok(progressMonitoringService.nonTrainingProgressMonitoring(agencyId));
     }
 
 
