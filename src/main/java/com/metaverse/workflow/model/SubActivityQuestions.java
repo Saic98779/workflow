@@ -24,12 +24,17 @@ public class SubActivityQuestions {
     @Column(name="sub_activity_id")
     private Long subActivityId;
 
-
+    @ElementCollection
+    @CollectionTable(
+            name = "questionsIds",
+            joinColumns = @JoinColumn(name = "sub_activity_question_id")
+    )
     private List<Integer> questionsIds;
 
     @Column(name="created_on",insertable = true,updatable = false)
     @CreationTimestamp
     private Date createdOn;
+
     @Column(name="updated_on",insertable = false,updatable = true)
     @UpdateTimestamp
     private Date updatedOn;
