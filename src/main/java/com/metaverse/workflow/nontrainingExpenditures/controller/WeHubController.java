@@ -207,41 +207,18 @@ public class WeHubController {
         return service.getSelectedOrganization();
     }
 
-    @GetMapping("/corpusDebitFinancing")
+    @GetMapping(value = "/corpusDebitFinancing", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> corpusDebitFinancing() {
-
-        RestTemplate restTemplate = new RestTemplate();
-        String url = "http://localhost:8080/tihcl/api/tihcl/corpusDebitFinancing";
-        String loginUrl= "http://localhost:8080/tihcl/api/auth/login";
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        HttpEntity<AuthRequest> entity = new HttpEntity<>(new AuthRequest("executive1@gmail.com","Password@123"),headers);
-
         try {
-            ResponseEntity<Map> response = restTemplate.exchange(
-                    loginUrl,
-                    HttpMethod.POST,
-                    entity,
-                    Map.class
+            return ResponseEntity.ok(
+                    WorkflowResponse.builder()
+                            .status(200)
+                            .message("fetched")
+                            .data(service.corpusDebitFinancing())
+                            .build()
             );
-            String token = (String) response.getBody().get("token");
-
-            HttpHeaders corpusHeaders = new HttpHeaders();
-            corpusHeaders.setBearerAuth(token);
-
-            HttpEntity<Void> corpusEntity = new HttpEntity<>(corpusHeaders);
-
-            ResponseEntity<List> corpusResponse = restTemplate.exchange(
-                    url,
-                    HttpMethod.GET,
-                    corpusEntity,
-                    List.class
-            );
-            return corpusResponse;
         } catch (RestClientException e) {
-         return ResponseEntity.status(400).body(e.getMessage());
+            return ResponseEntity.status(400).body(Map.of("error", e.getMessage()));
         }
     }
 }

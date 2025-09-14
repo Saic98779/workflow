@@ -7,9 +7,14 @@ import com.metaverse.workflow.model.*;
 import com.metaverse.workflow.nontraining.dto.NonTrainingProgramDto;
 import com.metaverse.workflow.nontraining.dto.ProgressMonitoringDto;
 import com.metaverse.workflow.nontraining.dto.TrainingProgramDto;
+import com.metaverse.workflow.nontraining.repository.NonTrainingAchievementRepository;
+import com.metaverse.workflow.nontraining.repository.NonTrainingActivityRepository;
+import com.metaverse.workflow.nontrainingExpenditures.Dto.CorpusDebitFinancing;
+import com.metaverse.workflow.nontrainingExpenditures.repository.ListingOnNSERepository;
 import com.metaverse.workflow.nontrainingExpenditures.repository.NonTrainingExpenditureRepository;
 import com.metaverse.workflow.nontrainingExpenditures.repository.NonTrainingResourceRepository;
 import com.metaverse.workflow.nontrainingExpenditures.repository.TravelAndTransportRepository;
+import com.metaverse.workflow.nontrainingExpenditures.service.WeHubService;
 import com.metaverse.workflow.trainingandnontrainingtarget.repository.NonTrainingTargetRepository;
 import com.metaverse.workflow.trainingandnontrainingtarget.repository.TrainingTargetRepository;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +34,12 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
     private final NonTrainingResourceRepository nonTrainingResourcesRepository;
     private final ActivityRepository activityRepository;
     private final TravelAndTransportRepository travelAndTransportRepository;
+
+    private final WeHubService service;
+
+    private final NonTrainingActivityRepository nonTrainingActivityRepository;
+    private final NonTrainingAchievementRepository nonTrainingAchievementRepository;
+    private final ListingOnNSERepository listingOnNSERepository;
 
     /*
         --- Non-Training Programs ---
@@ -233,16 +244,16 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
             Double bud = budgetAllocated.getOrDefault(key, 0.0);
             Double programExpO = programExp.getOrDefault(key, 0.0);
 
-            trainingProgressData.add( TrainingProgramDto.builder().agency(agencyName)
+            trainingProgressData.add(TrainingProgramDto.builder().agency(agencyName)
                     .activity(activityNames.get(key))
                     .subActivityId(key)
                     .subActivity(subActivityNames.get(key))
                     .trainingTarget(target1)
                     .trainingAchievement(countOfParticipants1)
-                    .trainingPercentage((target1!=0 ? Math.round((countOfParticipants1/target1)* 100 * 1000.0)/1000.0 : 0.0))
+                    .trainingPercentage((target1 != 0 ? Math.round((countOfParticipants1 / target1) * 100 * 1000.0) / 1000.0 : 0.0))
                     .budgetAllocated(bud)
                     .expenditure(programExpO)
-                    .expenditurePercentage((bud!=0.0) ? Math.round((programExpO/bud)* 100 * 1000.0)/1000.0 : 0.0)
+                    .expenditurePercentage((bud != 0.0) ? Math.round((programExpO / bud) * 100 * 1000.0) / 1000.0 : 0.0)
                     .build());
         }
         return trainingProgressData;
@@ -250,5 +261,105 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
 
     private static void addOrUpdate(Map<Long, Double> map, Long key, Double value) {
         map.merge(key, value, Double::sum);
+    }
+
+
+    public List<NonTrainingProgramDto> nonTrainingProgressMonitoring(Long agencyId) {
+
+        List<NonTrainingProgramDto> nonTrainingProgramDtoList = new ArrayList<>();
+
+        List<NonTrainingActivity> byAgencyAgencyId =
+                nonTrainingActivityRepository.findByAgency_AgencyId(agencyId);
+
+        for (NonTrainingActivity activity : byAgencyAgencyId) {
+            System.out.println(activity.getActivityName());
+            long activityId = activity.getActivityId();
+
+            switch ((int) activityId) {
+                case 13, 16, 17, 18 -> {
+                    List<NonTrainingSubActivity> subActivities = activity.getSubActivities();
+
+                    for (NonTrainingSubActivity subActivity : subActivities) {
+                        NonTrainingProgramDto nonTrainingProgramDto = new NonTrainingProgramDto();
+                        nonTrainingProgramDto.setNonTrainingActivity(activity.getActivityName());
+                        nonTrainingProgramDto.setNonTrainingSubActivity(subActivity.getSubActivityName());
+
+                        long subActivityId = subActivity.getSubActivityId();
+
+                        List<NonTrainingTargets> nonTrainingSubActivity = nonTrainingTargetRepository.findByNonTrainingSubActivity_subActivityId(subActivityId);
+                        long physicalTarget = nonTrainingSubActivity.stream().mapToLong(r -> r.getQ1Target() + r.getQ2Target() + r.getQ3Target() + r.getQ4Target()).sum();
+                        double financialTarget = nonTrainingSubActivity.stream().mapToDouble(r -> r.getQ1Budget() + r.getQ2Budget() + r.getQ3Budget() + r.getQ4Budget()).sum();
+                        nonTrainingProgramDto.setPhysicalTarget((int)physicalTarget);
+                        nonTrainingProgramDto.setFinancialTarget(financialTarget);
+
+                        Object[] objects = progressMonitoringSubActivityWiseAchievements(subActivityId);
+                        nonTrainingProgramDto.setPhysicalAchievement((String) objects[0]);
+                        nonTrainingProgramDto.setFinancialExpenditure((double) objects[1]);
+
+                        nonTrainingProgramDtoList.add(nonTrainingProgramDto);
+                    }
+                }
+
+            }
+        }
+        return nonTrainingProgramDtoList;
+    }
+
+
+    public Object[] progressMonitoringSubActivityWiseAchievements(Long subActivityId) {
+        NonTrainingProgramDto nonTrainingProgramDto = new NonTrainingProgramDto();
+        long subActivityId1 = subActivityId;
+        switch ((int) subActivityId1) {
+            // TIHCL sub activities
+            case 67 -> { // 67  Corpus-Debt Financing
+                List<CorpusDebitFinancing> list = service.corpusDebitFinancing();
+                if (list.isEmpty()) {
+                    nonTrainingProgramDto.setFinancialExpenditure(0.0);
+                }
+                Double financialAchieved = list.stream().mapToDouble(r -> r.getTotalDisbursedAmount()).sum();
+                String.valueOf(list.size());
+                Object[] objects = {String.valueOf(list.size()), financialAchieved};
+                return objects;
+            }
+            case 76 -> { // 76 Corpus-Listing on NSE from corpusListingOnNSE
+                Optional<List<ListingOnNSE>> corpusListingOnNSE = listingOnNSERepository.findByNonTrainingSubActivity_SubActivityId(subActivityId);
+                if (corpusListingOnNSE.isPresent()) {
+                    List<ListingOnNSE> listingOnNSES = corpusListingOnNSE.get();
+                    Double financialAchieved = listingOnNSES.stream().mapToDouble(r -> r.getAmountOfLoanProvided()).sum();
+                    Object[] objects = {String.valueOf(listingOnNSES.size()), financialAchieved};
+                    return objects;
+                } else {
+                    Object[] objects = {String.valueOf(0), 0.0};
+                    return objects;
+                }
+            }
+            // coi sub activities
+            case 26 -> { //  Resource table
+                List<NonTrainingResource> nonTrainingSubActivity = nonTrainingResourcesRepository.findByNonTrainingSubActivity_subActivityId(subActivityId);
+                if (nonTrainingSubActivity != null || !nonTrainingSubActivity.isEmpty()) {
+                    Double financialAchieved = nonTrainingSubActivity.stream().map(
+                            r -> r.getNonTrainingResourceExpenditures()).mapToDouble(
+                            exp -> exp.stream().mapToDouble(
+                                    resExp -> resExp.getAmount()).sum()).sum();
+                    Object[] objects = {String.valueOf(nonTrainingSubActivity.size()), financialAchieved};
+                    return objects;
+                } else {
+                    Object[] objects = {String.valueOf(0), 0.0};
+                    return objects;
+                }
+            }
+            case 27,28 -> { //  Expenditure
+                Optional<List<NonTrainingExpenditure>> nonTrainingSubActivity = nonTrainingExpenditureRepository.findByNonTrainingSubActivity_SubActivityId(subActivityId);
+                if (nonTrainingSubActivity.isPresent()) {
+                    Double financialAchieved = nonTrainingSubActivity.get().stream().mapToDouble(exp -> exp.getExpenditureAmount()).sum();
+                    Object[] objects = {String.valueOf(nonTrainingSubActivity.get().size()), financialAchieved};
+                    return objects;
+                } else {
+                    Object[] objects = {String.valueOf(0), 0.0};
+                    return objects;
+                }
+            }
+        }
+        return new Object[]{String.valueOf(0), 0.0};
     }
 }

@@ -121,8 +121,8 @@ public class ProgramServiceAdapter implements ProgramService {
             program = programRepository.save(ProgramRequestMapper.map(request, agency.get(), location.get()));
         }
         NotificationRequest notificationRequest = new NotificationRequest();
-        notificationRequest.setProgramId(program.getProgramId());
-        notificationRequest.setUserType(UserType.AGENCY);
+//        notificationRequest.setProgramId(program.getProgramId());
+        notificationRequest.setUserType(String.valueOf(UserType.AGENCY));
         notificationRequest.setMessage("New program scheduled: " + program.getProgramTitle());
 
         notificationService.saveNotification(notificationRequest);
@@ -646,7 +646,7 @@ public class ProgramServiceAdapter implements ProgramService {
             mediaCoverageRepository.deleteByProgramProgramId(programId);
             programSessionRepository.deleteByProgramProgramId(programId);
             programExpenditureRepo.deleteByProgramProgramId(programId);
-            notificationRepository.deleteByProgramProgramId(programId);
+//            notificationRepository.deleteByProgramProgramId(programId);
 
             em.createNativeQuery("DELETE FROM program_participant_temp WHERE program_id = :programId")
                     .setParameter("programId", programId)

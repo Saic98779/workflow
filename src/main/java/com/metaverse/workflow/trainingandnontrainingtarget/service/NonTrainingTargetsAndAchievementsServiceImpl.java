@@ -3,6 +3,7 @@ package com.metaverse.workflow.trainingandnontrainingtarget.service;
 import com.metaverse.workflow.model.NonTrainingAchievement;
 import com.metaverse.workflow.model.NonTrainingTargets;
 import com.metaverse.workflow.nontraining.repository.NonTrainingAchievementRepository;
+import com.metaverse.workflow.nontrainingExpenditures.repository.ListingOnNSERepository;
 import com.metaverse.workflow.nontrainingExpenditures.repository.NonTrainingExpenditureRepository;
 import com.metaverse.workflow.nontrainingExpenditures.repository.NonTrainingResourceRepository;
 import com.metaverse.workflow.nontrainingExpenditures.repository.TravelAndTransportRepository;
@@ -26,6 +27,8 @@ public class NonTrainingTargetsAndAchievementsServiceImpl implements NonTraining
     private final NonTrainingAchievementRepository nonTrainingAchievementRepository;
     private final NonTrainingResourceRepository nonTrainingResourceRepository;
     private final TravelAndTransportRepository travelAndTransportRepository;
+
+    private final ListingOnNSERepository listingOnNSERepository;
 
 
     @Override
@@ -59,11 +62,16 @@ public class NonTrainingTargetsAndAchievementsServiceImpl implements NonTraining
             // Financial Achievements per quarter
             Date[] fyRange = getFinancialYearRange(financialYear);
 
-            Double[] finQuarterly = quarterlyWiseExpenditure(agencyId, t.getNonTrainingSubActivity().getSubActivityId(), financialYear, t.getNonTrainingSubActivity().getNonTrainingActivity().getActivityName(), t.getNonTrainingSubActivity().getSubActivityName());
-            Double finQ1 = finQuarterly[0];
-            Double finQ2 = finQuarterly[1];
-            Double finQ3 = finQuarterly[2];
-            Double finQ4 = finQuarterly[3];
+            Object[] physicalFinancialAchieved = quarterlyWiseExpenditure(agencyId, t.getNonTrainingSubActivity().getSubActivityId(), financialYear, t.getNonTrainingSubActivity().getNonTrainingActivity().getActivityName(), t.getNonTrainingSubActivity().getSubActivityName());
+            Long[] physicalAchieved = (Long[]) physicalFinancialAchieved[0];
+            Double[] financialAchieved = (Double[]) physicalFinancialAchieved[1];
+
+
+            Double finQ1 = financialAchieved[0];
+            Double finQ2 = financialAchieved[1];
+            Double finQ3 = financialAchieved[2];
+            Double finQ4 = financialAchieved[3];
+
 
             dto.setFinancialAchievedQ1(finQ1 != null ? finQ1 : 0.0);
             dto.setFinancialAchievedQ2(finQ2 != null ? finQ2 : 0.0);
@@ -86,11 +94,12 @@ public class NonTrainingTargetsAndAchievementsServiceImpl implements NonTraining
             );
 
 
-            // Set totals
-            dto.setAchievedQ1(t.getAchievements().stream().map(NonTrainingAchievement::getQ1Achievement).findFirst().orElse("Yet to Begin"));
-            dto.setAchievedQ2(t.getAchievements().stream().map(NonTrainingAchievement::getQ2Achievement).findFirst().orElse("Yet to Begin"));
-            dto.setAchievedQ3(t.getAchievements().stream().map(NonTrainingAchievement::getQ3Achievement).findFirst().orElse("Yet to Begin"));
-            dto.setAchievedQ4(t.getAchievements().stream().map(NonTrainingAchievement::getQ4Achievement).findFirst().orElse("Yet to Begin"));
+            // Set totals  yet to begin
+            dto.setAchievedQ1(String.valueOf(physicalAchieved[0]));
+            dto.setAchievedQ2(String.valueOf(physicalAchieved[1]));
+            dto.setAchievedQ3(String.valueOf(physicalAchieved[2]));
+            dto.setAchievedQ4(String.valueOf(physicalAchieved[3]));
+
             dto.setTotalFinancialTarget(
                     (int) ((t.getQ1Budget() != null ? t.getQ1Budget() : 0)
                             + (t.getQ2Budget() != null ? t.getQ2Budget() : 0)
@@ -126,59 +135,108 @@ public class NonTrainingTargetsAndAchievementsServiceImpl implements NonTraining
         };
     }
 
-    public Double[] quarterlyWiseExpenditure(Long agencyId, Long subActivityId, String financialYear, String activityName, String subActivityName) {
-        switch (activityName.toLowerCase()) {  // coi completed,
-            case "staff", "project team" -> {
-                // Handle staff differently per sub-activity if needed
-                switch (subActivityName.toLowerCase()) {
-                    case "staff - ceo", "staff - designers", "staff - project manager", "interns for certifications",
-                         "r&d", "staff" -> {
-                        return getNonTrainingResourceExpenditureByQuarterlyWise(agencyId, subActivityId, financialYear, activityName, subActivityName);
-                    }
-                    default -> {
-                        return getNonTrainingExpenditureByQuarterlyWise(agencyId, subActivityId, financialYear, activityName, subActivityName);
-                    }
-                }
-            }
+    public Object[] quarterlyWiseExpenditure(Long agencyId, Long subActivityId, String financialYear, String activityName, String subActivityName) {
+        long subActivityId1 = subActivityId;
+        switch ((int) subActivityId1) {
+            case 26 -> {
+                Long q1 = nonTrainingResourceRepository.countResourcesBySubActivityAndDateRange(subActivityId,
+                        getFinancialYearRange1(financialYear.split("-")[0], 4, 1, true),
+                        getFinancialYearRange1(financialYear.split("-")[0], 6, 30, true)
+                );
+                Long q2 = nonTrainingExpenditureRepository.countRegistrationsBySubActivityAndDateRange(subActivityId,
+                        getFinancialYearRange1(financialYear.split("-")[0], 7, 1, true),
+                        getFinancialYearRange1(financialYear.split("-")[0], 9, 30, true)
+                );
+                Long q3 = nonTrainingResourceRepository.countResourcesBySubActivityAndDateRange(subActivityId,
+                        getFinancialYearRange1(financialYear.split("-")[0], 10, 1, true),
+                        getFinancialYearRange1(financialYear.split("-")[0], 12, 31, true)
+                );
+                Long q4 = nonTrainingExpenditureRepository.countRegistrationsBySubActivityAndDateRange(subActivityId,
+                        getFinancialYearRange1(financialYear.split("-")[1], 1, 1, true),
+                        getFinancialYearRange1(financialYear.split("-")[1], 3, 31, true)
+                );
 
-            case "contingency fund" -> {
-                System.out.println("Fetching " + activityName + " expenditure from resources repository");
-                return getNonTrainingResourceExpenditureByQuarterlyWise(agencyId, subActivityId, financialYear, activityName, subActivityName);
-            }
+                Double[] nonTrainingResourceExpenditure = getNonTrainingResourceExpenditureByQuarterlyWise(agencyId, subActivityId, financialYear, activityName, subActivityName);
 
-            case "setting up call center services for validation" -> {
-                // All treated as Staff
-                System.out.println("Fetching Staff expenditure (" + activityName + " - " + subActivityName + ")");
-                switch (subActivityName) {
-                    case "staff", "technology firm" -> {
-                        return getNonTrainingResourceExpenditureByQuarterlyWise(agencyId, subActivityId, financialYear, activityName, subActivityName);
-                    }
-                    default -> {
-                        return getNonTrainingExpenditureByQuarterlyWise(agencyId, subActivityId, financialYear, activityName, subActivityName);
-                    }
-                }
+                return new Object[]{new Long[]{q1, q2, q3, q4},
+                        nonTrainingResourceExpenditure};
             }
+            case 27, 28 -> {
+                Long q1 = nonTrainingExpenditureRepository.countRegistrationsBySubActivityAndDateRange(subActivityId,
+                        getFinancialYearRange1(financialYear.split("-")[0], 4, 1, true),
+                        getFinancialYearRange1(financialYear.split("-")[0], 6, 30, true)
+                );
+                Long q2 = nonTrainingExpenditureRepository.countRegistrationsBySubActivityAndDateRange(subActivityId,
+                        getFinancialYearRange1(financialYear.split("-")[0], 7, 1, true),
+                        getFinancialYearRange1(financialYear.split("-")[0], 9, 30, true)
+                );
+                Long q3 = nonTrainingExpenditureRepository.countRegistrationsBySubActivityAndDateRange(subActivityId,
+                        getFinancialYearRange1(financialYear.split("-")[0], 10, 1, true),
+                        getFinancialYearRange1(financialYear.split("-")[0], 12, 31, true)
+                );
+                Long q4 = nonTrainingExpenditureRepository.countRegistrationsBySubActivityAndDateRange(subActivityId,
+                        getFinancialYearRange1(financialYear.split("-")[1], 1, 1, true),
+                        getFinancialYearRange1(financialYear.split("-")[1], 3, 31, true)
+                );
 
-            case "hiring of technology platform" -> {
-                // Map to Technology firm
-                System.out.println("Fetching Technology firm expenditure");
-                return getNonTrainingResourceExpenditureByQuarterlyWise(agencyId, subActivityId, financialYear, activityName, subActivityName);
+                Double[] nonTrainingExpenditure = getNonTrainingExpenditureByQuarterlyWise(agencyId, subActivityId, financialYear, activityName, subActivityName);
+                return new Object[]{new Long[]{q1, q2, q3, q4},
+                                    nonTrainingExpenditure};
+
             }
+            case 67 -> { //Corpus-Debt Financing
 
-            case "travel & transport" -> {
-                System.out.println("travel & transport");
-                return getTravelAndTransportExpenditureByQuetrlyWise(agencyId, subActivityId, financialYear, activityName, subActivityName);
             }
+            case 76 -> { // Corpus-Listing On NSE
+                // financial Achieved
+                Double  expQ1 = listingOnNSERepository.sumLoanAmountBySubActivityAndDateRange(subActivityId,
+                        getFinancialYearRange1(financialYear.split("-")[0], 4, 1, false),
+                        getFinancialYearRange1(financialYear.split("-")[0], 6, 30, false));
+                Double expQ2 = listingOnNSERepository.sumLoanAmountBySubActivityAndDateRange(
+                        subActivityId,
+                        getFinancialYearRange1(financialYear.split("-")[0],7,1,false),
+                        getFinancialYearRange1(financialYear.split("-")[0],9,30,false)
+                );
 
-            default -> {
-                return getNonTrainingExpenditureByQuarterlyWise(agencyId, subActivityId, financialYear, activityName, subActivityName);
+                Double expQ3 = listingOnNSERepository.sumLoanAmountBySubActivityAndDateRange(
+                         subActivityId,
+                        getFinancialYearRange1(financialYear.split("-")[0],10,1,false),
+                        getFinancialYearRange1(financialYear.split("-")[0],12,31,false)
+                );
+
+                Double expQ4 = listingOnNSERepository.sumLoanAmountBySubActivityAndDateRange(
+                         subActivityId,
+                        getFinancialYearRange1(financialYear.split("-")[1],1,1,false),
+                        getFinancialYearRange1(financialYear.split("-")[1],3,31,false)
+
+                );
+
+              //  Training achievement
+                Long trainingAchievement1 = listingOnNSERepository.countListingsBySubActivityAndDateRange(subActivityId,
+                        getFinancialYearRange1(financialYear.split("-")[0], 4, 1, true),
+                        getFinancialYearRange1(financialYear.split("-")[0], 6, 30, true)
+                );
+                Long trainingAchievement2 = listingOnNSERepository.countListingsBySubActivityAndDateRange(subActivityId,
+                        getFinancialYearRange1(financialYear.split("-")[0], 7, 1, true),
+                        getFinancialYearRange1(financialYear.split("-")[0], 9, 30, true)
+                );
+                Long trainingAchievement3 = listingOnNSERepository.countListingsBySubActivityAndDateRange(subActivityId,
+                        getFinancialYearRange1(financialYear.split("-")[0], 10, 1, true),
+                        getFinancialYearRange1(financialYear.split("-")[0], 12, 31, true)
+                );
+                Long trainingAchievement4 = listingOnNSERepository.countListingsBySubActivityAndDateRange(subActivityId,
+                        getFinancialYearRange1(financialYear.split("-")[1], 1, 1, true),
+                        getFinancialYearRange1(financialYear.split("-")[1], 3, 31, true));
+
+                return new Object[]{new Long[]{trainingAchievement1, trainingAchievement2, trainingAchievement3, trainingAchievement4},
+                                    new Double[]{expQ1, expQ2, expQ3, expQ4}};
             }
         }
+        return  new Double[]{0.0, 0.0, 0.0, 0.0};
     }
 
 
     public Double[] getTravelAndTransportExpenditureByQuetrlyWise(Long agencyId, Long subActivityId, String financialYear, String activityName, String subActivityName) {
-        System.out.println("Fetching Travel & Transport expenditure for " + subActivityName);
         Double finQ1 = travelAndTransportRepository.sumExpenditureByAgencyAndSubActivityAndDateRange(
                 agencyId, subActivityId,
                 getFinancialYearRange1(financialYear.split("-")[0],4,1,false),

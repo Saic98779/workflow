@@ -10,6 +10,8 @@ import com.metaverse.workflow.common.util.DateUtil;
 import com.metaverse.workflow.exceptions.DataException;
 import com.metaverse.workflow.login.repository.LoginRepository;
 import com.metaverse.workflow.model.*;
+import com.metaverse.workflow.notifications.dto.NotificationRequest;
+import com.metaverse.workflow.notifications.service.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,6 +37,8 @@ public class CallCenterServiceAdapter implements CallCenterService {
     CallCenterVerificationRepository ccVerificationRepository;
     @Autowired
     LoginRepository loginRepository;
+    @Autowired
+    NotificationService notificationService;
 
     @Override
     public WorkflowResponse saveQuestion(QuestionRequest request) {
@@ -156,7 +160,18 @@ public class CallCenterServiceAdapter implements CallCenterService {
         } else {
             callCenterVerification = CallCenterRequestMapper.mapParticipantVerification(request, questionAnswersList, user, verificationStatus);
         }
+
         CallCenterVerification saved = ccVerificationRepository.save(callCenterVerification);
+
+        NotificationRequest notificationRequest = NotificationRequest.builder()
+                .userType("AGENT")
+                .screenName("CallCenterVerification")
+                .message("Verification completed for Participant: " + saved.getParticipantId())
+                .userId(user.getUserId())
+                .readRecipients(false)
+                .build();
+
+        notificationService.saveNotification(notificationRequest);
 
         return WorkflowResponse.builder()
                 .message("Participant Verification data is saved successfully")
