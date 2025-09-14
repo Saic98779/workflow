@@ -7,4 +7,6 @@ public interface SubActivityQuestionsRepository extends JpaRepository<SubActivit
 
 
     SubActivityQuestions findBySubActivityId(Long subActivityId);
+
+    boolean existsBySubActivityId(Long subActivityId);
 }
