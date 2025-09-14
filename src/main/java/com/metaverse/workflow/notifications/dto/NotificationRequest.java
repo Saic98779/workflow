@@ -10,15 +10,10 @@ import lombok.NoArgsConstructor;
 @Builder
 @Data
 public class NotificationRequest {
-    private String applicationNo;
-    private String applicationStatus;
     private String userType;
-    private Long programId;
     private Long   sourceId;           // sourceId
     private String screenName;      //Screen name
     private String message;
     private String userId;
-    private String managerId;
     private Boolean readRecipients;
-    private String district;
 }

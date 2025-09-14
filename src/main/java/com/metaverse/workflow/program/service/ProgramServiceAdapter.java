@@ -121,7 +121,7 @@ public class ProgramServiceAdapter implements ProgramService {
             program = programRepository.save(ProgramRequestMapper.map(request, agency.get(), location.get()));
         }
         NotificationRequest notificationRequest = new NotificationRequest();
-        notificationRequest.setProgramId(program.getProgramId());
+//        notificationRequest.setProgramId(program.getProgramId());
         notificationRequest.setUserType(String.valueOf(UserType.AGENCY));
         notificationRequest.setMessage("New program scheduled: " + program.getProgramTitle());
 

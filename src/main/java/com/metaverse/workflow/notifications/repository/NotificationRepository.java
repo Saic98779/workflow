@@ -4,12 +4,12 @@ import com.metaverse.workflow.model.Notifications;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface NotificationRepository extends JpaRepository<Notifications, Long> {
-
-    Optional<Notifications> findByApplicationNo(String applicationNo);
+    List<Notifications> findByUserId(String userId);
 
 //    void deleteByProgramProgramId(Long programId);
 }

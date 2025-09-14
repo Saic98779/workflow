@@ -1,6 +1,7 @@
 package com.metaverse.workflow.notifications.service;
 
 import com.metaverse.workflow.common.enums.UserRole;
+import com.metaverse.workflow.model.Notifications;
 import com.metaverse.workflow.notifications.dto.NotificationReadUpdateDto;
 import com.metaverse.workflow.notifications.dto.NotificationRequest;
 import com.metaverse.workflow.notifications.dto.NotificationResponse;
@@ -20,4 +21,6 @@ public interface NotificationService {
      NotificationResponseDto getAllNotificationsByUserType(UserRole userRole);
 
      int markAsRead(List<NotificationReadUpdateDto> dtos);
+
+     List<NotificationResponse> getAllNotificationsByUserId(String userId);
 }

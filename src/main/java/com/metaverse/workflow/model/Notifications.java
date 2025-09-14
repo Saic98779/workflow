@@ -1,14 +1,11 @@
 package com.metaverse.workflow.model;
 
+import com.metaverse.workflow.enums.UserType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-
-import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
@@ -17,20 +14,21 @@ import java.time.LocalDateTime;
 @Entity
 @EntityListeners(org.springframework.data.jpa.domain.support.AuditingEntityListener.class)
 @Table(name = "notifications")
-public class Notifications {
+public class Notifications extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
     protected Long id;
 
-    @Column(name = "application_no")
-    private String applicationNo;
+    @Column(name = "user_id")
+    private String userId;
 
-    @Column(name = "application_status")
-    private String applicationStatus;
+    @Column(name = "agency_id")
+    private Long agencyId;
 
     @Column(name="user_type")
-    private String userType;
+    @Enumerated(EnumType.STRING)
+    private UserType userType;
 
     @Column(name = "source_id")
     private Long sourceId;       // sourceId
@@ -41,23 +39,6 @@ public class Notifications {
     @Column(name = "message")
     private String message;
 
-    @CreatedDate
-    @Column(name = "created_timestamp", updatable = false)
-    protected LocalDateTime createdTimestamp;
-
-    @LastModifiedDate
-    @Column(name = "last_modified")
-    protected LocalDateTime lastModified;
-
-    @Version
-    protected Integer version;
-
     private Boolean readRecipients;
-
-    private String userId;
-
-    private String managerId;
-
-    private String district;
 }
 
