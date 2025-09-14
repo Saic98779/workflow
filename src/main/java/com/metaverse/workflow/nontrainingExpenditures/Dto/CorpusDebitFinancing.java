@@ -14,7 +14,7 @@ public class CorpusDebitFinancing {
     private String enterpriseName;
     private LocalDate createdOn;
     private Double riskCategoryScore;
-    private Double totalSanctionedAmount;
+    private Double totalDisbursedAmount;
     private LocalDate collectionDate;
     private Double sanctionedAmount;
     private LocalDate sanctionedDate;

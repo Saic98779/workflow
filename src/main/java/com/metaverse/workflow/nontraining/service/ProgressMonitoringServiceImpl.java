@@ -316,7 +316,7 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
                 if (list.isEmpty()) {
                     nonTrainingProgramDto.setFinancialExpenditure(0.0);
                 }
-                Double financialAchieved = list.stream().mapToDouble(r -> r.getTotalSanctionedAmount()).sum();
+                Double financialAchieved = list.stream().mapToDouble(r -> r.getTotalDisbursedAmount()).sum();
                 String.valueOf(list.size());
                 Object[] objects = {String.valueOf(list.size()), financialAchieved};
                 return objects;
