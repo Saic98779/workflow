@@ -298,11 +298,10 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
 
                         nonTrainingProgramDto.setPercentage((financialTarget != 0.0) ? Math.round(((Double) objects[1] / financialTarget) * 100 * 100.0) / 100.0 : 0.0);
                         try {
-                            nonTrainingProgramDto.setPhysicalPercentage((physicalTarget != 0.0) ? Math.round(Long.valueOf((String) objects[0]) / physicalTarget * 100* 1000.0)/1000.0+"" : 0.0+"");
-                        }catch (Exception ee){
+                            nonTrainingProgramDto.setPhysicalPercentage(String.valueOf(Math.round(((physicalTarget != 0.0) ? (Double.parseDouble((String) objects[0]) / physicalTarget) * 100 : 0.0) * 100.0) / 100.0));
+                        } catch (Exception ee) {
                             nonTrainingProgramDto.setPhysicalPercentage((String) objects[0]);
                         }
-
                         nonTrainingProgramDtoList.add(nonTrainingProgramDto);
                     }
                 }

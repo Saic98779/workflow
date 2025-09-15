@@ -6,8 +6,8 @@ import lombok.Data;
 @Data
 @Builder
 public class PhysicalFinancialDto {
-    private Long nonTrainingAchievementId;
-    private Long nonTrainingActivityId;
+
+    private Long nonTrainingSubActivityId;
     private Long physicalTarget;
     private String physicalTargetAchievement;
     private Double financialTarget;

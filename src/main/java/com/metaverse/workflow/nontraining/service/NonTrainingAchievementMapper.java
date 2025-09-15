@@ -10,8 +10,8 @@ import java.util.Optional;
 public class NonTrainingAchievementMapper {
 
 
-    public  static PhysicalFinancialDto PhysicalFinancialDtoMapper(NonTrainingAchievement nonTrainingAchievement, List<NonTrainingTargets> nonTrainingTargets){
-      if(nonTrainingAchievement != null){
+    public  static PhysicalFinancialDto PhysicalFinancialDtoMapper(Long SubActivityId, List<NonTrainingTargets> nonTrainingTargets){
+      if(nonTrainingTargets != null){
 
           Long QTarget= 0L;
           Double QBudget = 0.0;
@@ -28,12 +28,10 @@ public class NonTrainingAchievementMapper {
                       + Optional.ofNullable(targets.getQ4Budget()).orElse(0.0);
 
           }
-         return PhysicalFinancialDto.builder().nonTrainingAchievementId(nonTrainingAchievement.getNonTrainingAchievementId())
-                  .nonTrainingActivityId(nonTrainingAchievement.getNonTrainingActivity().getActivityId())
-                  .physicalTargetAchievement(nonTrainingAchievement.getPhysicalTargetAchievement())
+         return PhysicalFinancialDto.builder()
+                 .nonTrainingSubActivityId(SubActivityId)
                  .financialTarget(QBudget)
                  .physicalTarget(QTarget)
-                  .financialTargetAchievement(nonTrainingAchievement.getFinancialTargetAchievement())
                   .build();
       }else {
           return null;
