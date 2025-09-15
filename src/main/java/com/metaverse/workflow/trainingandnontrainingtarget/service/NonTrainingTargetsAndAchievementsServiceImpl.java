@@ -1,6 +1,5 @@
 package com.metaverse.workflow.trainingandnontrainingtarget.service;
 
-import com.metaverse.workflow.model.NonTrainingAchievement;
 import com.metaverse.workflow.model.NonTrainingTargets;
 import com.metaverse.workflow.nontraining.repository.NonTrainingAchievementRepository;
 import com.metaverse.workflow.nontrainingExpenditures.repository.ListingOnNSERepository;
@@ -13,8 +12,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -33,7 +34,6 @@ public class NonTrainingTargetsAndAchievementsServiceImpl implements NonTraining
 
     @Override
     public List<NonTrainingTargetsAndAchievementsResponse> getTargetsAndAchievements(String financialYear, Long agencyId) {
-        // Targets for this agency + FY
         List<NonTrainingTargets> targets = nonTrainingTargetRepository
                 .findByNonTrainingSubActivity_NonTrainingActivity_Agency_AgencyIdAndFinancialYear(agencyId, financialYear);
 
@@ -47,76 +47,76 @@ public class NonTrainingTargetsAndAchievementsServiceImpl implements NonTraining
             dto.setSubActivityName(t.getNonTrainingSubActivity().getSubActivityName());
             dto.setFinancialYear(t.getFinancialYear());
 
-            dto.setTrainingTargetQ1(t.getQ1Target() != null ? t.getQ1Target() : 0L);
-            dto.setTrainingTargetQ2(t.getQ2Target() != null ? t.getQ2Target() : 0L);
-            dto.setTrainingTargetQ3(t.getQ3Target() != null ? t.getQ3Target() : 0L);
-            dto.setTrainingTargetQ4(t.getQ4Target() != null ? t.getQ4Target() : 0L);
 
-            dto.setFinancialTargetQ1(t.getQ1Budget() != null ? t.getQ1Budget() : 0.0);
-            dto.setFinancialTargetQ2(t.getQ2Budget() != null ? t.getQ2Budget() : 0.0);
-            dto.setFinancialTargetQ3(t.getQ3Budget() != null ? t.getQ3Budget() : 0.0);
-            dto.setFinancialTargetQ4(t.getQ4Budget() != null ? t.getQ4Budget() : 0.0);
-
-            dto.setPhysicalExpenditurePercentage("Not Applicable"); // Not applicable for Non-Training
-
-            // Financial Achievements per quarter
-            Date[] fyRange = getFinancialYearRange(financialYear);
-
-            Object[] physicalFinancialAchieved = quarterlyWiseExpenditure(agencyId, t.getNonTrainingSubActivity().getSubActivityId(), financialYear, t.getNonTrainingSubActivity().getNonTrainingActivity().getActivityName(), t.getNonTrainingSubActivity().getSubActivityName());
-            Long[] physicalAchieved = (Long[]) physicalFinancialAchieved[0];
-            Double[] financialAchieved = (Double[]) physicalFinancialAchieved[1];
+            dto.setTrainingTargetQ1(Optional.ofNullable(t.getQ1Target()).orElse(0L));
+            dto.setTrainingTargetQ2(Optional.ofNullable(t.getQ2Target()).orElse(0L));
+            dto.setTrainingTargetQ3(Optional.ofNullable(t.getQ3Target()).orElse(0L));
+            dto.setTrainingTargetQ4(Optional.ofNullable(t.getQ4Target()).orElse(0L));
 
 
-            Double finQ1 = financialAchieved[0];
-            Double finQ2 = financialAchieved[1];
-            Double finQ3 = financialAchieved[2];
-            Double finQ4 = financialAchieved[3];
+            dto.setFinancialTargetQ1(Optional.ofNullable(t.getQ1Budget()).orElse(0.0));
+            dto.setFinancialTargetQ2(Optional.ofNullable(t.getQ2Budget()).orElse(0.0));
+            dto.setFinancialTargetQ3(Optional.ofNullable(t.getQ3Budget()).orElse(0.0));
+            dto.setFinancialTargetQ4(Optional.ofNullable(t.getQ4Budget()).orElse(0.0));
 
 
-            dto.setFinancialAchievedQ1(finQ1 != null ? finQ1 : 0.0);
-            dto.setFinancialAchievedQ2(finQ2 != null ? finQ2 : 0.0);
-            dto.setFinancialAchievedQ3(finQ3 != null ? finQ3 : 0.0);
-            dto.setFinancialAchievedQ4(finQ4 != null ? finQ4 : 0.0);
-
-// Totals
-            dto.setTotalFinancialTarget(
-                    (int) ((t.getQ1Budget() != null ? t.getQ1Budget() : 0)
-                            + (t.getQ2Budget() != null ? t.getQ2Budget() : 0)
-                            + (t.getQ3Budget() != null ? t.getQ3Budget() : 0)
-                            + (t.getQ4Budget() != null ? t.getQ4Budget() : 0))
-            );
-
-            dto.setTotalFinancialAchieved(
-                    ((finQ1 != null ? finQ1 : 0.0) +
-                            (finQ2 != null ? finQ2 : 0.0) +
-                            (finQ3 != null ? finQ3 : 0.0) +
-                            (finQ4 != null ? finQ4 : 0.0))
+            Object[] physicalFinancialAchieved = quarterlyWiseExpenditure(
+                    agencyId,
+                    t.getNonTrainingSubActivity().getSubActivityId(),
+                    financialYear,
+                    t.getNonTrainingSubActivity().getNonTrainingActivity().getActivityName(),
+                    t.getNonTrainingSubActivity().getSubActivityName()
             );
 
 
-            // Set totals  yet to begin
+            Long[] physicalAchieved = Arrays.stream((Object[]) physicalFinancialAchieved[0])
+                    .map(o -> (o instanceof Number) ? ((Number) o).longValue() : 0L)
+                    .toArray(Long[]::new);
+
+            Double[] financialAchieved = Arrays.stream((Object[]) physicalFinancialAchieved[1])
+                    .map(o -> (o instanceof Number) ? ((Number) o).doubleValue() : 0.0)
+                    .toArray(Double[]::new);
+
+
+            Double finQ1 = financialAchieved.length > 0 ? financialAchieved[0] : 0.0;
+            Double finQ2 = financialAchieved.length > 1 ? financialAchieved[1] : 0.0;
+            Double finQ3 = financialAchieved.length > 2 ? financialAchieved[2] : 0.0;
+            Double finQ4 = financialAchieved.length > 3 ? financialAchieved[3] : 0.0;
+
+            dto.setFinancialAchievedQ1(finQ1);
+            dto.setFinancialAchievedQ2(finQ2);
+            dto.setFinancialAchievedQ3(finQ3);
+            dto.setFinancialAchievedQ4(finQ4);
+
+            // Totals
             dto.setAchievedQ1(String.valueOf(physicalAchieved[0]));
             dto.setAchievedQ2(String.valueOf(physicalAchieved[1]));
             dto.setAchievedQ3(String.valueOf(physicalAchieved[2]));
             dto.setAchievedQ4(String.valueOf(physicalAchieved[3]));
+            dto.setTotalAchieved(physicalAchieved[0]+physicalAchieved[1]+physicalAchieved[2]+physicalAchieved[3]);
 
-            dto.setTotalFinancialTarget(
-                    (int) ((t.getQ1Budget() != null ? t.getQ1Budget() : 0)
-                            + (t.getQ2Budget() != null ? t.getQ2Budget() : 0)
-                            + (t.getQ3Budget() != null ? t.getQ3Budget() : 0)
-                            + (t.getQ4Budget() != null ? t.getQ4Budget() : 0))
+            long totalAchieved = Arrays.stream(physicalAchieved).mapToLong(Long::longValue).sum();
+            dto.setTotalTarget(dto.getTrainingTargetQ1() + dto.getTrainingTargetQ2()
+                    + dto.getTrainingTargetQ3() + dto.getTrainingTargetQ4());
+
+            dto.setTotalFinancialTarget((int) (dto.getFinancialTargetQ1()
+                                + dto.getFinancialTargetQ2()
+                                + dto.getFinancialTargetQ3()
+                                + dto.getFinancialTargetQ4()));
+
+            double totalFinancialAchieved = finQ1 + finQ2 + finQ3 + finQ4;
+            dto.setTotalFinancialAchieved(totalFinancialAchieved);
+
+
+            dto.setPhysicalExpenditurePercentage(
+                    dto.getTotalTarget() == 0 ? "0.0"
+                            : String.valueOf(Math.round ((((double) totalAchieved / dto.getTotalTarget()) * 100)*100.0)/ 100.0)
             );
-            dto.setTotalTarget((t.getQ1Target() != null ? t.getQ1Target() : 0)
-                    + (t.getQ2Target() != null ? t.getQ2Target() : 0)
-                    + (t.getQ3Target() != null ? t.getQ3Target() : 0)
-                    + (t.getQ4Target() != null ? t.getQ4Target() : 0));
+
             dto.setFinancialExpenditurePercentage(
-                    dto.getTotalFinancialTarget() == 0 ? 0.0 :
-                            Math.round((dto.getTotalFinancialAchieved() / dto.getTotalFinancialTarget()) * 100 * 100.0) / 100.0
+                    dto.getTotalFinancialTarget() == 0 ? 0.0
+                            : Math.round(((totalFinancialAchieved / dto.getTotalFinancialTarget()) * 100) * 100.0)/100.0
             );
-            if (finQ1 != null && finQ2 != null && finQ3 != null && finQ4 != null) {
-                dto.setTotalFinancialAchieved(finQ1 + finQ2 + finQ3 + finQ4);
-            }
             return dto;
         }).toList();
     }
@@ -138,7 +138,7 @@ public class NonTrainingTargetsAndAchievementsServiceImpl implements NonTraining
     public Object[] quarterlyWiseExpenditure(Long agencyId, Long subActivityId, String financialYear, String activityName, String subActivityName) {
         long subActivityId1 = subActivityId;
         switch ((int) subActivityId1) {
-            case 26 -> {
+            case 26, 14, 15, 16, 17, 74, 75 -> { //Resource : 14 : Staff - CEO, 15 : Staff - Designers, 16 : Staff - Designers ,17 : Staff - Project Manager,74 : Interns for certifications, 75 : R&D
                 Long q1 = nonTrainingResourceRepository.countResourcesBySubActivityAndDateRange(subActivityId,
                         getFinancialYearRange1(financialYear.split("-")[0], 4, 1, true),
                         getFinancialYearRange1(financialYear.split("-")[0], 6, 30, true)
@@ -161,7 +161,7 @@ public class NonTrainingTargetsAndAchievementsServiceImpl implements NonTraining
                 return new Object[]{new Long[]{q1, q2, q3, q4},
                         nonTrainingResourceExpenditure};
             }
-            case 27, 28 -> {
+            case 27, 28, 73 -> {  // Expenditure   73 : IT Infrastructure Setup
                 Long q1 = nonTrainingExpenditureRepository.countRegistrationsBySubActivityAndDateRange(subActivityId,
                         getFinancialYearRange1(financialYear.split("-")[0], 4, 1, true),
                         getFinancialYearRange1(financialYear.split("-")[0], 6, 30, true)
@@ -230,13 +230,36 @@ public class NonTrainingTargetsAndAchievementsServiceImpl implements NonTraining
 
                 return new Object[]{new Long[]{trainingAchievement1, trainingAchievement2, trainingAchievement3, trainingAchievement4},
                                     new Double[]{expQ1, expQ2, expQ3, expQ4}};
+            }case  19 -> { // 19 : Travel - IITH
+                Long q1 = travelAndTransportRepository.countTravelBySubActivityAndDateRange(subActivityId,
+                        getFinancialYearRange1(financialYear.split("-")[0], 4, 1, false),
+                        getFinancialYearRange1(financialYear.split("-")[0], 6, 30, false)
+                );
+                Long q2 = travelAndTransportRepository.countTravelBySubActivityAndDateRange(subActivityId,
+                        getFinancialYearRange1(financialYear.split("-")[0], 7, 1, false),
+                        getFinancialYearRange1(financialYear.split("-")[0], 9, 30, false)
+                );
+                Long q3 = travelAndTransportRepository.countTravelBySubActivityAndDateRange(subActivityId,
+                        getFinancialYearRange1(financialYear.split("-")[0], 10, 1, false),
+                        getFinancialYearRange1(financialYear.split("-")[0], 12, 31, false)
+                );
+                Long q4 = travelAndTransportRepository.countTravelBySubActivityAndDateRange(subActivityId,
+                        getFinancialYearRange1(financialYear.split("-")[1], 1, 1, false),
+                        getFinancialYearRange1(financialYear.split("-")[1], 3, 31, false)
+                );
+
+                Double[] nonTrainingResourceExpenditure = getTravelAndTransportExpenditureByQuarterlyWise(agencyId, subActivityId, financialYear, activityName, subActivityName);
+
+                return new Object[]{new Long[]{q1, q2, q3, q4},
+                        nonTrainingResourceExpenditure};
+
             }
         }
-        return  new Double[]{0.0, 0.0, 0.0, 0.0};
+        return  new Object[][]{{0L,0L,0L,0L},{0.0, 0.0, 0.0, 0.0}};
     }
 
 
-    public Double[] getTravelAndTransportExpenditureByQuetrlyWise(Long agencyId, Long subActivityId, String financialYear, String activityName, String subActivityName) {
+    public Double[] getTravelAndTransportExpenditureByQuarterlyWise(Long agencyId, Long subActivityId, String financialYear, String activityName, String subActivityName) {
         Double finQ1 = travelAndTransportRepository.sumExpenditureByAgencyAndSubActivityAndDateRange(
                 agencyId, subActivityId,
                 getFinancialYearRange1(financialYear.split("-")[0],4,1,false),
