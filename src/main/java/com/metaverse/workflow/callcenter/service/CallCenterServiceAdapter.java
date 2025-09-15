@@ -79,28 +79,31 @@ public class CallCenterServiceAdapter implements CallCenterService {
     @Override
     public WorkflowResponse saveSubActivityQuestions(SubActivityQuestionsRequest request) {
 
-        Optional<SubActivity> subActivity = subActivityRepository.findById(request.getSubActivityId());
-        if (!subActivity.isPresent())
-            return WorkflowResponse.builder().message("SubActivity  Not found").status(400).build();
-        List<SubActivityQuestions> allExistingQuestions = subActivityQuestionsRepository.findAll();
-
-        boolean exists = allExistingQuestions.stream()
-                .anyMatch(q -> q.getSubActivityId().equals(request.getSubActivityId()));
-
-        if (exists) {
-            return WorkflowResponse.builder().message("SubActivity already exists, cannot add duplicate").status(400).build();
+        if (!subActivityRepository.existsById(request.getSubActivityId())) {
+            return WorkflowResponse.builder().message("SubActivity not found").status(400).build();
         }
-
-
         List<Question> allQuestions = questionRepository.findAllById(request.getQuestions());
         if (allQuestions.size() != request.getQuestions().size()) {
             return WorkflowResponse.builder().message("Some questions were not found").status(400).build();
         }
+        SubActivityQuestions subActivityQuestions;
+        if (subActivityQuestionsRepository.existsBySubActivityId(request.getSubActivityId())) {
 
-        SubActivityQuestions subActivityQuestions = subActivityQuestionsRepository.save(CallCenterRequestMapper.mapSubActivityQuestions(request));
-        return WorkflowResponse.builder().message("SubActivityQuestion saved successfully")
-                .status(200).data(subActivityQuestions).build();
+            subActivityQuestions = subActivityQuestionsRepository.findBySubActivityId(request.getSubActivityId());
+            subActivityQuestions.setQuestionsIds(allQuestions.stream().map(Question::getQuestionId).collect(Collectors.toList()));
+        } else {
+            subActivityQuestions = CallCenterRequestMapper.mapSubActivityQuestions(request);
+        }
+        String massage =subActivityQuestions.getSubActivityQuestionsId() != null ?"SubActivityQuestion updated successfully":"SubActivityQuestion saved successfully";
+        SubActivityQuestions saved = subActivityQuestionsRepository.save(subActivityQuestions);
+
+        return WorkflowResponse.builder()
+                .message(massage)
+                .status(200)
+                .data(saved)
+                .build();
     }
+
 
     @Override
     public WorkflowResponse getQuestionBySubActivityId(Long subActivityId) {
