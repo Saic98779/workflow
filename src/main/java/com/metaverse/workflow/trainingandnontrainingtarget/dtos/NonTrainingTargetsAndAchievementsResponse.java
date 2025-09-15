@@ -26,7 +26,7 @@ public class NonTrainingTargetsAndAchievementsResponse {
     private Integer totalFinancialTarget;
     private Double totalFinancialAchieved;
     private Long totalTarget;
-    private Integer totalAchieved;
+    private Long totalAchieved;
     private String physicalExpenditurePercentage;
     private Double financialExpenditurePercentage;
 }

@@ -276,7 +276,7 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
             long activityId = activity.getActivityId();
 
             switch ((int) activityId) {
-                case 13, 16, 17, 18 -> {
+                case 13, 16, 17, 18, 22, 23, 24, 25 -> {
                     List<NonTrainingSubActivity> subActivities = activity.getSubActivities();
 
                     for (NonTrainingSubActivity subActivity : subActivities) {
@@ -294,7 +294,14 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
 
                         Object[] objects = progressMonitoringSubActivityWiseAchievements(subActivityId);
                         nonTrainingProgramDto.setPhysicalAchievement((String) objects[0]);
-                        nonTrainingProgramDto.setFinancialExpenditure((double) objects[1]);
+                        nonTrainingProgramDto.setFinancialExpenditure((Double) objects[1]);
+
+                        nonTrainingProgramDto.setPercentage((financialTarget != 0.0) ? Math.round(((Double) objects[1] / financialTarget) * 100 * 100.0) / 100.0 : 0.0);
+                        try {
+                            nonTrainingProgramDto.setPhysicalPercentage((physicalTarget != 0.0) ? Math.round(Long.valueOf((String) objects[0]) / physicalTarget * 100* 1000.0)/1000.0+"" : 0.0+"");
+                        }catch (Exception ee){
+                            nonTrainingProgramDto.setPhysicalPercentage((String) objects[0]);
+                        }
 
                         nonTrainingProgramDtoList.add(nonTrainingProgramDto);
                     }
@@ -333,8 +340,13 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
                     return objects;
                 }
             }
-            // coi sub activities
-            case 26 -> { //  Resource table
+            /*
+            Resource table
+             COI  ->  26 : Staff
+             CODE ->  14 : Staff - CEO, 15 : Staff - Designers, 16 : Staff - Designers, 17 : Staff - Project Manager,
+                      74 : Interns for certifications, 75 : R&D,
+             */
+            case 26,14,15,16,17,74 -> { //
                 List<NonTrainingResource> nonTrainingSubActivity = nonTrainingResourcesRepository.findByNonTrainingSubActivity_subActivityId(subActivityId);
                 if (nonTrainingSubActivity != null || !nonTrainingSubActivity.isEmpty()) {
                     Double financialAchieved = nonTrainingSubActivity.stream().map(
@@ -348,7 +360,13 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
                     return objects;
                 }
             }
-            case 27,28 -> { //  Expenditure
+
+            /*
+            Expenditure Table
+                COI  ->  27 : Technology firm, 28 : Staff - Call center Agency
+                CODE ->  73 : IT Infrastructure Setup
+             */
+            case 27,28,73 -> { //
                 Optional<List<NonTrainingExpenditure>> nonTrainingSubActivity = nonTrainingExpenditureRepository.findByNonTrainingSubActivity_SubActivityId(subActivityId);
                 if (nonTrainingSubActivity.isPresent()) {
                     Double financialAchieved = nonTrainingSubActivity.get().stream().mapToDouble(exp -> exp.getExpenditureAmount()).sum();
@@ -359,7 +377,19 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
                     return objects;
                 }
             }
+            /*
+              CODE -> 19 : Travel - IITH
+             */
+            case 19 ->{
+                List<TravelAndTransport> nonTrainingSubActivity = travelAndTransportRepository.findByNonTrainingSubActivity_SubActivityId(subActivityId);
+                    Double financialAchieved = nonTrainingSubActivity.stream().mapToDouble(exp -> exp.getAmount()).sum();
+                    Object[] targetAndFinancialAchieved = {String.valueOf(nonTrainingSubActivity.size()), financialAchieved};
+                    return targetAndFinancialAchieved;
+            }
         }
         return new Object[]{String.valueOf(0), 0.0};
     }
 }
+/*
+18		Consumable : not done from code
+ */

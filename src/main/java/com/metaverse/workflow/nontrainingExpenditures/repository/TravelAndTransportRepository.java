@@ -33,4 +33,18 @@ public interface TravelAndTransportRepository extends JpaRepository<TravelAndTra
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate);
 
+    @Query(value = """
+    SELECT COUNT(tt.travel_transport_id)
+    FROM travel_and_transport tt
+    JOIN non_training_sub_activity ntsa ON tt.sub_activity_id = ntsa.sub_activity_id
+    WHERE ntsa.sub_activity_id = :subActivityId
+      AND tt.date_of_travel BETWEEN :startDate AND :endDate
+""", nativeQuery = true)
+    Long countTravelBySubActivityAndDateRange(
+            @Param("subActivityId") Long subActivityId,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate
+    );
+
+
 }
