@@ -19,7 +19,7 @@ public class ProgramMonitoringMapper {
         if (source != null && !source.isBlank()) {
             if (source.equals("Officials") || source.equals("Others")) {
                 screen1Score += 1;
-            } else if (source.equals("IAs") || source.equals("News paper") || source.equals("Social media")) {
+            } else if (source.equals("IAs") || source.equals("News paper / TV") || source.equals("Social media")) {
                 screen1Score += 2;
             }
         }
@@ -158,7 +158,7 @@ public class ProgramMonitoringMapper {
                 if (source != null && !source.isBlank()) {
                     if (source.equals("Officials") || source.equals("Others")) {
                         screen1Score += 1;
-                    } else if (source.equals("IAs") || source.equals("News paper") || source.equals("Social media")) {
+                    } else if (source.equals("IAs") || source.equals("News paper / TV") || source.equals("Social media")) {
                         screen1Score += 2;
                     }
                 }
