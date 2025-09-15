@@ -24,21 +24,20 @@ public class NonTrainingAchievementServiceImpl implements NonTrainingAchievement
     @Override
     public PhysicalFinancialDto getPhysicalFinancial(Long subActivityId) {
 
-        NonTrainingAchievement physicalFinancialData = nonTrainingAchievementRepository.findByNonTrainingSubActivity_SubActivityId(subActivityId);
         List<NonTrainingTargets>  physicalFinancialTargets= nonTrainingTargetRepository.findByNonTrainingSubActivity_subActivityId(subActivityId);
-        if (physicalFinancialData != null)
-            return NonTrainingAchievementMapper.PhysicalFinancialDtoMapper(physicalFinancialData,physicalFinancialTargets);
+        if (physicalFinancialTargets != null)
+            return NonTrainingAchievementMapper.PhysicalFinancialDtoMapper(subActivityId, physicalFinancialTargets);
         return null;
     }
 
     public Optional<NonTrainingAchievement> updateNonTrainingAchievement(Long nonTrainingAchievementId, PhysicalFinancialDto updatedRequest) {
-        if (updatedRequest == null || updatedRequest.getNonTrainingAchievementId() == null)
+        if (updatedRequest == null || updatedRequest.getNonTrainingSubActivityId() == null)
             return Optional.empty();
 
         NonTrainingAchievement existing = nonTrainingAchievementRepository
                 .findById(nonTrainingAchievementId)
                 .orElseThrow(() -> new EntityNotFoundException(
-                        "Non Training Achievement not found with id " + updatedRequest.getNonTrainingAchievementId()
+                        "Non Training Sub Activity found with id " + updatedRequest.getNonTrainingSubActivityId()
                 ));
         existing.setPhysicalTargetAchievement(updatedRequest.getPhysicalTargetAchievement());
         existing.setFinancialTargetAchievement(updatedRequest.getFinancialTargetAchievement());
