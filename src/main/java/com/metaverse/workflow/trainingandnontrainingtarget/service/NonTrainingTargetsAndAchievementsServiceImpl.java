@@ -144,7 +144,7 @@ public class NonTrainingTargetsAndAchievementsServiceImpl implements NonTraining
                         getFinancialYearRange1(financialYear.split("-")[0], 4, 1, true),
                         getFinancialYearRange1(financialYear.split("-")[0], 6, 30, true)
                 );
-                Long q2 = nonTrainingExpenditureRepository.countRegistrationsBySubActivityAndDateRange(subActivityId,
+                Long q2 = nonTrainingResourceRepository.countResourcesBySubActivityAndDateRange(subActivityId,
                         getFinancialYearRange1(financialYear.split("-")[0], 7, 1, true),
                         getFinancialYearRange1(financialYear.split("-")[0], 9, 30, true)
                 );
@@ -152,7 +152,7 @@ public class NonTrainingTargetsAndAchievementsServiceImpl implements NonTraining
                         getFinancialYearRange1(financialYear.split("-")[0], 10, 1, true),
                         getFinancialYearRange1(financialYear.split("-")[0], 12, 31, true)
                 );
-                Long q4 = nonTrainingExpenditureRepository.countRegistrationsBySubActivityAndDateRange(subActivityId,
+                Long q4 = nonTrainingResourceRepository.countResourcesBySubActivityAndDateRange(subActivityId,
                         getFinancialYearRange1(financialYear.split("-")[1], 1, 1, true),
                         getFinancialYearRange1(financialYear.split("-")[1], 3, 31, true)
                 );
