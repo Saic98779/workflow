@@ -2,6 +2,7 @@ package com.metaverse.workflow.trainingandnontrainingtarget.service;
 
 import com.metaverse.workflow.model.NonTrainingTargets;
 import com.metaverse.workflow.nontraining.repository.NonTrainingAchievementRepository;
+import com.metaverse.workflow.nontrainingExpenditures.Dto.CorpusDebitFinancing;
 import com.metaverse.workflow.nontrainingExpenditures.repository.ListingOnNSERepository;
 import com.metaverse.workflow.nontrainingExpenditures.repository.NonTrainingExpenditureRepository;
 import com.metaverse.workflow.nontrainingExpenditures.repository.NonTrainingResourceRepository;
@@ -186,6 +187,7 @@ public class NonTrainingTargetsAndAchievementsServiceImpl implements NonTraining
             }
             case 67 -> { //Corpus-Debt Financing
 
+                return  new Object[][]{{0L,0L,0L,0L},{0.0, 0.0, 0.0, 0.0}};
             }
             case 76 -> { // Corpus-Listing On NSE
                 // financial Achieved
