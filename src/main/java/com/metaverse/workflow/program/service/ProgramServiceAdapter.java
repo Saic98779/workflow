@@ -96,9 +96,6 @@ public class ProgramServiceAdapter implements ProgramService {
     NotificationService notificationService;
 
     @Autowired
-    ProgramMonitoringFeedBackRepository monitoringFeedBackRepository;
-
-    @Autowired
     NotificationRepository notificationRepository;
 
     @Autowired
@@ -477,77 +474,6 @@ public class ProgramServiceAdapter implements ProgramService {
         return WorkflowResponse.builder().status(200).message("Success").data(response).build();
     }
 
-
-    public WorkflowResponse saveFeedback(ProgramMonitoringFeedBackRequest request) {
-        if (monitoringFeedBackRepository.existsByProgramId(request.getProgramId())) {
-            return WorkflowResponse.builder().status(400)
-                    .message("Feedback already exists for Program ID: " + request.getProgramId())
-                    .build();
-        }
-        ProgramMonitoringFeedBack monitoringFeedBack = ProgramMonitoringFeedBackMapper.mapRequest(request);
-        ProgramMonitoringFeedBack savedFeedBack = monitoringFeedBackRepository.save(monitoringFeedBack);
-        return WorkflowResponse.builder().status(200).message("Success")
-                .data(ProgramMonitoringFeedBackMapper.mapResponse(monitoringFeedBack)).build();
-    }
-
-    @Override
-    public WorkflowResponse updateFeedback(Long monitorId, ProgramMonitoringFeedBackRequest request) throws DataException {
-        ProgramMonitoringFeedBack entity = monitoringFeedBackRepository.findById(monitorId)
-                .orElseThrow(() -> new DataException("Feedback not found with id: " + monitorId, "FEEDBACK_NOT_FOUND", 400));
-
-        ProgramMonitoringFeedBackMapper.updateProgramMonitoringFeedBack(entity, request);
-        ProgramMonitoringFeedBack updated = monitoringFeedBackRepository.save(entity);
-        return WorkflowResponse.builder().status(200).message("FeedBack Update successfully.. ")
-                .data(ProgramMonitoringFeedBackMapper.mapResponse(updated)).build();
-    }
-
-    @Override
-    public WorkflowResponse getFeedBackByProgramId(Long programId) throws DataException {
-        Program program = programRepository.findById(programId)
-                .orElseThrow(() -> new DataException("Program data not found", "PROGRAM-DATA-NOT-FOUND", 400));
-        List<ProgramMonitoringFeedBack> monitoringFeedBackList = monitoringFeedBackRepository.findByProgramId(programId);
-
-        return WorkflowResponse.builder().status(200).message("Success")
-                .data(monitoringFeedBackList.stream().map(ProgramMonitoringFeedBackMapper::mapResponse)).build();
-    }
-
-    @Override
-    public WorkflowResponse getFeedBackById(Long feedBackId) {
-        if (monitoringFeedBackRepository.existsById(feedBackId)) {
-            Optional<ProgramMonitoringFeedBack> feedBack = monitoringFeedBackRepository.findById(feedBackId);
-            return WorkflowResponse.builder().status(200).message("Success")
-                    .data(ProgramMonitoringFeedBackMapper.mapResponse(feedBack.get())).build();
-
-        }
-        return WorkflowResponse.builder()
-                .status(400)
-                .message("MonitorFeedback not found for the given ID: " + feedBackId)
-                .build();
-
-
-    }
-
-    @Override
-    public WorkflowResponse getProgramDetailsFroFeedBack(Long programId) throws DataException {
-
-        Program program = programRepository.findById(programId).orElseThrow(() -> new DataException("Program data not found", "PROGRAM-DATA-NOT-FOUND", 400));
-        ProgramDetailsFroFeedBack programDetailsFroFeedBack = ProgramDetailsFroFeedBack.builder()
-                .state("Telangana")
-                .district(program.getLocation().getDistrict())
-                .dateOfMonitoring(DateUtil.dateToString(program.getStartDate(), "dd-MM-yyyy"))
-                .programName(program.getProgramTitle())
-                .programType(program.getProgramType())
-                .agencyName(program.getAgency() != null ? program.getAgency().getAgencyName() : null)
-                .hostingAgencyName(program.getAgency() != null ? program.getAgency().getAgencyName() : null)
-                .inTime(program.getStartTime())
-                .outTime(program.getEndTime())
-                .spocName(program.getSpocName())
-                .spocContact(program.getSpocContactNo())
-                .venueName(program.getLocation().getLocationName()).build();
-        return WorkflowResponse.builder().message("Success").status(200)
-                .data(programDetailsFroFeedBack)
-                .build();
-    }
 
     public WorkflowResponse importProgramsFromExcel(MultipartFile file) {
         List<String> errors = new ArrayList<>();

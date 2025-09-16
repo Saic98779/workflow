@@ -48,16 +48,6 @@ public class ProgramMonitoringController {
         return ResponseEntity.ok(programService.getFeedBackById(feedBackId));
     }
 
-    @GetMapping("/program/details/for/feedback/{programId}")
-    public ResponseEntity<?> getProgramDetailsFroFeedBack(@PathVariable Long programId) {
-        WorkflowResponse response;
-        try {
-            response = programService.getProgramDetailsFroFeedBack(programId);
-        } catch (DataException exception) {
-            return RestControllerBase.error(exception);
-        }
-        return ResponseEntity.ok(response);
-    }
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteProgramMonitoringFeedback(@PathVariable Long id) {
         return feedbackRepository.findById(id).map(feedback -> {

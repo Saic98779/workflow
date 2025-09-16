@@ -51,16 +51,6 @@ public class LoginController {
         }
         return ResponseEntity.ok(response);
     }
-    @Operation(summary = "Get user by id", responses = {
-            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = LoginUserResponse.class))),
-            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(implementation = Exception.class)))
-    })
-    @PostMapping(value = "/login/user/create", produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<WorkflowResponse> createUser(@RequestBody LoginUserRequest request) {
-        log.info("login controller, userId : {}", request.getMobileNo());
-        WorkflowResponse response = loginService.createUser(request);
-        return ResponseEntity.ok(response);
-    }
 
     @Operation(summary = "Get user by id", responses = {
             @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = LoginUserResponse.class))),

@@ -37,8 +37,8 @@ public class ProgramController {
     @Autowired
     ProgramService programService;
 
-    @Autowired
-    OverdueProgramUpdater overdueProgramUpdater;
+//    @Autowired
+//    OverdueProgramUpdater overdueProgramUpdater;
 
 
     @GetMapping("/program/sessions/{programId}")
@@ -285,49 +285,6 @@ public class ProgramController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/program/feedback/save")
-    public ResponseEntity<WorkflowResponse> saveFeedback(@RequestBody ProgramMonitoringFeedBackRequest request)
-    {
-        return ResponseEntity.ok(programService.saveFeedback(request));
-    }
-    @PostMapping("/program/feedback/update/{monitorId}")
-    public ResponseEntity<?> updateFeedback(@PathVariable Long monitorId, @RequestBody ProgramMonitoringFeedBackRequest request
-    ) {
-        WorkflowResponse response ;
-        try {
-            response = programService.updateFeedback(monitorId, request);
-        } catch (DataException exception) {
-            return RestControllerBase.error(exception);
-        }
-        return ResponseEntity.ok(response);
-    }
-    @GetMapping("/program/feedback/{programId}")
-    public ResponseEntity<?> getFeedbackByProgramId(@PathVariable Long programId) {
-        WorkflowResponse response ;
-        try {
-            response = programService.getFeedBackByProgramId(programId);
-        } catch (DataException exception) {
-            return RestControllerBase.error(exception);
-        }
-        return ResponseEntity.ok(response);
-    }
-    @GetMapping("/program/feedback/id/{feedBackId}")
-    public ResponseEntity<?> getFeedbackById(@PathVariable Long feedBackId) {
-
-        return ResponseEntity.ok(programService.getFeedBackById(feedBackId));
-    }
-
-    @GetMapping("/program/details/for/feedback/{programId}")
-    public ResponseEntity<?> getProgramDetailsFroFeedBack(@PathVariable Long programId) {
-        WorkflowResponse response ;
-        try {
-            response = programService.getProgramDetailsFroFeedBack(programId);
-        } catch (DataException exception) {
-            return RestControllerBase.error(exception);
-        }
-        return ResponseEntity.ok(response);
-    }
-
     @PostMapping(value = "/program/import", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<WorkflowResponse> importPrograms(@RequestPart("file") MultipartFile file) {
         WorkflowResponse response = programService.importProgramsFromExcel(file);
@@ -340,13 +297,13 @@ public class ProgramController {
         return ResponseEntity.ok(programService.deleteProgramAndDependencies(programId));
     }
 
-    @PutMapping("/{id}/update-overdue")
-    public ResponseEntity<ProgramUpdateResponse> updateOverdueById(@PathVariable Long id) {
-        try {
-            ProgramUpdateResponse response = overdueProgramUpdater.updateOverdueStatusById(id);
-            return ResponseEntity.ok(response);
-        } catch (EntityNotFoundException ex) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        }
-    }
+//    @PutMapping("/{id}/update-overdue")
+//    public ResponseEntity<ProgramUpdateResponse> updateOverdueById(@PathVariable Long id) {
+//        try {
+//            ProgramUpdateResponse response = overdueProgramUpdater.updateOverdueStatusById(id);
+//            return ResponseEntity.ok(response);
+//        } catch (EntityNotFoundException ex) {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+//        }
+//    }
 }

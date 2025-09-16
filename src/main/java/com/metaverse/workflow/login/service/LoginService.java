@@ -8,8 +8,6 @@ import java.util.List;
 public interface LoginService {
 
     LoginUserResponse getUserById(String id);
-
-    WorkflowResponse createUser(LoginUserRequest request);
     WorkflowResponse updateUser(String userId,LoginUserRequest request) throws DataException;
     List<LoginUserResponse> getUserByMobileNo(Long mobileNo);
 
