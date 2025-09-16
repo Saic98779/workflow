@@ -4,7 +4,6 @@ import com.metaverse.workflow.agency.repository.AgencyRepository;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.exceptions.DataException;
 import com.metaverse.workflow.login.repository.LoginRepository;
-import com.metaverse.workflow.model.Agency;
 import com.metaverse.workflow.model.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,11 +47,6 @@ public class LoginServiceAdapter implements LoginService {
         user.setAddress(request.getAddress());
 
         return WorkflowResponse.builder().status(200).message("User updated Successfully").data(LoginUserResponseMapper.map(loginRepository.save(user))).build();
-    }
-
-    @Override
-    public List<LoginUserResponse> getUserByMobileNo(Long mobileNo) {
-        return null;
     }
 
     @Override
