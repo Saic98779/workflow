@@ -7,16 +7,14 @@ import com.metaverse.workflow.nontrainingExpenditures.repository.ListingOnNSERep
 import com.metaverse.workflow.nontrainingExpenditures.repository.NonTrainingExpenditureRepository;
 import com.metaverse.workflow.nontrainingExpenditures.repository.NonTrainingResourceRepository;
 import com.metaverse.workflow.nontrainingExpenditures.repository.TravelAndTransportRepository;
+import com.metaverse.workflow.nontrainingExpenditures.service.WeHubService;
 import com.metaverse.workflow.trainingandnontrainingtarget.dtos.NonTrainingTargetsAndAchievementsResponse;
 import com.metaverse.workflow.trainingandnontrainingtarget.repository.NonTrainingTargetRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +27,8 @@ public class NonTrainingTargetsAndAchievementsServiceImpl implements NonTraining
     private final NonTrainingAchievementRepository nonTrainingAchievementRepository;
     private final NonTrainingResourceRepository nonTrainingResourceRepository;
     private final TravelAndTransportRepository travelAndTransportRepository;
+    private final WeHubService service;
+
 
     private final ListingOnNSERepository listingOnNSERepository;
 
@@ -186,11 +186,11 @@ public class NonTrainingTargetsAndAchievementsServiceImpl implements NonTraining
 
             }
             case 67 -> { //Corpus-Debt Financing
-
-                return  new Object[][]{{0L,0L,0L,0L},{0.0, 0.0, 0.0, 0.0}};
+                List<CorpusDebitFinancing> list = service.corpusDebitFinancing();
+                Object[] quarterlySummaryCorpusFinance = getQuarterlySummaryCorpusFinance(list, financialYear);
+                return quarterlySummaryCorpusFinance;
             }
             case 76 -> { // Corpus-Listing On NSE
-                // financial Achieved
                 Double  expQ1 = listingOnNSERepository.sumLoanAmountBySubActivityAndDateRange(subActivityId,
                         getFinancialYearRange1(financialYear.split("-")[0], 4, 1, false),
                         getFinancialYearRange1(financialYear.split("-")[0], 6, 30, false));
@@ -364,5 +364,43 @@ public class NonTrainingTargetsAndAchievementsServiceImpl implements NonTraining
         } else {
             return (T) start;
         }
+    }
+
+    public static Object[] getQuarterlySummaryCorpusFinance(List<CorpusDebitFinancing> usages, String financialYear) {
+
+        Long[] registrations = {0L, 0L, 0L, 0L};
+        Double[] sanctionedAmounts = {0.0, 0.0, 0.0, 0.0};
+
+        String[] parts = financialYear.split("-");
+        int startYear = Integer.parseInt(parts[0]);
+        int endYear = Integer.parseInt(parts[1]);
+
+        LocalDate fyStart = LocalDate.of(startYear, 4, 1);
+        LocalDate fyEnd   = LocalDate.of(endYear, 3, 31);
+
+        for (CorpusDebitFinancing usage : usages) {
+            LocalDate createdDate = usage.getCreatedOn();
+
+            // skip if not in financial year
+            if (createdDate.isBefore(fyStart) || createdDate.isAfter(fyEnd)) {
+                continue;
+            }
+
+            int month = createdDate.getMonthValue();
+            int year = createdDate.getYear();
+            int quarter;
+
+            if (year == startYear) {
+                if (month >= 4 && month <= 6) quarter = 1;        // Apr–Jun
+                else if (month >= 7 && month <= 9) quarter = 2;   // Jul–Sep
+                else quarter = 3;                                 // Oct–Dec
+            } else {
+                quarter = 4;
+            }
+
+            registrations[quarter - 1] += 1;
+            sanctionedAmounts[quarter - 1] += usage.getSanctionedAmount();
+        }
+        return new Object[]{registrations, sanctionedAmounts};
     }
 }
