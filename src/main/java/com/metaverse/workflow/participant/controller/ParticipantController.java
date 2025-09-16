@@ -1,5 +1,6 @@
 package com.metaverse.workflow.participant.controller;
 
+import com.metaverse.workflow.activitylog.ActivityLogService;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.common.util.ExcelHelper;
 import com.metaverse.workflow.model.Participant;
@@ -14,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 
@@ -32,16 +34,21 @@ public class ParticipantController {
 	@Autowired
 	private ParticipantRepository participantRepository;
 
+	@Autowired
+	private ActivityLogService logService;
+
 	@PostMapping("/participant/save")
-	public ResponseEntity<WorkflowResponse> saveParticipant(@RequestBody ParticipantRequest participantRequest)
+	public ResponseEntity<WorkflowResponse> saveParticipant(Principal principal, @RequestBody ParticipantRequest participantRequest)
 	{
 		WorkflowResponse response = participantService.saveParticipant(participantRequest);
+		logService.logs(principal.getName(),"save","save participant","participant","/participant/save");
 		return ResponseEntity.ok(response);
 	}
 	@PostMapping("/updateParticipant")
-	public ResponseEntity<WorkflowResponse> updateParticipant(@RequestBody ParticipantRequest participantRequest)
+	public ResponseEntity<WorkflowResponse> updateParticipant(Principal principal,@RequestBody ParticipantRequest participantRequest)
 	{
 		WorkflowResponse response = participantService.updateParticipant(participantRequest);
+		logService.logs(principal.getName(),"update","update participant","participant","/updateParticipant");
 		return ResponseEntity.ok(response);
 	}
 
@@ -85,7 +92,8 @@ public class ParticipantController {
 	}
 
 	@PostMapping(value = "/participants/import", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-	public WorkflowResponse uploadExcel(@RequestPart("file") MultipartFile file,
+	public WorkflowResponse uploadExcel(Principal principal,
+										@RequestPart("file") MultipartFile file,
 										@RequestParam("programId")Long programId) {
 		try {
 			if (!file.getOriginalFilename().endsWith(".xlsx")) {
@@ -93,6 +101,7 @@ public class ParticipantController {
 			}
 
 			Map<String, Object> result = excelHelper.excelToParticipants(file.getInputStream(), programId);
+			logService.logs(principal.getName(), "import participants", "import participants from excel","participant","/participants/import");
 			return WorkflowResponse.builder()
 				.message("Success")
 				.status(200)

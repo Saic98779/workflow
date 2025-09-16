@@ -1,5 +1,6 @@
 package com.metaverse.workflow.program.controller;
 
+import com.metaverse.workflow.activitylog.ActivityLogService;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.common.util.RestControllerBase;
 import com.metaverse.workflow.exceptions.DataException;
@@ -27,6 +28,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.file.Path;
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -36,6 +38,8 @@ public class ProgramController {
 
     @Autowired
     ProgramService programService;
+    @Autowired
+    private ActivityLogService logService;
 
 //    @Autowired
 //    OverdueProgramUpdater overdueProgramUpdater;
@@ -56,9 +60,10 @@ public class ProgramController {
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(implementation = Exception.class)))
     })
     @PostMapping(value = "/program/create", produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<WorkflowResponse> createProgram(@RequestBody ProgramRequest request) {
-        log.info("Program controller, title : {}", request.getProgramTitle());
+    public ResponseEntity<WorkflowResponse> createProgram(@RequestBody ProgramRequest request, Principal principal
+    ) {
         WorkflowResponse response = programService.createProgram(request);
+        logService.logs(principal.getName(),"save","program creation","program","/program/create");
         return ResponseEntity.ok(response);
     }
 
@@ -68,17 +73,19 @@ public class ProgramController {
     })
     @PostMapping(value = "/program/session/create", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_OCTET_STREAM_VALUE},
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<WorkflowResponse> createSession(@RequestPart("data") String data, @RequestPart(value = "files", required = false) List<MultipartFile> files) throws ParseException {
+    public ResponseEntity<WorkflowResponse> createSession(Principal principal,@RequestPart("data") String data, @RequestPart(value = "files", required = false) List<MultipartFile> files) throws ParseException {
         log.info("Program controller, title : {}", data);
         JSONParser parser = new JSONParser();
         ProgramSessionRequest request = parser.parse(data, ProgramSessionRequest.class);
         WorkflowResponse response = programService.createProgramSession(request, files);
+        logService.logs(principal.getName(),"save","program session creation","program session","/program/session/create");
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/program/session/delete")
-    public ResponseEntity<String> deleteSession(@RequestParam("sessionId") Long sessionId) throws ParseException {
+    public ResponseEntity<String> deleteSession(Principal principal,@RequestParam("sessionId") Long sessionId) throws ParseException {
         String response = programService.deleteProgramSession(sessionId);
+        logService.logs(principal.getName(),"delete","program session creation delete","program session","/program/session/delete");
         return ResponseEntity.ok(response);
     }
 
@@ -114,15 +121,18 @@ public class ProgramController {
     }
 
     @PostMapping(value = "/updateProgram", produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<WorkflowResponse> updateProgram(@RequestBody ProgramRequest request) {
+    public ResponseEntity<WorkflowResponse> updateProgram(Principal principal,@RequestBody ProgramRequest request) {
         log.info("Updating Program with ID: {}", request.getProgramId());
         WorkflowResponse response = programService.updateProgram(request);
+        logService.logs(principal.getName(),"update","program update","program","/updateProgram");
         return ResponseEntity.ok(response);
+
     }
 
     @PostMapping("/save/program/type")
-    public ResponseEntity<WorkflowResponse> saveProgramTypes(@RequestBody ProgramTypeRequest request) {
+    public ResponseEntity<WorkflowResponse> saveProgramTypes(Principal principal,@RequestBody ProgramTypeRequest request) {
         WorkflowResponse response = programService.saveProgramType(request);
+        logService.logs(principal.getName(),"save","program type","program type","/save/program/type");
         return ResponseEntity.ok(response);
     }
 
@@ -147,17 +157,19 @@ public class ProgramController {
 
     @PostMapping(value = "/program/session/update", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_OCTET_STREAM_VALUE},
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<WorkflowResponse> editProgramSession(@RequestPart("data") String data, @RequestPart(value = "files", required = false) List<MultipartFile> files) throws ParseException {
+    public ResponseEntity<WorkflowResponse> editProgramSession(Principal principal,@RequestPart("data") String data, @RequestPart(value = "files", required = false) List<MultipartFile> files) throws ParseException {
         log.info("Program controller, title : {}", data);
         JSONParser parser = new JSONParser();
         ProgramSessionRequest request = parser.parse(data, ProgramSessionRequest.class);
         WorkflowResponse response = programService.editProgramSession(request, files);
+        logService.logs(principal.getName(),"update","program session update","program session","/program/session/update");
         return ResponseEntity.ok(response);
     }
 
     @PostMapping(value = "/program/execution/images", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_OCTET_STREAM_VALUE},
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<WorkflowResponse> saveSessionImages(@RequestPart("data") String data,
+    public ResponseEntity<WorkflowResponse> saveSessionImages(Principal principal,
+                                                              @RequestPart("data") String data,
                                                               @RequestPart(value = "image1", required = false) MultipartFile image1,
                                                               @RequestPart(value = "image2", required = false) MultipartFile image2,
                                                               @RequestPart(value = "image3", required = false) MultipartFile image3,
@@ -167,19 +179,22 @@ public class ProgramController {
         JSONParser parser = new JSONParser();
         ProgramSessionRequest request = parser.parse(data, ProgramSessionRequest.class);
         WorkflowResponse response = programService.saveSessionImages(request, image1, image2, image3, image4, image5);
+        logService.logs(principal.getName(),"save","program execution images upload","program execution","/program/execution/images");
         return ResponseEntity.ok(response);
     }
 
     @PostMapping(value = "/program/collage/images", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<WorkflowResponse> saveCollageImages(@RequestParam("programId") Long programId,
+    public ResponseEntity<WorkflowResponse> saveCollageImages(Principal principal,@RequestParam("programId") Long programId,
                                                               @RequestPart(value = "image", required = false) MultipartFile image) {
         WorkflowResponse response = programService.saveCollageImages(programId, image);
+        logService.logs(principal.getName(),"save","create collage for reports","report","/program/collage/images");
+
         return ResponseEntity.ok(response);
     }
 
     @PostMapping(value = "/program/execution/media-coverage", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_OCTET_STREAM_VALUE},
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<WorkflowResponse> saveMediaCoverage(@RequestPart("data") String data,
+    public ResponseEntity<WorkflowResponse> saveMediaCoverage(Principal principal,@RequestPart("data") String data,
                                                               @RequestPart(value = "image1", required = false) MultipartFile image1,
                                                               @RequestPart(value = "image2", required = false) MultipartFile image2,
                                                               @RequestPart(value = "image3", required = false) MultipartFile image3) throws ParseException {
@@ -187,6 +202,8 @@ public class ProgramController {
         JSONParser parser = new JSONParser();
         MediaCoverageRequest request = parser.parse(data, MediaCoverageRequest.class);
         WorkflowResponse response = programService.saveMediaCoverage(request, image1, image2, image3);
+        logService.logs(principal.getName(),"save","program execution media coverage","program execution","/program/execution/media-coverage");
+
         return ResponseEntity.ok(response);
     }
 
@@ -286,15 +303,17 @@ public class ProgramController {
     }
 
     @PostMapping(value = "/program/import", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<WorkflowResponse> importPrograms(@RequestPart("file") MultipartFile file) {
+    public ResponseEntity<WorkflowResponse> importPrograms(Principal principal,@RequestPart("file") MultipartFile file) {
         WorkflowResponse response = programService.importProgramsFromExcel(file);
+        logService.logs(principal.getName(),"import programs","import program from excel ","program temp","/program/import");
         return ResponseEntity.ok(response);
     }
 
-    @DeleteMapping("program/delete/{programId}")
-    public ResponseEntity<WorkflowResponse> deleteProgram(@PathVariable Long programId) {
-
-        return ResponseEntity.ok(programService.deleteProgramAndDependencies(programId));
+    @DeleteMapping("/program/delete/{programId}")
+    public ResponseEntity<WorkflowResponse> deleteProgram(Principal principal,@PathVariable Long programId) {
+        WorkflowResponse response =programService.deleteProgramAndDependencies(programId);
+        logService.logs(principal.getName(),"delete","delete program  ","program temp","/program/delete/{programId}");
+        return ResponseEntity.ok(response);
     }
 
 //    @PutMapping("/{id}/update-overdue")

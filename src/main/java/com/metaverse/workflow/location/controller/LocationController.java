@@ -1,7 +1,9 @@
 package com.metaverse.workflow.location.controller;
 
+import java.security.Principal;
 import java.util.List;
 
+import com.metaverse.workflow.activitylog.ActivityLogService;
 import com.metaverse.workflow.common.util.RestControllerBase;
 import com.metaverse.workflow.exceptions.DataException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,12 +20,15 @@ import com.metaverse.workflow.location.service.LocationService;
 public class LocationController {
 	@Autowired
 	private LocationService locationSercice;
+	@Autowired
+	private ActivityLogService logService;
 	
 	@PostMapping("/location/save")
-	public ResponseEntity<WorkflowResponse> saveLocation(@RequestBody LocationRequest location)
+	public ResponseEntity<WorkflowResponse> saveLocation(@RequestBody LocationRequest location, Principal principal)
 	{
 	LocationResponse response = locationSercice.saveLocation(location);
 		if(response==null)return  ResponseEntity.internalServerError().body(WorkflowResponse.builder().message("Invalid Agency Id").status(400).build());
+		logService.logs(principal.getName(), "save","location creation","location","/location/save");
 		return ResponseEntity.ok(WorkflowResponse.builder().status(200).message("Created").data(response).build());
 	}
 	
@@ -41,17 +46,21 @@ public class LocationController {
 		return ResponseEntity.ok(response);
 	}
 	@PutMapping("/locations/update/{locationId}")
-	public ResponseEntity<?> updateLocation(@PathVariable Long locationId, @RequestBody LocationRequest locationRequest) {
+	public ResponseEntity<?> updateLocation(Principal principal,@PathVariable Long locationId, @RequestBody LocationRequest locationRequest) {
 		try {
-			return ResponseEntity.ok(locationSercice.updateLocation(locationId, locationRequest));
+			LocationResponse response =locationSercice.updateLocation(locationId, locationRequest);
+			logService.logs(principal.getName(), "update","location update","location","/locations/update/{locationId}");
+			return ResponseEntity.ok(response);
 		} catch (DataException e) {
 			return RestControllerBase.error(e);
 		}
 	}
 	@DeleteMapping("locations/delete/{locationId}")
-	public ResponseEntity<?> deleteLocation(@PathVariable Long locationId) {
+	public ResponseEntity<?> deleteLocation(@PathVariable Long locationId,Principal principal) {
 		try {
-			return ResponseEntity.ok(locationSercice.deleteLocation(locationId));
+			WorkflowResponse  response = locationSercice.deleteLocation(locationId);
+			logService.logs(principal.getName(), "delete","delete location","location","locations/delete/{locationId}");
+			return ResponseEntity.ok(response);
 		} catch (DataException e) {
 			return RestControllerBase.error(e);
 		}
