@@ -1,5 +1,6 @@
 package com.metaverse.workflow.program.controller;
 
+import com.metaverse.workflow.activitylog.ActivityLogService;
 import com.metaverse.workflow.common.constants.ProgramStatusConstants;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.model.Program;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -25,12 +27,14 @@ public class ProgramStatusController {
     private ProgramRepository programRepository;
     @Autowired
     private ProgramService programService;
+    @Autowired
+    private ActivityLogService logService;
 
 
     @PostMapping("/{programId}")
-    public WorkflowResponse updateProgramStatus(
-            @PathVariable Long programId,
-            @RequestParam String status) {
+    public WorkflowResponse updateProgramStatus(Principal principal,
+                                                @PathVariable Long programId,
+                                                @RequestParam String status) {
 
         Optional<Program> programOptional = programRepository.findById(programId);
 
@@ -43,6 +47,7 @@ public class ProgramStatusController {
         }
         program.setStatus(status);
         programRepository.save(program);
+        logService.logs(principal.getName(),"update","Program status update","program","/programs/status/{programId}");
         return WorkflowResponse.builder().message("Program status updated successfully to: " + status).status(HttpStatus.OK.value()).data(programId).build();
     }
 

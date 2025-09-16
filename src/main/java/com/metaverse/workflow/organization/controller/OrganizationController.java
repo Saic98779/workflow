@@ -1,5 +1,6 @@
 package com.metaverse.workflow.organization.controller;
 
+import com.metaverse.workflow.activitylog.ActivityLogService;
 import com.metaverse.workflow.agency.service.AgencyResponseMapper;
 import com.metaverse.workflow.model.Agency;
 import com.metaverse.workflow.resouce.service.ResourceResponse;
@@ -12,6 +13,7 @@ import com.metaverse.workflow.organization.service.OrganizationRequest;
 import com.metaverse.workflow.organization.service.OrganizationResponse;
 import com.metaverse.workflow.organization.service.OrganizationService;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -19,10 +21,13 @@ public class OrganizationController {
 
     @Autowired
     private OrganizationService organizationService;
+    @Autowired
+    private ActivityLogService logService;
 
     @PostMapping("/organization/save")
-    public ResponseEntity<WorkflowResponse> saveOrganization(@RequestBody OrganizationRequest request) {
+    public ResponseEntity<WorkflowResponse> saveOrganization(@RequestBody OrganizationRequest request, Principal principal) {
         WorkflowResponse response = organizationService.saveOrganization(request);
+        logService.logs(principal.getName(), "save","organization creation","organization","/organization/save");
         return ResponseEntity.ok(response);
     }
 

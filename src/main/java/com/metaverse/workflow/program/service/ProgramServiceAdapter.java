@@ -691,8 +691,8 @@ public class ProgramServiceAdapter implements ProgramService {
         List<Program> overduePrograms = programRepository.findProgramsWithStartDateEqual(twoDaysAgo);
 
         for (Program program : overduePrograms) {
-            System.out.println("Two days ago: " + twoDaysAgo);
-            System.out.println("Found programs: " + overduePrograms.size());
+//            System.out.println("Two days ago: " + twoDaysAgo);
+//            System.out.println("Found programs: " + overduePrograms.size());
             program.setOverdue(true);
             Long currentVersion = program.getVersion();
             if (currentVersion == null) {
