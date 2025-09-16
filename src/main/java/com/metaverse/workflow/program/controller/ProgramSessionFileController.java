@@ -22,7 +22,7 @@ public class ProgramSessionFileController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<DeleteFileResponse> deleteProgramSessionFile(@PathVariable("id") Long id, Principal principal) {
-        logService.logs(principal.getName(),"delete","delete program session file","program","/program-session-files/{id}");
+        logService.logs(principal.getName(),"DELETE","deleted program session file successfully with id " + id,"program","/program-session-files/{id}");
         boolean deleted = fileService.deleteFileById(id);
         if (deleted) {
             return ResponseEntity.ok(new DeleteFileResponse("File deleted successfully.", id));

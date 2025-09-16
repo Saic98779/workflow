@@ -41,14 +41,14 @@ public class ParticipantController {
 	public ResponseEntity<WorkflowResponse> saveParticipant(Principal principal, @RequestBody ParticipantRequest participantRequest)
 	{
 		WorkflowResponse response = participantService.saveParticipant(participantRequest);
-		logService.logs(principal.getName(),"save","save participant","participant","/participant/save");
+		logService.logs(principal.getName(),"SAVE","saved participant","participant","/participant/save");
 		return ResponseEntity.ok(response);
 	}
 	@PostMapping("/updateParticipant")
 	public ResponseEntity<WorkflowResponse> updateParticipant(Principal principal,@RequestBody ParticipantRequest participantRequest)
 	{
 		WorkflowResponse response = participantService.updateParticipant(participantRequest);
-		logService.logs(principal.getName(),"update","update participant","participant","/updateParticipant");
+		logService.logs(principal.getName(),"UPDATE","updated participant","participant","/updateParticipant");
 		return ResponseEntity.ok(response);
 	}
 
@@ -101,7 +101,7 @@ public class ParticipantController {
 			}
 
 			Map<String, Object> result = excelHelper.excelToParticipants(file.getInputStream(), programId);
-			logService.logs(principal.getName(), "import participants", "import participants from excel","participant","/participants/import");
+			logService.logs(principal.getName(), "IMPORT", "imported participants from excel","participant","/participants/import");
 			return WorkflowResponse.builder()
 				.message("Success")
 				.status(200)

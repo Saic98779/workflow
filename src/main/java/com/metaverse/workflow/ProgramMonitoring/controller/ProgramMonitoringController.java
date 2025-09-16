@@ -23,7 +23,7 @@ public class ProgramMonitoringController {
     @PostMapping("/program/feedback/save")
     public ResponseEntity<?> saveFeedback(Principal principal, @RequestBody ProgramMonitoringRequest request) throws DataException {
         WorkflowResponse response = programService.saveFeedback(request);
-        logService.logs(principal.getName(), "save","saving program monitoring","Program Monitoring","/new/program/feedback/save");
+        logService.logs(principal.getName(), "SAVE","saving program monitoring","Program Monitoring","/new/program/feedback/save");
         return ResponseEntity.ok(response);
     }
     @PostMapping("/program/feedback/update/{monitorId}")
@@ -34,7 +34,7 @@ public class ProgramMonitoringController {
         } catch (DataException exception) {
             return RestControllerBase.error(exception);
         }
-        logService.logs(principal.getName(), "update","update program monitoring","Program Monitoring","/new/program/feedback/update/{monitorId}");
+        logService.logs(principal.getName(), "UPDATE","update program monitoring","Program Monitoring","/new/program/feedback/update/{monitorId}");
         return ResponseEntity.ok(response);
     }
 
@@ -59,7 +59,7 @@ public class ProgramMonitoringController {
     public ResponseEntity<String> deleteProgramMonitoringFeedback(@PathVariable Long id,Principal principal) {
         return feedbackRepository.findById(id).map(feedback -> {
             feedbackRepository.delete(feedback);
-            logService.logs(principal.getName(), "delete","delete program monitoring","Program Monitoring","/new/{id}");
+            logService.logs(principal.getName(), "DELETE","delete program monitoring","Program Monitoring","/new/{id}");
             return ResponseEntity.ok("Program Monitoring FeedBack deleted successfully.");
         }).orElse(ResponseEntity.notFound().build());
 

@@ -26,7 +26,7 @@ public class ParticipantMigrationController {
 
     @PostMapping("/migrate")
     public Map<String, List<?>> migrateParticipants(@RequestBody List<Long> tempIds, Principal principal) {
-        logService.logs(principal.getName(), "migrate","participants save in temp while import","participant","/participants/temp/migrate");
+        logService.logs(principal.getName(), "IMPORT","participants save in temp while import","participant","/participants/temp/migrate");
         return migrationService.migrateParticipants(tempIds);
     }
 
@@ -46,7 +46,7 @@ public class ParticipantMigrationController {
             @RequestBody ParticipantTempUpdateRequest request) {
 
         ParticipantTempResponse updated = migrationService.updateParticipantTemp(participantTempId, request);
-        logService.logs(principal.getName(), "update","participants update after temp import ","participant","/participants/temp/{id}");
+        logService.logs(principal.getName(), "UPDATE","participant updated after temp import ","participant","/participants/temp/{id}");
 
         return ResponseEntity.ok(updated);
     }
@@ -54,7 +54,7 @@ public class ParticipantMigrationController {
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteParticipantTemp(@PathVariable Long id,Principal principal) {
         migrationService.deleteById(id);
-        logService.logs(principal.getName(), "delete","participants delete after temp import ","participant","/participants/temp/{id}");
+        logService.logs(principal.getName(), "DELETE","participant deleted after temp import ","participant","/participants/temp/{id}");
         return ResponseEntity.ok("ParticipantTemp with ID " + id + " deleted successfully");
     }
 }

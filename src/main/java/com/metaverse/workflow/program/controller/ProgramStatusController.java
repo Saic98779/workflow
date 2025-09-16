@@ -47,7 +47,7 @@ public class ProgramStatusController {
         }
         program.setStatus(status);
         programRepository.save(program);
-        logService.logs(principal.getName(),"update","Program status update","program","/programs/status/{programId}");
+        logService.logs(principal.getName(),"UPDATE","Program status updated successfully with status " + status,"program","/programs/status/{programId}");
         return WorkflowResponse.builder().message("Program status updated successfully to: " + status).status(HttpStatus.OK.value()).data(programId).build();
     }
 

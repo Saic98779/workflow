@@ -27,7 +27,7 @@ public class OrganizationController {
     @PostMapping("/organization/save")
     public ResponseEntity<WorkflowResponse> saveOrganization(@RequestBody OrganizationRequest request, Principal principal) {
         WorkflowResponse response = organizationService.saveOrganization(request);
-        logService.logs(principal.getName(), "save","organization creation","organization","/organization/save");
+        logService.logs(principal.getName(), "SAVE","organization creation","organization","/organization/save");
         return ResponseEntity.ok(response);
     }
 

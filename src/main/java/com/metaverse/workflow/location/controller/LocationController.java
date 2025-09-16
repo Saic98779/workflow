@@ -28,7 +28,7 @@ public class LocationController {
 	{
 	LocationResponse response = locationSercice.saveLocation(location);
 		if(response==null)return  ResponseEntity.internalServerError().body(WorkflowResponse.builder().message("Invalid Agency Id").status(400).build());
-		logService.logs(principal.getName(), "save","location creation","location","/location/save");
+		logService.logs(principal.getName(), "SAVE","location creation","location","/location/save");
 		return ResponseEntity.ok(WorkflowResponse.builder().status(200).message("Created").data(response).build());
 	}
 	
@@ -49,7 +49,7 @@ public class LocationController {
 	public ResponseEntity<?> updateLocation(Principal principal,@PathVariable Long locationId, @RequestBody LocationRequest locationRequest) {
 		try {
 			LocationResponse response =locationSercice.updateLocation(locationId, locationRequest);
-			logService.logs(principal.getName(), "update","location update","location","/locations/update/{locationId}");
+			logService.logs(principal.getName(), "UPDATE","location update","location","/locations/update/{locationId}");
 			return ResponseEntity.ok(response);
 		} catch (DataException e) {
 			return RestControllerBase.error(e);
@@ -59,7 +59,7 @@ public class LocationController {
 	public ResponseEntity<?> deleteLocation(@PathVariable Long locationId,Principal principal) {
 		try {
 			WorkflowResponse  response = locationSercice.deleteLocation(locationId);
-			logService.logs(principal.getName(), "delete","delete location","location","locations/delete/{locationId}");
+			logService.logs(principal.getName(), "DELETE","delete location","location","locations/delete/{locationId}");
 			return ResponseEntity.ok(response);
 		} catch (DataException e) {
 			return RestControllerBase.error(e);

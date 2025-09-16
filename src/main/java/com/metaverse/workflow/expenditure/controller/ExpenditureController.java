@@ -36,7 +36,7 @@ public class ExpenditureController {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             BulkExpenditureRequest bulkExpenditureRequest = objectMapper.readValue(request, BulkExpenditureRequest.class);
-            logService.logs(principal.getName(),"save","adding bulk expenditure for "+ CommonUtil.agencyMap.get(bulkExpenditureRequest.getAgencyId()),"bulk expenditure","/bulk/expenditure/save");
+            logService.logs(principal.getName(),"SAVE","adding bulk expenditure for "+ CommonUtil.agencyMap.get(bulkExpenditureRequest.getAgencyId()),"bulk expenditure","/bulk/expenditure/save");
             return ResponseEntity.ok(expenditureService.saveBulkExpenditure(bulkExpenditureRequest, files));
         }
         catch(DataException exception)
@@ -50,7 +50,7 @@ public class ExpenditureController {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             BulkExpenditureRequest bulkExpenditureRequest = objectMapper.readValue(request, BulkExpenditureRequest.class);
-            logService.logs(principal.getName(),"update","update bulk expenditure ","bulk expenditure","/bulk/expenditure/update/{id}");
+            logService.logs(principal.getName(),"UPDATE","update bulk expenditure ","bulk expenditure","/bulk/expenditure/update/{id}");
             return ResponseEntity.ok(expenditureService.updateBulkExpenditure(expenditureId, bulkExpenditureRequest, files));
         } catch (DataException exception) {
             return RestControllerBase.error(exception);
@@ -60,7 +60,7 @@ public class ExpenditureController {
     public ResponseEntity<?> deleteBulkExpenditure(@PathVariable Long expenditureId,Principal principal) {
         try {
             WorkflowResponse response = expenditureService.deleteBulkExpenditure(expenditureId);
-            logService.logs(principal.getName(),"delete","delete bulk expenditure ","bulk expenditure","/bulk/expenditure/delete/{expenditureId}");
+            logService.logs(principal.getName(),"DELETE","delete bulk expenditure ","bulk expenditure","/bulk/expenditure/delete/{expenditureId}");
             return ResponseEntity.ok(response);
         } catch (DataException e) {
             return RestControllerBase.error(e);
@@ -80,7 +80,7 @@ public class ExpenditureController {
             JSONParser parser = new JSONParser();
             ProgramExpenditureRequest programExpenditureRequest = parser.parse(request, ProgramExpenditureRequest.class);
             var response = expenditureService.saveProgramExpenditure(programExpenditureRequest, files);
-            logService.logs(principal.getName(),"save","save program expenditure ","program expenditure","/program/expenditure/save");
+            logService.logs(principal.getName(),"SAVE","save program expenditure ","program expenditure","/program/expenditure/save");
             return ResponseEntity.ok(response);
         }
         catch (DataException exception) {
@@ -100,7 +100,7 @@ public class ExpenditureController {
             JSONParser parser = new JSONParser();
             ProgramExpenditureRequest programExpenditureRequest = parser.parse(request, ProgramExpenditureRequest.class);
             var response = expenditureService.updateProgramExpenditure(expenditureId, programExpenditureRequest, files);
-            logService.logs(principal.getName(),"update","update program expenditure ","program expenditure","/program/expenditure/update/{expenditureId}");
+            logService.logs(principal.getName(),"UPDATE","update program expenditure ","program expenditure","/program/expenditure/update/{expenditureId}");
             return ResponseEntity.ok(response);
         }
         catch (DataException exception) {
@@ -143,7 +143,7 @@ public class ExpenditureController {
             @RequestBody BulkExpenditureTransactionRequest request) throws DataException {
         try {
             BulkExpenditureTransactionResponse response = expenditureService.saveTransaction(request);
-            logService.logs(principal.getName(), "save","Fetching item from bulk stock and saving transaction","bulk transaction","/bulk/transactions/save");
+            logService.logs(principal.getName(), "SAVE","Fetching item from bulk stock and saving transaction","bulk transaction","/bulk/transactions/save");
             return ResponseEntity.ok(response);
         }
         catch (DataException ex) {
@@ -179,7 +179,6 @@ public class ExpenditureController {
             @RequestBody BulkExpenditureLookupRequest request) throws DataException {
         try {
             BulkExpenditureLookupResponse result = expenditureService.getBulkExpendituresByExpenseAndItem(request);
-            logService.logs(principal.getName(), "LOOKUP", "Fetching bulk expenditures by expense and item", "Bulk Transaction", "/bulk/transactions/lookup");
             return ResponseEntity.ok(result);
         }
         catch (DataException ex) {
