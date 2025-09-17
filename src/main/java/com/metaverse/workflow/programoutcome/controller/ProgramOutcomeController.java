@@ -1,5 +1,6 @@
 package com.metaverse.workflow.programoutcome.controller;
 
+import com.metaverse.workflow.activitylog.ActivityLogService;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.common.util.RestControllerBase;
 import com.metaverse.workflow.exceptions.DataException;
@@ -17,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,10 +28,11 @@ import java.util.stream.Collectors;
 public class ProgramOutcomeController {
 
     @Autowired
-    ProgramOutcomeService programOutcomeService;
-
+    private ProgramOutcomeService programOutcomeService;
     @Autowired
-    UdyamService udyamService;
+    private ActivityLogService logService;
+    @Autowired
+    private UdyamService udyamService;
 
     @GetMapping(value = "/program/outcome/tables")
     public ResponseEntity<WorkflowResponse> getProgramOutcomeTables() {
@@ -42,22 +45,26 @@ public class ProgramOutcomeController {
     @GetMapping(value = "/program/outcome/details/{participantId}/{outcome}")
     public ResponseEntity<WorkflowResponse> getProgramOutcomeDetails(@PathVariable("participantId") Long participantId,
                                                                      @PathVariable("outcome") String outcome,
-                                                                     @RequestParam(value = "type",required = false) String type) {
+                                                                     @RequestParam(value = "type", required = false) String type) {
         log.info("/program/outcome/details/");
-        WorkflowResponse response = programOutcomeService.getOutcomeDetails(participantId, outcome,type);
+        WorkflowResponse response = programOutcomeService.getOutcomeDetails(participantId, outcome, type);
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping(value = "/program/outcome/save/{outcome}",consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_OCTET_STREAM_VALUE},
+    @PostMapping(value = "/program/outcome/save/{outcome}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_OCTET_STREAM_VALUE},
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> saveOutcome(@PathVariable("outcome") String outcomeName, @RequestPart("data") String data) throws ParseException {
+    public ResponseEntity<?> saveOutcome(Principal principal, @PathVariable("outcome") String outcomeName, @RequestPart("data") String data) throws ParseException {
         log.info("Program outcome : {}", data);
         WorkflowResponse response = null;
         try {
             response = programOutcomeService.saveOutCome(outcomeName, data);
         } catch (DataException exception) {
-            return   RestControllerBase.error(exception);
+            return RestControllerBase.error(exception);
         }
+        logService.logs(principal.getName(), "SAVE",
+                "Program outcome saved successfully | Outcome: " + outcomeName,
+                "ProgramOutcome",
+                "/program/outcome/save/" + outcomeName);
         return ResponseEntity.ok(response);
     }
 
@@ -66,8 +73,9 @@ public class ProgramOutcomeController {
         WorkflowResponse response = programOutcomeService.getOutcomeDetailsByName(outcomeName);
         return ResponseEntity.ok(response);
     }
+
     @PostMapping("/udyam/data/upload")
-    public ResponseEntity<?> uploadExcel(@RequestParam("file") MultipartFile file) {
+    public ResponseEntity<?> uploadExcel(@RequestParam("file") MultipartFile file,Principal principal) {
         if (file.isEmpty()) {
             return ResponseEntity.badRequest().body("File is empty");
         }
@@ -76,6 +84,10 @@ public class ProgramOutcomeController {
         } catch (DataException e) {
             return RestControllerBase.error(e);
         }
+        logService.logs(principal.getName(), "SAVE",
+                "Udyam Excel data uploaded successfully",
+                "UdyamData",
+                "/udyam/data/upload");
         return ResponseEntity.ok("Excel data saved successfully!");
     }
 

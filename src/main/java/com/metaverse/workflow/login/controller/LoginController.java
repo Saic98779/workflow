@@ -1,5 +1,6 @@
 package com.metaverse.workflow.login.controller;
 
+import com.metaverse.workflow.activitylog.ActivityLogService;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.common.util.RestControllerBase;
 import com.metaverse.workflow.exceptions.DataException;
@@ -18,13 +19,17 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
+
 @RestController
 @AllArgsConstructor
 @Slf4j
 public class LoginController {
 
     @Autowired
-    LoginService loginService;
+    private LoginService loginService;
+    @Autowired
+    private ActivityLogService logService;
 
     @Operation(summary = "Get user by id", responses = {
             @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = LoginUserResponse.class))),
@@ -42,13 +47,14 @@ public class LoginController {
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(implementation = Exception.class)))
     })
     @PostMapping(value = "/login/user/update/{userId}", produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<?> updateUser(@PathVariable String userId, @RequestBody LoginUserRequest request) {
+    public ResponseEntity<?> updateUser(Principal principal, @PathVariable String userId, @RequestBody LoginUserRequest request) {
         WorkflowResponse response ;
         try {
             response = loginService.updateUser(userId,request);
         } catch (DataException exception) {
             return RestControllerBase.error(exception);
         }
+        logService.logs(principal.getName(), "UPDATE", "User details updated for userId: " + userId,"USER_MANAGEMENT","/login/user/update/{userId}");
         return ResponseEntity.ok(response);
     }
 
@@ -89,9 +95,17 @@ public class LoginController {
                     content = @Content(schema = @Schema(implementation = Exception.class)))
     })
     @PutMapping(value = "/login/change-password", produces = {"application/json"})
-    public ResponseEntity<WorkflowResponse> changePassword(@RequestBody ChangePasswordRequest request) throws DataException {
+    public ResponseEntity<WorkflowResponse> changePassword(@RequestBody ChangePasswordRequest request,Principal principal) throws DataException {
         log.info("Change password controller, userId: {}", request.getUserId());
-        return ResponseEntity.ok(loginService.changePassword(request));
+        WorkflowResponse response = loginService.changePassword(request);
+        logService.logs(principal.getName(), "CHANGE_PASSWORD",
+                String.format("Password change for userId: %s | oldPwd: %s | newPwd: %s",
+                request.getUserId(),
+                request.getOldPassword(),
+                request.getNewPassword()),
+                "USER_MANAGEMENT",
+                "/login/change-password");
+        return ResponseEntity.ok(response);
     }
 }
 

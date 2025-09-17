@@ -1,5 +1,6 @@
 package com.metaverse.workflow.programoutcometargets.controller;
 
+import com.metaverse.workflow.activitylog.ActivityLogService;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.common.util.RestControllerBase;
 import com.metaverse.workflow.exceptions.DataException;
@@ -13,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -20,10 +22,18 @@ import java.util.List;
 public class TargetController {
     @Autowired
     private TargetService targetService;
+    @Autowired
+    private ActivityLogService logService;
+
     @PostMapping("/financial/save")
-    public ResponseEntity<?> createFinancialTarget(@RequestBody FinancialTargetRequest request) {
+    public ResponseEntity<?> createFinancialTarget(@RequestBody FinancialTargetRequest request, Principal principal) {
         try {
             WorkflowResponse response = targetService.saveFinancialTarget(request);
+            logService.logs(principal.getName(), "SAVE",
+                    "Financial target created successfully | Agency ID: " + request.getAgencyId(),
+                    "FinancialTarget",
+                    "/targets/financial/save");
+
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (DataException e) {
             return RestControllerBase.error(e);
@@ -32,10 +42,14 @@ public class TargetController {
 
     @PutMapping("/financial/update/{id}")
     public ResponseEntity<?> updateFinancialTarget(
-            @PathVariable("id") Long id,
+            @PathVariable("id") Long id,Principal principal,
             @RequestBody FinancialTargetRequest request) {
         try {
             WorkflowResponse response = targetService.updateFinancialTarget(request, id);
+            logService.logs(principal.getName(), "UPDATE",
+                    "Financial target updated successfully | Target ID: " + id,
+                    "FinancialTarget",
+                    "/targets/financial/update/" + id);
             return ResponseEntity.ok(response);
         } catch (DataException e) {
             return RestControllerBase.error(e);
@@ -63,18 +77,26 @@ public class TargetController {
         }
     }
     @DeleteMapping("/financial/{id}")
-    public ResponseEntity<?> deleteFinancialTargetById(@PathVariable("id") Long id) {
+    public ResponseEntity<?> deleteFinancialTargetById(@PathVariable("id") Long id,Principal principal) {
         try {
             WorkflowResponse response = targetService.deleteFinancialTarget(id);
+            logService.logs(principal.getName(), "DELETE",
+                    "Financial target deleted successfully | Target ID: " + id,
+                    "FinancialTarget",
+                    "/targets/financial/" + id);
             return ResponseEntity.ok(response);
         } catch (DataException e) {
             return RestControllerBase.error(e);
         }
     }
     @PostMapping("/physical/save")
-    public ResponseEntity<?> createPhysicalTarget(@RequestBody PhysicalTargetRequest request) {
+    public ResponseEntity<?> createPhysicalTarget(@RequestBody PhysicalTargetRequest request,Principal principal) {
         try {
             WorkflowResponse response = targetService.savePhysicalTarget(request);
+            logService.logs(principal.getName(), "SAVE",
+                    "Physical target created successfully | Agency ID: " + request.getAgencyId(),
+                    "PhysicalTarget",
+                    "/targets/physical/save");
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (DataException e) {
             return RestControllerBase.error(e);
@@ -83,9 +105,13 @@ public class TargetController {
     @PutMapping("/physical/update/{id}")
     public ResponseEntity<?> updatePhysicalTarget(
             @PathVariable("id") Long id,
-            @RequestBody PhysicalTargetRequest request) {
+            @RequestBody PhysicalTargetRequest request,Principal  principal) {
         try {
             WorkflowResponse response = targetService.updatePhysicalTarget(request, id);
+            logService.logs(principal.getName(), "UPDATE",
+                    "Physical target updated successfully | Target ID: " + id,
+                    "PhysicalTarget",
+                    "/targets/physical/update/" + id);
             return ResponseEntity.ok(response);
         } catch (DataException e) {
             return RestControllerBase.error(e);
@@ -111,9 +137,13 @@ public class TargetController {
         }
     }
     @DeleteMapping("/physical/{id}")
-    public ResponseEntity<?> deletePhysicalTargetById(@PathVariable("id") Long id) {
+    public ResponseEntity<?> deletePhysicalTargetById(@PathVariable("id") Long id,Principal principal) {
         try {
             WorkflowResponse response = targetService.deletePhysicalTarget(id);
+            logService.logs(principal.getName(), "DELETE",
+                    "Physical target deleted successfully | Target ID: " + id,
+                    "PhysicalTarget",
+                    "/targets/physical/" + id);
             return ResponseEntity.ok(response);
         } catch (DataException e) {
             return RestControllerBase.error(e);
