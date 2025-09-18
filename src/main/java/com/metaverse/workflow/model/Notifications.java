@@ -1,44 +1,69 @@
 package com.metaverse.workflow.model;
 
-import com.metaverse.workflow.enums.UserType;
+import com.metaverse.workflow.enums.NotificationRecipientType;
+import com.metaverse.workflow.enums.NotificationStatus;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.Filter;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+@Getter
+@Setter
 @Entity
-@EntityListeners(org.springframework.data.jpa.domain.support.AuditingEntityListener.class)
 @Table(name = "notifications")
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Notifications extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
-    protected Long id;
+    @Column(name = "date_of_notification")
+    private LocalDateTime dateOfNotification;
 
-    @Column(name = "user_id")
-    private String userId;
+    @Column(name = "date_of_first_notification")
+    private LocalDateTime dateOfFirstNotification;
 
-    @Column(name = "agency_id")
-    private Long agencyId;
+    @ManyToOne
+    @JoinColumn(name = "call_center_agent_id", referencedColumnName = "user_id")
+    private User callCenterAgent;
 
-    @Column(name="user_type")
+    @ManyToOne
+    @JoinColumn(name = "agency_id")
+    private Agency agency;
+
+    @ManyToOne
+    @JoinColumn(name = "participant_id")
+    private Participant participant;
+
+    @ManyToOne
+    @JoinColumn(name = "program_id")
+    private Program program;
+
+    // Remarks provided by Agency
+    @OneToMany(mappedBy = "notification", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Filter(name = "agencyRemarks", condition = "remark_by = 'AGENCY'")
+    private List<NotificationRemark> remarksByAgency = new ArrayList<>();
+
+    // Remarks provided by Call Center
+    @OneToMany(mappedBy = "notification", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Filter(name = "callCenterRemarks", condition = "remark_by = 'CALL_CENTER'")
+    private List<NotificationRemark> remarksByCallCenter = new ArrayList<>();
+
     @Enumerated(EnumType.STRING)
-    private UserType userType;
+    @Column(name = "status", nullable = false)
+    private NotificationStatus status;
 
-    @Column(name = "source_id")
-    private Long sourceId;       // sourceId
+    @Column(name = "date_of_fix")
+    private LocalDateTime dateOfFix;
 
-    @Column(name = "screen_name")
-    private String screenName;      //Screen name
+    @Column(name = "date_of_closure")
+    private LocalDateTime dateOfClosure;
 
-    @Column(name = "message")
-    private String message;
-
-    private Boolean readRecipients;
+    //Notifications that intended to be sent to different recipient types
+    @Enumerated(EnumType.STRING)
+    @Column(name = "recipient_type", nullable = false)
+    private NotificationRecipientType recipientType;
 }
-

@@ -9,11 +9,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 @Data
-public class NotificationRequest {
-    private String userType;
-    private Long   sourceId;           // sourceId
-    private String screenName;      //Screen name
+public class NotificationRequestDto  {
+    private Long callCenterUserId;
+    private Long agencyId;
     private String message;
-    private String userId;
-    private Boolean readRecipients;
 }

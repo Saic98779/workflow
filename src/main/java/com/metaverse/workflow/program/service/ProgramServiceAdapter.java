@@ -16,9 +16,8 @@ import com.metaverse.workflow.expenditure.repository.BulkExpenditureTransactionR
 import com.metaverse.workflow.expenditure.repository.ProgramExpenditureRepository;
 import com.metaverse.workflow.location.repository.LocationRepository;
 import com.metaverse.workflow.model.*;
-import com.metaverse.workflow.notifications.dto.NotificationRequest;
 import com.metaverse.workflow.notifications.repository.NotificationRepository;
-import com.metaverse.workflow.notifications.service.NotificationService;
+import com.metaverse.workflow.notifications.service.NotificationServiceImpl;
 import com.metaverse.workflow.participant.repository.ParticipantRepository;
 import com.metaverse.workflow.participant.repository.ParticipantTempRepository;
 import com.metaverse.workflow.participant.service.ParticipantResponse;
@@ -93,7 +92,7 @@ public class ProgramServiceAdapter implements ProgramService {
     FileSystemStorageService fileSystemStorageService;
 
     @Autowired
-    NotificationService notificationService;
+    NotificationServiceImpl notificationService;
 
     @Autowired
     NotificationRepository notificationRepository;
@@ -117,12 +116,6 @@ public class ProgramServiceAdapter implements ProgramService {
             location = locationRepository.findById(request.getLocationId());
             program = programRepository.save(ProgramRequestMapper.map(request, agency.get(), location.get()));
         }
-        NotificationRequest notificationRequest = new NotificationRequest();
-//        notificationRequest.setProgramId(program.getProgramId());
-        notificationRequest.setUserType(String.valueOf(UserType.AGENCY));
-        notificationRequest.setMessage("New program scheduled: " + program.getProgramTitle());
-
-        notificationService.saveNotification(notificationRequest);
         updateOverduePrograms();
         return WorkflowResponse.builder().status(200).message("Success").data(ProgramResponseMapper.map(program)).build();
     }

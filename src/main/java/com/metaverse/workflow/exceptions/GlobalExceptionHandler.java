@@ -1,8 +1,11 @@
 package com.metaverse.workflow.exceptions;
 
+import com.metaverse.workflow.notifications.exceptions.AgencyNotFoundException;
+import com.metaverse.workflow.notifications.exceptions.UserNotFoundException;
 import com.metaverse.workflow.security.ApplicationAPIResponse;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -86,6 +89,22 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                         .build(),
                 HttpStatus.BAD_REQUEST
         );
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ProblemDetail handleUserNotFound(UserNotFoundException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
+        problemDetail.setTitle("User Not Found");
+        problemDetail.setDetail(ex.getMessage());
+        return problemDetail;
+    }
+
+    @ExceptionHandler(AgencyNotFoundException.class)
+    public ProblemDetail handleAgencyNotFound(AgencyNotFoundException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
+        problemDetail.setTitle("Agency Not Found");
+        problemDetail.setDetail(ex.getMessage());
+        return problemDetail;
     }
 
 

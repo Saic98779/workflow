@@ -1,92 +1,136 @@
 package com.metaverse.workflow.notifications.service;
 
-import com.metaverse.workflow.common.enums.UserRole;
-import com.metaverse.workflow.enums.UserType;
+import com.metaverse.workflow.agency.repository.AgencyRepository;
+import com.metaverse.workflow.enums.RemarkBy;
+import com.metaverse.workflow.login.repository.LoginRepository;
+import com.metaverse.workflow.model.NotificationRemark;
 import com.metaverse.workflow.model.Notifications;
-import com.metaverse.workflow.notifications.dto.NotificationReadUpdateDto;
-import com.metaverse.workflow.notifications.dto.NotificationRequest;
-import com.metaverse.workflow.notifications.dto.NotificationResponse;
-import com.metaverse.workflow.notifications.dto.NotificationResponseDto;
+import com.metaverse.workflow.notifications.dto.NotificationRequestDto;
+import com.metaverse.workflow.notifications.dto.NotificationStatusUpdateDto;
 import com.metaverse.workflow.notifications.repository.NotificationRepository;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
+
+import com.metaverse.workflow.model.Agency;
+import com.metaverse.workflow.model.User;
+import com.metaverse.workflow.enums.NotificationRecipientType;
+import com.metaverse.workflow.enums.NotificationStatus;
+import lombok.RequiredArgsConstructor;
+
+import java.time.LocalDate;
 
 @Service
-public class NotificationServiceImpl implements NotificationService{
+@RequiredArgsConstructor
+public class NotificationServiceImpl {
 
     private final NotificationRepository notificationRepository;
+    private final LoginRepository userRepository;
+    private final AgencyRepository agencyRepository;
 
-    public NotificationServiceImpl(NotificationRepository notificationRepository) {
-        this.notificationRepository = notificationRepository;
-    }
+    // 1. Call Center -> Agency
+    public Notifications sendFromCallCenterToAgency(NotificationRequestDto dto) {
+        User callCenter = userRepository.findById(String.valueOf(dto.getCallCenterUserId()))
+                .orElseThrow(() -> new RuntimeException("Call center user not found"));
+        Agency agency = agencyRepository.findById(dto.getAgencyId())
+                .orElseThrow(() -> new RuntimeException("Agency not found"));
 
-    @Async
-    @Override
-    public CompletableFuture<NotificationResponse> saveNotification(NotificationRequest request) {
-        Notifications notifications = Notifications.builder()
-                .userType(UserType.valueOf(request.getUserType()))
-                .sourceId(request.getSourceId())
-                .screenName(request.getScreenName())
-                .message(request.getMessage())
-                .userId(request.getUserId())
-                .readRecipients(request.getReadRecipients())
+        Notifications notification = Notifications.builder()
+                .dateOfNotification(LocalDate.now().atStartOfDay())
+                .callCenterAgent(callCenter)
+                .agency(agency)
+                .status(NotificationStatus.OPEN)
+                .recipientType(NotificationRecipientType.AGENCY)
                 .build();
-        Notifications savedNotification = notificationRepository.save(notifications);
-        NotificationResponse response = NotificationResponse.builder()
-                .id(savedNotification.getId())
-                .userType(String.valueOf(savedNotification.getUserType()))
-                .sourceId(savedNotification.getSourceId())
-                .screenName(savedNotification.getScreenName())
-                .message(savedNotification.getMessage())
-                .userId(savedNotification.getUserId())
-                .readRecipients(savedNotification.getReadRecipients())
-                .build();
-        return CompletableFuture.completedFuture(response);
-    }
 
-    @Override
-    public NotificationResponseDto getAllNotifications() {
-        return null;
-    }
-
-    @Override
-    public NotificationResponseDto getAllNotificationsByUserType(UserRole userRole) {
-        return null;
-    }
-
-    @Override
-    @Transactional
-    public int markAsRead(List<NotificationReadUpdateDto> dtos) {
-        int updatedCount = 0;
-        for (NotificationReadUpdateDto dto : dtos) {
-            notificationRepository.findById(dto.getId()).ifPresent(notification -> {
-                notification.setReadRecipients(true);
-                notificationRepository.save(notification);
-            });
-            updatedCount++;
+        // Add initial remark from Call Center
+        if (dto.getMessage() != null && !dto.getMessage().isBlank()) {
+            NotificationRemark remark = NotificationRemark.builder()
+                    .notification(notification)
+                    .remarkBy(RemarkBy.CALL_CENTER)
+                    .remarkText(dto.getMessage())
+                    .remarkedAt(java.time.LocalDateTime.now())
+                    .build();
+            notification.getRemarksByCallCenter().add(remark);
         }
-        return updatedCount;
+
+        return notificationRepository.save(notification);
     }
 
-    @Override
-    public List<NotificationResponse> getAllNotificationsByUserId(String userId) {
-        List<Notifications> notifications = notificationRepository.findByUserId(userId);
+    // 2. Agency -> Call Center
+    public Notifications sendFromAgencyToCallCenter(NotificationRequestDto dto) {
+        Agency agency = agencyRepository.findById(dto.getAgencyId())
+                .orElseThrow(() -> new RuntimeException("Agency not found"));
+        User callCenter = userRepository.findById(String.valueOf(dto.getCallCenterUserId()))
+                .orElseThrow(() -> new RuntimeException("Call center user not found"));
 
-        return notifications.stream()
-                .map(n -> NotificationResponse.builder()
-                        .id(n.getId())
-                        .userType(n.getUserType() != null ? n.getUserType().name() : null)
-                        .sourceId(n.getSourceId())
-                        .screenName(n.getScreenName())
-                        .message(n.getMessage())
-                        .userId(n.getUserId())
-                        .readRecipients(n.getReadRecipients())
-                        .build())
-                .toList();
+        Notifications notification = Notifications.builder()
+                .dateOfNotification(LocalDate.now().atStartOfDay())
+                .agency(agency)
+                .callCenterAgent(callCenter)
+                .status(NotificationStatus.OPEN)
+                .recipientType(NotificationRecipientType.CALL_CENTER)
+                .build();
+
+        // Add initial remark from Agency
+        if (dto.getMessage() != null && !dto.getMessage().isBlank()) {
+            NotificationRemark remark = NotificationRemark.builder()
+                    .notification(notification)
+                    .remarkBy(RemarkBy.AGENCY)
+                    .remarkText(dto.getMessage())
+                    .remarkedAt(java.time.LocalDateTime.now())
+                    .build();
+            notification.getRemarksByAgency().add(remark);
+        }
+        return notificationRepository.save(notification);
     }
 
+    // 3. Get all notifications by Agency
+    public List<Notifications> getAllByAgencyAndStatuses(Long agencyId, List<NotificationStatus> statuses) {
+        return notificationRepository.findByAgency_AgencyIdAndStatusIn(agencyId, statuses);
+    }
+
+    public List<Notifications> getAllByAgency(Long agencyId) {
+        return notificationRepository.findByAgency_Id(agencyId);
+    }
+
+    // 4. Get all notifications by Call Center Agent (userId)
+    public List<Notifications> getAllByCallCenterUser(String userId) {
+        return notificationRepository.findByCallCenterAgent_UserId(userId);
+    }
+
+
+    public List<Notifications> getAllByCallCenterUserAndStatuses(String userId, List<NotificationStatus> statuses) {
+        return notificationRepository.findByCallCenterAgent_UserIdAndStatusIn(userId, statuses);
+    }
+
+    public Notifications updateStatus(NotificationStatusUpdateDto dto) {
+        Notifications notification = notificationRepository.findById(dto.getNotificationId())
+                .orElseThrow(() -> new RuntimeException("Notification not found with ID: " + dto.getNotificationId()));
+
+        notification.setStatus(dto.getStatus());
+
+        if (dto.getRemark() != null && !dto.getRemark().isBlank()) {
+            NotificationRemark remark = NotificationRemark.builder()
+                    .notification(notification)
+                    .remarkBy(dto.getRemarkBy())
+                    .remarkText(dto.getRemark())
+                    .remarkedAt(java.time.LocalDateTime.now())
+                    .build();
+
+            if (dto.getRemarkBy() == RemarkBy.AGENCY) {
+                notification.getRemarksByAgency().add(remark);
+            } else {
+                notification.getRemarksByCallCenter().add(remark);
+            }
+        }
+
+        switch (dto.getStatus()) {
+            case CLOSED -> notification.setDateOfClosure(java.time.LocalDateTime.now());
+            case COMPLETED -> notification.setDateOfFix(java.time.LocalDateTime.now());
+            default -> {}
+        }
+
+        return notificationRepository.save(notification);
+    }
 }
