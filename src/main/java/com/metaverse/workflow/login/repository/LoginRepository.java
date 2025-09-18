@@ -13,4 +13,6 @@ public interface LoginRepository extends JpaRepository<User, String> {
     List<UserEntity> findAllByMobileNo(@Param("mobileNo") Long mobileNo);*/
     
     Optional<User> findByEmail(String email);
+
+    Optional<Object> findByUserId(String s);
 }

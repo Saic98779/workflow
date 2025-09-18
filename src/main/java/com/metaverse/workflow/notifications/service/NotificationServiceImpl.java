@@ -3,22 +3,23 @@ package com.metaverse.workflow.notifications.service;
 import com.metaverse.workflow.agency.repository.AgencyRepository;
 import com.metaverse.workflow.enums.RemarkBy;
 import com.metaverse.workflow.login.repository.LoginRepository;
-import com.metaverse.workflow.model.NotificationRemark;
-import com.metaverse.workflow.model.Notifications;
+import com.metaverse.workflow.model.*;
 import com.metaverse.workflow.notifications.dto.NotificationRequestDto;
 import com.metaverse.workflow.notifications.dto.NotificationStatusUpdateDto;
 import com.metaverse.workflow.notifications.repository.NotificationRepository;
+import com.metaverse.workflow.participant.repository.ParticipantRepository;
+import com.metaverse.workflow.program.repository.ProgramRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import com.metaverse.workflow.model.Agency;
-import com.metaverse.workflow.model.User;
 import com.metaverse.workflow.enums.NotificationRecipientType;
 import com.metaverse.workflow.enums.NotificationStatus;
 import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -27,19 +28,36 @@ public class NotificationServiceImpl {
     private final NotificationRepository notificationRepository;
     private final LoginRepository userRepository;
     private final AgencyRepository agencyRepository;
+    private final ParticipantRepository participantRepository;
+    private final ProgramRepository programRepository;
 
     // 1. Call Center -> Agency
     public Notifications sendFromCallCenterToAgency(NotificationRequestDto dto) {
-        User callCenter = userRepository.findById(String.valueOf(dto.getCallCenterUserId()))
-                .orElseThrow(() -> new RuntimeException("Call center user not found"));
+        Optional<Object> callCenter = userRepository.findByUserId(dto.getCallCenterUserId());
         Agency agency = agencyRepository.findById(dto.getAgencyId())
                 .orElseThrow(() -> new RuntimeException("Agency not found"));
 
+        Participant participant = null;
+        if (dto.getParticipantId() != null) {
+            participant = participantRepository.findById(dto.getParticipantId())
+                    .orElseThrow(() -> new RuntimeException("Participant not found"));
+        }
+
+        Program program = null;
+        if (dto.getProgramId() != null) {
+            program = (Program) programRepository.findByProgramId(dto.getProgramId())
+                    .orElseThrow(() -> new RuntimeException("Program not found"));
+        }
+
         Notifications notification = Notifications.builder()
                 .dateOfNotification(LocalDate.now().atStartOfDay())
-                .callCenterAgent(callCenter)
+                .callCenterAgent(callCenter.get() instanceof User ? (User) callCenter.get() : null)
                 .agency(agency)
                 .status(NotificationStatus.OPEN)
+                .participant(participant)
+                .program(program)
+                .remarksByAgency(new ArrayList<>())
+                .remarksByCallCenter(new ArrayList<>())
                 .recipientType(NotificationRecipientType.AGENCY)
                 .build();
 
@@ -51,7 +69,8 @@ public class NotificationServiceImpl {
                     .remarkText(dto.getMessage())
                     .remarkedAt(java.time.LocalDateTime.now())
                     .build();
-            notification.getRemarksByCallCenter().add(remark);
+            notification.setRemarksByCallCenter(List.of(remark));
+            notification.setRemarksByAgency(List.of());
         }
 
         return notificationRepository.save(notification);
@@ -64,12 +83,28 @@ public class NotificationServiceImpl {
         User callCenter = userRepository.findById(String.valueOf(dto.getCallCenterUserId()))
                 .orElseThrow(() -> new RuntimeException("Call center user not found"));
 
+        Participant participant = null;
+        if (dto.getParticipantId() != null) {
+            participant = participantRepository.findById(dto.getParticipantId())
+                    .orElseThrow(() -> new RuntimeException("Participant not found"));
+        }
+
+        Program program = null;
+        if (dto.getProgramId() != null) {
+            program = (Program) programRepository.findByProgramId(dto.getProgramId())
+                    .orElseThrow(() -> new RuntimeException("Program not found"));
+        }
+
         Notifications notification = Notifications.builder()
                 .dateOfNotification(LocalDate.now().atStartOfDay())
                 .agency(agency)
                 .callCenterAgent(callCenter)
+                .participant(participant)
+                .program(program)
                 .status(NotificationStatus.OPEN)
                 .recipientType(NotificationRecipientType.CALL_CENTER)
+                .remarksByAgency(new ArrayList<>())
+                .remarksByCallCenter(new ArrayList<>())
                 .build();
 
         // Add initial remark from Agency
@@ -82,6 +117,7 @@ public class NotificationServiceImpl {
                     .build();
             notification.getRemarksByAgency().add(remark);
         }
+
         return notificationRepository.save(notification);
     }
 
@@ -91,7 +127,7 @@ public class NotificationServiceImpl {
     }
 
     public List<Notifications> getAllByAgency(Long agencyId) {
-        return notificationRepository.findByAgency_Id(agencyId);
+        return notificationRepository.findByAgency_AgencyId(agencyId);
     }
 
     // 4. Get all notifications by Call Center Agent (userId)

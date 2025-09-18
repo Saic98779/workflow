@@ -18,7 +18,7 @@ public interface NotificationRepository extends JpaRepository<Notifications, Lon
     );
     List<Notifications> findByAgency_AgencyIdAndStatusIn(Long agencyId, List<NotificationStatus> statuses);
 
-    List<Notifications> findByAgency_Id(Long agencyId);
+    List<Notifications> findByAgency_AgencyId(Long agencyId);
 
 
     List<Notifications> findByCallCenterAgent_UserId(String userId);

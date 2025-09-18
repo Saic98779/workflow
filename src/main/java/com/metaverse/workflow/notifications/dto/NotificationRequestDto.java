@@ -10,7 +10,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @Data
 public class NotificationRequestDto  {
-    private Long callCenterUserId;
+    private String callCenterUserId;
     private Long agencyId;
     private String message;
+    private Long participantId;
+    private Long programId;
 }
