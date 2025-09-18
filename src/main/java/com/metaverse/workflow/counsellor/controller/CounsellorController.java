@@ -4,6 +4,7 @@ import com.metaverse.workflow.activitylog.ActivityLogService;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.counsellor.service.CounsellorRegistrationRequest;
 import com.metaverse.workflow.counsellor.service.CounsellorService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,9 +25,9 @@ public class CounsellorController {
 
 
     @PostMapping("/saveCounsellor")
-    public ResponseEntity<WorkflowResponse> saveCounsellor(Principal principal, @RequestBody CounsellorRegistrationRequest counsellorRequest) {
+    public ResponseEntity<WorkflowResponse> saveCounsellor(Principal principal, @RequestBody CounsellorRegistrationRequest counsellorRequest, HttpServletRequest servletRequest) {
         WorkflowResponse response = counsellorService.saveCounseller(counsellorRequest);
-        logService.logs(principal.getName(), "SAVE","counsellor saved successfully","Counsellor","/saveCounsellor");
+        logService.logs(principal.getName(), "SAVE","counsellor saved successfully","Counsellor", servletRequest.getRequestURI());
         return ResponseEntity.ok(response);
     }
 

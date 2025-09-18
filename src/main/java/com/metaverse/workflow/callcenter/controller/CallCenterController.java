@@ -8,6 +8,7 @@ import com.metaverse.workflow.callcenter.service.SubActivityQuestionsRequest;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.common.util.RestControllerBase;
 import com.metaverse.workflow.exceptions.DataException;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,10 +24,10 @@ public class CallCenterController {
     ActivityLogService logService;
 
     @PostMapping("/save/question")
-    public ResponseEntity<WorkflowResponse> saveQuestion(Principal principal, @RequestBody QuestionRequest request)
+    public ResponseEntity<WorkflowResponse> saveQuestion(Principal principal, @RequestBody QuestionRequest request, HttpServletRequest servletRequest)
     {
         WorkflowResponse response=callCenterService.saveQuestion(request);
-        logService.logs(principal.getName(), "SAVE", "Questions saved successfully with question " + request.getQuestion(),"question","/save/question");
+        logService.logs(principal.getName(), "SAVE", "Questions saved successfully with question " + request.getQuestion(),"question", servletRequest.getRequestURI());
         return ResponseEntity.ok(response);
     }
 
@@ -43,10 +44,10 @@ public class CallCenterController {
         return ResponseEntity.ok(response);
     }
     @PostMapping("/save/subactivity/questions")
-    public ResponseEntity<WorkflowResponse> saveSubActivityQuestions(Principal principal, @RequestBody SubActivityQuestionsRequest request)
+    public ResponseEntity<WorkflowResponse> saveSubActivityQuestions(Principal principal, @RequestBody SubActivityQuestionsRequest request,HttpServletRequest servletRequest)
     {
         WorkflowResponse response = callCenterService.saveSubActivityQuestions(request);
-        logService.logs(principal.getName(), "SAVE", "Questions mapped successfully to subActivity " + request.getSubActivityId(),"question","/save/subactivity/questions");
+        logService.logs(principal.getName(), "SAVE", "Questions mapped successfully to subActivity " + request.getSubActivityId(),"question", servletRequest.getRequestURI());
         return ResponseEntity.ok(response);
     }
 
@@ -58,11 +59,11 @@ public class CallCenterController {
     }
 
     @PostMapping("/save/callcenter/verification/data")
-    public ResponseEntity<?> saveCallCenterVerification(Principal principal,@RequestBody CallCenterVerificationRequest request)
+    public ResponseEntity<?> saveCallCenterVerification(Principal principal,@RequestBody CallCenterVerificationRequest request,HttpServletRequest servletRequest)
     {
         try {
             WorkflowResponse response = callCenterService.saveCallCenterVerification(request);
-            logService.logs(principal.getName(), "UPDATE", String.format("Updated call center verification data for participant %s and program %s by %s" , request.getParticipantId() , request.getProgramId(), request.getVerifiedBy()),"question","/save/callcenter/verification/data");
+            logService.logs(principal.getName(), "UPDATE", String.format("Updated call center verification data for participant %s and program %s by %s" , request.getParticipantId() , request.getProgramId(), request.getVerifiedBy()),"question", servletRequest.getRequestURI());
             return ResponseEntity.ok(response);
         }
         catch (DataException ex) {

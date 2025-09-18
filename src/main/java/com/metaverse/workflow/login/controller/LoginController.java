@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,14 +48,15 @@ public class LoginController {
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(implementation = Exception.class)))
     })
     @PostMapping(value = "/login/user/update/{userId}", produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<?> updateUser(Principal principal, @PathVariable String userId, @RequestBody LoginUserRequest request) {
+    public ResponseEntity<?> updateUser(Principal principal, @PathVariable String userId,
+                                        @RequestBody LoginUserRequest request, HttpServletRequest servletRequest) {
         WorkflowResponse response ;
         try {
             response = loginService.updateUser(userId,request);
         } catch (DataException exception) {
             return RestControllerBase.error(exception);
         }
-        logService.logs(principal.getName(), "UPDATE", "User details updated for userId: " + userId,"USER_MANAGEMENT","/login/user/update/{userId}");
+        logService.logs(principal.getName(), "UPDATE", "User details updated for userId: " + userId,"USER_MANAGEMENT",servletRequest.getRequestURI());
         return ResponseEntity.ok(response);
     }
 
@@ -95,7 +97,8 @@ public class LoginController {
                     content = @Content(schema = @Schema(implementation = Exception.class)))
     })
     @PutMapping(value = "/login/change-password", produces = {"application/json"})
-    public ResponseEntity<WorkflowResponse> changePassword(@RequestBody ChangePasswordRequest request,Principal principal) throws DataException {
+    public ResponseEntity<WorkflowResponse> changePassword(@RequestBody ChangePasswordRequest request,Principal principal,
+                                                           HttpServletRequest servletRequest) throws DataException {
         log.info("Change password controller, userId: {}", request.getUserId());
         WorkflowResponse response = loginService.changePassword(request);
         logService.logs(principal.getName(), "CHANGE_PASSWORD",
@@ -104,7 +107,7 @@ public class LoginController {
                 request.getOldPassword(),
                 request.getNewPassword()),
                 "USER_MANAGEMENT",
-                "/login/change-password");
+                servletRequest.getRequestURI());
         return ResponseEntity.ok(response);
     }
 }

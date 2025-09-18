@@ -6,6 +6,7 @@ import java.util.List;
 import com.metaverse.workflow.activitylog.ActivityLogService;
 import com.metaverse.workflow.common.util.RestControllerBase;
 import com.metaverse.workflow.exceptions.DataException;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,11 +25,11 @@ public class LocationController {
 	private ActivityLogService logService;
 	
 	@PostMapping("/location/save")
-	public ResponseEntity<WorkflowResponse> saveLocation(@RequestBody LocationRequest location, Principal principal)
+	public ResponseEntity<WorkflowResponse> saveLocation(@RequestBody LocationRequest location, Principal principal, HttpServletRequest servletRequest)
 	{
 	LocationResponse response = locationSercice.saveLocation(location);
 		if(response==null)return  ResponseEntity.internalServerError().body(WorkflowResponse.builder().message("Invalid Agency Id").status(400).build());
-		logService.logs(principal.getName(), "SAVE","location creation","location","/location/save");
+		logService.logs(principal.getName(), "SAVE","location creation","location",servletRequest.getRequestURI());
 		return ResponseEntity.ok(WorkflowResponse.builder().status(200).message("Created").data(response).build());
 	}
 	
@@ -46,20 +47,22 @@ public class LocationController {
 		return ResponseEntity.ok(response);
 	}
 	@PutMapping("/locations/update/{locationId}")
-	public ResponseEntity<?> updateLocation(Principal principal,@PathVariable Long locationId, @RequestBody LocationRequest locationRequest) {
+	public ResponseEntity<?> updateLocation(Principal principal,@PathVariable Long locationId,
+											@RequestBody LocationRequest locationRequest,
+											HttpServletRequest servletRequest) {
 		try {
 			LocationResponse response =locationSercice.updateLocation(locationId, locationRequest);
-			logService.logs(principal.getName(), "UPDATE","location update","location","/locations/update/{locationId}");
+			logService.logs(principal.getName(), "UPDATE","location update","location", servletRequest.getRequestURI());
 			return ResponseEntity.ok(response);
 		} catch (DataException e) {
 			return RestControllerBase.error(e);
 		}
 	}
 	@DeleteMapping("locations/delete/{locationId}")
-	public ResponseEntity<?> deleteLocation(@PathVariable Long locationId,Principal principal) {
+	public ResponseEntity<?> deleteLocation(@PathVariable Long locationId,Principal principal,HttpServletRequest servletRequest) {
 		try {
 			WorkflowResponse  response = locationSercice.deleteLocation(locationId);
-			logService.logs(principal.getName(), "DELETE","location deleted successfully with id"+locationId,"location","locations/delete/{locationId}");
+			logService.logs(principal.getName(), "DELETE","location deleted successfully with id"+locationId,"location", servletRequest.getRequestURI());
 			return ResponseEntity.ok(response);
 		} catch (DataException e) {
 			return RestControllerBase.error(e);

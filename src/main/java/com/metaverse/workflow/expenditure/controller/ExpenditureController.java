@@ -12,6 +12,7 @@ import com.metaverse.workflow.exceptions.*;
 import com.metaverse.workflow.expenditure.service.*;
 import com.metaverse.workflow.model.HeadOfExpense;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.servlet.http.HttpServletRequest;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,11 +33,12 @@ public class ExpenditureController {
     private ActivityLogService logService;
 
     @PostMapping("/bulk/expenditure/save")
-    public ResponseEntity<?> saveBulkExpenditure(Principal principal, @RequestPart String request, @RequestPart(required = false) List<MultipartFile> files) throws JsonProcessingException {
+    public ResponseEntity<?> saveBulkExpenditure(Principal principal, @RequestPart String request, @RequestPart(required = false) List<MultipartFile> files,
+    HttpServletRequest servletRequest) throws JsonProcessingException {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             BulkExpenditureRequest bulkExpenditureRequest = objectMapper.readValue(request, BulkExpenditureRequest.class);
-            logService.logs(principal.getName(),"SAVE","adding bulk expenditure for "+ CommonUtil.agencyMap.get(bulkExpenditureRequest.getAgencyId()),"bulk expenditure","/bulk/expenditure/save");
+            logService.logs(principal.getName(),"SAVE","adding bulk expenditure for "+ CommonUtil.agencyMap.get(bulkExpenditureRequest.getAgencyId()),"bulk expenditure", servletRequest.getRequestURI());
             return ResponseEntity.ok(expenditureService.saveBulkExpenditure(bulkExpenditureRequest, files));
         }
         catch(DataException exception)
@@ -45,22 +47,22 @@ public class ExpenditureController {
         } 
     }
     @PostMapping("/bulk/expenditure/update/{id}")
-    public ResponseEntity<?> updateBulkExpenditure(Principal principal,@PathVariable("id") Long expenditureId, @RequestPart String request, @RequestPart(required = false) List<MultipartFile> files
-    ) throws JsonProcessingException {
+    public ResponseEntity<?> updateBulkExpenditure(Principal principal,@PathVariable("id") Long expenditureId, @RequestPart String request, @RequestPart(required = false) List<MultipartFile> files,
+    HttpServletRequest servletRequest) throws JsonProcessingException {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             BulkExpenditureRequest bulkExpenditureRequest = objectMapper.readValue(request, BulkExpenditureRequest.class);
-            logService.logs(principal.getName(),"UPDATE","update bulk expenditure ","bulk expenditure","/bulk/expenditure/update/{id}");
+            logService.logs(principal.getName(),"UPDATE","update bulk expenditure ","bulk expenditure", servletRequest.getRequestURI());
             return ResponseEntity.ok(expenditureService.updateBulkExpenditure(expenditureId, bulkExpenditureRequest, files));
         } catch (DataException exception) {
             return RestControllerBase.error(exception);
         }
     }
     @PostMapping("/bulk/expenditure/delete/{expenditureId}")
-    public ResponseEntity<?> deleteBulkExpenditure(@PathVariable Long expenditureId,Principal principal) {
+    public ResponseEntity<?> deleteBulkExpenditure(@PathVariable Long expenditureId,Principal principal,HttpServletRequest servletRequest) {
         try {
             WorkflowResponse response = expenditureService.deleteBulkExpenditure(expenditureId);
-            logService.logs(principal.getName(),"DELETE","delete bulk expenditure ","bulk expenditure","/bulk/expenditure/delete/{expenditureId}");
+            logService.logs(principal.getName(),"DELETE","delete bulk expenditure ","bulk expenditure",servletRequest.getRequestURI());
             return ResponseEntity.ok(response);
         } catch (DataException e) {
             return RestControllerBase.error(e);
@@ -75,12 +77,12 @@ public class ExpenditureController {
     )
     public ResponseEntity<?> saveProgramExpenditure(Principal principal,
             @RequestPart("request") String request,
-            @RequestPart(value = "files", required = false) List<MultipartFile> files) throws ParseException {
+            @RequestPart(value = "files", required = false) List<MultipartFile> files, HttpServletRequest servletRequest) throws ParseException {
         try {
             JSONParser parser = new JSONParser();
             ProgramExpenditureRequest programExpenditureRequest = parser.parse(request, ProgramExpenditureRequest.class);
             var response = expenditureService.saveProgramExpenditure(programExpenditureRequest, files);
-            logService.logs(principal.getName(),"SAVE","save program expenditure ","program expenditure","/program/expenditure/save");
+            logService.logs(principal.getName(),"SAVE","save program expenditure ","program expenditure", servletRequest.getRequestURI());
             return ResponseEntity.ok(response);
         }
         catch (DataException exception) {
@@ -95,12 +97,12 @@ public class ExpenditureController {
     public ResponseEntity<?> updateProgramExpenditure(Principal principal,
             @PathVariable("expenditureId") Long expenditureId,
             @RequestPart("request") String request,
-            @RequestPart(value = "files", required = false) List<MultipartFile> files) throws ParseException {
+            @RequestPart(value = "files", required = false) List<MultipartFile> files, HttpServletRequest servletRequest) throws ParseException {
         try {
             JSONParser parser = new JSONParser();
             ProgramExpenditureRequest programExpenditureRequest = parser.parse(request, ProgramExpenditureRequest.class);
             var response = expenditureService.updateProgramExpenditure(expenditureId, programExpenditureRequest, files);
-            logService.logs(principal.getName(),"UPDATE","update program expenditure ","program expenditure","/program/expenditure/update/{expenditureId}");
+            logService.logs(principal.getName(),"UPDATE","update program expenditure ","program expenditure", servletRequest.getRequestURI());
             return ResponseEntity.ok(response);
         }
         catch (DataException exception) {
@@ -140,10 +142,10 @@ public class ExpenditureController {
 
     @PostMapping("/bulk/transactions/save")
     public ResponseEntity<?> saveTransaction(Principal principal,
-            @RequestBody BulkExpenditureTransactionRequest request) throws DataException {
+            @RequestBody BulkExpenditureTransactionRequest request,HttpServletRequest servletRequest) throws DataException {
         try {
             BulkExpenditureTransactionResponse response = expenditureService.saveTransaction(request);
-            logService.logs(principal.getName(), "SAVE","Fetching item from bulk stock and saving transaction","bulk transaction","/bulk/transactions/save");
+            logService.logs(principal.getName(), "SAVE","Fetching item from bulk stock and saving transaction","bulk transaction",servletRequest.getRequestURI());
             return ResponseEntity.ok(response);
         }
         catch (DataException ex) {
@@ -151,10 +153,10 @@ public class ExpenditureController {
         }
     }
     @PostMapping("/bulk/transactions/delete/{transactionId}")
-    public ResponseEntity<?> deleteTransaction(@PathVariable Long transactionId,Principal principal) throws DataException {
+    public ResponseEntity<?> deleteTransaction(@PathVariable Long transactionId,Principal principal,HttpServletRequest servletRequest) throws DataException {
         try {
             WorkflowResponse response = expenditureService.deleteTransaction(transactionId);
-            logService.logs(principal.getName(), "DELETE", "Removing item from bulk stock and deleting transaction", "Bulk Transaction", "/bulk/transactions/delete/{transactionId}");
+            logService.logs(principal.getName(), "DELETE", "Removing item from bulk stock and deleting transaction", "Bulk Transaction", servletRequest.getRequestURI());
             return ResponseEntity.ok(response);
         }
         catch (DataException ex) {
@@ -163,10 +165,10 @@ public class ExpenditureController {
     }
     @PostMapping("/bulk/transactions/update/{transactionId}")
     public ResponseEntity<?> updateTransaction(Principal  principal,@PathVariable Long transactionId,
-            @RequestBody BulkExpenditureTransactionRequest request) throws DataException {
+            @RequestBody BulkExpenditureTransactionRequest request, HttpServletRequest servletRequest) throws DataException {
         try {
             WorkflowResponse response = expenditureService.updateTransaction(transactionId,request);
-            logService.logs(principal.getName(), "UPDATE", "Modifying bulk stock transaction details", "Bulk Transaction", "/bulk/transactions/update");
+            logService.logs(principal.getName(), "UPDATE", "Modifying bulk stock transaction details", "Bulk Transaction", servletRequest.getRequestURI());
             return ResponseEntity.ok(response);
         }
         catch (DataException ex) {
@@ -204,10 +206,10 @@ public class ExpenditureController {
     }
 
     @PostMapping("/program/expenditure/delete/{expenditureId}")
-    public ResponseEntity<?> deleteProgramExpenditure(@PathVariable Long expenditureId,Principal principal) {
+    public ResponseEntity<?> deleteProgramExpenditure(@PathVariable Long expenditureId,Principal principal,HttpServletRequest servletRequest) {
         try {
             WorkflowResponse response = expenditureService.deleteProgramExpenditure(expenditureId);
-            logService.logs(principal.getName(), "DELETE", "Deleting program expenditure with ID: " + expenditureId, "Program Expenditure", "/program/expenditure/delete/" + expenditureId);
+            logService.logs(principal.getName(), "DELETE", "Deleting program expenditure with ID: " + expenditureId, "Program Expenditure", servletRequest.getRequestURI());
             return ResponseEntity.ok(response);
         } catch (DataException e) {
             return RestControllerBase.error(e);
@@ -225,9 +227,10 @@ public class ExpenditureController {
     }
     @PutMapping("/save/remarks")
     public ResponseEntity<?> addingRemarks(Principal principal,@RequestBody ExpenditureRemarksDTO remarksDTO,
-                                           @RequestParam(value = "status", required = false) BillRemarksStatus status) {
+                                           @RequestParam(value = "status", required = false) BillRemarksStatus status,
+                                           HttpServletRequest servletRequest) {
         try {
-            logService.logs(principal.getName(), "UPDATE", "Adding/updating remarks for expenditure with status: " + status, "Program Expenditure", "/save/remarks");
+            logService.logs(principal.getName(), "UPDATE", "Adding/updating remarks for expenditure with status: " + status, "Program Expenditure", servletRequest.getRequestURI());
             return  ResponseEntity.ok(expenditureService.addRemarkOrResponse(remarksDTO, status));
         } catch (DataException e) {
             return RestControllerBase.error(e);
@@ -235,10 +238,11 @@ public class ExpenditureController {
     }
 
     @PutMapping("/save/remarks/transaction")
-    public ResponseEntity<?> addingRemarksTransaction(@RequestBody ExpenditureRemarksDTO remarksDTO, @RequestParam("status") BillRemarksStatus status, Principal principal)
+    public ResponseEntity<?> addingRemarksTransaction(@RequestBody ExpenditureRemarksDTO remarksDTO, @RequestParam("status") BillRemarksStatus status,
+                                                      Principal principal,HttpServletRequest servletRequest)
     {
         try {
-            logService.logs(principal.getName(), "UPDATE", "Adding/updating remarks for transaction with status: " + status, "Bulk Transaction", "/save/remarks/transaction");
+            logService.logs(principal.getName(), "UPDATE", "Adding/updating remarks for transaction with status: " + status, "Bulk Transaction", servletRequest.getRequestURI());
             return  ResponseEntity.ok(expenditureService.addRemarkOrResponseTransaction(remarksDTO, status));
         } catch (DataException e) {
             return RestControllerBase.error(e);

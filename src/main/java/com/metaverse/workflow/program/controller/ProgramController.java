@@ -14,6 +14,8 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.parser.JSONParser;
@@ -60,10 +62,10 @@ public class ProgramController {
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(implementation = Exception.class)))
     })
     @PostMapping(value = "/program/create", produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<WorkflowResponse> createProgram(@RequestBody ProgramRequest request, Principal principal
+    public ResponseEntity<WorkflowResponse> createProgram(@RequestBody ProgramRequest request, Principal principal, HttpServletRequest servletRequest
     ) {
         WorkflowResponse response = programService.createProgram(request);
-        logService.logs(principal.getName(),"SAVE","program created successfully","program","/program/create");
+        logService.logs(principal.getName(), "SAVE", "program created successfully", "program", servletRequest.getRequestURL().toString());
         return ResponseEntity.ok(response);
     }
 
@@ -73,19 +75,19 @@ public class ProgramController {
     })
     @PostMapping(value = "/program/session/create", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_OCTET_STREAM_VALUE},
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<WorkflowResponse> createSession(Principal principal,@RequestPart("data") String data, @RequestPart(value = "files", required = false) List<MultipartFile> files) throws ParseException {
+    public ResponseEntity<WorkflowResponse> createSession(Principal principal, @RequestPart("data") String data, @RequestPart(value = "files", required = false) List<MultipartFile> files, HttpServletRequest servletRequest) throws ParseException {
         log.info("Program controller, title : {}", data);
         JSONParser parser = new JSONParser();
         ProgramSessionRequest request = parser.parse(data, ProgramSessionRequest.class);
         WorkflowResponse response = programService.createProgramSession(request, files);
-        logService.logs(principal.getName(),"SAVE","program session created successfully","program session","/program/session/create");
+        logService.logs(principal.getName(), "SAVE", "program session created successfully", "program session", servletRequest.getRequestURI());
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/program/session/delete")
-    public ResponseEntity<String> deleteSession(Principal principal,@RequestParam("sessionId") Long sessionId) throws ParseException {
+    public ResponseEntity<String> deleteSession(Principal principal, @RequestParam("sessionId") Long sessionId, HttpServletRequest servletRequest) throws ParseException {
         String response = programService.deleteProgramSession(sessionId);
-        logService.logs(principal.getName(),"DELETE","program session delete successfully","program session","/program/session/delete");
+        logService.logs(principal.getName(), "DELETE", "program session delete successfully with id " + sessionId, "program session", servletRequest.getRequestURI());
         return ResponseEntity.ok(response);
     }
 
@@ -95,16 +97,16 @@ public class ProgramController {
                                                                        @RequestParam(value = "agencyId", required = false) Long agencyId,
                                                                        @RequestParam(defaultValue = "0") int page,
                                                                        @RequestParam(defaultValue = "10") int size) {
-        WorkflowResponse response = programService.getProgramParticipants(programId,agencyId, page, size);
+        WorkflowResponse response = programService.getProgramParticipants(programId, agencyId, page, size);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/program/participants/temp/{programId}")
     public ResponseEntity<WorkflowResponse> getTempParticipantsByProgramId(@PathVariable("programId") Long programId,
-                                                                       @RequestParam(value = "agencyId", required = false) Long agencyId,
-                                                                       @RequestParam(defaultValue = "0") int page,
-                                                                       @RequestParam(defaultValue = "10") int size) {
-        WorkflowResponse response = programService.getTempProgramParticipants(programId,agencyId, page, size);
+                                                                           @RequestParam(value = "agencyId", required = false) Long agencyId,
+                                                                           @RequestParam(defaultValue = "0") int page,
+                                                                           @RequestParam(defaultValue = "10") int size) {
+        WorkflowResponse response = programService.getTempProgramParticipants(programId, agencyId, page, size);
         return ResponseEntity.ok(response);
     }
 
@@ -121,18 +123,18 @@ public class ProgramController {
     }
 
     @PostMapping(value = "/updateProgram", produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<WorkflowResponse> updateProgram(Principal principal,@RequestBody ProgramRequest request) {
+    public ResponseEntity<WorkflowResponse> updateProgram(Principal principal, @RequestBody ProgramRequest request, HttpServletRequest servletRequest) {
         log.info("Updating Program with ID: {}", request.getProgramId());
         WorkflowResponse response = programService.updateProgram(request);
-        logService.logs(principal.getName(),"UPDATE","program updated successfully","program","/updateProgram");
+        logService.logs(principal.getName(), "UPDATE", "program updated successfully for id " + request.getProgramId(), "program", servletRequest.getRequestURI());
         return ResponseEntity.ok(response);
 
     }
 
     @PostMapping("/save/program/type")
-    public ResponseEntity<WorkflowResponse> saveProgramTypes(Principal principal,@RequestBody ProgramTypeRequest request) {
+    public ResponseEntity<WorkflowResponse> saveProgramTypes(Principal principal, @RequestBody ProgramTypeRequest request, HttpServletRequest servletRequest) {
         WorkflowResponse response = programService.saveProgramType(request);
-        logService.logs(principal.getName(),"SAVE","program type saved successfully","program type","/save/program/type");
+        logService.logs(principal.getName(), "SAVE", "program type saved successfully", "program type", servletRequest.getRequestURI());
         return ResponseEntity.ok(response);
     }
 
@@ -157,19 +159,19 @@ public class ProgramController {
 
     @PostMapping(value = "/program/session/update", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_OCTET_STREAM_VALUE},
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<WorkflowResponse> editProgramSession(Principal principal,@RequestPart("data") String data, @RequestPart(value = "files", required = false) List<MultipartFile> files) throws ParseException {
+    public ResponseEntity<WorkflowResponse> editProgramSession(Principal principal, @RequestPart("data") String data, @RequestPart(value = "files", required = false) List<MultipartFile> files, HttpServletRequest servletRequest) throws ParseException {
         log.info("Program controller, title : {}", data);
         JSONParser parser = new JSONParser();
         ProgramSessionRequest request = parser.parse(data, ProgramSessionRequest.class);
         WorkflowResponse response = programService.editProgramSession(request, files);
-        logService.logs(principal.getName(),"UPDATE","program session updated successfully","program session","/program/session/update");
+        logService.logs(principal.getName(), "UPDATE", "program session updated successfully", "program session", servletRequest.getRequestURI());
         return ResponseEntity.ok(response);
     }
 
     @PostMapping(value = "/program/execution/images", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_OCTET_STREAM_VALUE},
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<WorkflowResponse> saveSessionImages(Principal principal,
-                                                              @RequestPart("data") String data,
+                                                              @RequestPart("data") String data, HttpServletRequest servletRequest,
                                                               @RequestPart(value = "image1", required = false) MultipartFile image1,
                                                               @RequestPart(value = "image2", required = false) MultipartFile image2,
                                                               @RequestPart(value = "image3", required = false) MultipartFile image3,
@@ -179,30 +181,32 @@ public class ProgramController {
         JSONParser parser = new JSONParser();
         ProgramSessionRequest request = parser.parse(data, ProgramSessionRequest.class);
         WorkflowResponse response = programService.saveSessionImages(request, image1, image2, image3, image4, image5);
-        logService.logs(principal.getName(),"SAVE","program execution images uploaded successfully","program execution","/program/execution/images");
+        logService.logs(principal.getName(), "SAVE", "program execution images uploaded successfully", "program execution", servletRequest.getRequestURI());
         return ResponseEntity.ok(response);
     }
 
     @PostMapping(value = "/program/collage/images", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<WorkflowResponse> saveCollageImages(Principal principal,@RequestParam("programId") Long programId,
-                                                              @RequestPart(value = "image", required = false) MultipartFile image) {
+    public ResponseEntity<WorkflowResponse> saveCollageImages(Principal principal, @RequestParam("programId") Long programId,
+                                                              @RequestPart(value = "image", required = false) MultipartFile image,
+                                                              HttpServletRequest servletRequest) {
         WorkflowResponse response = programService.saveCollageImages(programId, image);
-        logService.logs(principal.getName(),"SAVE","created collage for reports","report","/program/collage/images");
+        logService.logs(principal.getName(), "SAVE", "created collage for reports", "report", servletRequest.getRequestURI());
 
         return ResponseEntity.ok(response);
     }
 
     @PostMapping(value = "/program/execution/media-coverage", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_OCTET_STREAM_VALUE},
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<WorkflowResponse> saveMediaCoverage(Principal principal,@RequestPart("data") String data,
+    public ResponseEntity<WorkflowResponse> saveMediaCoverage(Principal principal, @RequestPart("data") String data,
                                                               @RequestPart(value = "image1", required = false) MultipartFile image1,
                                                               @RequestPart(value = "image2", required = false) MultipartFile image2,
-                                                              @RequestPart(value = "image3", required = false) MultipartFile image3) throws ParseException {
+                                                              @RequestPart(value = "image3", required = false) MultipartFile image3,
+                                                              HttpServletRequest servletRequest) throws ParseException {
         log.info("Program controller save program media, data : {}", data);
         JSONParser parser = new JSONParser();
         MediaCoverageRequest request = parser.parse(data, MediaCoverageRequest.class);
         WorkflowResponse response = programService.saveMediaCoverage(request, image1, image2, image3);
-        logService.logs(principal.getName(),"SAVE","program execution media coverage saved","program execution","/program/execution/media-coverage");
+        logService.logs(principal.getName(), "SAVE", "program execution media coverage saved", "program execution", servletRequest.getRequestURI());
 
         return ResponseEntity.ok(response);
     }
@@ -284,8 +288,6 @@ public class ProgramController {
     }
 
 
-
-
     @GetMapping("/program/summary/{programId}")
     public ResponseEntity<?> getProgramSummeryById(@PathVariable("programId") Long programId) {
         try {
@@ -303,16 +305,16 @@ public class ProgramController {
     }
 
     @PostMapping(value = "/program/import", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<WorkflowResponse> importPrograms(Principal principal,@RequestPart("file") MultipartFile file) {
+    public ResponseEntity<WorkflowResponse> importPrograms(Principal principal, @RequestPart("file") MultipartFile file, HttpServletRequest servletRequest) {
         WorkflowResponse response = programService.importProgramsFromExcel(file);
-        logService.logs(principal.getName(),"IMPORT","imported program from excel successfully","program temp","/program/import");
+        logService.logs(principal.getName(), "IMPORT", "imported program from excel successfully", "program temp", servletRequest.getRequestURI());
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/program/delete/{programId}")
-    public ResponseEntity<WorkflowResponse> deleteProgram(Principal principal,@PathVariable Long programId) {
-        WorkflowResponse response =programService.deleteProgramAndDependencies(programId);
-        logService.logs(principal.getName(),"DELETE","deleted program successfully","program temp","/program/delete/{programId}");
+    public ResponseEntity<WorkflowResponse> deleteProgram(Principal principal, @PathVariable Long programId, HttpServletRequest servletRequest) {
+        WorkflowResponse response = programService.deleteProgramAndDependencies(programId);
+        logService.logs(principal.getName(), "DELETE", "deleted program successfully with id "+programId, "program temp", servletRequest.getRequestURI());
         return ResponseEntity.ok(response);
     }
 
