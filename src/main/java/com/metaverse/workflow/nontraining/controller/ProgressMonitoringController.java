@@ -1,5 +1,6 @@
 package com.metaverse.workflow.nontraining.controller;
 
+import com.metaverse.workflow.activitylog.ActivityLogService;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.model.NonTrainingAchievement;
 import com.metaverse.workflow.nontraining.dto.NonTrainingActivityDto;
@@ -14,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,6 +31,9 @@ public class ProgressMonitoringController {
 
     @Autowired
     private NonTrainingActivityService nonTrainingActivityService;
+
+    @Autowired
+    private ActivityLogService logService;
 
     @GetMapping("/non-training-targets")
     public ResponseEntity<?> getAgencyProgramMonitor(Long agencyId){
@@ -59,11 +64,17 @@ public class ProgressMonitoringController {
     }
 
     @PutMapping("/non-training-achievement/{nonTrainingAchievementId}")
-    public ResponseEntity<?> updateNonTrainingAchievement(@PathVariable Long nonTrainingAchievementId, @RequestBody PhysicalFinancialDto request) {
+    public ResponseEntity<?> updateNonTrainingAchievement(@PathVariable Long nonTrainingAchievementId, @RequestBody PhysicalFinancialDto request, Principal principal) {
         try {
             Optional<NonTrainingAchievement> updated = nonTrainingAchievementService.updateNonTrainingAchievement(nonTrainingAchievementId,request);
 
             if (updated.isPresent()) {
+                logService.logs(principal.getName(), "UPDATE",
+                        String.format("Non-Training Achievement updated | ID: %s | Request: %s",
+                                nonTrainingAchievementId, request.toString()),
+                        "NON_TRAINING",
+                        "/non-training-achievement/{nonTrainingAchievementId}"
+                );
                 return ResponseEntity.ok(
                         WorkflowResponse.builder()
                                 .data("")

@@ -1,5 +1,6 @@
 package com.metaverse.workflow.programrawmaterial.controller;
 
+import com.metaverse.workflow.activitylog.ActivityLogService;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.programattendance.service.ProgramAttendanceRequest;
 import com.metaverse.workflow.programrawmaterial.service.ProgramRawMaterialRequest;
@@ -10,13 +11,16 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
+
 @RestController
 @Slf4j
 public class ProgramRawMaterialController {
 
-
     @Autowired
-    ProgramRawMaterialService programRawMaterialService;
+    private ProgramRawMaterialService programRawMaterialService;
+    @Autowired
+    private ActivityLogService logService;
 
     @GetMapping(value = "/program/rawmaterial/{programId}")
     public ResponseEntity<WorkflowResponse> rawMaterialByProgramId(@PathVariable("programId") Long programId,
@@ -28,9 +32,13 @@ public class ProgramRawMaterialController {
     }
 
     @PostMapping(value = "/program/rawmaterial", produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<WorkflowResponse> saveProgramRawMaterial(@RequestBody ProgramRawMaterialRequest request) {
+    public ResponseEntity<WorkflowResponse> saveProgramRawMaterial(@RequestBody ProgramRawMaterialRequest request, Principal principal) {
         log.info("Program Raw Material controller, programId : {}", request.getProgramId());
         WorkflowResponse response = programRawMaterialService.updateProgramRawMaterial(request);
+        logService.logs(principal.getName(), "SAVE",
+                "Program raw material saved successfully | Program ID: " + request.getProgramId(),
+                "ProgramRawMaterial",
+                "/program/rawmaterial");
         return ResponseEntity.ok(response);
     }
 }

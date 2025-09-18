@@ -59,7 +59,7 @@ public class LocationController {
 	public ResponseEntity<?> deleteLocation(@PathVariable Long locationId,Principal principal) {
 		try {
 			WorkflowResponse  response = locationSercice.deleteLocation(locationId);
-			logService.logs(principal.getName(), "DELETE","delete location","location","locations/delete/{locationId}");
+			logService.logs(principal.getName(), "DELETE","location deleted successfully with id"+locationId,"location","locations/delete/{locationId}");
 			return ResponseEntity.ok(response);
 		} catch (DataException e) {
 			return RestControllerBase.error(e);
