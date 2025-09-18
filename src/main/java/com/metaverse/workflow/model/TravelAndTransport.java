@@ -48,8 +48,8 @@ public class TravelAndTransport {
     private List<ProgramSessionFile> programSessionFiles = new ArrayList<>();
 
     @Column(name = "created_on", updatable = false)
-    private String createdOn;
+    private Date createdOn;
 
     @Column(name = "updated_on", insertable = false, updatable = true)
-    private String updatedOn;
+    private Date updatedOn;
 }

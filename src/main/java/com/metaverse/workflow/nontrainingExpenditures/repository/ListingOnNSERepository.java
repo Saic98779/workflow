@@ -13,7 +13,7 @@ public interface ListingOnNSERepository extends JpaRepository<ListingOnNSE,Long>
     Optional<List<ListingOnNSE>> findByNonTrainingSubActivity_SubActivityId(Long subActivityId);
 
     @Query(value = """
-    SELECT COUNT(l.listing_on_nse_id)
+    SELECT COUNT(l.listing_onnseid)
     FROM listing_on_nse l
     JOIN non_training_sub_activity ntsa ON l.sub_activity_id = ntsa.sub_activity_id
     WHERE ntsa.sub_activity_id = :subActivityId

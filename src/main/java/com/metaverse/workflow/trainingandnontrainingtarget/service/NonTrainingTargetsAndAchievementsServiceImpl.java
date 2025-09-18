@@ -192,24 +192,24 @@ public class NonTrainingTargetsAndAchievementsServiceImpl implements NonTraining
             }
             case 76 -> { // Corpus-Listing On NSE
                 Double  expQ1 = listingOnNSERepository.sumLoanAmountBySubActivityAndDateRange(subActivityId,
-                        getFinancialYearRange1(financialYear.split("-")[0], 4, 1, false),
-                        getFinancialYearRange1(financialYear.split("-")[0], 6, 30, false));
+                        getFinancialYearRange1(financialYear.split("-")[0], 4, 1, true),
+                        getFinancialYearRange1(financialYear.split("-")[0], 6, 30, true));
                 Double expQ2 = listingOnNSERepository.sumLoanAmountBySubActivityAndDateRange(
                         subActivityId,
-                        getFinancialYearRange1(financialYear.split("-")[0],7,1,false),
-                        getFinancialYearRange1(financialYear.split("-")[0],9,30,false)
+                        getFinancialYearRange1(financialYear.split("-")[0],7,1,true),
+                        getFinancialYearRange1(financialYear.split("-")[0],9,30,true)
                 );
 
                 Double expQ3 = listingOnNSERepository.sumLoanAmountBySubActivityAndDateRange(
                          subActivityId,
-                        getFinancialYearRange1(financialYear.split("-")[0],10,1,false),
-                        getFinancialYearRange1(financialYear.split("-")[0],12,31,false)
+                        getFinancialYearRange1(financialYear.split("-")[0],10,1,true),
+                        getFinancialYearRange1(financialYear.split("-")[0],12,31,true)
                 );
 
                 Double expQ4 = listingOnNSERepository.sumLoanAmountBySubActivityAndDateRange(
                          subActivityId,
-                        getFinancialYearRange1(financialYear.split("-")[1],1,1,false),
-                        getFinancialYearRange1(financialYear.split("-")[1],3,31,false)
+                        getFinancialYearRange1(financialYear.split("-")[1],1,1,true),
+                        getFinancialYearRange1(financialYear.split("-")[1],3,31,true)
 
                 );
 

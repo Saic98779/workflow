@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Data
@@ -37,10 +38,10 @@ public class ListingOnNSE {
     private Date dateOfListing;
 
     @Column(name = "created_on", updatable = false)
-    private String createdOn;
+    private Date createdOn;
 
     @Column(name = "updated_on", insertable = false, updatable = true)
-    private String updatedOn;
+    private Date updatedOn;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sub_activity_id")
