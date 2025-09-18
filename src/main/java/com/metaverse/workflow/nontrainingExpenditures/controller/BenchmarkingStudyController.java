@@ -4,6 +4,7 @@ package com.metaverse.workflow.nontrainingExpenditures.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.metaverse.workflow.activitylog.ActivityLogService;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.common.util.RestControllerBase;
 import com.metaverse.workflow.exceptions.DataException;
@@ -16,19 +17,24 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.security.Principal;
+
 @RestController
 @RequestMapping("/benchmarking-study")
 @RequiredArgsConstructor
 public class BenchmarkingStudyController {
 
     private final BenchmarkingStudyService service;
+    private final ActivityLogService logService;
 
     @PostMapping(path="/save",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> create(@RequestPart String benchmarkingStudy ,@RequestPart(value = "file", required = false) MultipartFile file) {
+    public ResponseEntity<?> create(Principal principal, @RequestPart String benchmarkingStudy , @RequestPart(value = "file", required = false) MultipartFile file) {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             BenchmarkingStudyRequest benchmarkingStudyRequest = objectMapper.readValue(benchmarkingStudy, BenchmarkingStudyRequest.class);
-            return ResponseEntity.ok(service.createBenchmarkingStudy(benchmarkingStudyRequest,file));
+            WorkflowResponse response = service.createBenchmarkingStudy(benchmarkingStudyRequest,file);
+            logService.logs(principal.getName(), "SAVE","Benchmarking study created successfully","Benchmarking","/benchmarking-study/save");
+            return ResponseEntity.ok(response);
         } catch (DataException e) {
             return RestControllerBase.error(e);
         } catch (JsonMappingException e) {
@@ -40,9 +46,11 @@ public class BenchmarkingStudyController {
 
     @PutMapping("/{benchmarkingStudyId}")
     public ResponseEntity<?> update(@PathVariable Long benchmarkingStudyId,
-                                    @RequestBody BenchmarkingStudyRequest request) {
+                                    @RequestBody BenchmarkingStudyRequest request,
+                                    Principal principal) {
         try {
             WorkflowResponse response = service.updateBenchmarkingStudy(benchmarkingStudyId, request);
+            logService.logs(principal.getName(), "UPDATE", "Benchmarking study updated successfully | ID: " + benchmarkingStudyId, "Benchmarking", "/benchmarking-study/" + benchmarkingStudyId);
             return ResponseEntity.ok(response);
         } catch (DataException e) {
             return RestControllerBase.error(e);
@@ -70,9 +78,10 @@ public class BenchmarkingStudyController {
     }
 
     @DeleteMapping("/{benchmarkingStudyId}")
-    public ResponseEntity<?> delete(@PathVariable Long benchmarkingStudyId) {
+    public ResponseEntity<?> delete(@PathVariable Long benchmarkingStudyId,Principal principal) {
         try {
             WorkflowResponse response = service.deleteBenchmarkingStudy(benchmarkingStudyId);
+            logService.logs(principal.getName(), "DELETE", "Benchmarking study deleted successfully | ID: " + benchmarkingStudyId, "Benchmarking", "/benchmarking-study"+benchmarkingStudyId);
             return ResponseEntity.ok(response);
         } catch (DataException e) {
             return RestControllerBase.error(e);

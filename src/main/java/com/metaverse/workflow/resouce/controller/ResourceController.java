@@ -15,7 +15,7 @@ import com.metaverse.workflow.resouce.service.ResourceService;
 import java.security.Principal;
 
 @RestController
-public class ResouceController {
+public class ResourceController {
 
     @Autowired
     private ResourceService service;

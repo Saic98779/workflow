@@ -1,5 +1,6 @@
 package com.metaverse.workflow.security.controller;
 
+import com.metaverse.workflow.activitylog.ActivityLogService;
 import com.metaverse.workflow.agency.repository.AgencyRepository;
 import com.metaverse.workflow.common.enums.UserRole;
 import com.metaverse.workflow.common.response.WorkflowResponse;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.security.Principal;
 import java.util.Optional;
 
 @RestController
@@ -40,10 +42,11 @@ public class AuthenticationController {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AgencyRepository agencyRepository;
+    private final ActivityLogService logService;
 
     @PostMapping("/register")
     @Operation(summary = "Register a new user")
-    public ResponseEntity<ApplicationAPIResponse<AuthenticationResponse>> register(@RequestBody RegisterRequest request) {
+    public ResponseEntity<ApplicationAPIResponse<AuthenticationResponse>> register(@RequestBody RegisterRequest request, Principal principal) {
         log.info("Registering new user with email: {}", request.getEmail());
 
         if (loginRepository.findByEmail(request.getEmail()).isPresent()) {
@@ -105,7 +108,18 @@ public class AuthenticationController {
                 .userRole(UserRole.valueOf(savedUser.getUserRole()))
                 .agencyName(agency.map(Agency::getAgencyName).orElse(null))
                 .build();
-
+        if (principal != null) { // optional, in case registration is done by an admin
+            logService.logs(principal.getName(), "SAVE",
+                    "New user registered | Email: " + request.getEmail(),
+                    "UserManagement",
+                    "/register");
+        } else {
+            // For self-registration, you can log as SYSTEM or anonymous
+            logService.logs("SYSTEM", "SAVE",
+                    "New user registered | Email: " + request.getEmail(),
+                    "UserManagement",
+                    "/register");
+        }
         return ResponseEntity.ok(
                 ApplicationAPIResponse.<AuthenticationResponse>builder()
                         .status(200)
