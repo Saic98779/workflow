@@ -164,6 +164,7 @@ public class NotificationServiceImpl {
         switch (dto.getStatus()) {
             case CLOSED -> notification.setDateOfClosure(java.time.LocalDateTime.now());
             case COMPLETED -> notification.setDateOfFix(java.time.LocalDateTime.now());
+            case OPEN -> notification.setDateOfFirstNotification(java.time.LocalDateTime.now());
             default -> {}
         }
 

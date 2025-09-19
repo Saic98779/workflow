@@ -34,6 +34,6 @@ public class NotificationResponseDto {
     private NotificationRecipientType recipientType;
 
     // New fields replacing updateInformation
-    private List<String> remarksByAgency;
-    private List<String> remarksByCallCenter;
+    private List<RemarksResponseDto> remarksByAgency;
+    private List<RemarksResponseDto> remarksByCallCenter;
 }
