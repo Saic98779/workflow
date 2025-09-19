@@ -28,13 +28,11 @@ public class NotificationMapper {
 
         dto.setRemarksByAgency(
                 entity.getRemarksByAgency().stream()
-                        .map(NotificationRemark::getRemarkText)
-                        .toList()
+                        .map( agencyRemarks -> new RemarksResponseDto(agencyRemarks.getRemarkText(),agencyRemarks.getRemarkedAt()+"")).toList()
         );
         dto.setRemarksByCallCenter(
                 entity.getRemarksByCallCenter().stream()
-                        .map(NotificationRemark::getRemarkText)
-                        .toList()
+                        .map( callCenterRemarks -> new RemarksResponseDto(callCenterRemarks.getRemarkText(),callCenterRemarks.getRemarkedAt()+"")).toList()
         );
 
         return dto;
