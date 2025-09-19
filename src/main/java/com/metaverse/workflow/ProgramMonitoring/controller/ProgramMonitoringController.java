@@ -7,6 +7,7 @@ import com.metaverse.workflow.activitylog.ActivityLogService;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.common.util.RestControllerBase;
 import com.metaverse.workflow.exceptions.DataException;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,20 +22,22 @@ public class ProgramMonitoringController {
     private final ProgramMonitoringRepo feedbackRepository;
     private final ActivityLogService logService;
     @PostMapping("/program/feedback/save")
-    public ResponseEntity<?> saveFeedback(Principal principal, @RequestBody ProgramMonitoringRequest request) throws DataException {
+    public ResponseEntity<?> saveFeedback(Principal principal, @RequestBody ProgramMonitoringRequest request, HttpServletRequest servletRequest) throws DataException {
         WorkflowResponse response = programService.saveFeedback(request);
-        logService.logs(principal.getName(), "SAVE","saving program monitoring","Program Monitoring","/new/program/feedback/save");
+        logService.logs(principal.getName(), "SAVE","saving program monitoring","Program Monitoring", servletRequest.getRequestURI());
         return ResponseEntity.ok(response);
     }
     @PostMapping("/program/feedback/update/{monitorId}")
-    public ResponseEntity<?> updateFeedback(Principal principal,@PathVariable Long monitorId, @RequestBody ProgramMonitoringRequest request) {
+    public ResponseEntity<?> updateFeedback(Principal principal,@PathVariable Long monitorId,
+                                            @RequestBody ProgramMonitoringRequest request,
+                                            HttpServletRequest servletRequest) {
         WorkflowResponse response;
         try {
             response = programService.updateFeedback(monitorId, request);
         } catch (DataException exception) {
             return RestControllerBase.error(exception);
         }
-        logService.logs(principal.getName(), "UPDATE","update program monitoring","Program Monitoring","/new/program/feedback/update/{monitorId}");
+        logService.logs(principal.getName(), "UPDATE","update program monitoring","Program Monitoring", servletRequest.getRequestURI());
         return ResponseEntity.ok(response);
     }
 
@@ -56,10 +59,11 @@ public class ProgramMonitoringController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteProgramMonitoringFeedback(@PathVariable Long id,Principal principal) {
+    public ResponseEntity<String> deleteProgramMonitoringFeedback(@PathVariable Long id,Principal principal,
+                                                                  HttpServletRequest servletRequest) {
         return feedbackRepository.findById(id).map(feedback -> {
             feedbackRepository.delete(feedback);
-            logService.logs(principal.getName(), "DELETE","delete program monitoring","Program Monitoring","/new/{id}");
+            logService.logs(principal.getName(), "DELETE","delete program monitoring","Program Monitoring", servletRequest.getRequestURI());
             return ResponseEntity.ok("Program Monitoring FeedBack deleted successfully.");
         }).orElse(ResponseEntity.notFound().build());
 

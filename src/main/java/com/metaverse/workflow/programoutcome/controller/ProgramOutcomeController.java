@@ -9,6 +9,7 @@ import com.metaverse.workflow.programoutcome.dto.ProgramOutcomeTableResponse;
 import com.metaverse.workflow.programoutcome.service.OutcomeDetails;
 import com.metaverse.workflow.programoutcome.service.ProgramOutcomeService;
 import com.metaverse.workflow.programoutcome.service.UdyamService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.parser.ParseException;
@@ -53,7 +54,9 @@ public class ProgramOutcomeController {
 
     @PostMapping(value = "/program/outcome/save/{outcome}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_OCTET_STREAM_VALUE},
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> saveOutcome(Principal principal, @PathVariable("outcome") String outcomeName, @RequestPart("data") String data) throws ParseException {
+    public ResponseEntity<?> saveOutcome(Principal principal, @PathVariable("outcome") String outcomeName,
+                                         @RequestPart("data") String data,
+                                         HttpServletRequest servletRequest) throws ParseException {
         log.info("Program outcome : {}", data);
         WorkflowResponse response = null;
         try {
@@ -64,7 +67,7 @@ public class ProgramOutcomeController {
         logService.logs(principal.getName(), "SAVE",
                 "Program outcome saved successfully | Outcome: " + outcomeName,
                 "ProgramOutcome",
-                "/program/outcome/save/" + outcomeName);
+                servletRequest.getRequestURI());
         return ResponseEntity.ok(response);
     }
 
@@ -75,7 +78,7 @@ public class ProgramOutcomeController {
     }
 
     @PostMapping("/udyam/data/upload")
-    public ResponseEntity<?> uploadExcel(@RequestParam("file") MultipartFile file,Principal principal) {
+    public ResponseEntity<?> uploadExcel(@RequestParam("file") MultipartFile file,Principal principal,HttpServletRequest servletRequest) {
         if (file.isEmpty()) {
             return ResponseEntity.badRequest().body("File is empty");
         }
@@ -87,7 +90,7 @@ public class ProgramOutcomeController {
         logService.logs(principal.getName(), "SAVE",
                 "Udyam Excel data uploaded successfully",
                 "UdyamData",
-                "/udyam/data/upload");
+                servletRequest.getRequestURI());
         return ResponseEntity.ok("Excel data saved successfully!");
     }
 

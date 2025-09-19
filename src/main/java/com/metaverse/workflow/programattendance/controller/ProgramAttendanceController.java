@@ -5,6 +5,7 @@ import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.programattendance.service.ParticipantAttendanceRequest;
 import com.metaverse.workflow.programattendance.service.ProgramAttendanceRequest;
 import com.metaverse.workflow.programattendance.service.ProgramAttendanceService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -30,17 +31,19 @@ public class ProgramAttendanceController {
     }
 
     @PostMapping(value = "/program/attendence", produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<WorkflowResponse> saveProgramAttendance(@RequestBody ProgramAttendanceRequest request, Principal principal) {
+    public ResponseEntity<WorkflowResponse> saveProgramAttendance(@RequestBody ProgramAttendanceRequest request, Principal principal,
+                                                                  HttpServletRequest servletRequest) {
         WorkflowResponse response = programAttendanceService.updateProgramAttendance(request);
         logService.logs(principal.getName(), "SAVE",
                 "Program attendance saved successfully | Program ID: " + request.getProgramId(),
                 "ProgramAttendance",
-                "/program/attendence");
+                servletRequest.getRequestURI());
         return ResponseEntity.ok(response);
     }
 
     @PostMapping(value = "/participant/attendance", produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<WorkflowResponse> saveParticipantAttendance(@RequestBody ParticipantAttendanceRequest request,Principal principal) {
+    public ResponseEntity<WorkflowResponse> saveParticipantAttendance(@RequestBody ParticipantAttendanceRequest request,Principal principal,
+                                                                      HttpServletRequest servletRequest) {
         log.info("Participant attendance controller, programId: {}, participantId: {}", 
                 request.getProgramId(), request.getParticipantId());
         WorkflowResponse response = programAttendanceService.updateParticipantAttendance(request);
@@ -48,7 +51,7 @@ public class ProgramAttendanceController {
                 "Participant attendance saved successfully | Program ID: " + request.getProgramId() +
                         " | Participant ID: " + request.getParticipantId(),
                 "ParticipantAttendance",
-                "/participant/attendance");
+                servletRequest.getRequestURI());
         return ResponseEntity.ok(response);
     }
 

@@ -3,6 +3,7 @@ package com.metaverse.workflow.program.controller;
 import com.metaverse.workflow.activitylog.ActivityLogService;
 import com.metaverse.workflow.model.DeleteFileResponse;
 import com.metaverse.workflow.program.service.ProgramSessionFileService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -21,8 +22,8 @@ public class ProgramSessionFileController {
     private ActivityLogService logService;
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<DeleteFileResponse> deleteProgramSessionFile(@PathVariable("id") Long id, Principal principal) {
-        logService.logs(principal.getName(),"DELETE","deleted program session file successfully with id " + id,"program","/program-session-files/{id}");
+    public ResponseEntity<DeleteFileResponse> deleteProgramSessionFile(@PathVariable("id") Long id, Principal principal, HttpServletRequest servletRequest) {
+        logService.logs(principal.getName(),"DELETE","deleted program session file successfully with id " + id,"program", servletRequest.getRequestURI());
         boolean deleted = fileService.deleteFileById(id);
         if (deleted) {
             return ResponseEntity.ok(new DeleteFileResponse("File deleted successfully.", id));
