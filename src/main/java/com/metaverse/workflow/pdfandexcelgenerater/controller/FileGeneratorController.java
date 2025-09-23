@@ -265,4 +265,12 @@ public class FileGeneratorController {
         participantDetailsExcel.generateParticipantDetailsExcel(response,programId,agencyId);
     }
 
+    @GetMapping("/programs-participant-status/pdf/{agencyId}")
+    public void exportProgramsPdf(HttpServletResponse response,
+                                  @PathVariable Long agencyId) throws IOException {
+        response.setContentType("application/pdf");
+        response.setHeader("Content-Disposition", "attachment; filename=programs_participants.pdf");
+
+        programParticipantDetails.generateProgramsParticipantPdf(response, agencyId);
+    }
 }
