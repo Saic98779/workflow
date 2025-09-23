@@ -51,10 +51,4 @@ public class ActivityController {
         WorkflowResponse response = service.getActivityByAgencyId(id);
         return ResponseEntity.ok(response);
     }
-
-
-
-
-
-
 }

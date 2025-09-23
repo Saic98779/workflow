@@ -2,10 +2,7 @@ package com.metaverse.workflow.notifications.controller;
 
 import com.metaverse.workflow.enums.NotificationStatus;
 import com.metaverse.workflow.model.Notifications;
-import com.metaverse.workflow.notifications.dto.NotificationMapper;
-import com.metaverse.workflow.notifications.dto.NotificationRequestDto;
-import com.metaverse.workflow.notifications.dto.NotificationResponseDto;
-import com.metaverse.workflow.notifications.dto.NotificationStatusUpdateDto;
+import com.metaverse.workflow.notifications.dto.*;
 import com.metaverse.workflow.notifications.service.NotificationServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -17,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/notifications")
@@ -119,6 +117,48 @@ public class NotificationController {
                 .map(NotificationMapper::toDto)
                 .toList());
     }
+
+    @GetMapping("/callcenter/remarks/{userId}")
+    public ResponseEntity<Map<String, List<RemarkDto>>> getAllCallCenterRemarks(
+            @PathVariable String userId,
+            @RequestParam(required = false) List<NotificationStatus> statuses
+    ) {
+        List<Notifications> list = (statuses == null || statuses.isEmpty())
+                ? notificationService.getAllByCallCenterUser(userId)
+                : notificationService.getAllByCallCenterUserAndStatuses(userId, statuses);
+
+        // Flatten all remarks and map NotificationRemark -> RemarkDto
+        List<RemarkDto> allRemarks = list.stream()
+                .flatMap(n -> n.getRemarksByAgency().stream())
+                .map(r -> new RemarkDto(r.getRemarkText(), r.getRemarkedAt()))
+                .toList();
+
+        Map<String, List<RemarkDto>> response = Map.of("remarks", allRemarks);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/agency/remarks/{agencyId}")
+    public ResponseEntity<Map<String, List<RemarkDto>>> getAllAgencyRemarks(
+            @PathVariable Long agencyId,
+            @RequestParam(required = false) List<NotificationStatus> statuses
+    ) {
+        List<Notifications> list = (statuses == null || statuses.isEmpty())
+                ? notificationService.getAllByAgency(agencyId)
+                : notificationService.getAllByAgencyAndStatuses(agencyId, statuses);
+
+        // Flatten all remarks and map NotificationRemark -> RemarkDto
+        List<RemarkDto> allRemarks = list.stream()
+                .flatMap(n -> n.getRemarksByCallCenter().stream())
+                .map(r -> new RemarkDto(r.getRemarkText(), r.getRemarkedAt()))
+                .toList();
+
+        Map<String, List<RemarkDto>> response = Map.of("remarks", allRemarks);
+
+        return ResponseEntity.ok(response);
+    }
+
+
 
     @Operation(
             summary = "Update Notification Status",
