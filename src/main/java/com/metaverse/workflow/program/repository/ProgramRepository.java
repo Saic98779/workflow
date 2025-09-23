@@ -46,7 +46,7 @@ public interface ProgramRepository extends JpaRepository<Program, Long> {
 
 
     default List<Program> getAllPrograms(Long agencyId) {
-        return null;
+        return findByAgencyAgencyId(agencyId);
     }
 
     List<Program> findByAgency_AgencyIdAndLocation_DistrictAndStatus(Long id, String district, String programExecutionUpdated);

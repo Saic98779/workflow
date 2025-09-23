@@ -31,6 +31,8 @@ public interface ParticipantRepository extends JpaRepository<Participant, Long> 
 
     Page<Participant> findByPrograms_Agency_AgencyId(Long agencyId, Pageable pageable);
 
+    List<Participant> findByPrograms_Agency_AgencyId(Long agencyId);
+
     boolean existsByParticipantNameAndOrganization_OrganizationName(String participantName, String s);
 
     @Query("SELECT DISTINCT p FROM Participant p " +
