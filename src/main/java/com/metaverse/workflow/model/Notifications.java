@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.Filter;
+import org.hibernate.annotations.Where;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -44,13 +45,13 @@ public class Notifications extends BaseEntity {
 
     // Remarks provided by Agency
     @OneToMany(mappedBy = "notification", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Filter(name = "agencyRemarks", condition = "remark_by = 'AGENCY'")
+    @Where(clause = "remark_by = 'AGENCY'")
     @OrderBy("remarkedAt DESC")
     private List<NotificationRemark> remarksByAgency = new ArrayList<>();
 
     // Remarks provided by Call Center
     @OneToMany(mappedBy = "notification", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Filter(name = "callCenterRemarks", condition = "remark_by = 'CALL_CENTER'")
+    @Where(clause = "remark_by = 'CALL_CENTER'")
     @OrderBy("remarkedAt DESC")
     private List<NotificationRemark> remarksByCallCenter = new ArrayList<>();
 
