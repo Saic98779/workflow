@@ -45,11 +45,13 @@ public class Notifications extends BaseEntity {
     // Remarks provided by Agency
     @OneToMany(mappedBy = "notification", cascade = CascadeType.ALL, orphanRemoval = true)
     @Filter(name = "agencyRemarks", condition = "remark_by = 'AGENCY'")
+    @OrderBy("remarkedAt DESC")
     private List<NotificationRemark> remarksByAgency = new ArrayList<>();
 
     // Remarks provided by Call Center
     @OneToMany(mappedBy = "notification", cascade = CascadeType.ALL, orphanRemoval = true)
     @Filter(name = "callCenterRemarks", condition = "remark_by = 'CALL_CENTER'")
+    @OrderBy("remarkedAt DESC")
     private List<NotificationRemark> remarksByCallCenter = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
@@ -62,7 +64,7 @@ public class Notifications extends BaseEntity {
     @Column(name = "date_of_closure")
     private LocalDateTime dateOfClosure;
 
-    //Notifications that intended to be sent to different recipient types
+    // Notifications that intended to be sent to different recipient types
     @Enumerated(EnumType.STRING)
     @Column(name = "recipient_type", nullable = false)
     private NotificationRecipientType recipientType;

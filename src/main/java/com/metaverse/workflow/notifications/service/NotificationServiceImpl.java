@@ -51,6 +51,7 @@ public class NotificationServiceImpl {
 
         Notifications notification = Notifications.builder()
                 .dateOfNotification(LocalDate.now().atStartOfDay())
+                .dateOfFirstNotification(LocalDate.now().atStartOfDay())
                 .callCenterAgent(callCenter.get() instanceof User ? (User) callCenter.get() : null)
                 .agency(agency)
                 .status(NotificationStatus.OPEN)
@@ -97,6 +98,7 @@ public class NotificationServiceImpl {
 
         Notifications notification = Notifications.builder()
                 .dateOfNotification(LocalDate.now().atStartOfDay())
+                .dateOfFirstNotification(LocalDate.now().atStartOfDay())
                 .agency(agency)
                 .callCenterAgent(callCenter)
                 .participant(participant)
@@ -123,21 +125,23 @@ public class NotificationServiceImpl {
 
     // 3. Get all notifications by Agency
     public List<Notifications> getAllByAgencyAndStatuses(Long agencyId, List<NotificationStatus> statuses) {
-        return notificationRepository.findByAgency_AgencyIdAndStatusIn(agencyId, statuses);
+        return notificationRepository.findByAgency_AgencyIdAndStatusInOrderByRemarkedAtDesc(agencyId, statuses);
     }
 
     public List<Notifications> getAllByAgency(Long agencyId) {
-        return notificationRepository.findByAgency_AgencyId(agencyId);
+        return notificationRepository.findByAgency_AgencyIdAndStatusInOrderByRemarkedAtDesc(agencyId,
+                List.of(NotificationStatus.OPEN, NotificationStatus.IN_PROGRESS));
     }
 
     // 4. Get all notifications by Call Center Agent (userId)
     public List<Notifications> getAllByCallCenterUser(String userId) {
-        return notificationRepository.findByCallCenterAgent_UserId(userId);
+        return notificationRepository.findByCallCenterAgent_UserIdAndStatusInOrderByRemarkedAtDesc(userId,
+                List.of(NotificationStatus.OPEN, NotificationStatus.IN_PROGRESS));
     }
 
 
     public List<Notifications> getAllByCallCenterUserAndStatuses(String userId, List<NotificationStatus> statuses) {
-        return notificationRepository.findByCallCenterAgent_UserIdAndStatusIn(userId, statuses);
+        return notificationRepository.findByCallCenterAgent_UserIdAndStatusInOrderByRemarkedAtDesc(userId, statuses);
     }
 
     public Notifications updateStatus(NotificationStatusUpdateDto dto) {

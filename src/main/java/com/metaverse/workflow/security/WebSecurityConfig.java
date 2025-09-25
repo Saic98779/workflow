@@ -76,7 +76,7 @@ public class WebSecurityConfig {
                         .requestMatchers("/program/attendance/pdf/**").permitAll()
                         .requestMatchers("/program/participant/pdf/**").permitAll()
                         .requestMatchers("/program/summary/pdf/**").permitAll()
-
+                        .requestMatchers("/program/file/download/**").permitAll()
                         .requestMatchers("/program/excel").permitAll()
                         .requestMatchers("/organization/excel").permitAll()
                         .requestMatchers("/location/excel/**").permitAll()
