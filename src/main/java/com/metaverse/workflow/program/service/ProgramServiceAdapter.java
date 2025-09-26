@@ -106,6 +106,9 @@ public class ProgramServiceAdapter implements ProgramService {
     @Autowired
     private ProgramMonitoringRepo programMonitoringRepo;
 
+    @Autowired
+    private ProgramRescheduleRepository programRescheduleRepository;
+
     @Override
     public WorkflowResponse createProgram(ProgramRequest request) {
         Optional<Location> location = null;
@@ -210,7 +213,7 @@ public class ProgramServiceAdapter implements ProgramService {
         Optional<Location> location = locationRepository.findById(request.getLocationId());
         if (!location.isPresent()) return WorkflowResponse.builder().status(400).message("Invalid Location").build();
 
-        Program program = programRepository.save(ProgramRequestMapper.mapUpdate(request, agency.get(), location.get(), programOptional.get()));
+        Program program = programRepository.save(ProgramRequestMapper.mapUpdate(request, agency.get(), location.get(), programOptional.get(), programRescheduleRepository));
         updateOverduePrograms();
         return WorkflowResponse.builder().status(200).message("Success").data(ProgramResponseMapper.map(program)).build();
     }

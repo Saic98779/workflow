@@ -5,10 +5,12 @@ import com.metaverse.workflow.common.constants.ProgramStatusConstants;
 import com.metaverse.workflow.common.util.CommonUtil;
 import com.metaverse.workflow.common.util.DateUtil;
 import com.metaverse.workflow.model.*;
+import com.metaverse.workflow.program.repository.ProgramRescheduleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Component
@@ -81,25 +83,47 @@ public class ProgramRequestMapper {
                 .collect(Collectors.toList());
     }*/
 
-    public static Program mapUpdate(ProgramRequest programRequest, Agency agency, Location location, Program exisitingProgram) {
+    public static Program mapUpdate(
+            ProgramRequest programRequest,
+            Agency agency,
+            Location location,
+            Program existingProgram,
+            ProgramRescheduleRepository programRescheduleRepository
+    ) {
 
-        Program program = exisitingProgram;
-        program.setActivityId(programRequest.getActivityId());
-        program.setSubActivityId(programRequest.getSubActivityId());
-        program.setProgramType(programRequest.getProgramType());
-        program.setProgramDetails(programRequest.getProgramDetails());
-        program.setProgramTitle(programRequest.getProgramTitle());
-        program.setStartTime(programRequest.getStartTime());
-        program.setEndTime(programRequest.getEndTime());
-        program.setSpocName(programRequest.getSpocName());
-        program.setSpocContactNo(programRequest.getSpocContactNo());
-        program.setKpi(programRequest.getKpi());
-        program.setStartDate(DateUtil.stringToDate(programRequest.getStartDate(), "dd-MM-yyyy"));
-        program.setEndDate(DateUtil.stringToDate(programRequest.getEndDate(), "dd-MM-yyyy"));
-        program.setAgency(agency);
-        program.setLocation(location);
-        return program;
+        Date newStartDate = DateUtil.stringToDate(programRequest.getStartDate(), "dd-MM-yyyy");
+
+        // Compare old vs new start date
+        if (existingProgram.getStartDate() != null &&
+                newStartDate != null &&
+                !existingProgram.getStartDate().equals(newStartDate)) {
+
+            ProgramReschedule reschedule = ProgramReschedule.builder()
+                    .program(existingProgram)
+                    .oldStartDate(existingProgram.getStartDate())
+                    .newStartDate(newStartDate)
+                    .build();
+
+            programRescheduleRepository.save(reschedule);
+        }
+
+        // Update program fields
+        existingProgram.setActivityId(programRequest.getActivityId());
+        existingProgram.setSubActivityId(programRequest.getSubActivityId());
+        existingProgram.setProgramType(programRequest.getProgramType());
+        existingProgram.setProgramDetails(programRequest.getProgramDetails());
+        existingProgram.setProgramTitle(programRequest.getProgramTitle());
+        existingProgram.setStartTime(programRequest.getStartTime());
+        existingProgram.setEndTime(programRequest.getEndTime());
+        existingProgram.setSpocName(programRequest.getSpocName());
+        existingProgram.setSpocContactNo(programRequest.getSpocContactNo());
+        existingProgram.setKpi(programRequest.getKpi());
+        existingProgram.setStartDate(newStartDate);
+        existingProgram.setEndDate(DateUtil.stringToDate(programRequest.getEndDate(), "dd-MM-yyyy"));
+        existingProgram.setAgency(agency);
+        existingProgram.setLocation(location);
+
+        return existingProgram;
     }
-
 
 }
