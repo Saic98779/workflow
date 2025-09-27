@@ -1,6 +1,7 @@
 package com.metaverse.workflow.program.controller;
 
 import com.metaverse.workflow.common.util.ApplicationAPIResponse;
+import com.metaverse.workflow.program.service.ProgramListDto;
 import com.metaverse.workflow.program.service.ProgramRescheduleResponse;
 import com.metaverse.workflow.program.service.ProgramRescheduleService;
 import lombok.RequiredArgsConstructor;
@@ -8,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/program-reschedule-data")
@@ -26,6 +28,17 @@ public class ProgramRescheduleController {
                 .data(response)
                 .build();
 
+        return ResponseEntity.ok(applicationAPIResponse);
+    }
+
+    @GetMapping(path = "/reschedule/programs")
+    public ResponseEntity<ApplicationAPIResponse<List<ProgramListDto>>> getRescheduleProgramList(){
+
+        ApplicationAPIResponse<List<ProgramListDto>> applicationAPIResponse = ApplicationAPIResponse.<List<ProgramListDto>>builder()
+                .status(200)
+                .message("Success")
+                .data(programRescheduleService.getRescheduleProgramList())
+                .build();
         return ResponseEntity.ok(applicationAPIResponse);
     }
 }
