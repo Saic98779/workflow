@@ -14,6 +14,8 @@ public class ProgramRescheduleResponse {
     private Long rescheduleId;
     private String oldStartDate;
     private String newStartDate;
-    private String createdTimestamp;
+    private String oldEndDate;
+    private String newEndDate;
+    private String rescheduledTimestamp;
     private String programTitle;
 }

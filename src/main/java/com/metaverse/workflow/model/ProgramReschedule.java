@@ -23,5 +23,11 @@ public class ProgramReschedule extends BaseEntity {
 
     @Column(name = "new_start_date")
     private Date newStartDate;
+
+    @Column(name = "old_end_date")
+    private Date oldEndDate;
+
+    @Column(name = "new_end_date")
+    private Date newEndDate;
 }
 

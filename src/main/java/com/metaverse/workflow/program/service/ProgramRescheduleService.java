@@ -25,7 +25,9 @@ public class ProgramRescheduleService {
                         .rescheduleId(r.getId())
                         .oldStartDate(r.getOldStartDate() != null ? dateFormat.format(r.getOldStartDate()) : null)
                         .newStartDate(r.getNewStartDate() != null ? dateFormat.format(r.getNewStartDate()) : null)
-                        .createdTimestamp(r.getCreatedTimestamp() != null ? r.getCreatedTimestamp().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")) : null)
+                        .oldEndDate(r.getOldEndDate() != null ? dateFormat.format(r.getOldEndDate()) : null)
+                        .newEndDate(r.getNewEndDate() != null ? dateFormat.format(r.getNewEndDate()) : null)
+                        .rescheduledTimestamp(r.getCreatedTimestamp() != null ? r.getCreatedTimestamp().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")) : null)
                         .programTitle(r.getProgram() != null ? r.getProgram().getProgramTitle() : null)
                         .build())
                 .collect(Collectors.toList());

@@ -130,7 +130,7 @@ public class NotificationController {
         // Flatten all remarks and map NotificationRemark -> RemarkDto
         List<RemarkDto> allRemarks = list.stream()
                 .flatMap(n -> n.getRemarksByAgency().stream())
-                .map(r -> new RemarkDto(r.getRemarkText(), r.getRemarkedAt()))
+                .map(r -> new RemarkDto(r.getRemarkText(),r.getNotification().getAgency().getAgencyName(), null, r.getRemarkedAt()))
                 .toList();
 
         Map<String, List<RemarkDto>> response = Map.of("remarks", allRemarks);
@@ -150,7 +150,8 @@ public class NotificationController {
         // Flatten all remarks and map NotificationRemark -> RemarkDto
         List<RemarkDto> allRemarks = list.stream()
                 .flatMap(n -> n.getRemarksByCallCenter().stream())
-                .map(r -> new RemarkDto(r.getRemarkText(), r.getRemarkedAt()))
+                .map(r -> new RemarkDto(r.getRemarkText(), null, r.getNotification().getCallCenterAgent().getFirstName() + r.getNotification().getCallCenterAgent().getLastName()
+                        , r.getRemarkedAt()))
                 .toList();
 
         Map<String, List<RemarkDto>> response = Map.of("remarks", allRemarks);

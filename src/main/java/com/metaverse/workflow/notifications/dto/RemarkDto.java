@@ -11,6 +11,8 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class RemarkDto {
     private String remarksText;
+    private String agencyName;
+    private String ccName;
     private LocalDateTime remarksDate;
 }
 

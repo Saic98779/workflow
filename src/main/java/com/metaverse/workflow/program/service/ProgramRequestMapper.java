@@ -92,16 +92,17 @@ public class ProgramRequestMapper {
     ) {
 
         Date newStartDate = DateUtil.stringToDate(programRequest.getStartDate(), "dd-MM-yyyy");
+        Date oldEndDate = DateUtil.stringToDate(programRequest.getEndDate(), "dd-MM-yyyy");
 
         // Compare old vs new start date
-        if (existingProgram.getStartDate() != null &&
-                newStartDate != null &&
-                !existingProgram.getStartDate().equals(newStartDate)) {
-
+        if ((newStartDate != null || oldEndDate != null) &&
+                (!existingProgram.getStartDate().equals(newStartDate) || !existingProgram.getEndDate().equals(oldEndDate))) {
             ProgramReschedule reschedule = ProgramReschedule.builder()
                     .program(existingProgram)
                     .oldStartDate(existingProgram.getStartDate())
                     .newStartDate(newStartDate)
+                    .oldEndDate(existingProgram.getEndDate())
+                    .newEndDate(oldEndDate)
                     .build();
 
             programRescheduleRepository.save(reschedule);
