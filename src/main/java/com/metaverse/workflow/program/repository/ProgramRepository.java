@@ -132,4 +132,8 @@ public interface ProgramRepository extends JpaRepository<Program, Long> {
     Page<Program> findByAgencyAgencyIdAndStartDateBetween(Long agencyId, Date startDate, Date endDate, Pageable pageable);
 
     Page<Program> findAllByStartDateBetween(Date startDate, Date endDate, Pageable pageable);
+
+    Page<Program> findByAgencyAgencyIdAndProgramIdIn(Long agencyId, List<Long> programIds, Pageable pageable);
+
+    Page<Program> findByProgramIdIn(List<Long> rescheduledProgramIds, Pageable pageable);
 }

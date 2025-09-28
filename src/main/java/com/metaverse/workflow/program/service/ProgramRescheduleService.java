@@ -51,21 +51,21 @@ public class ProgramRescheduleService {
 
             List<Long> rescheduledProgramIds = programRescheduleRepository.findAllProgramIds();
 
-            List<Program> allPrograms = (agencyId == -1)
-                    ? programRepository.findAll()
-                    : programRepository.findByAgencyAgencyId(agencyId);
+            Page<Program> allPrograms = (agencyId == -1)
+                    ? programRepository.findByProgramIdIn(rescheduledProgramIds,pageable)
+                    : programRepository.findByAgencyAgencyIdAndProgramIdIn(agencyId,rescheduledProgramIds,pageable);
 
-            List<Program> rescheduledPrograms = allPrograms.stream()
-                    .filter(program -> rescheduledProgramIds.contains(program.getProgramId()))
-                    .toList();
+//            List<Program> rescheduledPrograms = allPrograms.stream()
+//                    .filter(program -> rescheduledProgramIds.contains(program.getProgramId()))
+//                    .toList();
 
-            int totalElements = rescheduledPrograms.size();
-            int totalPages = (int) Math.ceil((double) totalElements / size);
-
-            int start = Math.min(page * size, totalElements);
-            int end = Math.min(start + size, totalElements);
-
-            List<Program> pagedPrograms = rescheduledPrograms.subList(start, end);
+//            int totalElements = rescheduledPrograms.size();
+//            int totalPages = (int) Math.ceil((double) totalElements / size);
+//
+//            int start = Math.min(page * size, totalElements);
+//            int end = Math.min(start + size, totalElements);
+//
+            List<Program> pagedPrograms = allPrograms.getContent();
 
             pagedPrograms.forEach(program -> {
                 if (program.getProgramSessionList() != null) {
@@ -89,8 +89,8 @@ public class ProgramRescheduleService {
                     .status(200)
                     .message("Success")
                     .data(response)
-                    .totalElements((long) totalElements)
-                    .totalPages(totalPages)
+                    .totalElements(allPrograms.getTotalElements())
+                    .totalPages(allPrograms.getTotalPages())
                     .build();
 
         } catch (Exception e) {
