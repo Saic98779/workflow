@@ -6,6 +6,7 @@ import com.metaverse.workflow.model.BulkExpenditureTransaction;
 import com.metaverse.workflow.model.Program;
 import com.metaverse.workflow.model.ProgramExpenditure;
 import com.metaverse.workflow.program.repository.ProgramRepository;
+import com.metaverse.workflow.program.repository.ProgramRescheduleRepository;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,7 @@ public class ProgramStatusGenerator {
     private final ProgramRepository programRepository;
     private final ProgramExpenditureRepository expenditureRepository;
     private final BulkExpenditureTransactionRepository transactionRepository;
+    private final ProgramRescheduleRepository programRescheduleRepository;
 
     public void generateProgramsExcel(HttpServletResponse response, Long agencyId) throws IOException {
         List<Program> programList;
@@ -45,7 +47,8 @@ public class ProgramStatusGenerator {
         String[] headers = {
                 "Name of the IA", "Budget Head", "Name Of The Program", "No of sessions added",
                 "No of resource persons participated", "No of participants added", "Attendance updated for No participants",
-                "No of images uploaded", "No of Media images uploaded", "Total Expenditure updated ", "Final submission status "
+                "No of images uploaded", "No of Media images uploaded", "Total Expenditure updated ", "Final submission status ",
+                "No of times rescheduled"
         };
 
 
@@ -83,6 +86,7 @@ public class ProgramStatusGenerator {
             dataRow.createCell(9).setCellValue(expenditureList.stream().mapToDouble(ProgramExpenditure::getCost).sum() +
                     transactionList.stream().mapToDouble(BulkExpenditureTransaction::getAllocatedCost).sum());
             dataRow.createCell(10).setCellValue(program.getStatus().equals("Program Expenditure Updated") ? "YES" : "NO");
+            dataRow.createCell(11).setCellValue(programRescheduleRepository.findByProgram_ProgramId(program.getProgramId()).size());
             dataRowIndex++;
         }
         ServletOutputStream ops = response.getOutputStream();
