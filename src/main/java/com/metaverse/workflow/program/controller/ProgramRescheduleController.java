@@ -1,9 +1,11 @@
 package com.metaverse.workflow.program.controller;
 
+import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.common.util.ApplicationAPIResponse;
 import com.metaverse.workflow.program.service.ProgramRescheduleResponse;
 import com.metaverse.workflow.program.service.ProgramRescheduleService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,6 +29,23 @@ public class ProgramRescheduleController {
                 .build();
 
         return ResponseEntity.ok(applicationAPIResponse);
+    }
+
+    @GetMapping(path = "/programs/{agencyId}")
+    public ResponseEntity<WorkflowResponse> getRescheduleProgramList(@PathVariable Long agencyId,
+                                                                     @RequestParam(defaultValue = "0", required = false) int page,
+                                                                     @RequestParam(defaultValue = "10", required = false) int size,
+                                                                     @RequestParam(defaultValue = "programId,desc", required = false) String sort){
+        try {
+            WorkflowResponse response = programRescheduleService.getRescheduleProgramList(agencyId, page, size, sort);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(WorkflowResponse.builder()
+                            .status(500)
+                            .message("An error occurred while fetching programs : "+e.getMessage())
+                            .build());
+        }
     }
 }
 

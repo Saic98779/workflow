@@ -4,6 +4,7 @@ import com.metaverse.workflow.agency.service.AgencyResponse;
 import com.metaverse.workflow.agency.service.AgencyResponseMapper;
 import com.metaverse.workflow.agency.service.AgencyService;
 import com.metaverse.workflow.common.response.WorkflowResponse;
+import com.metaverse.workflow.common.util.DateUtil;
 import com.metaverse.workflow.location.service.LocationResponse;
 import com.metaverse.workflow.model.Agency;
 import com.metaverse.workflow.model.Program;
@@ -85,13 +86,26 @@ public class AgencyController {
     public ResponseEntity<WorkflowResponse> getProgramsByAgencyId(@PathVariable("id") Long id,
                                                                   @RequestParam(defaultValue = "0", required = false) int page,
                                                                   @RequestParam(defaultValue = "10", required = false) int size,
-                                                                  @RequestParam(defaultValue = "programId,desc", required = false) String sort
-    ) {
+                                                                  @RequestParam(defaultValue = "programId,desc", required = false) String sort,
+                                                                  @RequestParam(required = false) String startDate,
+                                                                  @RequestParam(required = false) String endDate
+                                                                  ) {
 
         Pageable pageable = PageRequest.of(page, size, getSortOrder(sort));
-        Page<Program> programPage = (id == -1)
-                ? programRepository.findAll(pageable)
-                : programRepository.findByAgencyAgencyId(id, pageable);
+        Page<Program> programPage;
+        if (id == -1) {
+            if (startDate != null && endDate != null) {
+                programPage = programRepository.findAllByStartDateBetween(DateUtil.stringToDate(startDate,"dd-MM-yyyy"), DateUtil.stringToDate(endDate,"dd-MM-yyyy"), pageable);
+            } else {
+                programPage = programRepository.findAll(pageable);
+            }
+        } else {
+            if (startDate != null && endDate != null) {
+                programPage = programRepository.findByAgencyAgencyIdAndStartDateBetween(id, DateUtil.stringToDate(startDate,"dd-MM-yyyy"), DateUtil.stringToDate(endDate,"dd-MM-yyyy"), pageable);
+            } else {
+                programPage = programRepository.findByAgencyAgencyId(id, pageable);
+            }
+        }
 
         for (Program program : programPage) {
             List<ProgramSession> sessions = program.getProgramSessionList();
