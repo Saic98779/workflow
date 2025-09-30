@@ -164,11 +164,14 @@ public class AgencyController {
                                                                         @RequestParam String status,
                                                                         @RequestParam(defaultValue = "0", required = false) int page,
                                                                         @RequestParam(defaultValue = "10", required = false) int size,
-                                                                        @RequestParam(defaultValue = "programId,desc", required = false) String sort
+                                                                        @RequestParam(defaultValue = "programId,desc", required = false) String sort,
+                                                                        @RequestParam(required = false) String fromDate,
+                                                                        @RequestParam(required = false) String toDate
+
     ) {
 
         Pageable pageable = PageRequest.of(page, size, getSortOrder(sort));
-        Page<Program> programPage = programRepository.findByAgencyAgencyStatusId(id, pageable,status);
+        Page<Program> programPage = programRepository.findByAgencyAgencyStatusId(id, pageable,status,DateUtil.covertStringToDate(fromDate),DateUtil.covertStringToDate(toDate));
 
         for (Program program : programPage) {
             List<ProgramSession> sessions = program.getProgramSessionList();
