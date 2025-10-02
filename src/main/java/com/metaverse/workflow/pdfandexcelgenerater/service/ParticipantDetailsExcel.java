@@ -58,7 +58,9 @@ public class ParticipantDetailsExcel {
         for (Participant res : participantList) {
             for (Program prog : res.getPrograms()) {
                 HSSFRow dataRow = sheet.createRow(dataRowIndex);
-
+                if (agencyId != -1 && !prog.getAgency().getAgencyId().equals(agencyId)) {
+                    continue;
+                }
                 dataRow.createCell(0).setCellValue(dataRowIndex); // SNo
                 dataRow.createCell(1).setCellValue(prog.getAgency() != null ? prog.getAgency().getAgencyName() : "");
                 dataRow.createCell(2).setCellValue(prog.getProgramTitle());
