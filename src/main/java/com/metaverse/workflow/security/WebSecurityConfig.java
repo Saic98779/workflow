@@ -94,6 +94,7 @@ public class WebSecurityConfig {
                         .requestMatchers("/ParticipantTemp/excel/sheets/**").permitAll()
                         .requestMatchers("/program-details/excel/**").permitAll()
                         .requestMatchers("/participant-details/excel/**").permitAll()
+                        .requestMatchers("/program-monitoring-report/pdf/**").permitAll()
                         .requestMatchers(
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
