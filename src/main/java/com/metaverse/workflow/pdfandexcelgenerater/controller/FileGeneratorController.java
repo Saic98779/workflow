@@ -53,7 +53,7 @@ public class FileGeneratorController {
     public ResponseEntity<InputStreamResource> generatePdfReport(HttpServletResponse response, @PathVariable Long agencyId) throws IOException {
         ByteArrayInputStream bis = programPdfGenerator.generateProgramsPdf(response, agencyId);
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "inline; filename=users.pdf");
+        headers.add("Content-Disposition", "inline; filename=Program_Details.pdf");
         return ResponseEntity.ok()
                 .headers(headers)
                 .contentType(MediaType.APPLICATION_PDF)
@@ -71,7 +71,7 @@ public class FileGeneratorController {
         }
         ByteArrayInputStream bis = sessionPDFGenerator.generateProgramSessionsPdf(programId);
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "inline; filename=users.pdf");
+        headers.add("Content-Disposition", "inline; filename=Session_Details.pdf");
         return ResponseEntity.ok()
                 .headers(headers)
                 .contentType(MediaType.APPLICATION_PDF)
@@ -89,7 +89,7 @@ public class FileGeneratorController {
         }
         ByteArrayInputStream bis = attendancePDFGenerator.programAttendancePDF(programId);
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "inline; filename=users.pdf");
+        headers.add("Content-Disposition", "inline; filename=Program_Attendance_Details.pdf");
         return ResponseEntity.ok()
                 .headers(headers)
                 .contentType(MediaType.APPLICATION_PDF)
@@ -107,7 +107,7 @@ public class FileGeneratorController {
         }
         ByteArrayInputStream bis = participantsPDFGenerator.generateProgramParticipantPdf(programId);
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "inline; filename=users.pdf");
+        headers.add("Content-Disposition", "inline; filename=Participant_Details.pdf");
         return ResponseEntity.ok()
                 .headers(headers)
                 .contentType(MediaType.APPLICATION_PDF)
@@ -119,28 +119,28 @@ public class FileGeneratorController {
     @GetMapping("/program/excel")
     public void generateExcelReport(HttpServletResponse response) throws IOException {
         response.setContentType("application/octet-stream");
-        response.setHeader("Content-Disposition", "attachment;fileName=users.xls");
+        response.setHeader("Content-Disposition", "attachment;fileName=Program_Details.xls");
         programExcelGenerator.generateProgramsExcel(response);
     }
 
     @GetMapping("/organization/excel")
     public void generateOrganizationExcelReport(HttpServletResponse response) throws IOException {
         response.setContentType("application/octet-stream");
-        response.setHeader("Content-Disposition", "attachment;fileName=users.xls");
+        response.setHeader("Content-Disposition", "attachment;fileName=Organization_Details.xls");
         organizationExcelGenerator.exportOrganizationsToExcel(response);
     }
 
     @GetMapping("/location/excel/{agencyId}")
     public void generateLocationExcelReport(HttpServletResponse response, @PathVariable Long agencyId) throws IOException {
         response.setContentType("application/octet-stream");
-        response.setHeader("Content-Disposition", "attachment;fileName=users.xls");
+        response.setHeader("Content-Disposition", "attachment;fileName=Location_Details.xls");
         locationExcelGenerator.locationsExportToExcel(response, agencyId);
     }
 
     @GetMapping("/resource/excel/{agencyId}")
     public void generateResourceExcelReport(HttpServletResponse response, @PathVariable Long agencyId) throws IOException {
         response.setContentType("application/octet-stream");
-        response.setHeader("Content-Disposition", "attachment;fileName=users.xls");
+        response.setHeader("Content-Disposition", "attachment;fileName=Resource_Details.xls");
         resourceExcelGenerator.exportAgencyResourcesToExcel(response, agencyId);
     }
 
@@ -154,7 +154,7 @@ public class FileGeneratorController {
             return RestControllerBase.error(e);
         }
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "inline; filename=users.pdf");
+        headers.add("Content-Disposition", "inline; filename=Program-Summery_Details.pdf");
         return ResponseEntity.ok()
                 .headers(headers)
                 .contentType(MediaType.APPLICATION_PDF)
@@ -165,7 +165,7 @@ public class FileGeneratorController {
     @GetMapping("/program/summery/excel/{programId}")
     public void generateProgramSummeryExcel(@PathVariable Long programId, HttpServletResponse response) throws IOException, DataException {
         response.setContentType("application/octet-stream");
-        response.setHeader("Content-Disposition", "attachment;fileName=users.xls");
+        response.setHeader("Content-Disposition", "attachment;fileName=Program-Summery_Details.xls");
         programSummeryExcelGenerator.generateProgramsExcel(response, programId);
 
     }

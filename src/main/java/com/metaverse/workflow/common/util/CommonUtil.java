@@ -5,6 +5,8 @@ import com.metaverse.workflow.agency.service.AgencyService;
 import com.metaverse.workflow.districtswithmandals.service.DistrictService;
 import com.metaverse.workflow.model.*;
 import com.metaverse.workflow.participant.service.ParticipantService;
+import com.metaverse.workflow.program.repository.ProgramRepository;
+import com.metaverse.workflow.program.service.ProgramService;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,9 +25,17 @@ public class CommonUtil {
     private final ActivityService activityService;
     private final AgencyService agencyService;
     private final ParticipantService participantService;
+    private final ProgramRepository programRepository;
 
     @PostConstruct
     public void initInstance() {
+        List<Program> programList = programRepository.findAll();
+        //log.info("Loaded {} programs from DB", programList.size());//not getting in counsol
+        programMap = programList.stream().collect(Collectors.toMap(
+                Program::getProgramId,
+                Program::getProgramTitle,
+                (existing, replacement) -> existing
+        ));
     }
 
     public static Map<Integer, String> districtMap;
@@ -34,6 +44,7 @@ public class CommonUtil {
     public static Map<Long, String> subActivityMap;
     public static Map<Long, String> agencyMap;
     public static Map<Long, Participant> participantMap;
+    public static Map<Long,String> programMap;
 
     public void init() {
         List<District> districtList = districtService.getAllDistrictsEntity();
@@ -78,5 +89,15 @@ public class CommonUtil {
                 (existing, replacement) -> existing
         ));
 
+        List<Program> programList = programRepository.findAll();
+        log.info("Loaded {} programs from DB", programList.size());//not getting in counsol
+        programMap = programList.stream().collect(Collectors.toMap(
+                Program::getProgramId,
+                Program::getProgramTitle,
+                (existing, replacement) -> existing
+        ));
+
     }
+
+
 }
