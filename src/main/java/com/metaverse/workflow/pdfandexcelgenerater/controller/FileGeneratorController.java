@@ -47,6 +47,7 @@ public class FileGeneratorController {
     private final ParticipantTempExcel generateParticipantTempExcel;
     private final ProgramDetailsExcel programDetailsExcel;
     private final  ParticipantDetailsExcel participantDetailsExcel;
+    private final ProgramMonitoringPDF programMonitoringPDF;
 
     @GetMapping(value = "/program/pdf/{agencyId}", produces = MediaType.APPLICATION_PDF_VALUE)
     public ResponseEntity<InputStreamResource> generatePdfReport(HttpServletResponse response, @PathVariable Long agencyId) throws IOException {
@@ -272,5 +273,14 @@ public class FileGeneratorController {
         response.setHeader("Content-Disposition", "attachment; filename=programs_participants.pdf");
 
         programParticipantDetails.generateProgramsParticipantPdf(response, agencyId);
+    }
+
+    @GetMapping("/program-monitoring-report/pdf/{monitoringId}")
+    public void exportProgramMonitoringPdf(HttpServletResponse response,
+                                  @PathVariable Long monitoringId) throws IOException {
+        response.setContentType("application/pdf");
+        response.setHeader("Content-Disposition", "attachment; filename=program_monitoring_report.pdf");
+
+        programMonitoringPDF.generateProgramsMonitoringPdf(response,monitoringId);
     }
 }
