@@ -8,4 +8,5 @@ public interface ProgramMonitoringService {
     WorkflowResponse updateFeedback(Long monitorId, ProgramMonitoringRequest request) throws DataException;
     WorkflowResponse getFeedBackByProgramId(Long programId) throws DataException;
     WorkflowResponse getFeedBackById(Long feedBackId);
+    WorkflowResponse getFeedBackByProgramIdDropDown(Long programId) throws DataException;
 }
