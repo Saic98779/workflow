@@ -1,5 +1,7 @@
 package com.metaverse.workflow.ProgramMonitoring.service;
 
+import com.metaverse.workflow.common.util.CommonUtil;
+import com.metaverse.workflow.common.util.DateUtil;
 import com.metaverse.workflow.exceptions.DataException;
 import com.metaverse.workflow.model.*;
 
@@ -83,6 +85,12 @@ public class ProgramMonitoringMapper {
 
     public static ProgramMonitoringResponse mapResponse(ProgramMonitoring monitoringFeedBack) {
         return ProgramMonitoringResponse.builder()
+                .programName(CommonUtil.programMap.get(monitoringFeedBack.getProgramId()))
+                .agencyName(CommonUtil.agencyMap.get(monitoringFeedBack.getAgencyId()))
+                .userId(monitoringFeedBack.getUser().getUserId())
+                .userName(monitoringFeedBack.getUser().getFirstName()+" "+monitoringFeedBack.getUser().getLastName())
+                .monitoringDate(DateUtil.dateToString(monitoringFeedBack.getMoniteringDate(),"dd-MM-yyyy"))
+
                 .programMonitoringId(monitoringFeedBack.getProgramMonitoringId())
                 .agencyId(monitoringFeedBack.getAgencyId())
                 .district(monitoringFeedBack.getDistrict())

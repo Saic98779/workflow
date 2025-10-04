@@ -43,16 +43,16 @@ public class ProgramPdfGenerator  {
             document.add(title);
             document.add(new Paragraph(""));
 
-            PdfPTable table = new PdfPTable(12);
+            PdfPTable table = new PdfPTable(13);
             table.setWidthPercentage(100);
             table.setSpacingBefore(5f);
             table.setSpacingAfter(10f);
 
 
             Font headerFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12, Color.WHITE);
-            Stream.of("ProgramName", "ActivityName",  "subActivityName", "AgencyName",
-                    "StartDate", "EndDate", "StartTime", "EndTime", "SpocName", "pocContactNo",
-                    "ProgramLocationName", "Kpi").forEach(headerTitle -> {
+            Stream.of("Sl.No","Program Name", "Activity Name",  "Sub Activity Name", "Agency Name",
+                    "Start Date", "End Date", "Start Time", "End Time", "SPOC Name", "SPOC ContactNo",
+                    "Program Location Name", "Kpi").forEach(headerTitle -> {
                 PdfPCell header = new PdfPCell();
                 header.setBackgroundColor(new Color(63, 81, 181)); // Indigo
                 header.setPadding(8);
@@ -62,8 +62,10 @@ public class ProgramPdfGenerator  {
             });
             Font rowFont = FontFactory.getFont(FontFactory.HELVETICA, 11, Color.BLACK);
             boolean alternate = false;
+            int slNo =0;
             for (ProgramResponse res : programList) {
                 Color rowColor = alternate ? new Color(224, 224, 224) : Color.WHITE;
+                table.addCell(createCell(safe(slNo), rowFont, rowColor));
                 table.addCell(createCell(safe(res.getProgramTitle()), rowFont, rowColor));
                 //table.addCell(createCell(safe(res.getActivityId()), rowFont, rowColor));
                 table.addCell(createCell(safe(res.getActivityName()), rowFont, rowColor));
@@ -81,6 +83,7 @@ public class ProgramPdfGenerator  {
                 table.addCell(createCell(safe(res.getProgramLocationName()), rowFont, rowColor));
                 table.addCell(createCell(safe(res.getKpi()), rowFont, rowColor));
                 alternate = !alternate;
+                slNo++;
             }
 
             document.add(table);

@@ -21,8 +21,9 @@ public class ProgramDetailsExcel {
         List<Program> programList;
         if (agencyId != -1) {
             programList = programRepository.findByAgencyAgencyId(agencyId);
+        }else {
+            programList = programRepository.findAll();
         }
-        programList = programRepository.findAll();
         List<ProgramResponse> programResponseList = programList.stream().map(ProgramResponseMapper::map).toList();
 
         HSSFWorkbook workbook = new HSSFWorkbook();
@@ -37,10 +38,10 @@ public class ProgramDetailsExcel {
 
         HSSFRow row = sheet.createRow(0);
         String[] headers = {
-                "SNo", "StartDate", "EndDate", "InTime", "OutTime",
-                "ProgramLocation", "District", "BudgetHead", "AgencyName",
-                "TitleOfProgram", "Status", "TypeOfActivity", "SubActivity",
-                "SPOCName", "SPOCContactNo"
+                "SNo", "Start Date", "End Date", "In Time", "Out Time",
+                "Program Location", "District", "Budget Head", "Agency Name",
+                "Title Of Program", "Status", "Activity", "Sub Activity",
+                "SPOC Name", "SPOC ContactNo"
         };
 
 

@@ -2,6 +2,7 @@ package com.metaverse.workflow.ProgramMonitoring.service;
 
 import com.metaverse.workflow.ProgramMonitoring.repository.ProgramMonitoringRepo;
 import com.metaverse.workflow.common.response.WorkflowResponse;
+import com.metaverse.workflow.common.util.CommonUtil;
 import com.metaverse.workflow.common.util.DateUtil;
 import com.metaverse.workflow.exceptions.DataException;
 import com.metaverse.workflow.login.repository.LoginRepository;
@@ -65,5 +66,22 @@ public class ProgramMonitoringServiceAdepter implements ProgramMonitoringService
                 .build();
 
 
+    }
+
+    @Override
+    public WorkflowResponse getFeedBackByProgramIdDropDown(Long programId) throws DataException {
+        Program program = programRepository.findById(programId)
+                .orElseThrow(() -> new DataException("Program data not found", "PROGRAM-DATA-NOT-FOUND", 400));
+        List<ProgramMonitoring> monitoringList = programMonitoringRepo.findByProgramId(programId);
+
+        return WorkflowResponse.builder().status(200).message("Success")
+                .data(monitoringList.stream().map(report->ProgramMonitoringDetails.builder()
+                        .programMonitoringId(report.getProgramMonitoringId())
+                        .programName(CommonUtil.programMap.get(report.getProgramId()))
+                        .userId(report.getUser().getUserId())
+                        .userName(report.getUser().getFirstName()+" "+report.getUser().getLastName())
+                        .monitoringDate(DateUtil.dateToString(report.getMoniteringDate(),"dd-MM-yyyy"))
+                        .build()
+                )).build();
     }
 }

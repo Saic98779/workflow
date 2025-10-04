@@ -68,4 +68,14 @@ public class ProgramMonitoringController {
         }).orElse(ResponseEntity.notFound().build());
 
     }
+    @GetMapping("/program/monitoring-dropdown/{programId}")
+    public ResponseEntity<?> getFeedbackByProgramIdDropDown(@PathVariable Long programId) {
+        WorkflowResponse response;
+        try {
+            response = programService.getFeedBackByProgramIdDropDown(programId);
+        } catch (DataException exception) {
+            return RestControllerBase.error(exception);
+        }
+        return ResponseEntity.ok(response);
+    }
 }

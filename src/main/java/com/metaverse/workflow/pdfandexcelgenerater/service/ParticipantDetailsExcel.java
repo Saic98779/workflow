@@ -42,7 +42,7 @@ public class ParticipantDetailsExcel {
 
         String[] headers = {
                 "SNo", "Agency Name", "Program Name", "District", "IsAspirant",
-                "OrganizationName", "ParticipantName", "Gender", "Category",
+                "Organization Name", "Participant Name", "Gender", "Category",
                 "Disability", "AadharNo", "MobileNo", "Email", "Designation"
         };
 

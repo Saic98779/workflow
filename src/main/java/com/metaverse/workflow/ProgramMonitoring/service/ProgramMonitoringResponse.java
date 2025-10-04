@@ -12,8 +12,13 @@ import java.util.List;
 public class ProgramMonitoringResponse {
     private Long programMonitoringId;
     private Long agencyId;
+    private String agencyName;
     private String district;
     private Long programId;
+    private String programName;
+    private String userId;
+    private String userName;
+    private String monitoringDate;
     private Integer stepNumber;
 
     private Boolean programAgendaCirculated;
