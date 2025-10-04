@@ -154,7 +154,7 @@ public class FileGeneratorController {
             return RestControllerBase.error(e);
         }
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "inline; filename=Program-Summery_Details.pdf");
+        headers.add("Content-Disposition", "inline; filename=Program_Summary_Details.pdf");
         return ResponseEntity.ok()
                 .headers(headers)
                 .contentType(MediaType.APPLICATION_PDF)
@@ -165,7 +165,7 @@ public class FileGeneratorController {
     @GetMapping("/program/summery/excel/{programId}")
     public void generateProgramSummeryExcel(@PathVariable Long programId, HttpServletResponse response) throws IOException, DataException {
         response.setContentType("application/octet-stream");
-        response.setHeader("Content-Disposition", "attachment;fileName=Program-Summery_Details.xls");
+        response.setHeader("Content-Disposition", "attachment;fileName=Program_Summary_Details.xls");
         programSummeryExcelGenerator.generateProgramsExcel(response, programId);
 
     }

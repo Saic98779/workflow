@@ -38,7 +38,7 @@ public class ProgramDetailsExcel {
 
         HSSFRow row = sheet.createRow(0);
         String[] headers = {
-                "SNo", "Start Date", "End Date", "InTime", "Out Time",
+                "SNo", "Start Date", "End Date", "In Time", "Out Time",
                 "Program Location", "District", "Budget Head", "Agency Name",
                 "Title Of Program", "Status", "Activity", "Sub Activity",
                 "SPOC Name", "SPOC ContactNo"
