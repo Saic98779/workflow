@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -160,18 +161,42 @@ public class AgencyController {
         return ResponseEntity.ok(service.getProgramsDistrictsAndAgency(id,district));
     }
     @GetMapping("/agency/programs/by/status/{id}")
-    public ResponseEntity<WorkflowResponse> getProgramsByStatusAgencyId(@PathVariable("id") Long id,
-                                                                        @RequestParam String status,
-                                                                        @RequestParam(defaultValue = "0", required = false) int page,
-                                                                        @RequestParam(defaultValue = "10", required = false) int size,
-                                                                        @RequestParam(defaultValue = "programId,desc", required = false) String sort,
-                                                                        @RequestParam(required = false) String fromDate,
-                                                                        @RequestParam(required = false) String toDate
-
+    public ResponseEntity<WorkflowResponse> getProgramsByStatusAgencyId(
+            @PathVariable("id") Long id,
+            @RequestParam(required = false) String status,
+            @RequestParam(defaultValue = "0", required = false) int page,
+            @RequestParam(defaultValue = "10", required = false) int size,
+            @RequestParam(defaultValue = "programId,desc", required = false) String sort,
+            @RequestParam(required = false) String fromDate,
+            @RequestParam(required = false) String toDate
     ) {
 
         Pageable pageable = PageRequest.of(page, size, getSortOrder(sort));
-        Page<Program> programPage = programRepository.findByAgencyAgencyStatusId(id, pageable,status,DateUtil.covertStringToDate(fromDate),DateUtil.covertStringToDate(toDate));
+
+        Page<Program> programPage;
+
+        Date from = DateUtil.covertStringToDate(fromDate);
+        Date to = DateUtil.covertStringToDate(toDate);
+
+        if (status == null || status.isEmpty()) {
+            // No status → return all programs with optional date filter
+            if (from != null && to != null) {
+                if (id == -1) {
+                    programPage = programRepository.findAllByStartDateBetween(from, to, pageable);
+                } else {
+                    programPage = programRepository.findByAgencyAgencyIdAndStartDateBetween(id, from, to, pageable);
+                }
+            } else {
+                if (id == -1) {
+                    programPage = programRepository.findAll(pageable);
+                } else {
+                    programPage = programRepository.findByAgencyAgencyId(id, pageable);
+                }
+            }
+        } else {
+            // Status is present → use your existing logic
+            programPage = programRepository.findByAgencyAgencyStatusId(id, pageable, status, from, to);
+        }
 
         for (Program program : programPage) {
             List<ProgramSession> sessions = program.getProgramSessionList();
@@ -200,6 +225,7 @@ public class AgencyController {
                         .build()
         );
     }
+
 
     @GetMapping("/agency/programs/district/{district}")
     public ResponseEntity<WorkflowResponse> getProgramsByDistrict(
