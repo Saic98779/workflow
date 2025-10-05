@@ -187,7 +187,7 @@ public class FileGeneratorController {
         programStatusGenerator.generateProgramsExcel(response, agencyId);
     }
 
-        @GetMapping("/programs-participant-status/{agencyId}")
+    @GetMapping("/programs-participant-status/{agencyId}")
     public void exportProgramParticipantStatus(HttpServletResponse response, @PathVariable Long agencyId) throws IOException {
         response.setContentType("application/vnd.ms-excel");
         response.setHeader("Content-Disposition", "attachment; filename=" + "Program_Participant_status.xls");
@@ -252,7 +252,7 @@ public class FileGeneratorController {
 
     @GetMapping("/program-details/excel/{agencyId}")
     public void generateProgramExcelReport(HttpServletResponse response, @PathVariable Long agencyId) throws IOException {
-        response.setContentType("application/octet-stream");
+        response.setContentType("application/vnd.ms-excel");
         response.setHeader("Content-Disposition", "attachment;fileName=Program_Details.xls");
         programDetailsExcel.generateProgramsExcel(response,agencyId);
     }
