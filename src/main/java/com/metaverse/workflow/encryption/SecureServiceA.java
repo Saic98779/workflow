@@ -1,0 +1,114 @@
+package com.metaverse.workflow.encryption;
+
+
+import java.nio.charset.StandardCharsets;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.SecureRandom;
+import java.security.Signature;
+import java.util.Base64;
+
+import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.GCMParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
+
+import com.metaverse.workflow.dto.CentralRampDataDto;
+import org.springframework.stereotype.Service;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+@Service
+public class SecureServiceA {
+
+    private static final int AES_KEY_SIZE = 32; // 256-bit
+    private static final int IV_SIZE = 16;
+    private static final int GCM_TAG_LENGTH = 128;
+
+    private final PrivateKey appAPrivateKey;
+    private final PublicKey appBPublicKey;
+    private final PrivateKey appBPrivateKey;
+    private final PublicKey appAPublicKey;
+
+    public SecureServiceA() throws Exception {
+        this.appAPrivateKey = KeyUtilA.loadPrivateKey("keys/AppA_private.pem");
+        this.appBPublicKey = KeyUtilA.loadPublicKey("keys/AppB_public.pem");
+        this.appBPrivateKey = KeyUtil.loadPrivateKey("keys/AppB_private.pem");
+        this.appAPublicKey = KeyUtil.loadPublicKey("keys/AppA_public.pem");
+    }
+
+    public String encryptAndSign(CentralRampDataDto payload) throws Exception {
+        // 1️. AES key + IV
+        byte[] aesKey = new byte[AES_KEY_SIZE];
+        new SecureRandom().nextBytes(aesKey);
+        byte[] iv = new byte[IV_SIZE];
+        System.arraycopy(aesKey, 0, iv, 0, IV_SIZE);
+
+        ObjectMapper mapper = new ObjectMapper();
+        String payloadJson = mapper.writeValueAsString(payload);
+
+        // 2️. AES-GCM Encryption
+        Cipher aesCipher = Cipher.getInstance("AES/GCM/NoPadding");
+        SecretKey secretKey = new SecretKeySpec(aesKey, "AES");
+        GCMParameterSpec gcmSpec = new GCMParameterSpec(GCM_TAG_LENGTH, iv);
+        aesCipher.init(Cipher.ENCRYPT_MODE, secretKey, gcmSpec);
+
+        byte[] encryptedPayloadBytes = aesCipher.doFinal(payloadJson.getBytes(StandardCharsets.UTF_8));
+        String encryptedPayloadBase64 = Base64.getEncoder().encodeToString(encryptedPayloadBytes);
+
+        // 3️. Sign encrypted payload
+        Signature signer = Signature.getInstance("SHA256withRSA");
+        signer.initSign(appAPrivateKey);
+        signer.update(encryptedPayloadBase64.getBytes(StandardCharsets.UTF_8));
+        String signatureBase64 = Base64.getEncoder().encodeToString(signer.sign());
+
+        // 4️. Encrypt AES key with App B public key
+        Cipher rsaCipher = Cipher.getInstance("RSA/ECB/OAEPPadding");
+        rsaCipher.init(Cipher.ENCRYPT_MODE, appBPublicKey);
+        byte[] encryptedAesKeyBytes = rsaCipher.doFinal(aesKey);
+        String encryptedAesKeyBase64 = Base64.getEncoder().encodeToString(encryptedAesKeyBytes);
+
+        // 5️. Combine all
+        String combined = encryptedAesKeyBase64 + ":" + encryptedPayloadBase64 + ":" + signatureBase64;
+        return Base64.getEncoder().encodeToString(combined.getBytes(StandardCharsets.UTF_8));
+    }
+
+    public CentralRampDataDto decryptAndVerify(String base64Combined) throws Exception {
+        byte[] combinedBytes = Base64.getDecoder().decode(base64Combined);
+        String combined = new String(combinedBytes, StandardCharsets.UTF_8);
+
+        String[] parts = combined.split(":");
+        if(parts.length != 3) throw new IllegalArgumentException("Invalid payload");
+
+        String encryptedKeyBase64 = parts[0];
+        String encryptedPayloadBase64 = parts[1];
+        String signatureBase64 = parts[2];
+
+        // AES key decrypt
+        Cipher rsaCipher = Cipher.getInstance("RSA/ECB/OAEPPadding");
+        rsaCipher.init(Cipher.DECRYPT_MODE, appBPrivateKey);
+        byte[] aesKey = rsaCipher.doFinal(Base64.getDecoder().decode(encryptedKeyBase64));
+
+        // Verify signature
+        Signature verifier = Signature.getInstance("SHA256withRSA");
+        verifier.initVerify(appAPublicKey);
+        verifier.update(encryptedPayloadBase64.getBytes(StandardCharsets.UTF_8));
+        boolean valid = verifier.verify(Base64.getDecoder().decode(signatureBase64));
+        if(!valid) throw new SecurityException("Invalid signature");
+
+        // AES-GCM decrypt
+        byte[] iv = new byte[IV_SIZE];
+        System.arraycopy(aesKey, 0, iv, 0, IV_SIZE);
+        SecretKeySpec secretKey = new SecretKeySpec(aesKey, "AES");
+
+        Cipher aesCipher = Cipher.getInstance("AES/GCM/NoPadding");
+        GCMParameterSpec gcmSpec = new GCMParameterSpec(GCM_TAG_LENGTH, iv);
+        aesCipher.init(Cipher.DECRYPT_MODE, secretKey, gcmSpec);
+        byte[] decryptedBytes = aesCipher.doFinal(Base64.getDecoder().decode(encryptedPayloadBase64));
+
+        ObjectMapper mapper = new ObjectMapper();
+
+        return mapper.readValue(decryptedBytes, CentralRampDataDto.class);
+    }
+}
+
+
