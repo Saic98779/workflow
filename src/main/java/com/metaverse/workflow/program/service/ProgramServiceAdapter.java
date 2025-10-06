@@ -10,7 +10,6 @@ import com.metaverse.workflow.common.fileservice.FileSystemStorageService;
 import com.metaverse.workflow.common.fileservice.StorageService;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.common.util.DateUtil;
-import com.metaverse.workflow.enums.UserType;
 import com.metaverse.workflow.exceptions.DataException;
 import com.metaverse.workflow.expenditure.repository.BulkExpenditureTransactionRepository;
 import com.metaverse.workflow.expenditure.repository.ProgramExpenditureRepository;
@@ -610,21 +609,23 @@ public class ProgramServiceAdapter implements ProgramService {
     }
 
     @Override
-    public WorkflowResponse getProgramStatusSummery(Long agencyId) {
+    public WorkflowResponse getProgramStatusSummery(Long agencyId, Date fromDate, Date toDate) {
 
+        boolean hasDates = fromDate != null && toDate != null;
         List<Program> programs;
 
-        if (agencyId == -1) {
-            programs = programRepository.findAll();
-        } else {
-            if (!agencyRepository.existsById(agencyId)) {
-                return WorkflowResponse.builder()
-                        .status(400)
-                        .message("Agency with ID " + agencyId + " does not exist.")
-                        .build();
-            }
-            programs = programRepository.findByAgencyAgencyId(agencyId);
+        if (agencyId == -1)
+            programs = hasDates ? programRepository.findByStartDateBetween(fromDate, toDate)
+                    : programRepository.findAll();
+        else {
+            if (!agencyRepository.existsById(agencyId))
+                return WorkflowResponse.builder().status(400)
+                        .message("Agency with ID " + agencyId + " does not exist.").build();
+
+            programs = hasDates ? programRepository.findByAgencyAgencyIdAndStartDateBetween(agencyId, fromDate, toDate)
+                    : programRepository.findByAgencyAgencyId(agencyId);
         }
+
 
         int completed = 0, inProcess = 0, completedDataPending = 0, yetToBegin = 0, overDue = 0;
         Date today = new Date();

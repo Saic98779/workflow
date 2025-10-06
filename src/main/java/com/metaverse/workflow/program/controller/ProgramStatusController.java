@@ -3,6 +3,7 @@ package com.metaverse.workflow.program.controller;
 import com.metaverse.workflow.activitylog.ActivityLogService;
 import com.metaverse.workflow.common.constants.ProgramStatusConstants;
 import com.metaverse.workflow.common.response.WorkflowResponse;
+import com.metaverse.workflow.common.util.DateUtil;
 import com.metaverse.workflow.model.Program;
 import com.metaverse.workflow.program.repository.ProgramRepository;
 import com.metaverse.workflow.program.service.ProgramResponse;
@@ -86,8 +87,10 @@ public class ProgramStatusController {
     }
 
     @GetMapping("/summary/{agencyId}")
-    public WorkflowResponse getProgramsStatusSummery(@PathVariable Long agencyId) {
-        return programService.getProgramStatusSummery(agencyId);
+    public WorkflowResponse getProgramsStatusSummery(@PathVariable Long agencyId,
+                                                     @RequestParam(required = false) String fromDate,
+                                                     @RequestParam(required = false) String toDate) {
+        return programService.getProgramStatusSummery(agencyId, DateUtil.covertStringToDate(fromDate),DateUtil.covertStringToDate(toDate) );
     }
 
     @GetMapping("/status-list/{agencyId}")

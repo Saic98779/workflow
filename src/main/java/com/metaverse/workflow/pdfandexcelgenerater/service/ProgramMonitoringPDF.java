@@ -9,6 +9,7 @@ import com.lowagie.text.pdf.PdfWriter;
 import com.metaverse.workflow.ProgramMonitoring.service.ProgramMonitoringResponse;
 import com.metaverse.workflow.ProgramMonitoring.service.ProgramMonitoringService;
 import com.metaverse.workflow.common.response.WorkflowResponse;
+import com.metaverse.workflow.common.util.CommonUtil;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Service;
 
@@ -70,10 +71,10 @@ public class ProgramMonitoringPDF {
 
             // === Program Details ===
             table.addCell(createCell("Agency Name", headerFont, new Color(63, 81, 181)));
-            table.addCell(createCell(safe(monitoring.getAgencyId()), rowFont, Color.WHITE));
+            table.addCell(createCell(safe(CommonUtil.agencyMap.get(monitoring.getAgencyId())), rowFont, Color.WHITE));
 
             table.addCell(createCell("Program Name", headerFont, new Color(63, 81, 181)));
-            table.addCell(createCell(safe(monitoring.getProgramId()), rowFont, Color.WHITE));
+            table.addCell(createCell(safe(CommonUtil.programMap.get(monitoring.getProgramId())), rowFont, Color.WHITE));
 
             table.addCell(createCell("Program Rating", headerFont, new Color(63, 81, 181)));
             table.addCell(createCell(getStarRating(monitoring.getTotalScore()), rowFont, Color.WHITE));
@@ -82,140 +83,140 @@ public class ProgramMonitoringPDF {
             table.addCell(createCell(safe(monitoring.getDistrict()), rowFont, Color.WHITE));
 
             table.addCell(createCell("Program Agenda Circulated", headerFont, new Color(63, 81, 181)));
-            table.addCell(createCell(safe(monitoring.getProgramAsPerSchedule()), rowFont, Color.WHITE));
+            table.addCell(createCell(safe(monitoring.getProgramAsPerSchedule().equals(Boolean.TRUE)? "Yes" :"No"), rowFont, Color.WHITE));
 
             table.addCell(createCell("Program As Per Schedule", headerFont, new Color(63, 81, 181)));
-            table.addCell(createCell(safe(monitoring.getProgramAsPerSchedule()), rowFont, Color.WHITE));
+            table.addCell(createCell(safe(monitoring.getProgramAsPerSchedule().equals(Boolean.TRUE)? "Yes" :"No"), rowFont, Color.WHITE));
 
             table.addCell(createCell("Training material supplied", headerFont, new Color(63, 81, 181)));
-            table.addCell(createCell(safe(monitoring.getTrainingMaterialSupplied()), rowFont, Color.WHITE));
+            table.addCell(createCell(safe(monitoring.getTrainingMaterialSupplied().equals(Boolean.TRUE)? "Yes" :"No"), rowFont, Color.WHITE));
 
             table.addCell(createCell("Seating arrangements made", headerFont, new Color(63, 81, 181)));
-            table.addCell(createCell(safe(monitoring.getSeatingArrangementsMade()), rowFont, Color.WHITE));
+            table.addCell(createCell(safe(monitoring.getSeatingArrangementsMade().equals(Boolean.TRUE)? "Yes" :"No"), rowFont, Color.WHITE));
 
             table.addCell(createCell("AV Projector available", headerFont, new Color(63, 81, 181)));
-            table.addCell(createCell(safe(monitoring.getAvProjectorAvailable()), rowFont, Color.WHITE));
+            table.addCell(createCell(safe(monitoring.getAvProjectorAvailable().equals(Boolean.TRUE)? "Yes" :"No"), rowFont, Color.WHITE));
 
             table.addCell(createCell("How did the participants know about the program", headerFont, new Color(63, 81, 181)));
             table.addCell(createCell(safe(monitoring.getHowDidYouKnowAboutProgram()), rowFont, Color.WHITE));
             //Audience Profile
             table.addCell(createCell("Male representation", headerFont, new Color(63, 81, 181)));
-            table.addCell(createCell(safe(monitoring.getParticipantsMale()), rowFont, Color.WHITE));
+            table.addCell(createCell(safe(monitoring.getParticipantsMale().equals(Boolean.TRUE)? "Yes" :"No"), rowFont, Color.WHITE));
 
             table.addCell(createCell("Female representation", headerFont, new Color(63, 81, 181)));
-            table.addCell(createCell(safe(monitoring.getParticipantsFemale()), rowFont, Color.WHITE));
+            table.addCell(createCell(safe(monitoring.getParticipantsFemale().equals(Boolean.TRUE)? "Yes" :"No"), rowFont, Color.WHITE));
 
             table.addCell(createCell("Transgender representation", headerFont, new Color(63, 81, 181)));
-            table.addCell(createCell(safe(monitoring.getParticipantsTransgender()), rowFont, Color.WHITE));
+            table.addCell(createCell(safe(monitoring.getParticipantsTransgender().equals(Boolean.TRUE)? "Yes" :"No"), rowFont, Color.WHITE));
 
             table.addCell(createCell("DIC representatives participated", headerFont, new Color(63, 81, 181)));
-            table.addCell(createCell(safe(monitoring.getDicRegistrationParticipated()), rowFont, Color.WHITE));
+            table.addCell(createCell(safe(monitoring.getDicRegistrationParticipated().equals(Boolean.TRUE)? "Yes" :"No"), rowFont, Color.WHITE));
 
             table.addCell(createCell("SHG representatives participated", headerFont, new Color(63, 81, 181)));
-            table.addCell(createCell(safe(monitoring.getShgRegistrationParticipated()), rowFont, Color.WHITE));
+            table.addCell(createCell(safe(monitoring.getShgRegistrationParticipated().equals(Boolean.TRUE)? "Yes" :"No"), rowFont, Color.WHITE));
 
             table.addCell(createCell("MSME representative participated", headerFont, new Color(63, 81, 181)));
-            table.addCell(createCell(safe(monitoring.getMsmeRegistrationParticipated()), rowFont, Color.WHITE));
+            table.addCell(createCell(safe(monitoring.getMsmeRegistrationParticipated().equals(Boolean.TRUE)? "Yes" :"No"), rowFont, Color.WHITE));
 
             table.addCell(createCell("Startups representative participated", headerFont, new Color(63, 81, 181)));
-            table.addCell(createCell(safe(monitoring.getStartupsRegistrationParticipated()), rowFont, Color.WHITE));
+            table.addCell(createCell(safe(monitoring.getStartupsRegistrationParticipated().equals(Boolean.TRUE)? "Yes" :"No"), rowFont, Color.WHITE));
 
             table.addCell(createCell("No Of IAs participated", headerFont, new Color(63, 81, 181)));
-            table.addCell(createCell(safe(monitoring.getNoIAsParticipated()), rowFont, Color.WHITE));
+            table.addCell(createCell(safe(monitoring.getNoIAsParticipated().size()), rowFont, Color.WHITE));
 
             //Program Delivery Details
             table.addCell(createCell("Speaker1 Name ", headerFont, new Color(63, 81, 181)));
             table.addCell(createCell(safe(monitoring.getSpeaker1Name()), rowFont, Color.WHITE));
 
             table.addCell(createCell("Topics as per session plan", headerFont, new Color(63, 81, 181)));
-            table.addCell(createCell(safe(monitoring.getTopicAsPerSessionPlan1()), rowFont, Color.WHITE));
+            table.addCell(createCell(safe(monitoring.getTopicAsPerSessionPlan1().equals(Boolean.TRUE)? "Yes" :"No"), rowFont, Color.WHITE));
 
             table.addCell(createCell("Time taken (In min) ", headerFont, new Color(63, 81, 181)));
             table.addCell(createCell(safe(monitoring.getTimeTaken1()), rowFont, Color.WHITE));
 
             table.addCell(createCell("Audio visual ald used", headerFont, new Color(63, 81, 181)));
-            table.addCell(createCell(safe(monitoring.getAudioVisualAidUsed1()), rowFont, Color.WHITE));
+            table.addCell(createCell(safe(monitoring.getAudioVisualAidUsed1().equals(Boolean.TRUE)? "Yes" :"No"), rowFont, Color.WHITE));
 
             table.addCell(createCell("Relevance ", headerFont, new Color(63, 81, 181)));
             table.addCell(createCell(safe(monitoring.getRelevance1()), rowFont, Color.WHITE));
 
             table.addCell(createCell("Session continuity", headerFont, new Color(63, 81, 181)));
-            table.addCell(createCell(safe(monitoring.getSessionContinuity1()), rowFont, Color.WHITE));
+            table.addCell(createCell(safe(monitoring.getSessionContinuity1().equals(Boolean.TRUE)? "Yes" :"No"), rowFont, Color.WHITE));
 
             table.addCell(createCell("Participant interaction ", headerFont, new Color(63, 81, 181)));
-            table.addCell(createCell(safe(monitoring.getParticipantInteraction1()), rowFont, Color.WHITE));
+            table.addCell(createCell(safe(monitoring.getParticipantInteraction1().equals(Boolean.TRUE)? "Yes" :"No"), rowFont, Color.WHITE));
             //Audience Profile
             table.addCell(createCell("Speaker2 Name ", headerFont, new Color(63, 81, 181)));
             table.addCell(createCell(safe(monitoring.getSpeaker2Name()), rowFont, Color.WHITE));
 
             table.addCell(createCell("Topics as per session plan", headerFont, new Color(63, 81, 181)));
-            table.addCell(createCell(safe(monitoring.getTopicAsPerSessionPlan2()), rowFont, Color.WHITE));
+            table.addCell(createCell(safe(monitoring.getTopicAsPerSessionPlan2().equals(Boolean.TRUE)? "Yes" :"No"), rowFont, Color.WHITE));
 
             table.addCell(createCell("Time taken (In min) ", headerFont, new Color(63, 81, 181)));
             table.addCell(createCell(safe(monitoring.getTimeTaken2()), rowFont, Color.WHITE));
 
             table.addCell(createCell("Audio visual ald used", headerFont, new Color(63, 81, 181)));
-            table.addCell(createCell(safe(monitoring.getAudioVisualAidUsed2()), rowFont, Color.WHITE));
+            table.addCell(createCell(safe(monitoring.getAudioVisualAidUsed2().equals(Boolean.TRUE)? "Yes" :"No"), rowFont, Color.WHITE));
 
             table.addCell(createCell("Relevance ", headerFont, new Color(63, 81, 181)));
             table.addCell(createCell(safe(monitoring.getRelevance2()), rowFont, Color.WHITE));
 
             table.addCell(createCell("Session continuity", headerFont, new Color(63, 81, 181)));
-            table.addCell(createCell(safe(monitoring.getSessionContinuity2()), rowFont, Color.WHITE));
+            table.addCell(createCell(safe(monitoring.getSessionContinuity2().equals(Boolean.TRUE)? "Yes" :"No"), rowFont, Color.WHITE));
 
             table.addCell(createCell("Participant interaction", headerFont, new Color(63, 81, 181)));
-            table.addCell(createCell(safe(monitoring.getParticipantInteraction2()), rowFont, Color.WHITE));
+            table.addCell(createCell(safe(monitoring.getParticipantInteraction2().equals(Boolean.TRUE)? "Yes" :"No"), rowFont, Color.WHITE));
             //Logistics/Facilities
             table.addCell(createCell("Venue quality", headerFont, new Color(63, 81, 181)));
-            table.addCell(createCell(safe(monitoring.getVenueQuality()), rowFont, Color.WHITE));
+            table.addCell(createCell(safe(monitoring.getVenueQuality().equals(Boolean.TRUE)? "Yes" :"No"), rowFont, Color.WHITE));
 
             table.addCell(createCell("Accessibility to disabilities", headerFont, new Color(63, 81, 181)));
-            table.addCell(createCell(safe(monitoring.getAccessibility()), rowFont, Color.WHITE));
+            table.addCell(createCell(safe(monitoring.getAccessibility().equals(Boolean.TRUE)? "Yes" :"No"), rowFont, Color.WHITE));
 
             table.addCell(createCell("Tea/Snacks provided", headerFont, new Color(63, 81, 181)));
-            table.addCell(createCell(safe(monitoring.getTeaSnacks()), rowFont, Color.WHITE));
+            table.addCell(createCell(safe(monitoring.getTeaSnacks().equals(Boolean.TRUE)? "Yes" :"No"), rowFont, Color.WHITE));
 
             table.addCell(createCell("Lunch provided ", headerFont, new Color(63, 81, 181)));
-            table.addCell(createCell(safe(monitoring.getLunch()), rowFont, Color.WHITE));
+            table.addCell(createCell(safe(monitoring.getLunch().equals(Boolean.TRUE)? "Yes" :"No"), rowFont, Color.WHITE));
 
             table.addCell(createCell("Canned water available.", headerFont, new Color(63, 81, 181)));
-            table.addCell(createCell(safe(monitoring.getCannedWater()), rowFont, Color.WHITE));
+            table.addCell(createCell(safe(monitoring.getCannedWater().equals(Boolean.TRUE)? "Yes" :"No"), rowFont, Color.WHITE));
 
             table.addCell(createCell("Toilet Hygiene", headerFont, new Color(63, 81, 181)));
-            table.addCell(createCell(safe(monitoring.getToiletHygiene()), rowFont, Color.WHITE));
+            table.addCell(createCell(safe(monitoring.getToiletHygiene().equals(Boolean.TRUE)? "Yes" :"No"), rowFont, Color.WHITE));
 
             table.addCell(createCell("AV Equipment", headerFont, new Color(63, 81, 181)));
-            table.addCell(createCell(safe(monitoring.getAvEquipment()), rowFont, Color.WHITE));
+            table.addCell(createCell(safe(monitoring.getAvEquipment().equals(Boolean.TRUE)? "Yes" :"No"), rowFont, Color.WHITE));
 
             table.addCell(createCell("Stationary", headerFont, new Color(63, 81, 181)));
-            table.addCell(createCell(safe(monitoring.getStationary()), rowFont, Color.WHITE));
+            table.addCell(createCell(safe(monitoring.getStationary().equals(Boolean.TRUE)? "Yes" :"No"), rowFont, Color.WHITE));
             //Participant Feedback
             table.addCell(createCell("Relevant ", headerFont, new Color(63, 81, 181)));
-            table.addCell(createCell(safe(monitoring.getRelevant()), rowFont, Color.WHITE));
+            table.addCell(createCell(safe(monitoring.getRelevant().equals(Boolean.TRUE)? "Yes" :"No"), rowFont, Color.WHITE));
 
             table.addCell(createCell("Enthusiastic", headerFont, new Color(63, 81, 181)));
-            table.addCell(createCell(safe(monitoring.getEnthusiast()), rowFont, Color.WHITE));
+            table.addCell(createCell(safe(monitoring.getEnthusiast().equals(Boolean.TRUE)? "Yes" :"No"), rowFont, Color.WHITE));
 
             table.addCell(createCell("Felt useful ", headerFont, new Color(63, 81, 181)));
-            table.addCell(createCell(safe(monitoring.getFeltUseful()), rowFont, Color.WHITE));
+            table.addCell(createCell(safe(monitoring.getFeltUseful().equals(Boolean.TRUE)? "Yes" :"No"), rowFont, Color.WHITE));
 
             table.addCell(createCell(" Further willing to engage", headerFont, new Color(63, 81, 181)));
-            table.addCell(createCell(safe(monitoring.getFutureWillingToEngage()), rowFont, Color.WHITE));
+            table.addCell(createCell(safe(monitoring.getFutureWillingToEngage().equals(Boolean.TRUE)? "Yes" :"No"), rowFont, Color.WHITE));
             //Feedback on Speaker
             table.addCell(createCell("Qualified ", headerFont, new Color(63, 81, 181)));
-            table.addCell(createCell(safe(monitoring.getQualified()), rowFont, Color.WHITE));
+            table.addCell(createCell(safe(monitoring.getQualified().equals(Boolean.TRUE)? "Yes" :"No"), rowFont, Color.WHITE));
 
             table.addCell(createCell("Experienced ", headerFont, new Color(63, 81, 181)));
-            table.addCell(createCell(safe(monitoring.getExperienced()), rowFont, Color.WHITE));
+            table.addCell(createCell(safe(monitoring.getExperienced().equals(Boolean.TRUE)? "Yes" :"No"), rowFont, Color.WHITE));
 
             table.addCell(createCell("Certified ", headerFont, new Color(63, 81, 181)));
-            table.addCell(createCell(safe(monitoring.getCertified()), rowFont, Color.WHITE));
+            table.addCell(createCell(safe(monitoring.getCertified().equals(Boolean.TRUE)? "Yes" :"No"), rowFont, Color.WHITE));
 
             table.addCell(createCell("Delivery methodology good", headerFont, new Color(63, 81, 181)));
-            table.addCell(createCell(safe(monitoring.getDeliveryMethodologyGood()), rowFont, Color.WHITE));
+            table.addCell(createCell(safe(monitoring.getDeliveryMethodologyGood().equals(Boolean.TRUE)? "Yes" :"No"), rowFont, Color.WHITE));
 
             table.addCell(createCell("Comes with relevant experience", headerFont, new Color(63, 81, 181)));
-            table.addCell(createCell(safe(monitoring.getRelevantExperience()), rowFont, Color.WHITE));
+            table.addCell(createCell(safe(monitoring.getRelevantExperience().equals(Boolean.TRUE)? "Yes" :"No"), rowFont, Color.WHITE));
             //Best practices identified?
 
             table.addCell(createCell("TBest practice 1", headerFont, new Color(63, 81, 181)));
