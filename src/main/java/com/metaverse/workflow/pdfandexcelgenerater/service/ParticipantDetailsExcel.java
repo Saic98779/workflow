@@ -19,7 +19,7 @@ public class ParticipantDetailsExcel {
     public void generateParticipantDetailsExcel(HttpServletResponse response, Long programId, Long agencyId) throws IOException {
         List<Participant> participantList;
 
-        if (agencyId == null) {
+        if (programId != null ) {
             participantList = participantRepository.findByPrograms_ProgramId(programId);
         } else if (agencyId != -1) {
             participantList = participantRepository.findByPrograms_Agency_AgencyId(agencyId);
