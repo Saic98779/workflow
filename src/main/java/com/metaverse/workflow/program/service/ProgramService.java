@@ -8,6 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.file.Path;
 import java.text.ParseException;
+import java.util.Date;
 import java.util.List;
 
 public interface  ProgramService {
@@ -34,6 +35,6 @@ public interface  ProgramService {
     WorkflowResponse importProgramsFromExcel(MultipartFile file);
     WorkflowResponse deleteProgramAndDependencies(Long programId);
     List<ProgramFilePathInfo> getProgramFileByType(FileType fileType);
-    WorkflowResponse getProgramStatusSummery(Long agencyId);
+    WorkflowResponse getProgramStatusSummery(Long agencyId, Date fromDate,Date toDate);
     WorkflowResponse getProgramSessionsByProgramId(Long programId)throws DataException;
 }

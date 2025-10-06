@@ -76,12 +76,12 @@ public class SessionPDFGenerator {
             document.add(new Paragraph(" "));
 
             // Session Table (Column-wise)
-            PdfPTable sessionTable = new PdfPTable(6);
+            PdfPTable sessionTable = new PdfPTable(7);
             sessionTable.setWidthPercentage(100);
             sessionTable.setSpacingBefore(5f);
             sessionTable.setSpacingAfter(10f);
 
-            Stream.of("Session Date", "Start Time", "End Time", "Session Type", "Methodology", "Resource Person")
+            Stream.of("Sl.No","Session Date", "Start Time", "End Time", "Session Type", "Methodology", "Resource Person")
                     .forEach(header -> {
                         PdfPCell cell = new PdfPCell(new Phrase(header, headerFont));
                         cell.setBackgroundColor(headerBgColor);
@@ -89,17 +89,18 @@ public class SessionPDFGenerator {
                         cell.setHorizontalAlignment(Element.ALIGN_CENTER);
                         sessionTable.addCell(cell);
                     });
-
+int slNo = 1;
             boolean alternate = false;
             for (ProgramSessionResponse res : programSessionList) {
                 Color bgColor = alternate ? altRowColor : Color.WHITE;
+                sessionTable.addCell(createCell(safe(slNo), dataFont, bgColor));
                 sessionTable.addCell(createCell(safe(res.getSessionDate()), dataFont, bgColor));
                 sessionTable.addCell(createCell(safe(res.getStartTime()), dataFont, bgColor));
                 sessionTable.addCell(createCell(safe(res.getEndTime()), dataFont, bgColor));
                 sessionTable.addCell(createCell(safe(res.getSessionTypeName()), dataFont, bgColor));
                 sessionTable.addCell(createCell(safe(res.getSessionTypeMethodology()), dataFont, bgColor));
                 sessionTable.addCell(createCell(safe(res.getResourceName()), dataFont, bgColor));
-                alternate = !alternate;
+                alternate = !alternate;slNo++;
             }
 
             document.add(sessionTable);

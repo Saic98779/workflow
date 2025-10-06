@@ -86,8 +86,8 @@ public class ParticipantsPDFGenerator {
 
 
             Stream.of(
-                    "Name", "Gender", "Category", "Disability", "Aadhar No", "Mobile No", "Email",
-                    "Designation", "Participated Before", "Previous Participation Details",
+                    "Sl.No","Name", "Gender", "Category", "Disability", "Aadhar No", "Mobile No", "Email",
+                    "Designation", "Participated Before",
                     "Pre-Training Assessment", "Post-Training Assessment", "Certificate Issued",
                     "Certificate Issue Date", "Need Assessment Methodology", "Organization",
                     "District", "Mandal", "VO Name"
@@ -100,9 +100,10 @@ public class ParticipantsPDFGenerator {
             });
 
             boolean alternate = false;
+            int slNo =1;
             for (ParticipantResponse p : participantList) {
                 Color bg = alternate ? altRowColor : Color.WHITE;
-
+                table.addCell(createCell(String.valueOf(slNo), dataFont, bg));
                 table.addCell(createCell(p.getParticipantName(), dataFont, bg));
                 table.addCell(createCell(String.valueOf(p.getGender()), dataFont, bg));
                 table.addCell(createCell(p.getCategory(), dataFont, bg));
@@ -112,7 +113,6 @@ public class ParticipantsPDFGenerator {
                 table.addCell(createCell(p.getEmail(), dataFont, bg));
                 table.addCell(createCell(p.getDesignation(), dataFont, bg));
                 table.addCell(createCell(String.valueOf(p.getIsParticipatedBefore()), dataFont, bg));
-                table.addCell(createCell(p.getPreviousParticipationDetails(), dataFont, bg));
                 table.addCell(createCell(String.valueOf(p.getPreTrainingAssessmentConducted()), dataFont, bg));
                 table.addCell(createCell(String.valueOf(p.getPostTrainingAssessmentConducted()), dataFont, bg));
                 table.addCell(createCell(String.valueOf(p.getIsCertificateIssued()), dataFont, bg));
@@ -122,7 +122,7 @@ public class ParticipantsPDFGenerator {
                 table.addCell(createCell(p.getDistrict(), dataFont, bg));
                 table.addCell(createCell(p.getMandal(), dataFont, bg));
                 table.addCell(createCell(p.getNameOfVO(), dataFont, bg));
-
+                slNo++;
                 alternate = !alternate;
             }
 

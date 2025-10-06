@@ -35,17 +35,15 @@ public class ExpenditureExcelGenerator {
         headerStyle.setFont(headerFont);
 
         String[] programHeaders = {
-                "programExpenditureId", "activityId", "subActivityId", "programId", "agencyId",
-                "activityName", "subActivityName", "programName", "agencyName", "expenditureType",
-                "headOfExpense", "cost", "billNo", "billDate", "payeeName", "bankName", "ifscCode",
-                "transactionId", "modeOfPayment", "purpose", "uploadBillUrl"
+                "Agency Name", "Program Name", "Activity Name", "Sub Activity Name",  "Expenditure Type",
+                "Head Of Expense", "Cost", "Bill No", "Bill Date", "PayeeName", "BankName", "IFSC Code",
+                "Transaction Id", "Mode Of Payment", "Purpose", "Bill Url"
         };
 
         String[] bulkHeaders = {
-                "bulkExpenditureTransactionId", "itemName", "purchasedQuantity", "unitCost", "bulkExpenditureId",
-                "purchaseDate", "consumedQuantity", "availableQuantity", "expenditureType", "headOfExpense",
-                "allocatedCost", "billNo", "billDate", "payeeName", "bankName", "ifscCode", "modeOfPayment",
-                "remarks", "uploadBillUrl"
+                "Item Name", "Purchased Quantity", "Unit Cost", "Purchase Date", "Consumed Quantity",
+                "Available Quantity", "Expenditure Type", "Head Of Expense", "Allocated Cost", "Bill No",
+                "Bill Date", "Payee Name", "Bank Name", "IFSC Code", "Mode Of Payment", "Remarks", " Bill Url"
         };
 
         // Write headers for each sheet
@@ -80,55 +78,47 @@ public class ExpenditureExcelGenerator {
             } else if ("post".equalsIgnoreCase(res.getExpenditureType())) {
                 dataRow = postSheet.createRow(postRowIndex++);
             } else {
-                continue; // skip unknown types
+                continue;
             }
-
-            dataRow.createCell(0).setCellValue(res.getProgramExpenditureId());
-            dataRow.createCell(1).setCellValue(res.getActivityId());
-            dataRow.createCell(2).setCellValue(res.getSubActivityId());
-            dataRow.createCell(3).setCellValue(res.getProgramId());
-            dataRow.createCell(4).setCellValue(res.getAgencyId());
-            dataRow.createCell(5).setCellValue(res.getActivityName());
-            dataRow.createCell(6).setCellValue(res.getSubActivityName());
-            dataRow.createCell(7).setCellValue(res.getProgramName());
-            dataRow.createCell(8).setCellValue(res.getAgencyName());
-            dataRow.createCell(9).setCellValue(res.getExpenditureType());
-            dataRow.createCell(10).setCellValue(res.getHeadOfExpense());
-            dataRow.createCell(11).setCellValue(res.getCost());
-            dataRow.createCell(12).setCellValue(res.getBillNo());
-            dataRow.createCell(13).setCellValue(res.getBillDate());
-            dataRow.createCell(14).setCellValue(res.getPayeeName());
-            dataRow.createCell(15).setCellValue(res.getBankName());
-            dataRow.createCell(16).setCellValue(res.getIfscCode());
-            dataRow.createCell(17).setCellValue(res.getTransactionId());
-            dataRow.createCell(18).setCellValue(res.getModeOfPayment());
-            dataRow.createCell(19).setCellValue(res.getPurpose());
-            dataRow.createCell(20).setCellValue(res.getUploadBillUrl());
+            dataRow.createCell(0).setCellValue(res.getAgencyName());
+            dataRow.createCell(1).setCellValue(res.getProgramName());
+            dataRow.createCell(2).setCellValue(res.getActivityName());
+            dataRow.createCell(3).setCellValue(res.getSubActivityName());
+            dataRow.createCell(4).setCellValue(res.getExpenditureType());
+            dataRow.createCell(5).setCellValue(res.getHeadOfExpense());
+            dataRow.createCell(6).setCellValue(res.getCost());
+            dataRow.createCell(7).setCellValue(res.getBillNo());
+            dataRow.createCell(8).setCellValue(res.getBillDate());
+            dataRow.createCell(9).setCellValue(res.getPayeeName());
+            dataRow.createCell(10).setCellValue(res.getBankName());
+            dataRow.createCell(11).setCellValue(res.getIfscCode());
+            dataRow.createCell(12).setCellValue(res.getTransactionId());
+            dataRow.createCell(13).setCellValue(res.getModeOfPayment());
+            dataRow.createCell(14).setCellValue(res.getPurpose());
+            dataRow.createCell(15).setCellValue(res.getUploadBillUrl());
         }
 
         // Write BulkTransactions to bulkSheet
         int bulkRowIndex = 1;
         for (BulkTransactions tx : bulkTransactionsList) {
             HSSFRow dataRow = bulkSheet.createRow(bulkRowIndex++);
-            dataRow.createCell(0).setCellValue(tx.getBulkExpenditureTransactionId());
-            dataRow.createCell(1).setCellValue(tx.getItemName());
-            dataRow.createCell(2).setCellValue(tx.getPurchasedQuantity());
-            dataRow.createCell(3).setCellValue(tx.getUnitCost());
-            dataRow.createCell(4).setCellValue(tx.getBulkExpenditureId());
-            dataRow.createCell(5).setCellValue(tx.getPurchaseDate());
-            dataRow.createCell(6).setCellValue(tx.getConsumedQuantity());
-            dataRow.createCell(7).setCellValue(tx.getAvailableQuantity());
-            dataRow.createCell(8).setCellValue(tx.getExpenditureType());
-            dataRow.createCell(9).setCellValue(tx.getHeadOfExpense());
-            dataRow.createCell(10).setCellValue(tx.getAllocatedCost());
-            dataRow.createCell(11).setCellValue(tx.getBillNo());
-            dataRow.createCell(12).setCellValue(tx.getBillDate());
-            dataRow.createCell(13).setCellValue(tx.getPayeeName());
-            dataRow.createCell(14).setCellValue(tx.getBankName());
-            dataRow.createCell(15).setCellValue(tx.getIfscCode());
-            dataRow.createCell(16).setCellValue(tx.getModeOfPayment());
-            dataRow.createCell(17).setCellValue(tx.getRemarks());
-            dataRow.createCell(18).setCellValue(tx.getUploadBillUrl());
+            dataRow.createCell(0).setCellValue(tx.getItemName());
+            dataRow.createCell(1).setCellValue(tx.getPurchasedQuantity());
+            dataRow.createCell(2).setCellValue(tx.getUnitCost());
+            dataRow.createCell(3).setCellValue(tx.getPurchaseDate());
+            dataRow.createCell(4).setCellValue(tx.getConsumedQuantity());
+            dataRow.createCell(5).setCellValue(tx.getAvailableQuantity());
+            dataRow.createCell(6).setCellValue(tx.getExpenditureType());
+            dataRow.createCell(7).setCellValue(tx.getHeadOfExpense());
+            dataRow.createCell(8).setCellValue(tx.getAllocatedCost());
+            dataRow.createCell(9).setCellValue(tx.getBillNo());
+            dataRow.createCell(10).setCellValue(tx.getBillDate());
+            dataRow.createCell(11).setCellValue(tx.getPayeeName());
+            dataRow.createCell(12).setCellValue(tx.getBankName());
+            dataRow.createCell(13).setCellValue(tx.getIfscCode());
+            dataRow.createCell(14).setCellValue(tx.getModeOfPayment());
+            dataRow.createCell(15).setCellValue(tx.getRemarks());
+            dataRow.createCell(16).setCellValue(tx.getUploadBillUrl());
         }
 
         // Export Excel
