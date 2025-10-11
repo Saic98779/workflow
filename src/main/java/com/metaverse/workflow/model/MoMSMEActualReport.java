@@ -2,18 +2,14 @@ package com.metaverse.workflow.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-
-import java.util.Date;
 
 @Entity
-@Table(name = "mo_msme_report_actual")
+@Table(name = "momsme_actual_report")
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MoMSMEReportActual extends AuditEntity {
+public class MoMSMEActualReport extends AuditEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

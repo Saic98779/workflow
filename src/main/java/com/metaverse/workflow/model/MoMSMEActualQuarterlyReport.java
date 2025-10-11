@@ -5,37 +5,32 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
-import java.util.Date;
 @Entity
-@Table(name = "momsme_report_submitted")
+@Table(name = "momsme_actual_quarterly_report")
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MoMSMEReportSubmitted extends AuditEntity {
+public class MoMSMEActualQuarterlyReport extends AuditEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "submitted_id")
-    private Long submittedId;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "mo_msme_activity_id", nullable = false)
-    private MoMSMEReport moMSMEReport;
+    @Column(name = "quarter_id")
+    private Long quarterlyId;
 
     @Column(name = "financial_year")
     private String financialYear;
-
-    @Column(name = "month")
-    private String month;
 
     @Column(name = "physical_achievement")
     private Double physicalAchievement;
 
     @Column(name = "financial_achievement")
     private Double financialAchievement;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "mo_msme_activity_id", nullable = false)
+    private MoMSMEActualReport moMSMEActualReport;
 
     @Column(name = "total")
     private Integer total;

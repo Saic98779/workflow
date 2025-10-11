@@ -8,7 +8,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.util.Date;
 
 @Entity
-@Table(name = "mo_msme_report_target")
+@Table(name = "momsme_monthly_report_targets")
 @Data
 @Builder
 @NoArgsConstructor

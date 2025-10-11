@@ -1,29 +1,20 @@
 package com.metaverse.workflow.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import lombok.*;
 
-import java.util.Date;
 @Entity
-@Table(name = "momsme_report_submitted")
+@Table(name = "momsme_actual_monthly_report")
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MoMSMEReportSubmitted extends AuditEntity {
+public class MoMSMEActualMonthlyReport extends AuditEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "submitted_id")
-    private Long submittedId;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "mo_msme_activity_id", nullable = false)
-    private MoMSMEReport moMSMEReport;
+    @Column(name = "month_id")
+    private Long monthId;
 
     @Column(name = "financial_year")
     private String financialYear;
@@ -36,6 +27,10 @@ public class MoMSMEReportSubmitted extends AuditEntity {
 
     @Column(name = "financial_achievement")
     private Double financialAchievement;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "mo_msme_activity_id", nullable = false)
+    private MoMSMEActualReport moMSMEActualReport;
 
     @Column(name = "total")
     private Integer total;
@@ -55,3 +50,4 @@ public class MoMSMEReportSubmitted extends AuditEntity {
     @Column(name = "bc")
     private Integer bc;
 }
+
