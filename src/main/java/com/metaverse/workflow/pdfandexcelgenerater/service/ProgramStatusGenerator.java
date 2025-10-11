@@ -45,7 +45,7 @@ public class ProgramStatusGenerator {
 
         HSSFRow row = sheet.createRow(0);
         String[] headers = {
-                "Name of the IA", "Budget Head", "Name Of The Program", "No of sessions added",
+                "Name of the IA", "Budget Head", "Name Of The Program","Program Location","Start Date ","Program End Date", "No of sessions added",
                 "No of resource persons participated", "No of participants added", "Attendance updated for No participants",
                 "No of images uploaded", "No of Media images uploaded", "Total Expenditure updated ", "Final submission status ",
                 "No of times rescheduled"
@@ -66,15 +66,19 @@ public class ProgramStatusGenerator {
             dataRow.createCell(0).setCellValue(program.getAgency().getAgencyName());
             dataRow.createCell(1).setCellValue(program.getProgramType());
             dataRow.createCell(2).setCellValue(program.getProgramTitle());
-            dataRow.createCell(3).setCellValue(program.getProgramSessionList().size());
-            dataRow.createCell(4).setCellValue(program.getProgramSessionList().stream()
+            dataRow.createCell(3).setCellValue(program.getLocation().getLocationName());
+            dataRow.createCell(4).setCellValue(program.getStartDate().toString());
+            dataRow.createCell(5).setCellValue(program.getEndDate().toString());
+
+            dataRow.createCell(6).setCellValue(program.getProgramSessionList().size());
+            dataRow.createCell(7).setCellValue(program.getProgramSessionList().stream()
                     .map(session -> session.getResource().getResourceId())
                     .filter(Objects::nonNull)
                     .distinct()
                     .count());
-            dataRow.createCell(5).setCellValue(program.getParticipants().size());
-            dataRow.createCell(6).setCellValue(program.getParticipants().size());
-            dataRow.createCell(7).setCellValue(program.getProgramSessionList().stream()
+            dataRow.createCell(8).setCellValue(program.getParticipants().size());
+            dataRow.createCell(9).setCellValue(program.getParticipants().size());
+            dataRow.createCell(10).setCellValue(program.getProgramSessionList().stream()
                     .mapToLong(session ->
                             (session.getImage1() != null ? 1 : 0) +
                                     (session.getImage2() != null ? 1 : 0) +
@@ -82,11 +86,11 @@ public class ProgramStatusGenerator {
                                     (session.getImage4() != null ? 1 : 0) +
                                     (session.getImage5() != null ? 1 : 0)
                     ).sum());
-            dataRow.createCell(8).setCellValue(program.getMediaCoverageList().size());
-            dataRow.createCell(9).setCellValue(expenditureList.stream().mapToDouble(ProgramExpenditure::getCost).sum() +
+            dataRow.createCell(11).setCellValue(program.getMediaCoverageList().size());
+            dataRow.createCell(12).setCellValue(expenditureList.stream().mapToDouble(ProgramExpenditure::getCost).sum() +
                     transactionList.stream().mapToDouble(BulkExpenditureTransaction::getAllocatedCost).sum());
-            dataRow.createCell(10).setCellValue(program.getStatus().equals("Program Expenditure Updated") ? "YES" : "NO");
-            dataRow.createCell(11).setCellValue(programRescheduleRepository.findByProgram_ProgramId(program.getProgramId()).size());
+            dataRow.createCell(13).setCellValue(program.getStatus().equals("Program Expenditure Updated") ? "YES" : "NO");
+            dataRow.createCell(14).setCellValue(programRescheduleRepository.findByProgram_ProgramId(program.getProgramId()).size());
             dataRowIndex++;
         }
         ServletOutputStream ops = response.getOutputStream();
