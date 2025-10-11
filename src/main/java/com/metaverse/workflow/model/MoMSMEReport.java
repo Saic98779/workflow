@@ -13,7 +13,7 @@ import java.util.Date;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MoMSMEReport {
+public class MoMSMEReport extends AuditEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,7 +21,7 @@ public class MoMSMEReport {
     private Long moMSMEActivityId;
 
     @Column(name = "intervention")
-    private String intervention;//agency
+    private String intervention;
 
     @Column(name = "component")
     private String component;//Activity
@@ -29,11 +29,11 @@ public class MoMSMEReport {
     @Column(name = "mo_msme_activity")
     private String moMSMEActivity;//subActivity
 
-    @CreationTimestamp
-    @Column(name = "created_on", updatable = false)
-    private Date createdOn;
+    @OneToOne
+    @JoinColumn(name = "non_training_activity_id", referencedColumnName = "activityId")
+    private NonTrainingActivity nonTrainingActivity;
 
-    @UpdateTimestamp
-    @Column(name = "updated_on", insertable = false)
-    private Date updatedOn;
+    @OneToOne
+    @JoinColumn(name = "non_training_sub_activity_id", referencedColumnName = "subActivityId")
+    private NonTrainingSubActivity nonTrainingSubActivity;
 }

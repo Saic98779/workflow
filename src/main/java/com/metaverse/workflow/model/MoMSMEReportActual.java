@@ -13,7 +13,7 @@ import java.util.Date;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MoMSMEReportActual {
+public class MoMSMEReportActual extends AuditEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,6 +32,10 @@ public class MoMSMEReportActual {
     @Column(name = "financial_achievement")
     private Double financialAchievement;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "mo_msme_activity_id", nullable = false)
+    private MoMSMEReport moMSMEReport;
+
     @Column(name = "total")
     private Integer total;
 
@@ -49,12 +53,4 @@ public class MoMSMEReportActual {
 
     @Column(name = "bc")
     private Integer bc;
-
-    @CreationTimestamp
-    @Column(name = "created_on", updatable = false)
-    private Date createdOn;
-
-    @UpdateTimestamp
-    @Column(name = "updated_on", insertable = false)
-    private Date updatedOn;
 }

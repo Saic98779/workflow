@@ -15,7 +15,7 @@ import java.util.Date;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MoMSMEReportSubmitted {
+public class MoMSMEReportSubmitted extends AuditEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "submitted_id")
@@ -54,12 +54,4 @@ public class MoMSMEReportSubmitted {
 
     @Column(name = "bc")
     private Integer bc;
-
-    @CreationTimestamp
-    @Column(name = "created_on", updatable = false)
-    private Date createdOn;
-
-    @UpdateTimestamp
-    @Column(name = "updated_on", insertable = false)
-    private Date updatedOn;
 }

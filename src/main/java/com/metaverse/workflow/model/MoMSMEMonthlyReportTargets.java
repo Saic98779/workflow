@@ -13,7 +13,7 @@ import java.util.Date;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MoMSMEMonthlyReportTargets {
+public class MoMSMEMonthlyReportTargets extends AuditEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,12 +35,4 @@ public class MoMSMEMonthlyReportTargets {
 
     @Column(name = "financial_target")
     private Double financialTarget;
-
-    @CreationTimestamp
-    @Column(name = "created_on", updatable = false)
-    private Date createdOn;
-
-    @UpdateTimestamp
-    @Column(name = "updated_on", insertable = false)
-    private Date updatedOn;
 }

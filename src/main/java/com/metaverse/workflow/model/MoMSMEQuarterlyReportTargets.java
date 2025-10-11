@@ -6,7 +6,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.util.Date;
 
-public class MoMSMEQuarterlyReportTargets {
+public class MoMSMEQuarterlyReportTargets extends AuditEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "quarterly_target_id")
@@ -27,13 +27,4 @@ public class MoMSMEQuarterlyReportTargets {
 
     @Column(name = "financial_target")
     private Double financialTarget;
-
-
-    @CreationTimestamp
-    @Column(name = "created_on", updatable = false)
-    private Date createdOn;
-
-    @UpdateTimestamp
-    @Column(name = "updated_on", insertable = false)
-    private Date updatedOn;
 }
