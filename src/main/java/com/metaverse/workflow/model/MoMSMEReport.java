@@ -2,10 +2,6 @@ package com.metaverse.workflow.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-
-import java.util.Date;
 
 @Entity
 @Table(name = "momsme_report")
@@ -23,17 +19,12 @@ public class MoMSMEReport extends AuditEntity {
     @Column(name = "intervention")
     private String intervention;
 
-    @Column(name = "component")
-    private String component;//Activity
-
-    @Column(name = "mo_msme_activity")
-    private String moMSMEActivity;//subActivity
-
     @OneToOne
-    @JoinColumn(name = "non_training_activity_id", referencedColumnName = "activityId")
+    @JoinColumn(name = "non_training_activity_id", referencedColumnName = "activity_id")
     private NonTrainingActivity nonTrainingActivity;
 
     @OneToOne
-    @JoinColumn(name = "non_training_sub_activity_id", referencedColumnName = "subActivityId")
+    @JoinColumn(name = "non_training_sub_activity_id", referencedColumnName = "sub_activity_id")
     private NonTrainingSubActivity nonTrainingSubActivity;
+
 }
