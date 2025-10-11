@@ -29,6 +29,9 @@ public interface ParticipantRepository extends JpaRepository<Participant, Long> 
 
     List<Participant> findByPrograms_ProgramId(Long programId);
 
+    @Query("SELECT DISTINCT p FROM Participant p JOIN p.programs pr WHERE pr.programId = :programId")
+    List<Participant> findByProgramId(@Param("programId") Long programId);
+
     Page<Participant> findByPrograms_Agency_AgencyId(Long agencyId, Pageable pageable);
 
     List<Participant> findByPrograms_Agency_AgencyId(Long agencyId);
