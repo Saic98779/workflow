@@ -23,6 +23,9 @@ public class NIMSMEVendorDetails extends BaseEntity {
     @Column(name = "order_details", columnDefinition = "TEXT")
     private String orderDetails;
 
+    @Column(name = "order_upload")
+    private String orderUpload;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sub_activity_id", nullable = false)
     private NonTrainingSubActivity nonTrainingSubActivity;

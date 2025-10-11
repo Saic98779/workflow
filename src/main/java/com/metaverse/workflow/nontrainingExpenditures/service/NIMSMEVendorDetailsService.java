@@ -1,13 +1,19 @@
 package com.metaverse.workflow.nontrainingExpenditures.service;
 
+import com.metaverse.workflow.common.fileservice.StorageService;
+import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.common.util.DateUtil;
 import com.metaverse.workflow.model.NIMSMEVendorDetails;
 import com.metaverse.workflow.model.NonTrainingSubActivity;
+import com.metaverse.workflow.model.ProgramSessionFile;
 import com.metaverse.workflow.nontrainingExpenditures.Dto.NIMSMEVendorDetailsDto;
 import com.metaverse.workflow.nontrainingExpenditures.repository.NIMSMEVendorDetailsRepository;
 import com.metaverse.workflow.nontrainingExpenditures.repository.NonTrainingSubActivityRepository;
+import com.metaverse.workflow.program.repository.ProgramSessionFileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,19 +27,15 @@ public class NIMSMEVendorDetailsService {
     @Autowired
     private NonTrainingSubActivityRepository subActivityRepository;
 
+    @Autowired
+    private StorageService storageService;
+
+    @Autowired
+    private ProgramSessionFileRepository programSessionFileRepository;
+
     public List<NIMSMEVendorDetailsDto> getAllVendors() {
-        return repository.findAll().stream().map(nimsmeVendorDetails -> {
-            NIMSMEVendorDetailsDto dto =  new NIMSMEVendorDetailsDto();
-            dto.setVendorId(nimsmeVendorDetails.getId());
-            dto.setVendorCompanyName(nimsmeVendorDetails.getVendorCompanyName());
-            dto.setOrderDetails(nimsmeVendorDetails.getOrderDetails());
-            dto.setDateOfOrder(DateUtil.dateToString(nimsmeVendorDetails.getDateOfOrder(),"dd-MM-yyyy"));
-            dto.setSubActivityId(nimsmeVendorDetails.getNonTrainingSubActivity().getSubActivityId());
-            return dto;
-        }).toList();
-
-
-    }
+        return repository.findAll().stream().map(nimsmeVendorDetails ->
+                entityToDto(nimsmeVendorDetails)).toList();}
 
     public NIMSMEVendorDetailsDto getVendorById(Long vendorId) {
         Optional<NIMSMEVendorDetails> byId = repository.findById(vendorId);
@@ -49,7 +51,7 @@ public class NIMSMEVendorDetailsService {
         return repository.findByNonTrainingSubActivity_SubActivityId(subActivityId).stream().map(s -> entityToDto(s)).toList();
     }
 
-    public NIMSMEVendorDetailsDto saveVendor(NIMSMEVendorDetailsDto dto) {
+    public NIMSMEVendorDetailsDto saveVendor(NIMSMEVendorDetailsDto dto, MultipartFile file) {
 
         NIMSMEVendorDetails vendor = new NIMSMEVendorDetails();
         vendor.setVendorCompanyName(dto.getVendorCompanyName());
@@ -61,7 +63,18 @@ public class NIMSMEVendorDetailsService {
                 .orElseThrow(() -> new RuntimeException("SubActivity not found with id " + finalDto.getSubActivityId()));
         vendor.setNonTrainingSubActivity(subActivity);
 
+
         NIMSMEVendorDetails save = repository.save(vendor);
+        if (file != null && !file.isEmpty()) {
+            String filePath = this.storageFiles(file, save.getId(), "NIMSMEVendorDetails");
+            save.setOrderUpload(filePath);
+            repository.save(save);
+            programSessionFileRepository.save(ProgramSessionFile.builder()
+                    .fileType("File")
+                    .filePath(filePath)
+                    .nimsmeVendorDetails(save)
+                    .build());
+        }
 
         dto = new NIMSMEVendorDetailsDto();
         dto.setVendorId(save.getId());
@@ -92,8 +105,17 @@ public class NIMSMEVendorDetailsService {
     }
 
 
-    public void deleteVendor(Long vendorId) {
+    @Transactional
+    public WorkflowResponse deleteVendor(Long vendorId) {
+        if (!repository.existsById(vendorId)) {
+            throw new RuntimeException("Vendor not found with id " + vendorId);
+        }
+        programSessionFileRepository.deleteByNimsmeVendorDetails_Id(vendorId);
         repository.deleteById(vendorId);
+        return WorkflowResponse.builder()
+                .message("Vendor Deleted Successfully")
+                .status(200)
+                .build();
     }
 
     public void deleteBySubActivityId(Long subActivityId) {
@@ -108,8 +130,13 @@ public class NIMSMEVendorDetailsService {
         dto.setVendorCompanyName(nimsmeVendorDetails.getVendorCompanyName());
         dto.setOrderDetails(nimsmeVendorDetails.getOrderDetails());
         dto.setDateOfOrder(DateUtil.dateToString(nimsmeVendorDetails.getDateOfOrder(),"dd-MM-yyyy"));
+        dto.setOrderUpload(nimsmeVendorDetails.getOrderUpload());
         dto.setSubActivityId(nimsmeVendorDetails.getNonTrainingSubActivity().getSubActivityId());
         return dto;
+    }
+
+    public String storageFiles(MultipartFile file, Long vendorId, String folderName) {
+        return storageService.store(file, vendorId, folderName);
     }
 }
 

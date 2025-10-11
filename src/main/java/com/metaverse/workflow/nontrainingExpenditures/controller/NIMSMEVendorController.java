@@ -1,11 +1,14 @@
 package com.metaverse.workflow.nontrainingExpenditures.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.nontrainingExpenditures.Dto.NIMSMEVendorDetailsDto;
 import com.metaverse.workflow.nontrainingExpenditures.service.NIMSMEVendorDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/vendors")
@@ -34,10 +37,13 @@ public class NIMSMEVendorController {
         return ResponseEntity.ok(WorkflowResponse.builder().data(service.getSubActivityIdById(subActivityId)).status(200).message("fetched successfully").build());
     }
 
-    @PostMapping(path = "/save")
-    public ResponseEntity<WorkflowResponse> createVendor(@RequestBody NIMSMEVendorDetailsDto vendorDetailsDto) {
+    @PostMapping(path = "/save",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<WorkflowResponse> createVendor(@RequestPart("vendorDetailsDto")String vendorDetailsDto,
+                                                         @RequestPart(value = "file", required = false) MultipartFile file) {
         try {
-            NIMSMEVendorDetailsDto nimsmeVendorDetailsDto = service.saveVendor(vendorDetailsDto);
+            ObjectMapper objectMapper = new ObjectMapper();
+            NIMSMEVendorDetailsDto dto = objectMapper.readValue(vendorDetailsDto, NIMSMEVendorDetailsDto.class);
+            NIMSMEVendorDetailsDto nimsmeVendorDetailsDto = service.saveVendor(dto,file);
             return ResponseEntity.ok(
                     WorkflowResponse.builder()
                             .data(nimsmeVendorDetailsDto).status(201).message("Saved successfully").build());
@@ -65,13 +71,11 @@ public class NIMSMEVendorController {
         }
     }
 
-
     @DeleteMapping("/{vendorId}")
     public ResponseEntity<?> deleteVendor(@PathVariable Long vendorId) {
 
         try {
-            service.deleteVendor(vendorId);
-            return ResponseEntity.ok(WorkflowResponse.builder().status(200).message("Deleted successfully").build());
+            return ResponseEntity.ok(service.deleteVendor(vendorId));
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(
                     WorkflowResponse.builder().status(500).message("An unexpected error occurred: " + e.getMessage())

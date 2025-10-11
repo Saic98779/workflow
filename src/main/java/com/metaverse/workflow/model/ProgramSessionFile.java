@@ -57,4 +57,8 @@ public class ProgramSessionFile {
     @JoinColumn(name = "central_data_id")
     private NIMSMECentralData nimsmeCentralData;
 
+    @ManyToOne
+    @JoinColumn(name = "nimsme_vendor_details")
+    private NIMSMEVendorDetails nimsmeVendorDetails;
+
 }
