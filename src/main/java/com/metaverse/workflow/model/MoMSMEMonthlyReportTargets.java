@@ -17,7 +17,7 @@ public class MoMSMEMonthlyReportTargets extends AuditEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "target_id")
+    @Column(name = "month_id")
     private Long monthlyTargetId;
 
     @ManyToOne(fetch = FetchType.LAZY)
