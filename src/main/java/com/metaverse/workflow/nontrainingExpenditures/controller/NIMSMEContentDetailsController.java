@@ -17,17 +17,17 @@ public class NIMSMEContentDetailsController {
     @Autowired
     private NIMSMEContentDetailsService service;
 
-    @PostMapping(path = "/save")
+    @PostMapping(path = "/content/save")
     public ResponseEntity<?> createContent(@RequestBody NIMSMEContentDetailsDto nimsmeContentDetailsDto) {
         return ResponseEntity.ok(WorkflowResponse.builder().data(service.saveContent(nimsmeContentDetailsDto)).status(201).message("Saved successfully").build());
     }
 
-    @GetMapping(path = "/get-all")
+    @GetMapping(path = "/content/get-all")
     public ResponseEntity<?> getAllContent() {
         return ResponseEntity.ok(WorkflowResponse.builder().data(service.getAllContent()).status(200).message("fetched successfully").build());
     }
 
-    @GetMapping("/{contentId}")
+    @GetMapping("/content/{contentId}")
     public ResponseEntity<?> getContentById(@PathVariable Long contentId) {
         try {
             NIMSMEContentDetailsDto data = service.getContentById(contentId);
@@ -44,7 +44,7 @@ public class NIMSMEContentDetailsController {
         }
     }
 
-    @GetMapping("/subActivity/{nonTrainingSubActivityId}")
+    @GetMapping("/content/subActivity/{nonTrainingSubActivityId}")
     public ResponseEntity<?> getContentByNonTrainingSubActivityId(@PathVariable Long nonTrainingSubActivityId) {
         try {
             List<NIMSMEContentDetailsDto> data = service.getContentByNonTrainingSubActivityId(nonTrainingSubActivityId);
@@ -61,7 +61,7 @@ public class NIMSMEContentDetailsController {
     }
 
 
-    @PutMapping("/{contentId}")
+    @PutMapping("/content/{contentId}")
     public ResponseEntity<?> updateContent(@PathVariable Long contentId, @RequestBody NIMSMEContentDetailsDto nimsmeContentDetailsDto) {
 
         try {
@@ -84,7 +84,7 @@ public class NIMSMEContentDetailsController {
         }
     }
 
-    @DeleteMapping("/{contentId}")
+    @DeleteMapping("/content/{contentId}")
     public ResponseEntity<?> deleteContent(@PathVariable Long contentId) {
         try {
             service.deleteContent(contentId);
@@ -101,7 +101,7 @@ public class NIMSMEContentDetailsController {
         }
     }
 
-    @DeleteMapping("/subactivity/{subActivityId}")
+    @DeleteMapping("/content/subactivity/{subActivityId}")
     public ResponseEntity<?> deleteBySubActivityId(@PathVariable Long subActivityId) {
         try {
             service.deleteBySubActivityId(subActivityId);
