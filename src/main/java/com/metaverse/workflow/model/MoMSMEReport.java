@@ -3,6 +3,9 @@ package com.metaverse.workflow.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+import java.util.Set;
+
 @Entity
 @Table(name = "momsme_report")
 @Data
@@ -25,12 +28,12 @@ public class MoMSMEReport extends AuditEntity {
     @Column(name = "activity")
     private String activity;
 
-//    @OneToOne
-//    @JoinColumn(name = "non_training_activity_id", referencedColumnName = "activity_id")
-//    private NonTrainingActivity nonTrainingActivity;
-//
-//    @OneToOne
-//    @JoinColumn(name = "non_training_sub_activity_id", referencedColumnName = "sub_activity_id")
-//    private NonTrainingSubActivity nonTrainingSubActivity;
+    @OneToMany(mappedBy = "moMSMEReport", fetch = FetchType.LAZY)
+    private List<MoMSMEQuarterlyReportTargets> moMSMEQuarterlyReportTargets;
 
+    @OneToMany(mappedBy = "moMSMEReport", fetch = FetchType.LAZY)
+    private List<MoMSMEMonthlyReportTargets> moMSMEMonthlyReportTargets;
+
+    @OneToMany(mappedBy = "moMSMEReport", fetch = FetchType.LAZY)
+    private List<MoMSMEReportSubmitted> moMSMEReportSubmitted;
 }

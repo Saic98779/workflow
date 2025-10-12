@@ -1,16 +1,18 @@
-package com.metaverse.workflow.MoMSMEReport.service;
+package com.metaverse.workflow.MoMSMEReport.dtos;
 
-import jakarta.persistence.Column;
 import lombok.Builder;
 import lombok.Data;
 
-@Builder
 @Data
-public class MoMSMEReportSubmittedDTO {
-    private Long submittedId;
-    private Long moMSMEActivityId;
+@Builder
+public class CumulativeQuarterData {
+    private String intervention;
+    private String component;
+    private String activity;
     private String financialYear;
     private String month;
+    private Double physicalTarget;
+    private Double financialTarget;
     private Double physicalAchievement;
     private Double financialAchievement;
     private Integer total;
@@ -18,7 +20,4 @@ public class MoMSMEReportSubmittedDTO {
     private Integer sc;
     private Integer st;
     private Integer obc;
-    private String intervention;
-    private String component;
-    private String activity;
 }
