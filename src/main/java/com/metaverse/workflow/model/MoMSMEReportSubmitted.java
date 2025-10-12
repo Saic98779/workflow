@@ -18,6 +18,10 @@ public class MoMSMEReportSubmitted extends AuditEntity {
     @Column(name = "submitted_id")
     private Long submittedId;
 
+    @ManyToOne
+    @JoinColumn(name = "mo_msme_activity_id")
+    private MoMSMEReport moMSMEReport;
+
     @Column(name = "financial_year")
     private String financialYear;
 

@@ -1,5 +1,6 @@
 package com.metaverse.workflow.MoMSMEReport.service;
 
+import com.metaverse.workflow.model.MoMSMEReport;
 import com.metaverse.workflow.model.MoMSMEReportSubmitted;
 
 public class MoMSMEReportSubmittedMapper {
@@ -8,7 +9,7 @@ public class MoMSMEReportSubmittedMapper {
 
         return MoMSMEReportSubmittedDTO.builder()
                 .submittedId(entity.getSubmittedId())
-                  .financialYear(entity.getFinancialYear())
+                .financialYear(entity.getFinancialYear())
                 .month(entity.getMonth())
                 .physicalAchievement(entity.getPhysicalAchievement())
                 .financialAchievement(entity.getFinancialAchievement())
@@ -17,10 +18,13 @@ public class MoMSMEReportSubmittedMapper {
                 .sc(entity.getSc())
                 .st(entity.getSt())
                 .obc(entity.getObc())
+                .intervention(entity.getMoMSMEReport().getIntervention())
+                .component(entity.getMoMSMEReport().getComponent())
+                .activity(entity.getMoMSMEReport().getActivity())
                 .build();
     }
 
-    public static MoMSMEReportSubmitted toEntity(MoMSMEReportSubmittedDTO dto) {
+    public static MoMSMEReportSubmitted toEntity(MoMSMEReportSubmittedDTO dto, MoMSMEReport moMSMEReport) {
         if (dto == null) return null;
 
         return MoMSMEReportSubmitted.builder()
@@ -34,6 +38,7 @@ public class MoMSMEReportSubmittedMapper {
                 .sc(dto.getSc())
                 .st(dto.getSt())
                 .obc(dto.getObc())
+                .moMSMEReport(moMSMEReport)
                 .build();
     }
 }

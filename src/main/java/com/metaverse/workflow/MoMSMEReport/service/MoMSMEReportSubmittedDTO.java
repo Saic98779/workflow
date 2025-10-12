@@ -1,5 +1,6 @@
 package com.metaverse.workflow.MoMSMEReport.service;
 
+import jakarta.persistence.Column;
 import lombok.Builder;
 import lombok.Data;
 
@@ -7,6 +8,7 @@ import lombok.Data;
 @Data
 public class MoMSMEReportSubmittedDTO {
     private Long submittedId;
+    private Long moMSMEActivityId;
     private String financialYear;
     private String month;
     private Double physicalAchievement;
@@ -16,4 +18,7 @@ public class MoMSMEReportSubmittedDTO {
     private Integer sc;
     private Integer st;
     private Integer obc;
+    private String intervention;
+    private String component;
+    private String activity;
 }
