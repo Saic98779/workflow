@@ -19,12 +19,18 @@ public class MoMSMEReport extends AuditEntity {
     @Column(name = "intervention")
     private String intervention;
 
-    @OneToOne
-    @JoinColumn(name = "non_training_activity_id", referencedColumnName = "activity_id")
-    private NonTrainingActivity nonTrainingActivity;
+    @Column(name = "component")
+    private String component;
+    
+    @Column(name = "activity")
+    private String activity;
 
-    @OneToOne
-    @JoinColumn(name = "non_training_sub_activity_id", referencedColumnName = "sub_activity_id")
-    private NonTrainingSubActivity nonTrainingSubActivity;
+//    @OneToOne
+//    @JoinColumn(name = "non_training_activity_id", referencedColumnName = "activity_id")
+//    private NonTrainingActivity nonTrainingActivity;
+//
+//    @OneToOne
+//    @JoinColumn(name = "non_training_sub_activity_id", referencedColumnName = "sub_activity_id")
+//    private NonTrainingSubActivity nonTrainingSubActivity;
 
 }
