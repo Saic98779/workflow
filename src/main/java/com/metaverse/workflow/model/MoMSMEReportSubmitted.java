@@ -5,10 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
-import java.util.Date;
 @Entity
 @Table(name = "momsme_report_submitted")
 @Data
@@ -20,10 +17,6 @@ public class MoMSMEReportSubmitted extends AuditEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "submitted_id")
     private Long submittedId;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "mo_msme_activity_id", nullable = false)
-    private MoMSMEReport moMSMEReport;
 
     @Column(name = "financial_year")
     private String financialYear;
@@ -49,9 +42,6 @@ public class MoMSMEReportSubmitted extends AuditEntity {
     @Column(name = "st")
     private Integer st;
 
-    @Column(name = "oc")
-    private Integer oc;
-
-    @Column(name = "bc")
-    private Integer bc;
+    @Column(name = "obc")
+    private Integer obc;
 }
