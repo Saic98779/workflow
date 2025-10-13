@@ -60,6 +60,8 @@ public class ExpenditureResponseMapper {
                 .fileIds(fileIds)
                 .checkNo(expenditure.getCheckNo())
                 .checkDate(DateUtil.dateToString(expenditure.getCheckDate(),"dd-MM-yyyy"))
+                .availableQuantity(expenditure.getAvailableQuantity())
+                .consumedQuantity(expenditure.getConsumedQuantity())
                 .build();
     }
     public static BulkTransactions mapBulkExpenditureTransaction(BulkExpenditureTransaction  expenditure)

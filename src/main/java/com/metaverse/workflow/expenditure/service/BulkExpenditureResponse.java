@@ -1,6 +1,7 @@
 package com.metaverse.workflow.expenditure.service;
 
 import com.metaverse.workflow.common.enums.PaymentType;
+import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -36,4 +37,6 @@ BulkExpenditureResponse {
     private List<Long> fileIds;
     private String checkNo;
     private String checkDate;
+    private Integer consumedQuantity;
+    private Integer availableQuantity;
 }
