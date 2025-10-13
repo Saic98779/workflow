@@ -206,6 +206,7 @@ public class ExpenditureServiceAdepter implements ExpenditureService {
     }
 
     @Override
+    @Transactional
     public BulkExpenditureTransactionResponse saveTransaction(BulkExpenditureTransactionRequest request) throws DataException {
 
         BulkExpenditure bulkExpenditure = bulkExpenditureRepository.findById(request.getBulkExpenditureId())
@@ -221,17 +222,40 @@ public class ExpenditureServiceAdepter implements ExpenditureService {
         HeadOfExpense headOfExpense = headOfExpenseRepository.findById(request.getHeadOfExpenseId())
                 .orElseThrow(() -> new DataException("Head of expense data not found", "HEAD-OF-EXPENSE-DATA-NOT-FOUND", 400));
 
-        BulkExpenditureTransaction saved = transactionRepo.save(ExpenditureRequestMapper.mapBulkExpenditureTransaction(request, activity, subActivity, program, agency, bulkExpenditure, headOfExpense));
-
-        if (bulkExpenditure != null && request.getConsumedQuantity() != null) {
-            int updatedAvailableQty = 0;
-            if (bulkExpenditure.getAvailableQuantity() > request.getConsumedQuantity()) {
-                updatedAvailableQty = bulkExpenditure.getAvailableQuantity() - request.getConsumedQuantity();
-            }
-            bulkExpenditure.setAvailableQuantity(updatedAvailableQty);
-            bulkExpenditure.setConsumedQuantity(bulkExpenditure.getConsumedQuantity() + request.getConsumedQuantity());
-            bulkExpenditureRepository.save(bulkExpenditure);
+//        BulkExpenditureTransaction saved = transactionRepo.save(ExpenditureRequestMapper.mapBulkExpenditureTransaction(request, activity, subActivity, program, agency, bulkExpenditure, headOfExpense));
+//
+//        if (bulkExpenditure != null && request.getConsumedQuantity() != null) {
+//            int updatedAvailableQty = 0;
+//            if (bulkExpenditure.getAvailableQuantity() > request.getConsumedQuantity()) {
+//                updatedAvailableQty = bulkExpenditure.getAvailableQuantity() - request.getConsumedQuantity();
+//            }
+//            bulkExpenditure.setAvailableQuantity(updatedAvailableQty);
+//            bulkExpenditure.setConsumedQuantity(bulkExpenditure.getConsumedQuantity() + request.getConsumedQuantity());
+//            bulkExpenditureRepository.save(bulkExpenditure);
+//        }
+        // Validate available quantity
+        int requestedQty = request.getConsumedQuantity() != null ? request.getConsumedQuantity() : 0;
+        if (requestedQty > bulkExpenditure.getAvailableQuantity()) {
+            throw new DataException(
+                    "Consumed quantity exceeds available quantity",
+                    "INSUFFICIENT-QUANTITY",
+                    400
+            );
         }
+
+        // Update available and consumed quantities
+        bulkExpenditure.setAvailableQuantity(bulkExpenditure.getAvailableQuantity() - requestedQty);
+        bulkExpenditure.setConsumedQuantity(
+                (bulkExpenditure.getConsumedQuantity() == null ? 0 : bulkExpenditure.getConsumedQuantity()) + requestedQty
+        );
+        bulkExpenditureRepository.save(bulkExpenditure);
+
+        // Save transaction record
+        BulkExpenditureTransaction transaction = ExpenditureRequestMapper.mapBulkExpenditureTransaction(
+                request, activity, subActivity, program, agency, bulkExpenditure, headOfExpense
+        );
+
+        BulkExpenditureTransaction saved = transactionRepo.save(transaction);
 
 
         BulkExpenditureTransactionResponse response = BulkExpenditureTransactionResponse.builder()
