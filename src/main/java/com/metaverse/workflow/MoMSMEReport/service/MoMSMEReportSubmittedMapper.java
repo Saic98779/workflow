@@ -1,48 +1,45 @@
 package com.metaverse.workflow.MoMSMEReport.service;
 
 import com.metaverse.workflow.MoMSMEReport.dtos.CumulativeQuarterData;
-import com.metaverse.workflow.model.MoMSMEQuarterlyReportTargets;
-import com.metaverse.workflow.model.MoMSMEReport;
-import com.metaverse.workflow.model.MoMSMEReportSubmitted;
+import com.metaverse.workflow.model.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static org.apache.poi.sl.usermodel.PlaceholderDetails.PlaceholderSize.quarter;
 
 public class MoMSMEReportSubmittedMapper {
     public static MoMSMEReportSubmittedDto toDTO(MoMSMEReportSubmitted entity) {
         if (entity == null) return null;
 
+        String months = null;
+        if (entity.getMonthlyReports() != null && !entity.getMonthlyReports().isEmpty()) {
+            months = entity.getMonthlyReports().stream()
+                    .map(m -> m.getMonth())
+                    .sorted()
+                    .collect(Collectors.joining(", "));
+        }
+
         return MoMSMEReportSubmittedDto.builder()
                 .submittedId(entity.getSubmittedId())
                 .financialYear(entity.getFinancialYear())
-                .month(entity.getMonth())
-                .physicalAchievement(entity.getPhysicalAchievement())
-                .financialAchievement(entity.getFinancialAchievement())
-                .total(entity.getTotal())
-                .women(entity.getWomen())
-                .sc(entity.getSc())
-                .st(entity.getSt())
-                .obc(entity.getObc())
-                .intervention(entity.getMoMSMEReport().getIntervention())
-                .component(entity.getMoMSMEReport().getComponent())
-                .activity(entity.getMoMSMEReport().getActivity())
-                .build();
-    }
-
-    public static MoMSMEReportSubmitted toEntity(MoMSMEReportSubmittedDto dto, MoMSMEReport moMSMEReport) {
-        if (dto == null) return null;
-
-        return MoMSMEReportSubmitted.builder()
-                .submittedId(dto.getSubmittedId())
-                .financialYear(dto.getFinancialYear())
-                .month(dto.getMonth())
-                .physicalAchievement(dto.getPhysicalAchievement())
-                .financialAchievement(dto.getFinancialAchievement())
-                .total(dto.getTotal())
-                .women(dto.getWomen())
-                .sc(dto.getSc())
-                .st(dto.getSt())
-                .obc(dto.getObc())
-                .moMSMEReport(moMSMEReport)
+                .month(months)
+                .physicalAchievement(entity.getQuarterlyReport().getPhysicalAchievement())
+                .financialAchievement(entity.getQuarterlyReport().getFinancialAchievement())
+                .total(entity.getQuarterlyReport().getTotal())
+                .women(entity.getQuarterlyReport().getWomen())
+                .sc(entity.getQuarterlyReport().getSc())
+                .st(entity.getQuarterlyReport().getSt())
+                .obc(entity.getQuarterlyReport().getObc())
+                .intervention(
+                        entity.getMoMSMEReport() != null ? entity.getMoMSMEReport().getIntervention() : null
+                )
+                .component(
+                        entity.getMoMSMEReport() != null ? entity.getMoMSMEReport().getComponent() : null
+                )
+                .activity(
+                        entity.getMoMSMEReport() != null ? entity.getMoMSMEReport().getActivity() : null
+                )
                 .build();
     }
 
@@ -52,10 +49,27 @@ public class MoMSMEReportSubmittedMapper {
         public static MoMSMEReportDto toDTOReport(MoMSMEReport entity, String month, String financialYear) {
             if (entity == null) return null;
 
-            MoMSMEReportSubmitted currentMonthSubmission = entity.getMoMSMEReportSubmitted().stream()
-                    .filter(s -> s.getMonth().equals(month) && s.getFinancialYear().equals(financialYear))
+            List<MoMSMEReportSubmittedMonthly> quarterMonthsRecords = entity.getMoMSMEReportSubmitted().stream()
+                    .filter(s -> s.getFinancialYear().equals(financialYear))       // filter by FY
+                    .flatMap(s -> s.getMonthlyReports().stream())                   // get all monthly records
+                    .filter(m -> getQuarterMonths(month).contains(m.getMonth().toLowerCase()))
+                    .toList();
+
+            MoMSMEReportSubmittedMonthly monthRecord = entity.getMoMSMEReportSubmitted().stream()
+                    .filter(s -> s.getFinancialYear().equals(financialYear))
+                    .flatMap(s -> s.getMonthlyReports().stream())
+                    .filter(m -> m.getMonth().equalsIgnoreCase(month))
                     .findFirst()
                     .orElse(null);
+
+            MoMSMEReportSubmittedQuarterly quarterlyRecord = entity.getMoMSMEReportSubmitted().stream()
+                    .filter(s -> s.getFinancialYear().equals(financialYear))
+                    .map(MoMSMEReportSubmitted::getQuarterlyReport)
+                    .filter(q -> q != null && q.getQuarter().equalsIgnoreCase(String.valueOf(quarter)))
+                    .findFirst()
+                    .orElse(null);
+
+
 
             String quarter = getQuarter(month);
 
@@ -64,21 +78,6 @@ public class MoMSMEReportSubmittedMapper {
                     .findFirst()
                     .orElse(null);
 
-            List<String> quarterMonths = getQuarterMonths(quarter);
-            int total = 0, women = 0, sc = 0, st = 0, obc = 0;
-            double physicalAchievement = 0, financialAchievement = 0;
-
-            for (MoMSMEReportSubmitted s : entity.getMoMSMEReportSubmitted()) {
-                if (s.getFinancialYear().equals(financialYear) && quarterMonths.contains(s.getMonth())) {
-                    total += s.getTotal() != null ? s.getTotal() : 0;
-                    women += s.getWomen() != null ? s.getWomen() : 0;
-                    sc += s.getSc() != null ? s.getSc() : 0;
-                    st += s.getSt() != null ? s.getSt() : 0;
-                    obc += s.getObc() != null ? s.getObc() : 0;
-                    physicalAchievement += s.getPhysicalAchievement() != null ? s.getPhysicalAchievement() : 0;
-                    financialAchievement += s.getFinancialAchievement() != null ? s.getFinancialAchievement() : 0;
-                }
-            }
 
             return MoMSMEReportDto.builder()
                     .moMSMEActivityId(entity.getMoMSMEActivityId())
@@ -86,25 +85,25 @@ public class MoMSMEReportSubmittedMapper {
                     .month(month)
                     .physicalTarget(currentQuarterTargets != null ? currentQuarterTargets.getPhysicalTarget() : 0)
                     .financialTarget(currentQuarterTargets != null ? currentQuarterTargets.getFinancialTarget() : 0)
-                    .currentPhysicalAchievement(currentMonthSubmission != null ? currentMonthSubmission.getPhysicalAchievement() : 0)
-                    .currentFinancialAchievement(currentMonthSubmission != null ? currentMonthSubmission.getFinancialAchievement() : 0)
-                    .physicalAchievement(physicalAchievement)
-                    .financialAchievement(financialAchievement)
-                    .currentMonthMoMSMEBenefitedDto(currentMonthSubmission != null ?
+                    .currentPhysicalAchievement(monthRecord != null ? monthRecord.getPhysicalAchievement() : 0)
+                    .currentFinancialAchievement(monthRecord != null ? monthRecord.getFinancialAchievement() : 0)
+                    .physicalAchievement(quarterlyRecord != null ? quarterlyRecord.getPhysicalAchievement() : 0)
+                    .financialAchievement(quarterlyRecord != null ? quarterlyRecord.getFinancialAchievement() : 0)
+                    .currentMonthMoMSMEBenefitedDto(!quarterMonthsRecords.isEmpty() ?
                             CurrentMonthMoMSMEBenefitedDto.builder()
-                                    .total(currentMonthSubmission.getTotal())
-                                    .women(currentMonthSubmission.getWomen())
-                                    .sc(currentMonthSubmission.getSc())
-                                    .st(currentMonthSubmission.getSt())
-                                    .obc(currentMonthSubmission.getObc())
+                                    .total(monthRecord != null ? monthRecord.getTotal() : 0)
+                                    .women(monthRecord != null ? monthRecord.getWomen() : 0)
+                                    .sc(monthRecord != null ? monthRecord.getSc() : 0)
+                                    .st(monthRecord != null ? monthRecord.getSt() : 0)
+                                    .obc(monthRecord != null ? monthRecord.getObc() : 0)
                                     .build() : null)
 
                     .currentQuarterMoMSMEBenefitedDto(CurrentQuarterMoMSMEBenefitedDto.builder()
-                            .total(total)
-                            .women(women)
-                            .sc(sc)
-                            .st(st)
-                            .obc(obc)
+                            .total(quarterlyRecord != null ? quarterlyRecord.getTotal() : 0)
+                            .women(quarterlyRecord != null ? quarterlyRecord.getWomen() : 0)
+                            .sc(quarterlyRecord != null ? quarterlyRecord.getSc() : 0)
+                            .st(quarterlyRecord != null ? quarterlyRecord.getSt() : 0)
+                            .obc(quarterlyRecord != null ? quarterlyRecord.getObc() : 0)
                             .build())
 
                     .intervention(entity.getIntervention())
@@ -120,23 +119,25 @@ public class MoMSMEReportSubmittedMapper {
             // Get months in the quarter
             List<String> quarterMonths = getQuarterMonths(quarter);
 
-            // Filter monthly submissions for this quarter
-            List<MoMSMEReportSubmitted> quarterlySubmissions = entity.getMoMSMEReportSubmitted().stream()
-                    .filter(s -> s.getFinancialYear().equals(financialYear) && quarterMonths.contains(s.getMonth().toLowerCase()))
+            // Get all monthly records for this quarter
+            List<MoMSMEReportSubmittedMonthly> quarterlyMonthRecords = entity.getMoMSMEReportSubmitted().stream()
+                    .filter(s -> s.getFinancialYear().equals(financialYear))      // filter by financial year
+                    .flatMap(s -> s.getMonthlyReports().stream())                  // flatten monthly reports
+                    .filter(m -> quarterMonths.contains(m.getMonth().toLowerCase())) // filter by quarter months
                     .toList();
 
-            // Calculate quarterly totals
+            // Compute quarterly totals
             int totalQuarter = 0, womenQuarter = 0, scQuarter = 0, stQuarter = 0, obcQuarter = 0;
-            double physicalAchievementQuarter = 0, financialAchievementQuarter = 0;
+            double physicalAchievementQuarter = 0.0, financialAchievementQuarter = 0.0;
 
-            for (MoMSMEReportSubmitted s : quarterlySubmissions) {
-                totalQuarter += s.getTotal() != null ? s.getTotal() : 0;
-                womenQuarter += s.getWomen() != null ? s.getWomen() : 0;
-                scQuarter += s.getSc() != null ? s.getSc() : 0;
-                stQuarter += s.getSt() != null ? s.getSt() : 0;
-                obcQuarter += s.getObc() != null ? s.getObc() : 0;
-                physicalAchievementQuarter += s.getPhysicalAchievement() != null ? s.getPhysicalAchievement() : 0;
-                financialAchievementQuarter += s.getFinancialAchievement() != null ? s.getFinancialAchievement() : 0;
+            for (MoMSMEReportSubmittedMonthly m : quarterlyMonthRecords) {
+                totalQuarter += m.getTotal() != null ? m.getTotal() : 0;
+                womenQuarter += m.getWomen() != null ? m.getWomen() : 0;
+                scQuarter += m.getSc() != null ? m.getSc() : 0;
+                stQuarter += m.getSt() != null ? m.getSt() : 0;
+                obcQuarter += m.getObc() != null ? m.getObc() : 0;
+                physicalAchievementQuarter += m.getPhysicalAchievement() != null ? m.getPhysicalAchievement() : 0;
+                financialAchievementQuarter += m.getFinancialAchievement() != null ? m.getFinancialAchievement() : 0;
             }
 
             // Find quarterly target
@@ -160,33 +161,48 @@ public class MoMSMEReportSubmittedMapper {
                             .filter(t -> t.getFinancialYear().equals(financialYear))
                             .mapToDouble(t -> t.getFinancialTarget() != null ? t.getFinancialTarget() : 0)
                             .sum())
-                    .physicalAchievement(0.0)
-                    .financialAchievement(0.0)
-                    .total(0)
-                    .women(0)
-                    .sc(0)
-                    .st(0)
-                    .obc(0)
+                    .physicalAchievement(entity.getMoMSMEReportSubmitted().stream()
+                            .filter(s -> s.getFinancialYear().equals(financialYear))
+                            .flatMap(s -> s.getMonthlyReports().stream())
+                            .mapToDouble(m -> m.getPhysicalAchievement() != null ? m.getPhysicalAchievement() : 0)
+                            .sum())
+                    .financialAchievement(entity.getMoMSMEReportSubmitted().stream()
+                            .filter(s -> s.getFinancialYear().equals(financialYear))
+                            .flatMap(s -> s.getMonthlyReports().stream())
+                            .mapToDouble(m -> m.getFinancialAchievement() != null ? m.getFinancialAchievement() : 0)
+                            .sum())
+                    .total(entity.getMoMSMEReportSubmitted().stream()
+                            .filter(s -> s.getFinancialYear().equals(financialYear))
+                            .flatMap(s -> s.getMonthlyReports().stream())
+                            .mapToInt(m -> m.getTotal() != null ? m.getTotal() : 0)
+                            .sum())
+                    .women(entity.getMoMSMEReportSubmitted().stream()
+                            .filter(s -> s.getFinancialYear().equals(financialYear))
+                            .flatMap(s -> s.getMonthlyReports().stream())
+                            .mapToInt(m -> m.getWomen() != null ? m.getWomen() : 0)
+                            .sum())
+                    .sc(entity.getMoMSMEReportSubmitted().stream()
+                            .filter(s -> s.getFinancialYear().equals(financialYear))
+                            .flatMap(s -> s.getMonthlyReports().stream())
+                            .mapToInt(m -> m.getSc() != null ? m.getSc() : 0)
+                            .sum())
+                    .st(entity.getMoMSMEReportSubmitted().stream()
+                            .filter(s -> s.getFinancialYear().equals(financialYear))
+                            .flatMap(s -> s.getMonthlyReports().stream())
+                            .mapToInt(m -> m.getSt() != null ? m.getSt() : 0)
+                            .sum())
+                    .obc(entity.getMoMSMEReportSubmitted().stream()
+                            .filter(s -> s.getFinancialYear().equals(financialYear))
+                            .flatMap(s -> s.getMonthlyReports().stream())
+                            .mapToInt(m -> m.getObc() != null ? m.getObc() : 0)
+                            .sum())
                     .build();
-
-            // Sum cumulative achievements and counts
-            entity.getMoMSMEReportSubmitted().stream()
-                    .filter(s -> s.getFinancialYear().equals(financialYear))
-                    .forEach(s -> {
-                        cumulativeDto.setTotal(cumulativeDto.getTotal() + (s.getTotal() != null ? s.getTotal() : 0));
-                        cumulativeDto.setWomen(cumulativeDto.getWomen() + (s.getWomen() != null ? s.getWomen() : 0));
-                        cumulativeDto.setSc(cumulativeDto.getSc() + (s.getSc() != null ? s.getSc() : 0));
-                        cumulativeDto.setSt(cumulativeDto.getSt() + (s.getSt() != null ? s.getSt() : 0));
-                        cumulativeDto.setObc(cumulativeDto.getObc() + (s.getObc() != null ? s.getObc() : 0));
-                        cumulativeDto.setPhysicalAchievement(cumulativeDto.getPhysicalAchievement() + (s.getPhysicalAchievement() != null ? s.getPhysicalAchievement() : 0));
-                        cumulativeDto.setFinancialAchievement(cumulativeDto.getFinancialAchievement() + (s.getFinancialAchievement() != null ? s.getFinancialAchievement() : 0));
-                    });
 
             // Build main DTO
             return MoMSMEReportDto.builder()
                     .moMSMEActivityId(entity.getMoMSMEActivityId())
                     .financialYear(financialYear)
-                    .month(String.join(", ", quarterMonths))
+                    .month(String.join(", ", quarterMonths)) // comma-separated months
                     .physicalTarget(quarterlyTarget != null ? quarterlyTarget.getPhysicalTarget() : 0)
                     .financialTarget(quarterlyTarget != null ? quarterlyTarget.getFinancialTarget() : 0)
                     .physicalAchievement(physicalAchievementQuarter)
@@ -206,39 +222,37 @@ public class MoMSMEReportSubmittedMapper {
                     .build();
         }
 
-
         public static MoMSMEReportDto toDTOReportByCumulative(MoMSMEReport entity, String financialYear) {
             if (entity == null) return null;
 
-            // ---- Filter submissions for the full FY ----
-            List<MoMSMEReportSubmitted> fySubmissions = entity.getMoMSMEReportSubmitted().stream()
+            // ---- Flatten all monthly records for the FY ----
+            List<MoMSMEReportSubmittedMonthly> fyMonthlyRecords = entity.getMoMSMEReportSubmitted().stream()
                     .filter(s -> s.getFinancialYear().equals(financialYear))
+                    .flatMap(s -> s.getMonthlyReports().stream())
                     .toList();
 
             // ---- Calculate totals ----
             int total = 0, women = 0, sc = 0, st = 0, obc = 0;
             double physicalAchievement = 0.0, financialAchievement = 0.0;
 
-            for (MoMSMEReportSubmitted s : fySubmissions) {
-                total += s.getTotal() != null ? s.getTotal() : 0;
-                women += s.getWomen() != null ? s.getWomen() : 0;
-                sc += s.getSc() != null ? s.getSc() : 0;
-                st += s.getSt() != null ? s.getSt() : 0;
-                obc += s.getObc() != null ? s.getObc() : 0;
-                physicalAchievement += s.getPhysicalAchievement() != null ? s.getPhysicalAchievement() : 0;
-                financialAchievement += s.getFinancialAchievement() != null ? s.getFinancialAchievement() : 0;
+            for (MoMSMEReportSubmittedMonthly m : fyMonthlyRecords) {
+                total += m.getTotal() != null ? m.getTotal() : 0;
+                women += m.getWomen() != null ? m.getWomen() : 0;
+                sc += m.getSc() != null ? m.getSc() : 0;
+                st += m.getSt() != null ? m.getSt() : 0;
+                obc += m.getObc() != null ? m.getObc() : 0;
+                physicalAchievement += m.getPhysicalAchievement() != null ? m.getPhysicalAchievement() : 0;
+                financialAchievement += m.getFinancialAchievement() != null ? m.getFinancialAchievement() : 0;
             }
 
-            // ---- Filter and sum targets ----
-            List<MoMSMEQuarterlyReportTargets> fyTargets = entity.getMoMSMEQuarterlyReportTargets().stream()
+            // ---- Sum quarterly targets for FY ----
+            double physicalTarget = entity.getMoMSMEQuarterlyReportTargets().stream()
                     .filter(t -> t.getFinancialYear().equals(financialYear))
-                    .toList();
-
-            double physicalTarget = fyTargets.stream()
                     .mapToDouble(t -> t.getPhysicalTarget() != null ? t.getPhysicalTarget() : 0.0)
                     .sum();
 
-            double financialTarget = fyTargets.stream()
+            double financialTarget = entity.getMoMSMEQuarterlyReportTargets().stream()
+                    .filter(t -> t.getFinancialYear().equals(financialYear))
                     .mapToDouble(t -> t.getFinancialTarget() != null ? t.getFinancialTarget() : 0.0)
                     .sum();
 
@@ -260,7 +274,7 @@ public class MoMSMEReportSubmittedMapper {
                     .obc(obc)
                     .build();
 
-            // ---- Final DTO ----
+            // ---- Build main DTO ----
             return MoMSMEReportDto.builder()
                     .moMSMEActivityId(entity.getMoMSMEActivityId())
                     .financialYear(financialYear)
@@ -276,6 +290,7 @@ public class MoMSMEReportSubmittedMapper {
                     .activity(entity.getActivity())
                     .build();
         }
+
 
 
 
