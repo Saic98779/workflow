@@ -13,10 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -130,61 +127,94 @@ public class MoMSMEReportSubmittedService {
 
     public WorkflowResponse getMonthlyReport(Long moMSMEActivityId, String financialYear, String month) throws DataException {
 
-        // Step 1: Fetch monthly report entity
-        Optional<MoMSMEReport> report = Optional.ofNullable(moMSMEReportRepo.findById(moMSMEActivityId)
-                .orElseThrow(() -> new DataException(
-                        "MoMSME Report not found for the given criteria",
+        List<MoMSMEReport> reports;
+
+        if (moMSMEActivityId == -1) {
+            // Fetch all reports
+            reports = moMSMEReportRepo.findAll();
+            if (reports.isEmpty()) {
+                throw new DataException(
+                        "No MoMSME Reports found in the system",
                         "MO-MSME_REPORT_NOT_FOUND",
-                        400)));
-
-
-        if (report.isEmpty()) {
-            throw new DataException(
-                    "MoMSME Report not found for the given criteria",
-                    "MO-MSME_REPORT_NOT_FOUND",
-                    400);
+                        404);
+            }
+        } else {
+            MoMSMEReport singleReport = moMSMEReportRepo.findById(moMSMEActivityId)
+                    .orElseThrow(() -> new DataException(
+                            "MoMSME Report not found for ID: " + moMSMEActivityId,
+                            "MO-MSME_REPORT_NOT_FOUND",
+                            400));
+            reports = List.of(singleReport);
         }
 
-        // Step 2: Map entity to DTO (DTO already includes quarterly and monthly achievements)
-        MoMSMEReportDto dto = MoMSMEReportSubmittedMapper.MoMSMEReportMapper.toDTOReport(report.get(), month, financialYear);
+        List<MoMSMEReportDto> dtoList = reports.stream()
+                .map(entity -> MoMSMEReportSubmittedMapper.MoMSMEReportMapper.toDTOReport(entity, month, financialYear))
+                .toList();
 
         return WorkflowResponse.builder()
                 .status(200)
-                .message("Monthly report retrieved successfully with quarterly achievements.")
-                .data(dto)
+                .message("Monthly report(s) retrieved successfully with quarterly achievements.")
+                .data(dtoList)
+                .totalElements(dtoList.size())
                 .build();
     }
 
     public WorkflowResponse getMonthlyReportByQuarter(Long moMSMEActivityId, String financialYear, String quarter) throws DataException {
-        Optional<MoMSMEReport> entity = Optional.ofNullable(moMSMEReportRepo.findById(moMSMEActivityId)
-                .orElseThrow(() -> new DataException(
-                        "MoMSME Report not found for the given criteria",
-                        "MO-MSME_REPORT_NOT_FOUND",
-                        400)));
 
-        MoMSMEReportDto dto = MoMSMEReportSubmittedMapper.MoMSMEReportMapper.toDTOReportByQuarter(entity.get(), quarter, financialYear);
+        List<MoMSMEReport> reports;
+        if(moMSMEActivityId == -1 ){
+            reports = moMSMEReportRepo.findAll();
+            if (reports.isEmpty()) {
+                throw new DataException(
+                        "No MoMSME Reports found for financial year: " + financialYear,
+                        "MO-MSME_REPORT_NOT_FOUND",
+                        404);
+            }
+
+        }else {
+            Optional<MoMSMEReport> entity = Optional.ofNullable(moMSMEReportRepo.findById(moMSMEActivityId)
+                    .orElseThrow(() -> new DataException(
+                            "MoMSME Report not found for the given criteria",
+                            "MO-MSME_REPORT_NOT_FOUND",
+                            400)));
+            reports = List.of(entity.get());
+        }
+        List<MoMSMEReportDto> dtoList = reports.stream()
+                .map(entity -> MoMSMEReportSubmittedMapper.MoMSMEReportMapper.toDTOReportByQuarter(entity, quarter, financialYear))
+                .toList();
 
         return WorkflowResponse.builder()
                 .status(200)
                 .message("Quarterly report retrieved successfully with quarterly achievements.")
-                .data(dto)
+                .data(dtoList)
                 .build();
     }
 
     public WorkflowResponse getCumulativeReport(Long moMSMEActivityId, String financialYear) throws DataException {
-        Optional<MoMSMEReport> entity = Optional.ofNullable(moMSMEReportRepo.findById(moMSMEActivityId)
-                .orElseThrow(() -> new DataException(
-                        "MoMSME Report not found for the given criteria",
-                        "MO-MSME_REPORT_NOT_FOUND",
-                        400)));
+
+        List<MoMSMEReport> all = new ArrayList<>();
+
+        if (Long.valueOf(-1).equals(moMSMEActivityId)) {
+            all = moMSMEReportRepo.findAll();
+        } else {
+            MoMSMEReport entity = moMSMEReportRepo.findById(moMSMEActivityId)
+                    .orElseThrow(() -> new DataException(
+                            "MoMSME Report not found for the given criteria",
+                            "MO-MSME_REPORT_NOT_FOUND",
+                            400));
+            all.add(entity);
+        }
 
         // Map to DTO with cumulative data
-        MoMSMEReportDto dto = MoMSMEReportSubmittedMapper.MoMSMEReportMapper.toDTOReportByCumulative(entity.get(), financialYear);
+        List<MoMSMEReportDto> reportDtos = all.stream()
+                .map(report -> MoMSMEReportSubmittedMapper.MoMSMEReportMapper
+                        .toDTOReportByCumulative(report, financialYear))
+                .toList();
 
         return WorkflowResponse.builder()
                 .status(200)
                 .message("Cumulative report generated successfully.")
-                .data(dto)
+                .data(reportDtos)
                 .build();
     }
 
