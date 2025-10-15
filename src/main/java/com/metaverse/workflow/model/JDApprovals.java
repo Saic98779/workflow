@@ -13,8 +13,13 @@ public class JDApprovals extends AuditEntity{
     @Column(name = "jd_approval_id")
     private Long JdApprovalsId;
 
-    @Column(name = "program_id")
-    private Long programId;
+    @OneToOne
+    @JoinColumn(name = "program")
+    private Program program;
+
+    @OneToOne
+    @JoinColumn(name = "program_monitoring")
+    private ProgramMonitoring programMonitoring;
 
     @Column(name = "status")
     private String status;

@@ -33,18 +33,24 @@ public class NotificationServiceImpl {
 
     // 1. Call Center -> Agency
     public Notifications sendFromCallCenterToAgency(NotificationRequestDto dto) {
-        Optional<Object> callCenter = userRepository.findByUserId(dto.getCallCenterUserId());
-        Agency agency = agencyRepository.findById(dto.getAgencyId())
-                .orElseThrow(() -> new RuntimeException("Agency not found"));
 
+        Optional<Object> callCenter = Optional.empty();
+        if(!dto.getCallCenterUserId().equals("-1")) {
+             callCenter = userRepository.findByUserId(dto.getCallCenterUserId());
+        }
+        Agency agency = null;
+        if(!dto.getAgencyId().equals("-1")) {
+            agency  = agencyRepository.findById(dto.getAgencyId())
+                    .orElseThrow(() -> new RuntimeException("Agency not found"));
+        }
         Participant participant = null;
-        if (dto.getParticipantId() != null) {
+        if (dto.getParticipantId() != null && !dto.getParticipantId().equals(-1L)) {
             participant = participantRepository.findById(dto.getParticipantId())
                     .orElseThrow(() -> new RuntimeException("Participant not found"));
         }
 
         Program program = null;
-        if (dto.getProgramId() != null) {
+        if (dto.getProgramId() != null && !dto.getProgramId().equals(-1L)) {
             program = (Program) programRepository.findByProgramId(dto.getProgramId())
                     .orElseThrow(() -> new RuntimeException("Program not found"));
         }
@@ -52,7 +58,7 @@ public class NotificationServiceImpl {
         Notifications notification = Notifications.builder()
                 .dateOfNotification(LocalDate.now().atStartOfDay())
                 .dateOfFirstNotification(LocalDate.now().atStartOfDay())
-                .callCenterAgent(callCenter.get() instanceof User ? (User) callCenter.get() : null)
+                .callCenterAgent(callCenter.isPresent() ? (callCenter.get() instanceof User ? (User) callCenter.get() : null) : null)
                 .agency(agency)
                 .status(NotificationStatus.OPEN)
                 .participant(participant)
@@ -66,7 +72,7 @@ public class NotificationServiceImpl {
         if (dto.getMessage() != null && !dto.getMessage().isBlank()) {
             NotificationRemark remark = NotificationRemark.builder()
                     .notification(notification)
-                    .remarkBy(RemarkBy.CALL_CENTER)
+                    .remarkBy(dto.getProgramId().equals(-1L) ? RemarkBy.ADMIN :  RemarkBy.CALL_CENTER)
                     .remarkText(dto.getMessage())
                     .remarkedAt(java.time.LocalDateTime.now())
                     .build();
@@ -79,19 +85,25 @@ public class NotificationServiceImpl {
 
     // 2. Agency -> Call Center
     public Notifications sendFromAgencyToCallCenter(NotificationRequestDto dto) {
-        Agency agency = agencyRepository.findById(dto.getAgencyId())
+
+        Agency agency = null;
+        if (dto.getAgencyId() != null && !dto.getAgencyId().equals(-1L))
+            agency =  agencyRepository.findById(dto.getAgencyId())
                 .orElseThrow(() -> new RuntimeException("Agency not found"));
-        User callCenter = userRepository.findById(String.valueOf(dto.getCallCenterUserId()))
+
+        User callCenter = null;
+        if (dto.getCallCenterUserId() != null && !dto.getCallCenterUserId().equals("-1"))
+                userRepository.findById(dto.getCallCenterUserId())
                 .orElseThrow(() -> new RuntimeException("Call center user not found"));
 
         Participant participant = null;
-        if (dto.getParticipantId() != null) {
+        if (dto.getParticipantId() != null && !dto.getParticipantId().equals(-1L)) {
             participant = participantRepository.findById(dto.getParticipantId())
                     .orElseThrow(() -> new RuntimeException("Participant not found"));
         }
 
         Program program = null;
-        if (dto.getProgramId() != null) {
+        if (dto.getProgramId() != null && !dto.getProgramId().equals(-1L)) {
             program = (Program) programRepository.findByProgramId(dto.getProgramId())
                     .orElseThrow(() -> new RuntimeException("Program not found"));
         }
@@ -104,7 +116,7 @@ public class NotificationServiceImpl {
                 .participant(participant)
                 .program(program)
                 .status(NotificationStatus.OPEN)
-                .recipientType(NotificationRecipientType.CALL_CENTER)
+                .recipientType(dto.getProgramId().equals(-1L) ? NotificationRecipientType.ADMIN :NotificationRecipientType.CALL_CENTER)
                 .remarksByAgency(new ArrayList<>())
                 .remarksByCallCenter(new ArrayList<>())
                 .build();
