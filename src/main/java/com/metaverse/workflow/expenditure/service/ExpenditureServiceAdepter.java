@@ -4,6 +4,7 @@ import com.metaverse.workflow.activity.repository.ActivityRepository;
 import com.metaverse.workflow.activity.repository.SubActivityRepository;
 import com.metaverse.workflow.agency.repository.AgencyRepository;
 import com.metaverse.workflow.common.enums.ExpenditureType;
+import com.metaverse.workflow.common.enums.UserRole;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.enums.BillRemarksStatus;
 import com.metaverse.workflow.exceptions.*;
@@ -14,6 +15,8 @@ import com.metaverse.workflow.expenditure.repository.ProgramExpenditureRepositor
 import com.metaverse.workflow.login.repository.LoginRepository;
 import com.metaverse.workflow.model.*;
 
+import com.metaverse.workflow.notifications.dto.NotificationRequestDto;
+import com.metaverse.workflow.notifications.service.NotificationServiceImpl;
 import com.metaverse.workflow.program.repository.ProgramRepository;
 import com.metaverse.workflow.program.repository.ProgramSessionFileRepository;
 import com.metaverse.workflow.program.service.ProgramServiceAdapter;
@@ -49,6 +52,9 @@ public class ExpenditureServiceAdepter implements ExpenditureService {
     ProgramServiceAdapter programServiceAdapter;
     @Autowired
     LoginRepository userRepo;
+
+    @Autowired
+    NotificationServiceImpl notificationService;
 
     @Override
     public WorkflowResponse saveBulkExpenditure(BulkExpenditureRequest expenditureRequest, List<MultipartFile> files) throws DataException {
@@ -715,6 +721,31 @@ public class ExpenditureServiceAdepter implements ExpenditureService {
         AgencyComments agencyComment = ExpenditureRemarksMapper.mapToEntityAgencyComments(remarks, user);
         agencyComment.setExpenditure(expenditure); // Ensure bidirectional relationship
         expenditure.getAgencyComments().add(agencyComment);
+
+
+        if(user.getUserRole().equals("ADMIN")){
+            // admin to agency
+            System.err.println("admin to agency");
+            NotificationRequestDto notificationRequestDto = new NotificationRequestDto();
+            notificationRequestDto.setAgencyId(expenditure.getAgency().getAgencyId());
+            notificationRequestDto.setMessage(remarks.getSpiuComments());
+            notificationRequestDto.setProgramId(-1L);
+            notificationRequestDto.setParticipantId(-1L);
+            notificationRequestDto.setCallCenterUserId("-1");
+            notificationService.sendFromCallCenterToAgency(notificationRequestDto);
+
+        }else if(remarks.getAgencyComments() != null){
+            // agency to admin
+            NotificationRequestDto notificationRequestDto = new NotificationRequestDto();
+            notificationRequestDto.setAgencyId(-1L);
+            System.err.println("agency to admin");
+            notificationRequestDto.setAgencyId(-1L);
+            notificationRequestDto.setMessage(remarks.getAgencyComments());
+            notificationRequestDto.setProgramId(-1L);
+            notificationRequestDto.setParticipantId(-1L);
+            notificationRequestDto.setCallCenterUserId("-1");
+            notificationService.sendFromAgencyToCallCenter(notificationRequestDto); // need to change
+        }
 
         // 4. Set status if provided
         if (status != null) {

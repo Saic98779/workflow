@@ -1,5 +1,6 @@
 package com.metaverse.workflow.notifications.dto;
 
+import com.metaverse.workflow.enums.NotificationRecipientType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

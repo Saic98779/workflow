@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/notifications")
@@ -148,10 +149,20 @@ public class NotificationController {
                 : notificationService.getAllByAgencyAndStatuses(agencyId, statuses);
 
         // Flatten all remarks and map NotificationRemark -> RemarkDto
-        List<RemarkDto> allRemarks = list.stream()
+   /*     List<RemarkDto> allRemarks = list.stream()
                 .flatMap(n -> n.getRemarksByCallCenter().stream())
                 .map(r -> new RemarkDto(r.getRemarkText(), null, r.getNotification().getCallCenterAgent().getFirstName() + r.getNotification().getCallCenterAgent().getLastName()
                         , r.getRemarkedAt()))
+                .toList();*/
+        List<RemarkDto> allRemarks = list.stream()
+                .flatMap(n -> n.getRemarksByCallCenter().stream())
+                .map(r -> {
+                    String agentName = Optional.ofNullable(r.getNotification())
+                            .map(n -> n.getCallCenterAgent())
+                            .map(a -> a.getFirstName() + " " + a.getLastName())
+                            .orElse("N/A");
+                    return new RemarkDto(r.getRemarkText(), null, agentName, r.getRemarkedAt());
+                })
                 .toList();
 
         Map<String, List<RemarkDto>> response = Map.of("remarks", allRemarks);

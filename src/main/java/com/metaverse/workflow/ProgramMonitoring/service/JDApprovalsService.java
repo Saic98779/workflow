@@ -2,9 +2,13 @@ package com.metaverse.workflow.ProgramMonitoring.service;
 
 import com.metaverse.workflow.ProgramMonitoring.dto.JDApprovalsDto;
 import com.metaverse.workflow.ProgramMonitoring.repository.JDApprovalsRepository;
+import com.metaverse.workflow.ProgramMonitoring.repository.ProgramMonitoringRepo;
 import com.metaverse.workflow.common.response.WorkflowResponse;
+import com.metaverse.workflow.exceptions.DataException;
 import com.metaverse.workflow.model.JDApprovals;
 import com.metaverse.workflow.model.Program;
+import com.metaverse.workflow.model.ProgramMonitoring;
+import com.metaverse.workflow.nontraining.service.ProgressMonitoringServiceImpl;
 import com.metaverse.workflow.program.repository.ProgramRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,21 +23,21 @@ public class JDApprovalsService {
     private final JDApprovalsRepository repository;
 
     private final ProgramRepository programRepository;
+    private final ProgramMonitoringRepo programMonitoringRepo;
 
 
-    public WorkflowResponse createApproval(JDApprovalsDto approval) {
+    public WorkflowResponse createApproval(JDApprovalsDto approval) throws DataException {
 
-        Optional<Program> byId = programRepository.findById(approval.getProgramId());
+        Program byId = programRepository.findById(approval.getProgramId()).
+                orElseThrow(() -> new DataException("Program Id not found", "PROGRAM_NOT_FOUND", 400));
+        ProgramMonitoring programMonitoringId = programMonitoringRepo.findById(approval.getProgramMonitoringId()).
+                orElseThrow(() -> new DataException("Program Monitoring Id not found", "PROGRAM_MONITORING_NOT_FOUND", 400));
 
-        if(byId.isPresent()){
             JDApprovals saved = repository.save(toEntity(approval));
+
             return WorkflowResponse.builder()
                     .status(200).message("JD Approval created successfully")
                     .data(toDto(saved)).build();
-        }
-        return WorkflowResponse.builder()
-                .status(200).message("Program id not fount")
-                .build();
     }
 
     public WorkflowResponse getAllApprovals() {
@@ -63,7 +67,7 @@ public class JDApprovalsService {
 
     public WorkflowResponse updateApproval(Long id, JDApprovalsDto updatedApproval) {
         return repository.findById(id).map(existing -> {
-            existing.setProgramId(updatedApproval.getProgramId());
+
             existing.setStatus(updatedApproval.getStatus());
             existing.setRemarks(updatedApproval.getRemarks());
             JDApprovals saved = repository.save(existing);
@@ -97,7 +101,7 @@ public class JDApprovalsService {
     public JDApprovalsDto toDto(JDApprovals entity) {
         JDApprovalsDto dto = new JDApprovalsDto();
         dto.setJdApprovalsId(entity.getJdApprovalsId());
-        dto.setProgramId(entity.getProgramId());
+        dto.setProgramId(entity.getProgram().getProgramId());
         dto.setStatus(entity.getStatus());
         dto.setRemarks(entity.getRemarks());
         return dto;
@@ -106,7 +110,8 @@ public class JDApprovalsService {
     public JDApprovals toEntity(JDApprovalsDto dto) {
         JDApprovals entity = new JDApprovals();
         entity.setJdApprovalsId(dto.getJdApprovalsId());
-        entity.setProgramId(dto.getProgramId());
+        entity.setProgram(programRepository.findById(dto.getProgramId()).get());
+        entity.setProgramMonitoring(programMonitoringRepo.findById(dto.getProgramMonitoringId()).get());
         entity.setStatus(dto.getStatus());
         entity.setRemarks(dto.getRemarks());
         return entity;
