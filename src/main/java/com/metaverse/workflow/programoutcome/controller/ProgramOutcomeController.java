@@ -94,4 +94,13 @@ public class ProgramOutcomeController {
         return ResponseEntity.ok("Excel data saved successfully!");
     }
 
+    @GetMapping(path = "/get/outcome-targets/{agencyId}")
+    public ResponseEntity<?> getApiForOutcomes(@PathVariable Long agencyId){
+
+        try {
+           return ResponseEntity.ok(programOutcomeService.getApiForOutcomes(agencyId));
+        }catch (Exception e) {
+          return   ResponseEntity.status(400).body(WorkflowResponse.builder().status(400).message(e.getMessage()).build());
+        }
+    }
 }

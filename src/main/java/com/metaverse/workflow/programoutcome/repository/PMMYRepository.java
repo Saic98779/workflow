@@ -4,6 +4,7 @@ import com.metaverse.workflow.model.outcomes.PMMY;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Date;
+import java.util.List;
 
 public interface PMMYRepository extends JpaRepository<PMMY, Long> {
     default long countPMMY(Long agencyId, Date start, Date end) {
@@ -18,4 +19,6 @@ public interface PMMYRepository extends JpaRepository<PMMY, Long> {
 
     long countByAgencyAgencyIdAndGroundingDateBetween(Long agencyId, Date start, Date end);
     long countByGroundingDateBetween(Date start, Date start1);
+
+    List<PMMY> findByAgencyAgencyId(Long agencyId);
 }

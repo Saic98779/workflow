@@ -34,5 +34,5 @@ public interface UdyamRegistrationRepository extends JpaRepository<UdyamRegistra
 
     }
 
-    boolean existsByInfluencedParticipant_InfluencedId(Long influencedId);
+    List<UdyamRegistration> findByAgencyAgencyId(Long agencyId);
 }

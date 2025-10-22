@@ -4,6 +4,7 @@ import com.metaverse.workflow.model.outcomes.GeMRegistration;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Date;
+import java.util.List;
 
 public interface GeMRegistrationRepository extends JpaRepository<GeMRegistration, Long> {
     boolean existsByParticipant_ParticipantId(Long participantId);
@@ -24,5 +25,6 @@ public interface GeMRegistrationRepository extends JpaRepository<GeMRegistration
         }
     }
 
-    boolean existsByInfluencedParticipant_InfluencedId(Long influencedId);
+
+    List<GeMRegistration> findByAgencyAgencyId(Long agencyId);
 }

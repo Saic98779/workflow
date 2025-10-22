@@ -4,6 +4,7 @@ import com.metaverse.workflow.model.outcomes.CopyRights;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Date;
+import java.util.List;
 
 public interface CopyRightsRepository extends JpaRepository<CopyRights,Long> {
     long countByAgencyAgencyIdAndDateOfApplicationFiledBetween(Long agencyId, Date start, Date end);
@@ -17,4 +18,6 @@ public interface CopyRightsRepository extends JpaRepository<CopyRights,Long> {
            return countByAgencyAgencyIdAndDateOfApplicationFiledBetween(agencyId, start, end);
        }
    }
+
+    List<CopyRights> findByAgencyAgencyId(Long agencyId);
 }

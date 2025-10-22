@@ -5,9 +5,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Date;
+import java.util.List;
 
 @Repository
 public interface CGTMSETransactionRepository extends JpaRepository<CGTMSETransaction,Long> {
+    List<CGTMSETransaction> findByAgencyAgencyId(Long agencyId) ;
+
+
     long countByAgencyAgencyIdAndAmountReleaseDateBetween(Long agencyId, Date dQ2Start, Date dQ2End);
     long countByAmountReleaseDateBetween(Date dQ2Start, Date dQ2End);
 

@@ -4,6 +4,7 @@ import com.metaverse.workflow.model.outcomes.DesignRights;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Date;
+import java.util.List;
 
 public interface DesignRightsRepository extends JpaRepository<DesignRights,Long> {
     long countByAgencyAgencyIdAndDateOfApplicationBetween(Long agencyId, Date start, Date end);
@@ -17,4 +18,6 @@ public interface DesignRightsRepository extends JpaRepository<DesignRights,Long>
             return countByAgencyAgencyIdAndDateOfApplicationBetween(agencyId, start, end);
         }
     }
+
+    List<DesignRights> findByAgencyAgencyId(Long agencyId);
 }

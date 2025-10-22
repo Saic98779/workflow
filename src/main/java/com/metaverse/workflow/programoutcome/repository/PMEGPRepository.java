@@ -4,6 +4,7 @@ import com.metaverse.workflow.model.outcomes.PMEGP;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Date;
+import java.util.List;
 
 public interface PMEGPRepository extends JpaRepository<PMEGP,Long> {
     default long countPMEGP(Long agencyId, Date start, Date end) {
@@ -19,4 +20,6 @@ public interface PMEGPRepository extends JpaRepository<PMEGP,Long> {
     long countByAgencyAgencyIdAndGroundingDateBetween(Long agencyId, Date start, Date end);
 
     long countByGroundingDateBetween(Date start, Date start1);
+
+    List<PMEGP> findByAgencyAgencyId(Long agencyId);
 }

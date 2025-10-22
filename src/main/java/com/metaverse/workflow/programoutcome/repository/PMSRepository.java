@@ -4,6 +4,7 @@ import com.metaverse.workflow.model.outcomes.PMS;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Date;
+import java.util.List;
 
 public interface PMSRepository extends JpaRepository<PMS,Long> {
 
@@ -20,4 +21,6 @@ public interface PMSRepository extends JpaRepository<PMS,Long> {
     long countByDateOfLoanReleasedBetween(Date start, Date end);
 
     long countByAgencyAgencyIdAndDateOfLoanReleasedBetween(Long agencyId, Date start, Date end);
+
+    List<PMS> findByAgencyAgencyId(Long agencyId);
 }

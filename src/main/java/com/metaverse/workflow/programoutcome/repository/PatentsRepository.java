@@ -4,6 +4,7 @@ import com.metaverse.workflow.model.outcomes.Patents;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Date;
+import java.util.List;
 
 public interface PatentsRepository extends JpaRepository<Patents,Long> {
     long countByAgencyAgencyIdAndDateOfExportBetween(Long agencyId, Date dQ1Start, Date dQ1End);
@@ -19,4 +20,6 @@ public interface PatentsRepository extends JpaRepository<Patents,Long> {
         }
 
     }
+
+    List<Patents> findByAgencyAgencyId(Long agencyId);
 }

@@ -4,6 +4,7 @@ import com.metaverse.workflow.model.outcomes.TreadMark;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Date;
+import java.util.List;
 
 public interface TreadMarkRepository extends JpaRepository<TreadMark,Long> {
     long countByAgencyAgencyIdAndDateOfRegistrationBetween(Long agencyId, Date dQ1Start, Date dQ1End);
@@ -19,4 +20,6 @@ public interface TreadMarkRepository extends JpaRepository<TreadMark,Long> {
         }
 
     }
+
+    List<TreadMark> findByAgencyAgencyId(Long agencyId);
 }
