@@ -32,4 +32,6 @@ public class GreeningOfMSMERequest {
     private Long agencyId;
     private Long participantId;
     private Long organizationId;
+    public Boolean isInfluenced;
+    private Long influencedId;
 }

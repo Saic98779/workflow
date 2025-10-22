@@ -23,4 +23,6 @@ public interface GeMRegistrationRepository extends JpaRepository<GeMRegistration
             return countByAgencyAgencyIdAndGemRegistrationDateBetween(agencyId, dQ1Start, dQ1End);
         }
     }
+
+    boolean existsByInfluencedParticipant_InfluencedId(Long influencedId);
 }

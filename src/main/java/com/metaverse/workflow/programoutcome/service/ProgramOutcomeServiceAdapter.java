@@ -4,10 +4,12 @@ import com.metaverse.workflow.agency.repository.AgencyRepository;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.exceptions.DataException;
 import com.metaverse.workflow.model.Agency;
+import com.metaverse.workflow.model.InfluencedParticipant;
 import com.metaverse.workflow.model.Organization;
 import com.metaverse.workflow.model.Participant;
 import com.metaverse.workflow.model.outcomes.*;
 import com.metaverse.workflow.organization.repository.OrganizationRepository;
+import com.metaverse.workflow.participant.repository.InfluencedParticipantRepository;
 import com.metaverse.workflow.participant.repository.ParticipantRepository;
 import com.metaverse.workflow.programoutcome.dto.*;
 import com.metaverse.workflow.programoutcome.repository.*;
@@ -52,7 +54,8 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
     PMEGPRepository pmegpRepository;
     @Autowired
     PMMYRepository pmmyRepository;
-
+    @Autowired
+    InfluencedParticipantRepository influencedParticipantRepository;
     @Autowired
     PMSRepository pmsRepository;
 
@@ -399,18 +402,40 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                 Agency agency = agencyRepository.findById(request.getAgencyId() == null ? 0 : request.getAgencyId())
                         .orElseThrow(() -> new DataException("Agency data not found", "AGENCY-DATA-NOT-FOUND", 400));
 
-                Participant participant = participantRepository.findById(request.getParticipantId() == null ? 0 : request.getParticipantId())
-                        .orElseThrow(() -> new DataException("Participant data not found", "PARTICIPANT-DATA-NOT-FOUND", 400));
 
                 Organization organization = organizationRepository.findById(request.getOrganizationId() == null ? 0 : request.getOrganizationId())
                         .orElseThrow(() -> new DataException("Organization data not found", "ORGANIZATION-DATA-NOT-FOUND", 400));
-                if (ondcRegistrationRepository.existsByParticipant_ParticipantId(request.getParticipantId())) {
-                    return WorkflowResponse.builder()
-                            .status(400)
-                            .message("ONDC registration already exists for the given participant.")
-                            .build();
+                Participant participant = null;
+                InfluencedParticipant influencedParticipant = null;
+
+                if (Boolean.TRUE.equals(request.getIsInfluenced())) {
+                    influencedParticipant = influencedParticipantRepository.findById(
+                                    request.getInfluencedId() == null ? 0 : request.getInfluencedId())
+                            .orElseThrow(() -> new DataException("Influenced Participant data not found",
+                                    "INFLUENCED-PARTICIPANT-DATA-NOT-FOUND", 400));
+
+                    if (ondcRegistrationRepository.existsByInfluencedParticipant_InfluencedId(request.getInfluencedId())) {
+                        return WorkflowResponse.builder()
+                                .status(400)
+                                .message("ONDC registration already exists for the given influenced participant.")
+                                .build();
+                    }
+
+                } else {
+                    participant = participantRepository.findById(
+                                    request.getParticipantId() == null ? 0 : request.getParticipantId())
+                            .orElseThrow(() -> new DataException("Participant data not found",
+                                    "PARTICIPANT-DATA-NOT-FOUND", 400));
+
+                    if (ondcRegistrationRepository.existsByParticipant_ParticipantId(request.getParticipantId())) {
+                        return WorkflowResponse.builder()
+                                .status(400)
+                                .message("ONDC registration already exists for the given participant.")
+                                .build();
+                    }
                 }
-                ondcRegistrationRepository.save(OutcomeRequestMapper.mapOndcRegistration(request, agency, participant, organization));
+
+                ondcRegistrationRepository.save(OutcomeRequestMapper.mapOndcRegistration(request, agency, participant, organization,influencedParticipant));
                 status = outcomeName + " Saved Successfully.";
                 break;
             }
@@ -425,58 +450,125 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
             }
             case "UdyamRegistration": {
                 UdyamRegistrationRequest request = parser.parse(data, UdyamRegistrationRequest.class);
+
                 Agency agency = agencyRepository.findById(request.getAgencyId() == null ? 0 : request.getAgencyId())
                         .orElseThrow(() -> new DataException("Agency data not found", "AGENCY-DATA-NOT-FOUND", 400));
 
-                Participant participant = participantRepository.findById(request.getParticipantId() == null ? 0 : request.getParticipantId())
-                        .orElseThrow(() -> new DataException("Participant data not found", "PARTICIPANT-DATA-NOT-FOUND", 400));
-
                 Organization organization = organizationRepository.findById(request.getOrganizationId() == null ? 0 : request.getOrganizationId())
                         .orElseThrow(() -> new DataException("Organization data not found", "ORGANIZATION-DATA-NOT-FOUND", 400));
-                if (udyamRegistrationRepository.existsByParticipant_ParticipantId(request.getParticipantId())) {
-                    return WorkflowResponse.builder()
-                            .message("Udyam registration already exists for the given participant.")
-                            .status(400)
-                            .build();
+
+                Participant participant = null;
+                InfluencedParticipant influencedParticipant = null;
+
+                if (Boolean.TRUE.equals(request.getIsInfluenced())) {
+                    influencedParticipant = influencedParticipantRepository.findById(
+                                    request.getInfluencedId() == null ? 0 : request.getInfluencedId())
+                            .orElseThrow(() -> new DataException("Influenced Participant data not found",
+                                    "INFLUENCED-PARTICIPANT-DATA-NOT-FOUND", 400));
+
+                    if (udyamRegistrationRepository.existsByInfluencedParticipant_InfluencedId(request.getInfluencedId())) {
+                        return WorkflowResponse.builder()
+                                .status(400)
+                                .message("Udyam registration already exists for the given influenced participant.")
+                                .build();
+                    }
+
+                } else {
+                    participant = participantRepository.findById(
+                                    request.getParticipantId() == null ? 0 : request.getParticipantId())
+                            .orElseThrow(() -> new DataException("Participant data not found",
+                                    "PARTICIPANT-DATA-NOT-FOUND", 400));
+
+                    if (udyamRegistrationRepository.existsByParticipant_ParticipantId(request.getParticipantId())) {
+                        return WorkflowResponse.builder()
+                                .status(400)
+                                .message("Udyam registration already exists for the given participant.")
+                                .build();
+                    }
                 }
-                udyamRegistrationRepository.save(OutcomeRequestMapper.mapUdyamRegistration(request, agency, participant, organization));
+
+                udyamRegistrationRepository.save(
+                        OutcomeRequestMapper.mapUdyamRegistration(request, agency, participant, organization, influencedParticipant)
+                );
+
                 status = outcomeName + " Saved Successfully.";
                 break;
             }
+
             case "CGTMSETransaction": {
                 CGTMSETransactionRequest request = parser.parse(data, CGTMSETransactionRequest.class);
                 Agency agency = agencyRepository.findById(request.getAgencyId() == null ? 0 : request.getAgencyId())
                         .orElseThrow(() -> new DataException("Agency data not found", "AGENCY-DATA-NOT-FOUND", 400));
 
-                Participant participant = participantRepository.findById(request.getParticipantId() == null ? 0 : request.getParticipantId())
-                        .orElseThrow(() -> new DataException("Participant data not found", "PARTICIPANT-DATA-NOT-FOUND", 400));
-
                 Organization organization = organizationRepository.findById(request.getOrganizationId() == null ? 0 : request.getOrganizationId())
                         .orElseThrow(() -> new DataException("Organization data not found", "ORGANIZATION-DATA-NOT-FOUND", 400));
-                cgtmseTransactionRepository.save(OutcomeRequestMapper.mapCGTMSETransaction(request, agency, participant, organization));
+
+                Participant participant = null;
+                InfluencedParticipant influencedParticipant = null;
+
+                // Check whether registration is for InfluencedParticipant or normal Participant
+                if (Boolean.TRUE.equals(request.getIsInfluenced())) {
+                    influencedParticipant = influencedParticipantRepository.findById(
+                                    request.getInfluencedId() == null ? 0 : request.getInfluencedId())
+                            .orElseThrow(() -> new DataException("Influenced Participant data not found",
+                                    "INFLUENCED-PARTICIPANT-DATA-NOT-FOUND", 400));
+                } else {
+                    participant = participantRepository.findById(
+                                    request.getParticipantId() == null ? 0 : request.getParticipantId())
+                            .orElseThrow(() -> new DataException("Participant data not found",
+                                    "PARTICIPANT-DATA-NOT-FOUND", 400));
+                }
+                cgtmseTransactionRepository.save(OutcomeRequestMapper.mapCGTMSETransaction(request, agency, participant, organization,influencedParticipant));
                 status = outcomeName + " Saved Successfully.";
                 break;
             }
             case "GeMRegistration": {
                 GeMRegistrationRequest request = parser.parse(data, GeMRegistrationRequest.class);
+
                 Agency agency = agencyRepository.findById(request.getAgencyId() == null ? 0 : request.getAgencyId())
                         .orElseThrow(() -> new DataException("Agency data not found", "AGENCY-DATA-NOT-FOUND", 400));
 
-                Participant participant = participantRepository.findById(request.getParticipantId() == null ? 0 : request.getParticipantId())
-                        .orElseThrow(() -> new DataException("Participant data not found", "PARTICIPANT-DATA-NOT-FOUND", 400));
-
                 Organization organization = organizationRepository.findById(request.getOrganizationId() == null ? 0 : request.getOrganizationId())
                         .orElseThrow(() -> new DataException("Organization data not found", "ORGANIZATION-DATA-NOT-FOUND", 400));
-                if (geMRegistrationRepository.existsByParticipant_ParticipantId(request.getParticipantId())) {
-                    return WorkflowResponse.builder()
-                            .message("GeM registration already exists for the given participant.")
-                            .status(400)
-                            .build();
+
+                Participant participant = null;
+                InfluencedParticipant influencedParticipant = null;
+
+                if (Boolean.TRUE.equals(request.getIsInfluenced())) {
+                    influencedParticipant = influencedParticipantRepository.findById(
+                                    request.getInfluencedId() == null ? 0 : request.getInfluencedId())
+                            .orElseThrow(() -> new DataException("Influenced Participant data not found",
+                                    "INFLUENCED-PARTICIPANT-DATA-NOT-FOUND", 400));
+
+                    if (geMRegistrationRepository.existsByInfluencedParticipant_InfluencedId(request.getInfluencedId())) {
+                        return WorkflowResponse.builder()
+                                .status(400)
+                                .message("GeM registration already exists for the given influenced participant.")
+                                .build();
+                    }
+
+                } else {
+                    participant = participantRepository.findById(
+                                    request.getParticipantId() == null ? 0 : request.getParticipantId())
+                            .orElseThrow(() -> new DataException("Participant data not found",
+                                    "PARTICIPANT-DATA-NOT-FOUND", 400));
+
+                    if (geMRegistrationRepository.existsByParticipant_ParticipantId(request.getParticipantId())) {
+                        return WorkflowResponse.builder()
+                                .status(400)
+                                .message("GeM registration already exists for the given participant.")
+                                .build();
+                    }
                 }
-                geMRegistrationRepository.save(OutcomeRequestMapper.mapGeMRegistration(request, agency, participant, organization));
+
+                geMRegistrationRepository.save(
+                        OutcomeRequestMapper.mapGeMRegistration(request, agency, participant, organization, influencedParticipant)
+                );
+
                 status = outcomeName + " Saved Successfully.";
                 break;
             }
+
             case "GeMTransaction": {
                 GeMTransactionRequest request = parser.parse(data, GeMTransactionRequest.class);
                 GeMRegistration gemRegistration = geMRegistrationRepository.findByParticipantParticipantId(request.getParticipantId());
@@ -488,24 +580,51 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
             }
             case "TReDSRegistration": {
                 TReDSRegistrationRequest request = parser.parse(data, TReDSRegistrationRequest.class);
+
                 Agency agency = agencyRepository.findById(request.getAgencyId() == null ? 0 : request.getAgencyId())
                         .orElseThrow(() -> new DataException("Agency data not found", "AGENCY-DATA-NOT-FOUND", 400));
 
-                Participant participant = participantRepository.findById(request.getParticipantId() == null ? 0 : request.getParticipantId())
-                        .orElseThrow(() -> new DataException("Participant data not found", "PARTICIPANT-DATA-NOT-FOUND", 400));
-
                 Organization organization = organizationRepository.findById(request.getOrganizationId() == null ? 0 : request.getOrganizationId())
                         .orElseThrow(() -> new DataException("Organization data not found", "ORGANIZATION-DATA-NOT-FOUND", 400));
-                if (tredsRegistrationRepository.existsByParticipant_ParticipantId(request.getParticipantId())) {
-                    return WorkflowResponse.builder()
-                            .message("TReDS registration already exists for the given participant.")
-                            .status(400)
-                            .build();
+
+                Participant participant = null;
+                InfluencedParticipant influencedParticipant = null;
+
+                if (Boolean.TRUE.equals(request.getIsInfluenced())) {
+                    influencedParticipant = influencedParticipantRepository.findById(
+                                    request.getInfluencedId() == null ? 0 : request.getInfluencedId())
+                            .orElseThrow(() -> new DataException("Influenced Participant data not found",
+                                    "INFLUENCED-PARTICIPANT-DATA-NOT-FOUND", 400));
+
+                    if (tredsRegistrationRepository.existsByInfluencedParticipant_InfluencedId(request.getInfluencedId())) {
+                        return WorkflowResponse.builder()
+                                .status(400)
+                                .message("TReDS registration already exists for the given influenced participant.")
+                                .build();
+                    }
+
+                } else {
+                    participant = participantRepository.findById(
+                                    request.getParticipantId() == null ? 0 : request.getParticipantId())
+                            .orElseThrow(() -> new DataException("Participant data not found",
+                                    "PARTICIPANT-DATA-NOT-FOUND", 400));
+
+                    if (tredsRegistrationRepository.existsByParticipant_ParticipantId(request.getParticipantId())) {
+                        return WorkflowResponse.builder()
+                                .status(400)
+                                .message("TReDS registration already exists for the given participant.")
+                                .build();
+                    }
                 }
-                tredsRegistrationRepository.save(OutcomeRequestMapper.mapTredsRegistration(request, agency, participant, organization));
+
+                tredsRegistrationRepository.save(
+                        OutcomeRequestMapper.mapTredsRegistration(request, agency, participant, organization, influencedParticipant)
+                );
+
                 status = outcomeName + " Saved Successfully.";
                 break;
             }
+
             case "TReDSTransaction": {
                 TReDSTransactionRequest tredsTransactionRequest = parser.parse(data, TReDSTransactionRequest.class);
                 List<TReDSRegistration> tredsRegistrationList = tredsRegistrationRepository.findByParticipantId(tredsTransactionRequest.getParticipantId());
@@ -520,13 +639,26 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                 Agency agency = agencyRepository.findById(request.getAgencyId() == null ? 0 : request.getAgencyId())
                         .orElseThrow(() -> new DataException("Agency data not found", "AGENCY-DATA-NOT-FOUND", 400));
 
-                Participant participant = participantRepository.findById(request.getParticipantId() == null ? 0 : request.getParticipantId())
-                        .orElseThrow(() -> new DataException("Participant data not found", "PARTICIPANT-DATA-NOT-FOUND", 400));
-
                 Organization organization = organizationRepository.findById(request.getOrganizationId() == null ? 0 : request.getOrganizationId())
                         .orElseThrow(() -> new DataException("Organization data not found", "ORGANIZATION-DATA-NOT-FOUND", 400));
 
-                pmegpRepository.save(OutcomeRequestMapper.mapPmegp(request, agency, participant, organization));
+                Participant participant = null;
+                InfluencedParticipant influencedParticipant = null;
+
+                // Check whether registration is for InfluencedParticipant or normal Participant
+                if (Boolean.TRUE.equals(request.getIsInfluenced())) {
+                    influencedParticipant = influencedParticipantRepository.findById(
+                                    request.getInfluencedId() == null ? 0 : request.getInfluencedId())
+                            .orElseThrow(() -> new DataException("Influenced Participant data not found",
+                                    "INFLUENCED-PARTICIPANT-DATA-NOT-FOUND", 400));
+                } else {
+                    participant = participantRepository.findById(
+                                    request.getParticipantId() == null ? 0 : request.getParticipantId())
+                            .orElseThrow(() -> new DataException("Participant data not found",
+                                    "PARTICIPANT-DATA-NOT-FOUND", 400));
+                }
+
+                pmegpRepository.save(OutcomeRequestMapper.mapPmegp(request, agency, participant, organization, influencedParticipant));
                 status = outcomeName + " Saved Successfully.";
                 break;
             }
@@ -535,12 +667,26 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                 Agency agency = agencyRepository.findById(request.getAgencyId() == null ? 0 : request.getAgencyId())
                         .orElseThrow(() -> new DataException("Agency data not found", "AGENCY-DATA-NOT-FOUND", 400));
 
-                Participant participant = participantRepository.findById(request.getParticipantId() == null ? 0 : request.getParticipantId())
-                        .orElseThrow(() -> new DataException("Participant data not found", "PARTICIPANT-DATA-NOT-FOUND", 400));
 
                 Organization organization = organizationRepository.findById(request.getOrganizationId() == null ? 0 : request.getOrganizationId())
                         .orElseThrow(() -> new DataException("Organization data not found", "ORGANIZATION-DATA-NOT-FOUND", 400));
-                pmmyRepository.save(OutcomeRequestMapper.mapPmmy(request, agency, participant, organization));
+
+                Participant participant = null;
+                InfluencedParticipant influencedParticipant = null;
+
+                // Check whether registration is for InfluencedParticipant or normal Participant
+                if (Boolean.TRUE.equals(request.getIsInfluenced())) {
+                    influencedParticipant = influencedParticipantRepository.findById(
+                                    request.getInfluencedId() == null ? 0 : request.getInfluencedId())
+                            .orElseThrow(() -> new DataException("Influenced Participant data not found",
+                                    "INFLUENCED-PARTICIPANT-DATA-NOT-FOUND", 400));
+                } else {
+                    participant = participantRepository.findById(
+                                    request.getParticipantId() == null ? 0 : request.getParticipantId())
+                            .orElseThrow(() -> new DataException("Participant data not found",
+                                    "PARTICIPANT-DATA-NOT-FOUND", 400));
+                }
+                pmmyRepository.save(OutcomeRequestMapper.mapPmmy(request, agency, participant, organization, influencedParticipant));
                 status = outcomeName + " Saved Successfully.";
                 break;
             }
@@ -549,12 +695,25 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                 Agency agency = agencyRepository.findById(request.getAgencyId() == null ? 0 : request.getAgencyId())
                         .orElseThrow(() -> new DataException("Agency data not found", "AGENCY-DATA-NOT-FOUND", 400));
 
-                Participant participant = participantRepository.findById(request.getParticipantId() == null ? 0 : request.getParticipantId())
-                        .orElseThrow(() -> new DataException("Participant data not found", "PARTICIPANT-DATA-NOT-FOUND", 400));
-
                 Organization organization = organizationRepository.findById(request.getOrganizationId() == null ? 0 : request.getOrganizationId())
                         .orElseThrow(() -> new DataException("Organization data not found", "ORGANIZATION-DATA-NOT-FOUND", 400));
-                pmsRepository.save(OutcomeRequestMapper.mapPms(request, agency, participant, organization));
+
+                Participant participant = null;
+                InfluencedParticipant influencedParticipant = null;
+
+                // Check whether registration is for InfluencedParticipant or normal Participant
+                if (Boolean.TRUE.equals(request.getIsInfluenced())) {
+                    influencedParticipant = influencedParticipantRepository.findById(
+                                    request.getInfluencedId() == null ? 0 : request.getInfluencedId())
+                            .orElseThrow(() -> new DataException("Influenced Participant data not found",
+                                    "INFLUENCED-PARTICIPANT-DATA-NOT-FOUND", 400));
+                } else {
+                    participant = participantRepository.findById(
+                                    request.getParticipantId() == null ? 0 : request.getParticipantId())
+                            .orElseThrow(() -> new DataException("Participant data not found",
+                                    "PARTICIPANT-DATA-NOT-FOUND", 400));
+                }
+                pmsRepository.save(OutcomeRequestMapper.mapPms(request, agency, participant, organization,influencedParticipant));
                 status = outcomeName + " Saved Successfully.";
                 break;
             }
@@ -562,13 +721,26 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                 ICSchemeRequest request = parser.parse(data, ICSchemeRequest.class);
                 Agency agency = agencyRepository.findById(request.getAgencyId() == null ? 0 : request.getAgencyId())
                         .orElseThrow(() -> new DataException("Agency data not found", "AGENCY-DATA-NOT-FOUND", 400));
-
-                Participant participant = participantRepository.findById(request.getParticipantId() == null ? 0 : request.getParticipantId())
-                        .orElseThrow(() -> new DataException("Participant data not found", "PARTICIPANT-DATA-NOT-FOUND", 400));
-
+                
                 Organization organization = organizationRepository.findById(request.getOrganizationId() == null ? 0 : request.getOrganizationId())
                         .orElseThrow(() -> new DataException("Organization data not found", "ORGANIZATION-DATA-NOT-FOUND", 400));
-                icSchemeRepository.save(OutcomeRequestMapper.mapIcScheme(request, agency, participant, organization));
+
+                Participant participant = null;
+                InfluencedParticipant influencedParticipant = null;
+
+                // Check whether registration is for InfluencedParticipant or normal Participant
+                if (Boolean.TRUE.equals(request.getIsInfluenced())) {
+                    influencedParticipant = influencedParticipantRepository.findById(
+                                    request.getInfluencedId() == null ? 0 : request.getInfluencedId())
+                            .orElseThrow(() -> new DataException("Influenced Participant data not found",
+                                    "INFLUENCED-PARTICIPANT-DATA-NOT-FOUND", 400));
+                } else {
+                    participant = participantRepository.findById(
+                                    request.getParticipantId() == null ? 0 : request.getParticipantId())
+                            .orElseThrow(() -> new DataException("Participant data not found",
+                                    "PARTICIPANT-DATA-NOT-FOUND", 400));
+                }
+                icSchemeRepository.save(OutcomeRequestMapper.mapIcScheme(request, agency, participant, organization,influencedParticipant));
                 status = outcomeName + " Saved Successfully.";
                 break;
             }
@@ -577,12 +749,25 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                 Agency agency = agencyRepository.findById(request.getAgencyId() == null ? 0 : request.getAgencyId())
                         .orElseThrow(() -> new DataException("Agency data not found", "AGENCY-DATA-NOT-FOUND", 400));
 
-                Participant participant = participantRepository.findById(request.getParticipantId() == null ? 0 : request.getParticipantId())
-                        .orElseThrow(() -> new DataException("Participant data not found", "PARTICIPANT-DATA-NOT-FOUND", 400));
-
                 Organization organization = organizationRepository.findById(request.getOrganizationId() == null ? 0 : request.getOrganizationId())
                         .orElseThrow(() -> new DataException("Organization data not found", "ORGANIZATION-DATA-NOT-FOUND", 400));
-                nsicRepository.save(OutcomeRequestMapper.mapNsic(request, agency, participant, organization));
+
+                Participant participant = null;
+                InfluencedParticipant influencedParticipant = null;
+
+                // Check whether registration is for InfluencedParticipant or normal Participant
+                if (Boolean.TRUE.equals(request.getIsInfluenced())) {
+                    influencedParticipant = influencedParticipantRepository.findById(
+                                    request.getInfluencedId() == null ? 0 : request.getInfluencedId())
+                            .orElseThrow(() -> new DataException("Influenced Participant data not found",
+                                    "INFLUENCED-PARTICIPANT-DATA-NOT-FOUND", 400));
+                } else {
+                    participant = participantRepository.findById(
+                                    request.getParticipantId() == null ? 0 : request.getParticipantId())
+                            .orElseThrow(() -> new DataException("Participant data not found",
+                                    "PARTICIPANT-DATA-NOT-FOUND", 400));
+                }
+                nsicRepository.save(OutcomeRequestMapper.mapNsic(request, agency, participant, organization,influencedParticipant));
                 status = outcomeName + " Saved Successfully.";
                 break;
             }
@@ -591,12 +776,24 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                 Agency agency = agencyRepository.findById(request.getAgencyId() == null ? 0 : request.getAgencyId())
                         .orElseThrow(() -> new DataException("Agency data not found", "AGENCY-DATA-NOT-FOUND", 400));
 
-                Participant participant = participantRepository.findById(request.getParticipantId() == null ? 0 : request.getParticipantId())
-                        .orElseThrow(() -> new DataException("Participant data not found", "PARTICIPANT-DATA-NOT-FOUND", 400));
-
                 Organization organization = organizationRepository.findById(request.getOrganizationId() == null ? 0 : request.getOrganizationId())
                         .orElseThrow(() -> new DataException("Organization data not found", "ORGANIZATION-DATA-NOT-FOUND", 400));
-                patentsRepository.save(OutcomeRequestMapper.mapPatents(request, agency, participant, organization));
+                Participant participant = null;
+                InfluencedParticipant influencedParticipant = null;
+
+                // Check whether registration is for InfluencedParticipant or normal Participant
+                if (Boolean.TRUE.equals(request.getIsInfluenced())) {
+                    influencedParticipant = influencedParticipantRepository.findById(
+                                    request.getInfluencedId() == null ? 0 : request.getInfluencedId())
+                            .orElseThrow(() -> new DataException("Influenced Participant data not found",
+                                    "INFLUENCED-PARTICIPANT-DATA-NOT-FOUND", 400));
+                } else {
+                    participant = participantRepository.findById(
+                                    request.getParticipantId() == null ? 0 : request.getParticipantId())
+                            .orElseThrow(() -> new DataException("Participant data not found",
+                                    "PARTICIPANT-DATA-NOT-FOUND", 400));
+                }
+                patentsRepository.save(OutcomeRequestMapper.mapPatents(request, agency, participant, organization,influencedParticipant));
                 status = outcomeName + " Saved Successfully.";
                 break;
             }
@@ -605,12 +802,25 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                 Agency agency = agencyRepository.findById(request.getAgencyId() == null ? 0 : request.getAgencyId())
                         .orElseThrow(() -> new DataException("Agency data not found", "AGENCY-DATA-NOT-FOUND", 400));
 
-                Participant participant = participantRepository.findById(request.getParticipantId() == null ? 0 : request.getParticipantId())
-                        .orElseThrow(() -> new DataException("Participant data not found", "PARTICIPANT-DATA-NOT-FOUND", 400));
-
                 Organization organization = organizationRepository.findById(request.getOrganizationId() == null ? 0 : request.getOrganizationId())
                         .orElseThrow(() -> new DataException("Organization data not found", "ORGANIZATION-DATA-NOT-FOUND", 400));
-                giProductRepository.save(OutcomeRequestMapper.mapGIProduct(request, agency, participant, organization));
+
+                Participant participant = null;
+                InfluencedParticipant influencedParticipant = null;
+
+                // Check whether registration is for InfluencedParticipant or normal Participant
+                if (Boolean.TRUE.equals(request.getIsInfluenced())) {
+                    influencedParticipant = influencedParticipantRepository.findById(
+                                    request.getInfluencedId() == null ? 0 : request.getInfluencedId())
+                            .orElseThrow(() -> new DataException("Influenced Participant data not found",
+                                    "INFLUENCED-PARTICIPANT-DATA-NOT-FOUND", 400));
+                } else {
+                    participant = participantRepository.findById(
+                                    request.getParticipantId() == null ? 0 : request.getParticipantId())
+                            .orElseThrow(() -> new DataException("Participant data not found",
+                                    "PARTICIPANT-DATA-NOT-FOUND", 400));
+                }
+                giProductRepository.save(OutcomeRequestMapper.mapGIProduct(request, agency, participant, organization, influencedParticipant));
                 status = outcomeName + " Saved Successfully.";
                 break;
             }
@@ -619,12 +829,25 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                 Agency agency = agencyRepository.findById(request.getAgencyId() == null ? 0 : request.getAgencyId())
                         .orElseThrow(() -> new DataException("Agency data not found", "AGENCY-DATA-NOT-FOUND", 400));
 
-                Participant participant = participantRepository.findById(request.getParticipantId() == null ? 0 : request.getParticipantId())
-                        .orElseThrow(() -> new DataException("Participant data not found", "PARTICIPANT-DATA-NOT-FOUND", 400));
-
                 Organization organization = organizationRepository.findById(request.getOrganizationId() == null ? 0 : request.getOrganizationId())
                         .orElseThrow(() -> new DataException("Organization data not found", "ORGANIZATION-DATA-NOT-FOUND", 400));
-                barcodeRepository.save(OutcomeRequestMapper.mapBarcode(request, agency, participant, organization));
+
+                Participant participant = null;
+                InfluencedParticipant influencedParticipant = null;
+
+                // Check whether registration is for InfluencedParticipant or normal Participant
+                if (Boolean.TRUE.equals(request.getIsInfluenced())) {
+                    influencedParticipant = influencedParticipantRepository.findById(
+                                    request.getInfluencedId() == null ? 0 : request.getInfluencedId())
+                            .orElseThrow(() -> new DataException("Influenced Participant data not found",
+                                    "INFLUENCED-PARTICIPANT-DATA-NOT-FOUND", 400));
+                } else {
+                    participant = participantRepository.findById(
+                                    request.getParticipantId() == null ? 0 : request.getParticipantId())
+                            .orElseThrow(() -> new DataException("Participant data not found",
+                                    "PARTICIPANT-DATA-NOT-FOUND", 400));
+                }
+                barcodeRepository.save(OutcomeRequestMapper.mapBarcode(request, agency, participant, organization, influencedParticipant));
                 status = outcomeName + " Saved Successfully.";
                 break;
             }
@@ -633,12 +856,24 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                 Agency agency = agencyRepository.findById(request.getAgencyId() == null ? 0 : request.getAgencyId())
                         .orElseThrow(() -> new DataException("Agency data not found", "AGENCY-DATA-NOT-FOUND", 400));
 
-                Participant participant = participantRepository.findById(request.getParticipantId() == null ? 0 : request.getParticipantId())
-                        .orElseThrow(() -> new DataException("Participant data not found", "PARTICIPANT-DATA-NOT-FOUND", 400));
-
                 Organization organization = organizationRepository.findById(request.getOrganizationId() == null ? 0 : request.getOrganizationId())
                         .orElseThrow(() -> new DataException("Organization data not found", "ORGANIZATION-DATA-NOT-FOUND", 400));
-                treadMarkRepository.save(OutcomeRequestMapper.mapTreadMark(request, agency, participant, organization));
+                Participant participant = null;
+                InfluencedParticipant influencedParticipant = null;
+
+                // Check whether registration is for InfluencedParticipant or normal Participant
+                if (Boolean.TRUE.equals(request.getIsInfluenced())) {
+                    influencedParticipant = influencedParticipantRepository.findById(
+                                    request.getInfluencedId() == null ? 0 : request.getInfluencedId())
+                            .orElseThrow(() -> new DataException("Influenced Participant data not found",
+                                    "INFLUENCED-PARTICIPANT-DATA-NOT-FOUND", 400));
+                } else {
+                    participant = participantRepository.findById(
+                                    request.getParticipantId() == null ? 0 : request.getParticipantId())
+                            .orElseThrow(() -> new DataException("Participant data not found",
+                                    "PARTICIPANT-DATA-NOT-FOUND", 400));
+                }
+                treadMarkRepository.save(OutcomeRequestMapper.mapTreadMark(request, agency, participant, organization,influencedParticipant));
                 status = outcomeName + " Saved Successfully.";
                 break;
             }
@@ -647,12 +882,25 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                 Agency agency = agencyRepository.findById(request.getAgencyId() == null ? 0 : request.getAgencyId())
                         .orElseThrow(() -> new DataException("Agency data not found", "AGENCY-DATA-NOT-FOUND", 400));
 
-                Participant participant = participantRepository.findById(request.getParticipantId() == null ? 0 : request.getParticipantId())
-                        .orElseThrow(() -> new DataException("Participant data not found", "PARTICIPANT-DATA-NOT-FOUND", 400));
-
                 Organization organization = organizationRepository.findById(request.getOrganizationId() == null ? 0 : request.getOrganizationId())
                         .orElseThrow(() -> new DataException("Organization data not found", "ORGANIZATION-DATA-NOT-FOUND", 400));
-                leanRepository.save(OutcomeRequestMapper.mapLean(request, agency, participant, organization));
+
+                Participant participant = null;
+                InfluencedParticipant influencedParticipant = null;
+
+                // Check whether registration is for InfluencedParticipant or normal Participant
+                if (Boolean.TRUE.equals(request.getIsInfluenced())) {
+                    influencedParticipant = influencedParticipantRepository.findById(
+                                    request.getInfluencedId() == null ? 0 : request.getInfluencedId())
+                            .orElseThrow(() -> new DataException("Influenced Participant data not found",
+                                    "INFLUENCED-PARTICIPANT-DATA-NOT-FOUND", 400));
+                } else {
+                    participant = participantRepository.findById(
+                                    request.getParticipantId() == null ? 0 : request.getParticipantId())
+                            .orElseThrow(() -> new DataException("Participant data not found",
+                                    "PARTICIPANT-DATA-NOT-FOUND", 400));
+                }
+                leanRepository.save(OutcomeRequestMapper.mapLean(request, agency, participant, organization,influencedParticipant));
                 status = outcomeName + " Saved Successfully.";
                 break;
             }
@@ -661,13 +909,26 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                 Agency agency = agencyRepository.findById(request.getAgencyId() == null ? 0 : request.getAgencyId())
                         .orElseThrow(() -> new DataException("Agency data not found", "AGENCY-DATA-NOT-FOUND", 400));
 
-                Participant participant = participantRepository.findById(request.getParticipantId() == null ? 0 : request.getParticipantId())
-                        .orElseThrow(() -> new DataException("Participant data not found", "PARTICIPANT-DATA-NOT-FOUND", 400));
-
                 Organization organization = organizationRepository.findById(request.getOrganizationId() == null ? 0 : request.getOrganizationId())
                         .orElseThrow(() -> new DataException("Organization data not found", "ORGANIZATION-DATA-NOT-FOUND", 400));
 
-                zedCertificationRepository.save(OutcomeRequestMapper.mapZEDCertification(request, agency, participant, organization));
+                Participant participant = null;
+                InfluencedParticipant influencedParticipant = null;
+
+                // Check whether registration is for InfluencedParticipant or normal Participant
+                if (Boolean.TRUE.equals(request.getIsInfluenced())) {
+                    influencedParticipant = influencedParticipantRepository.findById(
+                                    request.getInfluencedId() == null ? 0 : request.getInfluencedId())
+                            .orElseThrow(() -> new DataException("Influenced Participant data not found",
+                                    "INFLUENCED-PARTICIPANT-DATA-NOT-FOUND", 400));
+                } else {
+                    participant = participantRepository.findById(
+                                    request.getParticipantId() == null ? 0 : request.getParticipantId())
+                            .orElseThrow(() -> new DataException("Participant data not found",
+                                    "PARTICIPANT-DATA-NOT-FOUND", 400));
+                }
+
+                zedCertificationRepository.save(OutcomeRequestMapper.mapZEDCertification(request, agency, participant, organization,influencedParticipant));
                 status = outcomeName + " Saved Successfully.";
                 break;
             }
@@ -676,13 +937,25 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                 Agency agency = agencyRepository.findById(request.getAgencyId() == null ? 0 : request.getAgencyId())
                         .orElseThrow(() -> new DataException("Agency data not found", "AGENCY-DATA-NOT-FOUND", 400));
 
-                Participant participant = participantRepository.findById(request.getParticipantId() == null ? 0 : request.getParticipantId())
-                        .orElseThrow(() -> new DataException("Participant data not found", "PARTICIPANT-DATA-NOT-FOUND", 400));
-
                 Organization organization = organizationRepository.findById(request.getOrganizationId() == null ? 0 : request.getOrganizationId())
                         .orElseThrow(() -> new DataException("Organization data not found", "ORGANIZATION-DATA-NOT-FOUND", 400));
 
-                consortiaTenderRepository.save(OutcomeRequestMapper.mapConsortiaTender(request, agency, participant, organization));
+                Participant participant = null;
+                InfluencedParticipant influencedParticipant = null;
+
+                // Check whether registration is for InfluencedParticipant or normal Participant
+                if (Boolean.TRUE.equals(request.getIsInfluenced())) {
+                    influencedParticipant = influencedParticipantRepository.findById(
+                                    request.getInfluencedId() == null ? 0 : request.getInfluencedId())
+                            .orElseThrow(() -> new DataException("Influenced Participant data not found",
+                                    "INFLUENCED-PARTICIPANT-DATA-NOT-FOUND", 400));
+                } else {
+                    participant = participantRepository.findById(
+                                    request.getParticipantId() == null ? 0 : request.getParticipantId())
+                            .orElseThrow(() -> new DataException("Participant data not found",
+                                    "PARTICIPANT-DATA-NOT-FOUND", 400));
+                }
+                consortiaTenderRepository.save(OutcomeRequestMapper.mapConsortiaTender(request, agency, participant, organization,influencedParticipant));
                 status = outcomeName + " Saved Successfully.";
                 break;
             }
@@ -691,12 +964,25 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                 Agency agency = agencyRepository.findById(request.getAgencyId() == null ? 0 : request.getAgencyId())
                         .orElseThrow(() -> new DataException("Agency data not found", "AGENCY-DATA-NOT-FOUND", 400));
 
-                Participant participant = participantRepository.findById(request.getParticipantId() == null ? 0 : request.getParticipantId())
-                        .orElseThrow(() -> new DataException("Participant data not found", "PARTICIPANT-DATA-NOT-FOUND", 400));
-
                 Organization organization = organizationRepository.findById(request.getOrganizationId() == null ? 0 : request.getOrganizationId())
                         .orElseThrow(() -> new DataException("Organization data not found", "ORGANIZATION-DATA-NOT-FOUND", 400));
-                oemRepository.save(OutcomeRequestMapper.mapOem(request, agency, participant, organization));
+
+                Participant participant = null;
+                InfluencedParticipant influencedParticipant = null;
+
+                // Check whether registration is for InfluencedParticipant or normal Participant
+                if (Boolean.TRUE.equals(request.getIsInfluenced())) {
+                    influencedParticipant = influencedParticipantRepository.findById(
+                                    request.getInfluencedId() == null ? 0 : request.getInfluencedId())
+                            .orElseThrow(() -> new DataException("Influenced Participant data not found",
+                                    "INFLUENCED-PARTICIPANT-DATA-NOT-FOUND", 400));
+                } else {
+                    participant = participantRepository.findById(
+                                    request.getParticipantId() == null ? 0 : request.getParticipantId())
+                            .orElseThrow(() -> new DataException("Participant data not found",
+                                    "PARTICIPANT-DATA-NOT-FOUND", 400));
+                }
+                oemRepository.save(OutcomeRequestMapper.mapOem(request, agency, participant, organization,influencedParticipant));
 
                 status = outcomeName + " Saved Successfully.";
                 break;
@@ -706,13 +992,25 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                 Agency agency = agencyRepository.findById(request.getAgencyId() == null ? 0 : request.getAgencyId())
                         .orElseThrow(() -> new DataException("Agency data not found", "AGENCY-DATA-NOT-FOUND", 400));
 
-                Participant participant = participantRepository.findById(request.getParticipantId() == null ? 0 : request.getParticipantId())
-                        .orElseThrow(() -> new DataException("Participant data not found", "PARTICIPANT-DATA-NOT-FOUND", 400));
-
                 Organization organization = organizationRepository.findById(request.getOrganizationId() == null ? 0 : request.getOrganizationId())
                         .orElseThrow(() -> new DataException("Organization data not found", "ORGANIZATION-DATA-NOT-FOUND", 400));
 
-                pmfmeSchemeRepository.save(OutcomeRequestMapper.mapPmfmseScheme(request, agency, participant, organization));
+                Participant participant = null;
+                InfluencedParticipant influencedParticipant = null;
+
+                // Check whether registration is for InfluencedParticipant or normal Participant
+                if (Boolean.TRUE.equals(request.getIsInfluenced())) {
+                    influencedParticipant = influencedParticipantRepository.findById(
+                                    request.getInfluencedId() == null ? 0 : request.getInfluencedId())
+                            .orElseThrow(() -> new DataException("Influenced Participant data not found",
+                                    "INFLUENCED-PARTICIPANT-DATA-NOT-FOUND", 400));
+                } else {
+                    participant = participantRepository.findById(
+                                    request.getParticipantId() == null ? 0 : request.getParticipantId())
+                            .orElseThrow(() -> new DataException("Participant data not found",
+                                    "PARTICIPANT-DATA-NOT-FOUND", 400));
+                }
+                pmfmeSchemeRepository.save(OutcomeRequestMapper.mapPmfmseScheme(request, agency, participant, organization,influencedParticipant));
                 status = outcomeName + " Saved Successfully.";
                 break;
             }
@@ -721,13 +1019,26 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                 Agency agency = agencyRepository.findById(request.getAgencyId() == null ? 0 : request.getAgencyId())
                         .orElseThrow(() -> new DataException("Agency data not found", "AGENCY-DATA-NOT-FOUND", 400));
 
-                Participant participant = participantRepository.findById(request.getParticipantId() == null ? 0 : request.getParticipantId())
-                        .orElseThrow(() -> new DataException("Participant data not found", "PARTICIPANT-DATA-NOT-FOUND", 400));
-
                 Organization organization = organizationRepository.findById(request.getOrganizationId() == null ? 0 : request.getOrganizationId())
                         .orElseThrow(() -> new DataException("Organization data not found", "ORGANIZATION-DATA-NOT-FOUND", 400));
 
-                pmViswakarmaReposiroty.save(OutcomeRequestMapper.mapPMViswakarma(request, agency, participant, organization));
+                Participant participant = null;
+                InfluencedParticipant influencedParticipant = null;
+
+                // Check whether registration is for InfluencedParticipant or normal Participant
+                if (Boolean.TRUE.equals(request.getIsInfluenced())) {
+                    influencedParticipant = influencedParticipantRepository.findById(
+                                    request.getInfluencedId() == null ? 0 : request.getInfluencedId())
+                            .orElseThrow(() -> new DataException("Influenced Participant data not found",
+                                    "INFLUENCED-PARTICIPANT-DATA-NOT-FOUND", 400));
+                } else {
+                    participant = participantRepository.findById(
+                                    request.getParticipantId() == null ? 0 : request.getParticipantId())
+                            .orElseThrow(() -> new DataException("Participant data not found",
+                                    "PARTICIPANT-DATA-NOT-FOUND", 400));
+                }
+
+                pmViswakarmaReposiroty.save(OutcomeRequestMapper.mapPMViswakarma(request, agency, participant, organization, influencedParticipant));
                 status = outcomeName + " Saved Successfully.";
                 break;
             }
@@ -736,13 +1047,26 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                 Agency agency = agencyRepository.findById(request.getAgencyId() == null ? 0 : request.getAgencyId())
                         .orElseThrow(() -> new DataException("Agency data not found", "AGENCY-DATA-NOT-FOUND", 400));
 
-                Participant participant = participantRepository.findById(request.getParticipantId() == null ? 0 : request.getParticipantId())
-                        .orElseThrow(() -> new DataException("Participant data not found", "PARTICIPANT-DATA-NOT-FOUND", 400));
-
                 Organization organization = organizationRepository.findById(request.getOrganizationId() == null ? 0 : request.getOrganizationId())
                         .orElseThrow(() -> new DataException("Organization data not found", "ORGANIZATION-DATA-NOT-FOUND", 400));
 
-                vendorDevelopmentRepository.save(OutcomeRequestMapper.mapVendorDevelopment(request, agency, participant, organization));
+                Participant participant = null;
+                InfluencedParticipant influencedParticipant = null;
+
+                // Check whether registration is for InfluencedParticipant or normal Participant
+                if (Boolean.TRUE.equals(request.getIsInfluenced())) {
+                    influencedParticipant = influencedParticipantRepository.findById(
+                                    request.getInfluencedId() == null ? 0 : request.getInfluencedId())
+                            .orElseThrow(() -> new DataException("Influenced Participant data not found",
+                                    "INFLUENCED-PARTICIPANT-DATA-NOT-FOUND", 400));
+                } else {
+                    participant = participantRepository.findById(
+                                    request.getParticipantId() == null ? 0 : request.getParticipantId())
+                            .orElseThrow(() -> new DataException("Participant data not found",
+                                    "PARTICIPANT-DATA-NOT-FOUND", 400));
+                }
+
+                vendorDevelopmentRepository.save(OutcomeRequestMapper.mapVendorDevelopment(request, agency, participant, organization, influencedParticipant));
                 status = outcomeName + " Saved Successfully.";
                 break;
             }
@@ -751,13 +1075,25 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                 Agency agency = agencyRepository.findById(request.getAgencyId() == null ? 0 : request.getAgencyId())
                         .orElseThrow(() -> new DataException("Agency data not found", "AGENCY-DATA-NOT-FOUND", 400));
 
-                Participant participant = participantRepository.findById(request.getParticipantId() == null ? 0 : request.getParticipantId())
-                        .orElseThrow(() -> new DataException("Participant data not found", "PARTICIPANT-DATA-NOT-FOUND", 400));
-
                 Organization organization = organizationRepository.findById(request.getOrganizationId() == null ? 0 : request.getOrganizationId())
                         .orElseThrow(() -> new DataException("Organization data not found", "ORGANIZATION-DATA-NOT-FOUND", 400));
 
-                scStHubRepository.save(OutcomeRequestMapper.mapScStHub(request, agency, participant, organization));
+                Participant participant = null;
+                InfluencedParticipant influencedParticipant = null;
+
+                // Check whether registration is for InfluencedParticipant or normal Participant
+                if (Boolean.TRUE.equals(request.getIsInfluenced())) {
+                    influencedParticipant = influencedParticipantRepository.findById(
+                                    request.getInfluencedId() == null ? 0 : request.getInfluencedId())
+                            .orElseThrow(() -> new DataException("Influenced Participant data not found",
+                                    "INFLUENCED-PARTICIPANT-DATA-NOT-FOUND", 400));
+                } else {
+                    participant = participantRepository.findById(
+                                    request.getParticipantId() == null ? 0 : request.getParticipantId())
+                            .orElseThrow(() -> new DataException("Participant data not found",
+                                    "PARTICIPANT-DATA-NOT-FOUND", 400));
+                }
+                scStHubRepository.save(OutcomeRequestMapper.mapScStHub(request, agency, participant, organization,influencedParticipant));
                 status = outcomeName + " Saved Successfully.";
                 break;
             }
@@ -766,13 +1102,25 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                 Agency agency = agencyRepository.findById(request.getAgencyId() == null ? 0 : request.getAgencyId())
                         .orElseThrow(() -> new DataException("Agency data not found", "AGENCY-DATA-NOT-FOUND", 400));
 
-                Participant participant = participantRepository.findById(request.getParticipantId() == null ? 0 : request.getParticipantId())
-                        .orElseThrow(() -> new DataException("Participant data not found", "PARTICIPANT-DATA-NOT-FOUND", 400));
-
-                Organization organization = organizationRepository.findById(request.getOrganizationId() == null ? 0 : request.getOrganizationId())
+                                 Organization organization = organizationRepository.findById(request.getOrganizationId() == null ? 0 : request.getOrganizationId())
                         .orElseThrow(() -> new DataException("Organization data not found", "ORGANIZATION-DATA-NOT-FOUND", 400));
 
-                sidbiAspireRepository.save(OutcomeRequestMapper.mapSidbiAspire(request, agency, participant, organization));
+                Participant participant = null;
+                InfluencedParticipant influencedParticipant = null;
+
+                // Check whether registration is for InfluencedParticipant or normal Participant
+                if (Boolean.TRUE.equals(request.getIsInfluenced())) {
+                    influencedParticipant = influencedParticipantRepository.findById(
+                                    request.getInfluencedId() == null ? 0 : request.getInfluencedId())
+                            .orElseThrow(() -> new DataException("Influenced Participant data not found",
+                                    "INFLUENCED-PARTICIPANT-DATA-NOT-FOUND", 400));
+                } else {
+                    participant = participantRepository.findById(
+                                    request.getParticipantId() == null ? 0 : request.getParticipantId())
+                            .orElseThrow(() -> new DataException("Participant data not found",
+                                    "PARTICIPANT-DATA-NOT-FOUND", 400));
+                }
+                sidbiAspireRepository.save(OutcomeRequestMapper.mapSidbiAspire(request, agency, participant, organization,influencedParticipant));
                 status = outcomeName + " Saved Successfully.";
                 break;
             }
@@ -781,13 +1129,25 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                 Agency agency = agencyRepository.findById(request.getAgencyId() == null ? 0 : request.getAgencyId())
                         .orElseThrow(() -> new DataException("Agency data not found", "AGENCY-DATA-NOT-FOUND", 400));
 
-                Participant participant = participantRepository.findById(request.getParticipantId() == null ? 0 : request.getParticipantId())
-                        .orElseThrow(() -> new DataException("Participant data not found", "PARTICIPANT-DATA-NOT-FOUND", 400));
-
                 Organization organization = organizationRepository.findById(request.getOrganizationId() == null ? 0 : request.getOrganizationId())
                         .orElseThrow(() -> new DataException("Organization data not found", "ORGANIZATION-DATA-NOT-FOUND", 400));
 
-                designRightsRepository.save(OutcomeRequestMapper.mapDesignRights(request, agency, participant, organization));
+                Participant participant = null;
+                InfluencedParticipant influencedParticipant = null;
+
+                // Check whether registration is for InfluencedParticipant or normal Participant
+                if (Boolean.TRUE.equals(request.getIsInfluenced())) {
+                    influencedParticipant = influencedParticipantRepository.findById(
+                                    request.getInfluencedId() == null ? 0 : request.getInfluencedId())
+                            .orElseThrow(() -> new DataException("Influenced Participant data not found",
+                                    "INFLUENCED-PARTICIPANT-DATA-NOT-FOUND", 400));
+                } else {
+                    participant = participantRepository.findById(
+                                    request.getParticipantId() == null ? 0 : request.getParticipantId())
+                            .orElseThrow(() -> new DataException("Participant data not found",
+                                    "PARTICIPANT-DATA-NOT-FOUND", 400));
+                }
+                designRightsRepository.save(OutcomeRequestMapper.mapDesignRights(request, agency, participant, organization, influencedParticipant));
                 status = outcomeName + " Saved Successfully.";
                 break;
             }
@@ -796,13 +1156,25 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                 Agency agency = agencyRepository.findById(request.getAgencyId() == null ? 0 : request.getAgencyId())
                         .orElseThrow(() -> new DataException("Agency data not found", "AGENCY-DATA-NOT-FOUND", 400));
 
-                Participant participant = participantRepository.findById(request.getParticipantId() == null ? 0 : request.getParticipantId())
-                        .orElseThrow(() -> new DataException("Participant data not found", "PARTICIPANT-DATA-NOT-FOUND", 400));
-
                 Organization organization = organizationRepository.findById(request.getOrganizationId() == null ? 0 : request.getOrganizationId())
                         .orElseThrow(() -> new DataException("Organization data not found", "ORGANIZATION-DATA-NOT-FOUND", 400));
 
-                copyRightsRepository.save(OutcomeRequestMapper.mapCopyRights(request, agency, participant, organization));
+                Participant participant = null;
+                InfluencedParticipant influencedParticipant = null;
+
+                // Check whether registration is for InfluencedParticipant or normal Participant
+                if (Boolean.TRUE.equals(request.getIsInfluenced())) {
+                    influencedParticipant = influencedParticipantRepository.findById(
+                                    request.getInfluencedId() == null ? 0 : request.getInfluencedId())
+                            .orElseThrow(() -> new DataException("Influenced Participant data not found",
+                                    "INFLUENCED-PARTICIPANT-DATA-NOT-FOUND", 400));
+                } else {
+                    participant = participantRepository.findById(
+                                    request.getParticipantId() == null ? 0 : request.getParticipantId())
+                            .orElseThrow(() -> new DataException("Participant data not found",
+                                    "PARTICIPANT-DATA-NOT-FOUND", 400));
+                }
+                copyRightsRepository.save(OutcomeRequestMapper.mapCopyRights(request, agency, participant, organization,influencedParticipant));
                 status = outcomeName + " Saved Successfully.";
                 break;
             }
@@ -811,13 +1183,25 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                 Agency agency = agencyRepository.findById(request.getAgencyId() == null ? 0 : request.getAgencyId())
                         .orElseThrow(() -> new DataException("Agency data not found", "AGENCY-DATA-NOT-FOUND", 400));
 
-                Participant participant = participantRepository.findById(request.getParticipantId() == null ? 0 : request.getParticipantId())
-                        .orElseThrow(() -> new DataException("Participant data not found", "PARTICIPANT-DATA-NOT-FOUND", 400));
-
                 Organization organization = organizationRepository.findById(request.getOrganizationId() == null ? 0 : request.getOrganizationId())
                         .orElseThrow(() -> new DataException("Organization data not found", "ORGANIZATION-DATA-NOT-FOUND", 400));
 
-                greeningOfMSMERepository.save(OutcomeRequestMapper.mapGreeningOfMSME(request, agency, participant, organization));
+                Participant participant = null;
+                InfluencedParticipant influencedParticipant = null;
+
+                // Check whether registration is for InfluencedParticipant or normal Participant
+                if (Boolean.TRUE.equals(request.getIsInfluenced())) {
+                    influencedParticipant = influencedParticipantRepository.findById(
+                                    request.getInfluencedId() == null ? 0 : request.getInfluencedId())
+                            .orElseThrow(() -> new DataException("Influenced Participant data not found",
+                                    "INFLUENCED-PARTICIPANT-DATA-NOT-FOUND", 400));
+                } else {
+                    participant = participantRepository.findById(
+                                    request.getParticipantId() == null ? 0 : request.getParticipantId())
+                            .orElseThrow(() -> new DataException("Participant data not found",
+                                    "PARTICIPANT-DATA-NOT-FOUND", 400));
+                }
+                greeningOfMSMERepository.save(OutcomeRequestMapper.mapGreeningOfMSME(request, agency, participant, organization,influencedParticipant));
                 status = outcomeName + " Saved Successfully.";
                 break;
             }

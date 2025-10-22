@@ -10,15 +10,10 @@ import lombok.*;
 public class PMViswakarmaRequest {
 
     public String artisanCategory;
-
     public String dateOfTraining;
-
     public String certificateIssueDate;
-
     public String dateOfCreditAvailed;
-
     public Double amountOfCreditAvailed;
-
     public String purposeOfUtilisation; // Working Capital / Renovation / Equipment
 
     public Double monthlyIncomeAfterCredit;
@@ -26,4 +21,5 @@ public class PMViswakarmaRequest {
     private Long participantId;
     private Long organizationId;
     private Long agencyId;
+    private Long influencedId;
 }

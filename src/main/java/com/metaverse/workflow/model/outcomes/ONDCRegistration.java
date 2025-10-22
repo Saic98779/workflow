@@ -2,6 +2,7 @@ package com.metaverse.workflow.model.outcomes;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.metaverse.workflow.model.Agency;
+import com.metaverse.workflow.model.InfluencedParticipant;
 import com.metaverse.workflow.model.Organization;
 import com.metaverse.workflow.model.Participant;
 import jakarta.persistence.*;
@@ -52,5 +53,9 @@ public class ONDCRegistration {
     private Boolean isInfluenced;
     @OneToMany(mappedBy = "ondcRegistration", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ONDCTransaction> ondcTransactionList;
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "influenced_id")
+    private InfluencedParticipant influencedParticipant;
 
 }

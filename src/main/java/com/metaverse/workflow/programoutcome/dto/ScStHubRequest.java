@@ -32,4 +32,5 @@ public class ScStHubRequest {
     private Long participantId;
     private Long organizationId;
     private Long agencyId;
+    private Long influencedId;
 }
