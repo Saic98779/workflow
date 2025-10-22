@@ -27,4 +27,6 @@ public interface GeMRegistrationRepository extends JpaRepository<GeMRegistration
 
 
     List<GeMRegistration> findByAgencyAgencyId(Long agencyId);
+
+    boolean existsByInfluencedParticipant_InfluencedId(Long influencedId);
 }
