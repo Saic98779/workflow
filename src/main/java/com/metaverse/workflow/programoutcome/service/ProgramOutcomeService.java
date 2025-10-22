@@ -17,4 +17,6 @@ public interface ProgramOutcomeService {
 
     WorkflowResponse getOutcomeDetailsByName(String outcome);
 
+    WorkflowResponse getApiForOutcomes(Long agencyId);
+
 }

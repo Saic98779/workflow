@@ -4,6 +4,7 @@ import com.metaverse.workflow.model.outcomes.NSIC;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Date;
+import java.util.List;
 
 public interface NSICRepository extends JpaRepository<NSIC,Long> {
     long countByAgencyAgencyIdAndDateOfProcurementBetween(Long agencyId, Date start, Date end);
@@ -18,4 +19,5 @@ public interface NSICRepository extends JpaRepository<NSIC,Long> {
         }
     }
 
+    List<NSIC> findByAgencyAgencyId(Long agencyId);
 }

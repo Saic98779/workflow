@@ -4,6 +4,7 @@ import com.metaverse.workflow.model.outcomes.PMFMEScheme;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Date;
+import java.util.List;
 
 public interface PMFMESchemeRepository extends JpaRepository<PMFMEScheme,Long> {
     default long countPMFMEScheme(Long agencyId, Date start, Date end) {
@@ -20,4 +21,5 @@ public interface PMFMESchemeRepository extends JpaRepository<PMFMEScheme,Long> {
 
     long countByDateOfApplicationSubmissionBetween(Date start, Date start1);
 
+    List<PMFMEScheme> findByAgencyAgencyId(Long agencyId);
 }

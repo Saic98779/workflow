@@ -34,4 +34,6 @@ public interface TReDSRegistrationRepository extends JpaRepository<TReDSRegistra
         }
 
     }
+
+    List<TReDSRegistration> findByAgencyAgencyId(Long agencyId);
 }

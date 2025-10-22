@@ -4,6 +4,7 @@ import com.metaverse.workflow.model.outcomes.ConsortiaTender;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Date;
+import java.util.List;
 
 public interface ConsortiaTenderRepository  extends JpaRepository<ConsortiaTender,Long> {
     long countByAgencyAgencyIdAndDateOfJoiningConsortiaBetween(Long agencyId, Date start, Date end);
@@ -17,4 +18,6 @@ public interface ConsortiaTenderRepository  extends JpaRepository<ConsortiaTende
              return countByAgencyAgencyIdAndDateOfJoiningConsortiaBetween(agencyId, start, end);
          }
      }
+
+    List<ConsortiaTender> findByAgencyAgencyId(Long agencyId);
 }

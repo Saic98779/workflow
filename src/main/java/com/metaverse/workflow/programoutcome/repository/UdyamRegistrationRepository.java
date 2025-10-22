@@ -33,4 +33,6 @@ public interface UdyamRegistrationRepository extends JpaRepository<UdyamRegistra
         }
 
     }
+
+    List<UdyamRegistration> findByAgencyAgencyId(Long agencyId);
 }

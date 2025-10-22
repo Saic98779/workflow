@@ -1,11 +1,13 @@
 package com.metaverse.workflow.programoutcome.repository;
 
+import com.metaverse.workflow.model.outcomes.ONDCRegistration;
 import com.metaverse.workflow.model.outcomes.ONDCTransaction;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.Date;
+import java.util.List;
 
 public interface ONDCTransactionRepository extends JpaRepository<ONDCTransaction, Long> {
     @Query("SELECT COUNT(t) FROM ONDCTransaction t WHERE t.ondcRegistration.agency.agencyId = :agencyId AND t.transactionDate BETWEEN :startDate AND :endDate")
@@ -27,4 +29,6 @@ public interface ONDCTransactionRepository extends JpaRepository<ONDCTransaction
         }
 
     }
+
+//    List<ONDCTransaction> findByAgencyAgencyId(Long agencyId);
 }
