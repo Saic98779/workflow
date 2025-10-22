@@ -34,4 +34,6 @@ public interface TReDSRegistrationRepository extends JpaRepository<TReDSRegistra
         }
 
     }
+
+    boolean existsByInfluencedParticipant_InfluencedId(Long influencedId);
 }

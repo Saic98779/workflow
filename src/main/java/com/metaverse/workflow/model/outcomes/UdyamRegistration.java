@@ -1,6 +1,7 @@
 package com.metaverse.workflow.model.outcomes;
 
 import com.metaverse.workflow.model.Agency;
+import com.metaverse.workflow.model.InfluencedParticipant;
 import com.metaverse.workflow.model.Organization;
 import com.metaverse.workflow.model.Participant;
 import jakarta.persistence.*;
@@ -54,4 +55,8 @@ public class UdyamRegistration {
     @ManyToOne
     @JoinColumn(name = "organization_id")
     private Organization organization;
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "influenced_id")
+    private InfluencedParticipant influencedParticipant;
 }

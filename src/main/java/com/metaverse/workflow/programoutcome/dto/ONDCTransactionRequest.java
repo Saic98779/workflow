@@ -20,5 +20,6 @@ public class ONDCTransactionRequest {
     private Long participantId;
     private Long organizationId;
     private Long agencyId;
+    private Long influencedId;
 
 }

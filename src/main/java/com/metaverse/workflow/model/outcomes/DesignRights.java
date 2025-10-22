@@ -1,6 +1,7 @@
 package com.metaverse.workflow.model.outcomes;
 
 import com.metaverse.workflow.model.Agency;
+import com.metaverse.workflow.model.InfluencedParticipant;
 import com.metaverse.workflow.model.Organization;
 import com.metaverse.workflow.model.Participant;
 import jakarta.persistence.*;
@@ -70,4 +71,8 @@ public class DesignRights {
     @Column(name = "updated_on", insertable = false, updatable = true)
     @UpdateTimestamp
     private Date updatedOn;
+    @com.fasterxml.jackson.annotation.JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "influenced_id")
+    private InfluencedParticipant influencedParticipant;
 }

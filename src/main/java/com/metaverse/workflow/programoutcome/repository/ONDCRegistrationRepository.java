@@ -37,4 +37,5 @@ public interface ONDCRegistrationRepository extends JpaRepository<ONDCRegistrati
 
     }
 
+    boolean existsByInfluencedParticipant_InfluencedId(Long influencedId);
 }
