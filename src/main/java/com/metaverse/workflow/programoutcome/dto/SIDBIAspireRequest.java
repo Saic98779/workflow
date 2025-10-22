@@ -28,4 +28,5 @@ public class SIDBIAspireRequest {
     private Long agencyId;
     private Long participantId;
     private Long organizationId;
+    private Long influencedId;
 }

@@ -22,4 +22,5 @@ public class CopyRightsRequest {
     private Long agencyId;
     private Long participantId;
     private Long organizationId;
+    private Long influencedId;
 }

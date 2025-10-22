@@ -17,4 +17,5 @@ public class NSICRequest {
     private Long agencyId;
     private Long participantId;
     private Long organizationId;
+    private Long influencedId;
 }

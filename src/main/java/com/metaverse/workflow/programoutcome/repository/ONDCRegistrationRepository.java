@@ -36,6 +36,6 @@ public interface ONDCRegistrationRepository extends JpaRepository<ONDCRegistrati
         }
 
     }
-
     List<ONDCRegistration> findByAgencyAgencyId(Long agencyId);
+
 }

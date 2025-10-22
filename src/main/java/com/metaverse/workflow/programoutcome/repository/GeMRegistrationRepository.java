@@ -25,5 +25,6 @@ public interface GeMRegistrationRepository extends JpaRepository<GeMRegistration
         }
     }
 
+
     List<GeMRegistration> findByAgencyAgencyId(Long agencyId);
 }
