@@ -1,7 +1,6 @@
-package com.metaverse.workflow.participant.dto;
+package com.metaverse.workflow.participant.service;
 
 import lombok.*;
-import java.util.Date;
 
 @Data
 @NoArgsConstructor

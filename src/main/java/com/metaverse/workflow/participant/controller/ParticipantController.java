@@ -111,4 +111,9 @@ public class ParticipantController {
 			return WorkflowResponse.builder().message(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR)).status(200).data("Error uploading file: " + e.getMessage()).build();
 		}
 	}
+
+	@GetMapping("/participants/search-by-mobile/{mobileNo}")
+	public ResponseEntity<WorkflowResponse> getPersonByMobileNo(@PathVariable Long mobileNo) {
+		return ResponseEntity.ok(participantService.getParticipantsOrInfluencedParticipantByMobileNo(mobileNo));
+	}
 }
