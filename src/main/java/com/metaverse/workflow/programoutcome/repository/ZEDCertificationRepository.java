@@ -30,4 +30,5 @@ public interface ZEDCertificationRepository extends JpaRepository<ZEDCertificati
     }
 
 
+    List<ZEDCertification> findByInfluencedParticipant_InfluencedId(Long participantId);
 }
