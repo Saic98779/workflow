@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface InfluencedParticipantRepository extends JpaRepository<InfluencedParticipant, Long> {
+    InfluencedParticipant findByMobileNo(Long mobileNo);
 }

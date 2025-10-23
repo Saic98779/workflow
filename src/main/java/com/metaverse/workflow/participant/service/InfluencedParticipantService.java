@@ -5,11 +5,8 @@ import com.metaverse.workflow.exceptions.DataException;
 import com.metaverse.workflow.model.InfluencedParticipant;
 import com.metaverse.workflow.model.Organization;
 import com.metaverse.workflow.organization.repository.OrganizationRepository;
-import com.metaverse.workflow.participant.dto.InfluencedParticipantDto;
 import com.metaverse.workflow.participant.repository.InfluencedParticipantRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 

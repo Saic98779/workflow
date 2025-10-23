@@ -2,10 +2,7 @@ package com.metaverse.workflow.participant.service;
 
 import com.metaverse.workflow.common.util.CommonUtil;
 import com.metaverse.workflow.common.util.DateUtil;
-import com.metaverse.workflow.model.Participant;
-import com.metaverse.workflow.model.ParticipantTemp;
-import com.metaverse.workflow.model.Program;
-import com.metaverse.workflow.model.Sector;
+import com.metaverse.workflow.model.*;
 
 import java.util.stream.Collectors;
 
@@ -130,4 +127,31 @@ public class ParticipantResponseMapper {
 				.build();
 	}
 
+	public static ParticipantsOrInfluencedParticipant mapParticipantsOrInfluencedParticipant(Participant participant, InfluencedParticipant influencedParticipant) {
+		if(participant != null)
+		{
+			return ParticipantsOrInfluencedParticipant.builder()
+					.organizationId( participant.getOrganization() != null ? participant.getOrganization().getOrganizationId() : null)
+					.organizationName(participant.getOrganization() != null ? participant.getOrganization().getOrganizationName(): null)
+					.nameOfTheSHG(participant.getOrganization() != null ? participant.getOrganization().getNameOfTheSHG(): null)
+					.programDates(participant.getPrograms().stream().map(program -> dateToString(program.getStartDate(), "dd-MM-yyyy"))
+							.collect(Collectors.toList()))
+					.participantId(participant.getParticipantId())
+					.participantName(participant.getParticipantName())
+					.mobileNo(participant.getMobileNo())
+					.designation(participant.getDesignation())
+					.build();
+		}
+		else {
+			 return ParticipantsOrInfluencedParticipant.builder()
+					.organizationId( influencedParticipant.getOrganization() != null ? influencedParticipant.getOrganization().getOrganizationId() : null)
+					.organizationName(influencedParticipant.getOrganization() != null ? influencedParticipant.getOrganization().getOrganizationName(): null)
+					.nameOfTheSHG(influencedParticipant.getOrganization() != null ? influencedParticipant.getOrganization().getNameOfTheSHG(): null)
+					 .influencedId(influencedParticipant.getInfluencedId())
+					.participantName(influencedParticipant.getParticipantName())
+					.mobileNo(influencedParticipant.getMobileNo())
+					.designation(influencedParticipant.getDesignation())
+					.build();
+		}
+	}
 }

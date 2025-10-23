@@ -1,12 +1,14 @@
 package com.metaverse.workflow.participant.service;
 
 import com.metaverse.workflow.common.response.WorkflowResponse;
+import com.metaverse.workflow.model.InfluencedParticipant;
 import com.metaverse.workflow.model.Organization;
 import com.metaverse.workflow.model.Participant;
 import com.metaverse.workflow.model.Program;
 import com.metaverse.workflow.organization.service.OrganizationResponse;
 import com.metaverse.workflow.organization.service.OrganizationResponseMapper;
 import com.metaverse.workflow.organization.service.OrganizationService;
+import com.metaverse.workflow.participant.repository.InfluencedParticipantRepository;
 import com.metaverse.workflow.participant.repository.ParticipantRepository;
 import com.metaverse.workflow.program.repository.ProgramRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +32,8 @@ public class ParticipantServiceAdapter implements ParticipantService {
     private OrganizationService organizationService;
     @Autowired
     private ProgramRepository programRepository;
+    @Autowired
+    private InfluencedParticipantRepository influencedParticipantRepository;
 
     @Override
     public WorkflowResponse saveParticipant(ParticipantRequest request) {
@@ -177,6 +181,30 @@ public class ParticipantServiceAdapter implements ParticipantService {
 
     public void saveAll(List<Participant> participants) {
         participantRepository.saveAll(participants);
+    }
+
+    @Override
+    public WorkflowResponse getParticipantsOrInfluencedParticipantByMobileNo(Long mobileNo) {
+        Participant participant = participantRepository.findByMobileNo(mobileNo);
+        InfluencedParticipant influencedParticipant = influencedParticipantRepository.findByMobileNo(mobileNo);
+
+        if (participant == null && influencedParticipant == null) {
+            return WorkflowResponse.builder()
+                    .message("No record found for the given mobile number")
+                    .status(404)
+                    .build();
+        }
+
+        ParticipantsOrInfluencedParticipant response =
+                ParticipantResponseMapper.mapParticipantsOrInfluencedParticipant(participant, influencedParticipant);
+
+        String message = participant != null ? "Participant found" : "Influenced Participant found";
+
+        return WorkflowResponse.builder()
+                .message(message)
+                .status(200)
+                .data(response)
+                .build();
     }
 
 }

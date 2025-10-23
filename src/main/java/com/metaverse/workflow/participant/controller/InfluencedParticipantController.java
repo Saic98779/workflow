@@ -2,7 +2,7 @@ package com.metaverse.workflow.participant.controller;
 
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.exceptions.DataException;
-import com.metaverse.workflow.participant.dto.InfluencedParticipantDto;
+import com.metaverse.workflow.participant.service.InfluencedParticipantDto;
 import com.metaverse.workflow.participant.service.InfluencedParticipantService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

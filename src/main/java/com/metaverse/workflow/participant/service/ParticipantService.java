@@ -28,4 +28,6 @@ public interface ParticipantService {
     Boolean isMobileNumberExists(Long mobileNo);
 
     void saveAll(List<Participant> participants);
+
+    WorkflowResponse getParticipantsOrInfluencedParticipantByMobileNo(Long mobileNo);
 }
