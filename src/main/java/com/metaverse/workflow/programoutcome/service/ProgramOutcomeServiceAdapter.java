@@ -105,7 +105,7 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
     }
 
     @Override
-    public WorkflowResponse getOutcomeDetails(Long participantId, String outcome, String type) {
+    public WorkflowResponse getOutcomeDetails(Long participantId, String outcome, String type ,Boolean isInfluenced) {
         String className = "com.metaverse.workflow.programoutcome.dto." + outcome + "Request";
         try {
             Field[] fields = Class.forName(className).getFields();
@@ -121,8 +121,12 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
             }
             switch (outcome) {
                 case "ONDCTransaction": {
-
-                    List<ONDCRegistration> ondcRegistration = ondcRegistrationRepository.findByParticipantId(participantId);
+                    List<ONDCRegistration> ondcRegistration ;
+                    if(isInfluenced) {
+                        ondcRegistration = ondcRegistrationRepository.findByInfluencedParticipant_InfluencedId(participantId);
+                    }else {
+                        ondcRegistration = ondcRegistrationRepository.findByParticipantId(participantId);
+                    }
                     if (ondcRegistration == null || ondcRegistration.isEmpty())
                         return WorkflowResponse.builder()
                                 .status(400)
@@ -138,7 +142,13 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                     break;
                 }
                 case "GeMTransaction": {
-                    GeMRegistration gemRegistration = geMRegistrationRepository.findByParticipantParticipantId(participantId);
+                    GeMRegistration gemRegistration;
+                    if(isInfluenced) {
+                        gemRegistration = geMRegistrationRepository.findByInfluencedParticipant_InfluencedId(participantId);
+                    }else {
+                        gemRegistration =  geMRegistrationRepository.findByParticipantParticipantId(participantId);
+                    }
+                    geMRegistrationRepository.findByParticipantParticipantId(participantId);
                     if (gemRegistration == null)
                         return WorkflowResponse.builder()
                                 .status(400)
@@ -161,7 +171,13 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                     break;
                 }
                 case "TReDSTransaction": {
-                    List<TReDSRegistration> tReDSRegistrations = tredsRegistrationRepository.findByParticipantId(participantId);
+                    List<TReDSRegistration> tReDSRegistrations;
+                    if(isInfluenced) {
+                        tReDSRegistrations = tredsRegistrationRepository.findByInfluencedParticipant_InfluencedId(participantId);
+                    }else {
+                        tReDSRegistrations =  tredsRegistrationRepository.findByParticipantId(participantId);
+                    }
+
                     if (tReDSRegistrations == null || tReDSRegistrations.isEmpty())
                         return WorkflowResponse.builder()
                                 .status(400)
@@ -178,7 +194,12 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                     break;
                 }
                 case "ZEDCertification": {
-                    List<ZEDCertification> zedCertifications = zedCertificationRepository.findByParticipantId(participantId);
+                    List<ZEDCertification> zedCertifications ;
+                    if(isInfluenced) {
+                        zedCertifications = zedCertificationRepository.findByInfluencedParticipant_InfluencedId(participantId);
+                    }else {
+                        zedCertifications =  zedCertificationRepository.findByParticipantId(participantId);
+                    }
 
                     String currentType = zedCertifications != null && !zedCertifications.isEmpty()
                             ? zedCertifications.get(0).getZedCertificationType()

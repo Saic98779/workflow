@@ -10,6 +10,7 @@ import com.metaverse.workflow.programoutcome.service.OutcomeDetails;
 import com.metaverse.workflow.programoutcome.service.ProgramOutcomeService;
 import com.metaverse.workflow.programoutcome.service.UdyamService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.websocket.server.PathParam;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.parser.ParseException;
@@ -46,9 +47,10 @@ public class ProgramOutcomeController {
     @GetMapping(value = "/program/outcome/details/{participantId}/{outcome}")
     public ResponseEntity<WorkflowResponse> getProgramOutcomeDetails(@PathVariable("participantId") Long participantId,
                                                                      @PathVariable("outcome") String outcome,
+                                                                     @PathParam("participantType") Boolean isInfluenced,
                                                                      @RequestParam(value = "type", required = false) String type) {
         log.info("/program/outcome/details/");
-        WorkflowResponse response = programOutcomeService.getOutcomeDetails(participantId, outcome, type);
+        WorkflowResponse response = programOutcomeService.getOutcomeDetails(participantId, outcome, type,isInfluenced);
         return ResponseEntity.ok(response);
     }
 

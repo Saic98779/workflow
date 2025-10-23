@@ -39,4 +39,6 @@ public interface ONDCRegistrationRepository extends JpaRepository<ONDCRegistrati
     List<ONDCRegistration> findByAgencyAgencyId(Long agencyId);
 
     boolean existsByInfluencedParticipant_InfluencedId(Long influencedId);
+
+    List<ONDCRegistration> findByInfluencedParticipant_InfluencedId(Long participantId);
 }
