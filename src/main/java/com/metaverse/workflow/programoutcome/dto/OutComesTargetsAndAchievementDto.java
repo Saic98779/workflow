@@ -9,11 +9,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class OutComesTargetsAndAchiDto {
+public class OutComesTargetsAndAchievementDto {
 
     private String agencyName;
     private String outComeName;
     private Long outComeTarget;
-    private Long outComeParticipantAchi;
-    private Long outComeInfluencerAchi;
+    private Long outComeParticipantAchievement;
+    private Long outComeInfluencerAchievement;
 }

@@ -3,11 +3,7 @@ package com.metaverse.workflow.programoutcome.service;
 import com.metaverse.workflow.agency.repository.AgencyRepository;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.exceptions.DataException;
-import com.metaverse.workflow.model.Agency;
-import com.metaverse.workflow.model.InfluencedParticipant;
-import com.metaverse.workflow.model.Organization;
-import com.metaverse.workflow.model.Participant;
-import com.metaverse.workflow.model.PhysicalTarget;
+import com.metaverse.workflow.model.*;
 import com.metaverse.workflow.model.outcomes.*;
 import com.metaverse.workflow.organization.repository.OrganizationRepository;
 import com.metaverse.workflow.participant.repository.InfluencedParticipantRepository;
@@ -22,10 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -1248,28 +1241,33 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
     }
 
     @Override
-    public WorkflowResponse getApiForOutcomes(Long agencyId) {
+    public WorkflowResponse getApiForOutcomes(Long agencyId, Long outcomeId) {
+
         List<Long> integers = List.of(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L, 12L);
-        List<List<OutComesTargetsAndAchiDto>> lists = new ArrayList<>();
+        List<Object> lists = new ArrayList<>();
+        Boolean b = false;
         if (agencyId == -1) {
             for (Long i : integers) {
-                List<OutComesTargetsAndAchiDto> apiForOutcomes1 = getApiForOutcomes1(i);
-                if (!apiForOutcomes1.isEmpty())
-                   lists.add(apiForOutcomes1);
+                Object apiForOutcomes1 = getApiForOutcomes1(i, outcomeId, b);
+                if (outcomeId == null || outcomeId == -1) {
+                    List<?> list = (List<?>) apiForOutcomes1;
+                    if (!list.isEmpty())
+                        lists.add(list);
+                } else {
+                    lists.add(apiForOutcomes1);
+                }
             }
         } else {
-            lists.add(getApiForOutcomes1(agencyId));
+            lists.add(getApiForOutcomes1(agencyId, outcomeId, false));
         }
         return WorkflowResponse.builder().data(lists).status(200).message("Fetched Successfully").build();
-
     }
 
-    public List<OutComesTargetsAndAchiDto> getApiForOutcomes1(Long agencyId) {
+    public <T> T getApiForOutcomes1(Long agencyId, Long outcomeId, Boolean b) {
 
-
-        List<OutComesTargetsAndAchiDto> outComesTargetsAndAchiDtos = new ArrayList<>();
+        List<OutComesTargetsAndAchievementDto> outComesTargetsAndAchiDtos = new ArrayList<>();
         List<PhysicalTarget> physicalTargets = new ArrayList<>();
-        List.of(1,2,3,4,5,6,7,8,9,10,11,12);
+
         // tragets
         if (agencyId != -1) {
             physicalTargets = physicalRepository.findByAgencyAgencyId(agencyId);
@@ -1290,11 +1288,11 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                         long trueCount = influenceCount.getOrDefault(true, 0L); // non-participants
                         long falseCount = influenceCount.getOrDefault(false, 0L) + trueCount; // non-participants + participants
 
-                        outComesTargetsAndAchiDtos.add(OutComesTargetsAndAchiDto.builder().agencyName(physicalTarget.getAgency().getAgencyName())
+                        outComesTargetsAndAchiDtos.add(OutComesTargetsAndAchievementDto.builder().agencyName(physicalTarget.getAgency().getAgencyName())
                                 .outComeName("ONDC Registration")
                                 .outComeTarget((long) targetTotal)
-                                .outComeParticipantAchi(falseCount)
-                                .outComeInfluencerAchi(trueCount).build());
+                                .outComeParticipantAchievement(falseCount)
+                                .outComeInfluencerAchievement(trueCount).build());
 
                     }
                     break;
@@ -1311,13 +1309,14 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                         long trueCount = influenceCount.getOrDefault(true, 0L); // non-participants
                         long falseCount = influenceCount.getOrDefault(false, 0L) + trueCount; // non-participants + participants
 
-                        outComesTargetsAndAchiDtos.add(OutComesTargetsAndAchiDto.builder().agencyName(physicalTarget.getAgency().getAgencyName())
+                        outComesTargetsAndAchiDtos.add(OutComesTargetsAndAchievementDto.builder().agencyName(physicalTarget.getAgency().getAgencyName())
                                 .outComeName("Udyam Registration")
                                 .outComeTarget((long) targetTotal)
-                                .outComeParticipantAchi(falseCount)
-                                .outComeInfluencerAchi(trueCount).build());
-                        break;
+                                .outComeParticipantAchievement(falseCount)
+                                .outComeInfluencerAchievement(trueCount).build());
+
                     }
+                    break;
                     case "TReDSRegistration": {
                         PhysicalTarget physicalTarget = physicalTargets.get(i);
 
@@ -1329,14 +1328,15 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                         long trueCount = influenceCount.getOrDefault(true, 0L); // non-participants
                         long falseCount = influenceCount.getOrDefault(false, 0L) + trueCount; // non-participants + participants
 
-                        outComesTargetsAndAchiDtos.add(OutComesTargetsAndAchiDto.builder().agencyName(physicalTarget.getAgency().getAgencyName())
+                        outComesTargetsAndAchiDtos.add(OutComesTargetsAndAchievementDto.builder().agencyName(physicalTarget.getAgency().getAgencyName())
                                 .outComeName("TReDS Registration")
                                 .outComeTarget((long) targetTotal)
-                                .outComeParticipantAchi(falseCount)
-                                .outComeInfluencerAchi(trueCount).build());
+                                .outComeParticipantAchievement(falseCount)
+                                .outComeInfluencerAchievement(trueCount).build());
 
-                        break;
+
                     }
+                    break;
                     case "PMEGP": {
                         PhysicalTarget physicalTarget = physicalTargets.get(i);
 
@@ -1347,13 +1347,14 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
 
                         long trueCount = influenceCount.getOrDefault(true, 0L); // non-participants
                         long falseCount = influenceCount.getOrDefault(false, 0L) + trueCount; // non-participants + participants
-                        outComesTargetsAndAchiDtos.add(OutComesTargetsAndAchiDto.builder().agencyName(physicalTarget.getAgency().getAgencyName())
+                        outComesTargetsAndAchiDtos.add(OutComesTargetsAndAchievementDto.builder().agencyName(physicalTarget.getAgency().getAgencyName())
                                 .outComeName("PMEGP")
                                 .outComeTarget((long) targetTotal)
-                                .outComeParticipantAchi(falseCount)
-                                .outComeInfluencerAchi(trueCount).build());
-                        break;
+                                .outComeParticipantAchievement(falseCount)
+                                .outComeInfluencerAchievement(trueCount).build());
+
                     }
+                    break;
                     case "PMMY": {
 
                         PhysicalTarget physicalTarget = physicalTargets.get(i);
@@ -1365,14 +1366,14 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
 
                         long trueCount = influenceCount.getOrDefault(true, 0L); // non-participants
                         long falseCount = influenceCount.getOrDefault(false, 0L) + trueCount; // non-participants + participants
-                        outComesTargetsAndAchiDtos.add(OutComesTargetsAndAchiDto.builder().agencyName(physicalTarget.getAgency().getAgencyName())
+                        outComesTargetsAndAchiDtos.add(OutComesTargetsAndAchievementDto.builder().agencyName(physicalTarget.getAgency().getAgencyName())
                                 .outComeName("PMMY")
                                 .outComeTarget((long) targetTotal)
-                                .outComeParticipantAchi(falseCount)
-                                .outComeInfluencerAchi(trueCount).build());
+                                .outComeParticipantAchievement(falseCount)
+                                .outComeInfluencerAchievement(trueCount).build());
 
-                        break;
                     }
+                    break;
                     case "PMS": {
                         PhysicalTarget physicalTarget = physicalTargets.get(i);
 
@@ -1383,14 +1384,14 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
 
                         long trueCount = influenceCount.getOrDefault(true, 0L); // non-participants
                         long falseCount = influenceCount.getOrDefault(false, 0L) + trueCount; // non-participants + participants
-                        outComesTargetsAndAchiDtos.add(OutComesTargetsAndAchiDto.builder().agencyName(physicalTarget.getAgency().getAgencyName())
+                        outComesTargetsAndAchiDtos.add(OutComesTargetsAndAchievementDto.builder().agencyName(physicalTarget.getAgency().getAgencyName())
                                 .outComeName("PMS")
                                 .outComeTarget((long) targetTotal)
-                                .outComeParticipantAchi(falseCount)
-                                .outComeInfluencerAchi(trueCount).build());
+                                .outComeParticipantAchievement(falseCount)
+                                .outComeInfluencerAchievement(trueCount).build());
 
-                        break;
                     }
+                    break;
                     case "ICScheme": {
                         PhysicalTarget physicalTarget = physicalTargets.get(i);
 
@@ -1401,14 +1402,14 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
 
                         long trueCount = influenceCount.getOrDefault(true, 0L); // non-participants
                         long falseCount = influenceCount.getOrDefault(false, 0L) + trueCount; // non-participants + participants
-                        outComesTargetsAndAchiDtos.add(OutComesTargetsAndAchiDto.builder().agencyName(physicalTarget.getAgency().getAgencyName())
+                        outComesTargetsAndAchiDtos.add(OutComesTargetsAndAchievementDto.builder().agencyName(physicalTarget.getAgency().getAgencyName())
                                 .outComeName("IC Scheme")
                                 .outComeTarget((long) targetTotal)
-                                .outComeParticipantAchi(falseCount)
-                                .outComeInfluencerAchi(trueCount).build());
+                                .outComeParticipantAchievement(falseCount)
+                                .outComeInfluencerAchievement(trueCount).build());
 
-                        break;
                     }
+                    break;
                     case "NSIC": {
                         PhysicalTarget physicalTarget = physicalTargets.get(i);
 
@@ -1420,15 +1421,13 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                         long trueCount = influenceCount.getOrDefault(true, 0L); // non-participants
                         long falseCount = influenceCount.getOrDefault(false, 0L) + trueCount; // non-participants + participants
 
-                        outComesTargetsAndAchiDtos.add(OutComesTargetsAndAchiDto.builder().agencyName(physicalTarget.getAgency().getAgencyName())
+                        outComesTargetsAndAchiDtos.add(OutComesTargetsAndAchievementDto.builder().agencyName(physicalTarget.getAgency().getAgencyName())
                                 .outComeName("NSIC")
                                 .outComeTarget((long) targetTotal)
-                                .outComeParticipantAchi(falseCount)
-                                .outComeInfluencerAchi(trueCount).build());
-
-                        break;
-
+                                .outComeParticipantAchievement(falseCount)
+                                .outComeInfluencerAchievement(trueCount).build());
                     }
+                    break;
                     case "Patents": {
                         PhysicalTarget physicalTarget = physicalTargets.get(i);
 
@@ -1439,13 +1438,13 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
 
                         long trueCount = influenceCount.getOrDefault(true, 0L); // non-participants
                         long falseCount = influenceCount.getOrDefault(false, 0L) + trueCount; // non-participants + participants
-                        outComesTargetsAndAchiDtos.add(OutComesTargetsAndAchiDto.builder().agencyName(physicalTarget.getAgency().getAgencyName())
+                        outComesTargetsAndAchiDtos.add(OutComesTargetsAndAchievementDto.builder().agencyName(physicalTarget.getAgency().getAgencyName())
                                 .outComeName("Patents")
                                 .outComeTarget((long) targetTotal)
-                                .outComeParticipantAchi(falseCount)
-                                .outComeInfluencerAchi(trueCount).build());
-                        break;
+                                .outComeParticipantAchievement(falseCount)
+                                .outComeInfluencerAchievement(trueCount).build());
                     }
+                    break;
                     case "GIProduct": {
 
                         PhysicalTarget physicalTarget = physicalTargets.get(i);
@@ -1457,14 +1456,13 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
 
                         long trueCount = influenceCount.getOrDefault(true, 0L); // non-participants
                         long falseCount = influenceCount.getOrDefault(false, 0L) + trueCount; // non-participants + participants
-                        outComesTargetsAndAchiDtos.add(OutComesTargetsAndAchiDto.builder().agencyName(physicalTarget.getAgency().getAgencyName())
+                        outComesTargetsAndAchiDtos.add(OutComesTargetsAndAchievementDto.builder().agencyName(physicalTarget.getAgency().getAgencyName())
                                 .outComeName("GIProduct")
                                 .outComeTarget((long) targetTotal)
-                                .outComeParticipantAchi(falseCount)
-                                .outComeInfluencerAchi(trueCount).build());
-
-                        break;
+                                .outComeParticipantAchievement(falseCount)
+                                .outComeInfluencerAchievement(trueCount).build());
                     }
+                    break;
                     case "Barcode": {
                         PhysicalTarget physicalTarget = physicalTargets.get(i);
 
@@ -1476,13 +1474,13 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                         long trueCount = influenceCount.getOrDefault(true, 0L); // non-participants
                         long falseCount = influenceCount.getOrDefault(false, 0L) + trueCount; // non-participants + participants
 
-                        outComesTargetsAndAchiDtos.add(OutComesTargetsAndAchiDto.builder().agencyName(physicalTarget.getAgency().getAgencyName())
+                        outComesTargetsAndAchiDtos.add(OutComesTargetsAndAchievementDto.builder().agencyName(physicalTarget.getAgency().getAgencyName())
                                 .outComeName("Barcode")
                                 .outComeTarget((long) targetTotal)
-                                .outComeParticipantAchi(falseCount)
-                                .outComeInfluencerAchi(trueCount).build());
-                        break;
+                                .outComeParticipantAchievement(falseCount)
+                                .outComeInfluencerAchievement(trueCount).build());
                     }
+                    break;
                     case "TreadMark": {
 
                         PhysicalTarget physicalTarget = physicalTargets.get(i);
@@ -1494,14 +1492,13 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
 
                         long trueCount = influenceCount.getOrDefault(true, 0L); // non-participants
                         long falseCount = influenceCount.getOrDefault(false, 0L) + trueCount; // non-participants + participants
-                        outComesTargetsAndAchiDtos.add(OutComesTargetsAndAchiDto.builder().agencyName(physicalTarget.getAgency().getAgencyName())
+                        outComesTargetsAndAchiDtos.add(OutComesTargetsAndAchievementDto.builder().agencyName(physicalTarget.getAgency().getAgencyName())
                                 .outComeName("TreadMark")
                                 .outComeTarget((long) targetTotal)
-                                .outComeParticipantAchi(falseCount)
-                                .outComeInfluencerAchi(trueCount).build());
-
-                        break;
+                                .outComeParticipantAchievement(falseCount)
+                                .outComeInfluencerAchievement(trueCount).build());
                     }
+                    break;
                     case "Lean": {
 
                         PhysicalTarget physicalTarget = physicalTargets.get(i);
@@ -1513,15 +1510,13 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
 
                         long trueCount = influenceCount.getOrDefault(true, 0L); // non-participants
                         long falseCount = influenceCount.getOrDefault(false, 0L) + trueCount; // non-participants + participants
-                        outComesTargetsAndAchiDtos.add(OutComesTargetsAndAchiDto.builder().agencyName(physicalTarget.getAgency().getAgencyName())
+                        outComesTargetsAndAchiDtos.add(OutComesTargetsAndAchievementDto.builder().agencyName(physicalTarget.getAgency().getAgencyName())
                                 .outComeName("Lean")
                                 .outComeTarget((long) targetTotal)
-                                .outComeParticipantAchi(falseCount)
-                                .outComeInfluencerAchi(trueCount).build());
-
-                        break;
-
+                                .outComeParticipantAchievement(falseCount)
+                                .outComeInfluencerAchievement(trueCount).build());
                     }
+                    break;
                     case "PMViswakarma": {
 
                         PhysicalTarget physicalTarget = physicalTargets.get(i);
@@ -1534,14 +1529,13 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                         long trueCount = influenceCount.getOrDefault(true, 0L); // non-participants
                         long falseCount = influenceCount.getOrDefault(false, 0L) + trueCount; // non-participants + participants
 
-                        outComesTargetsAndAchiDtos.add(OutComesTargetsAndAchiDto.builder().agencyName(physicalTarget.getAgency().getAgencyName())
+                        outComesTargetsAndAchiDtos.add(OutComesTargetsAndAchievementDto.builder().agencyName(physicalTarget.getAgency().getAgencyName())
                                 .outComeName("PM Viswakarma")
                                 .outComeTarget((long) targetTotal)
-                                .outComeParticipantAchi(falseCount)
-                                .outComeInfluencerAchi(trueCount).build());
-                        break;
-
+                                .outComeParticipantAchievement(falseCount)
+                                .outComeInfluencerAchievement(trueCount).build());
                     }
+                    break;
                     case "GeMRegistration": {
 
                         PhysicalTarget physicalTarget = physicalTargets.get(i);
@@ -1553,15 +1547,13 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
 
                         long trueCount = influenceCount.getOrDefault(true, 0L); // non-participants
                         long falseCount = influenceCount.getOrDefault(false, 0L) + trueCount; // non-participants + participants
-                        outComesTargetsAndAchiDtos.add(OutComesTargetsAndAchiDto.builder().agencyName(physicalTarget.getAgency().getAgencyName())
+                        outComesTargetsAndAchiDtos.add(OutComesTargetsAndAchievementDto.builder().agencyName(physicalTarget.getAgency().getAgencyName())
                                 .outComeName("GeM Registration")
                                 .outComeTarget((long) targetTotal)
-                                .outComeParticipantAchi(falseCount)
-                                .outComeInfluencerAchi(trueCount).build());
-
-                        break;
-
+                                .outComeParticipantAchievement(falseCount)
+                                .outComeInfluencerAchievement(trueCount).build());
                     }
+                    break;
                     case "OEM": {
 
                         PhysicalTarget physicalTarget = physicalTargets.get(i);
@@ -1573,15 +1565,13 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
 
                         long trueCount = influenceCount.getOrDefault(true, 0L); // non-participants
                         long falseCount = influenceCount.getOrDefault(false, 0L) + trueCount; // non-participants + participants
-                        outComesTargetsAndAchiDtos.add(OutComesTargetsAndAchiDto.builder().agencyName(physicalTarget.getAgency().getAgencyName())
+                        outComesTargetsAndAchiDtos.add(OutComesTargetsAndAchievementDto.builder().agencyName(physicalTarget.getAgency().getAgencyName())
                                 .outComeName("OEM")
                                 .outComeTarget((long) targetTotal)
-                                .outComeParticipantAchi(falseCount)
-                                .outComeInfluencerAchi(trueCount).build());
-
-                        break;
-
+                                .outComeParticipantAchievement(falseCount)
+                                .outComeInfluencerAchievement(trueCount).build());
                     }
+                    break;
                     case "PMFMEScheme": {
 
                         PhysicalTarget physicalTarget = physicalTargets.get(i);
@@ -1593,15 +1583,13 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
 
                         long trueCount = influenceCount.getOrDefault(true, 0L); // non-participants
                         long falseCount = influenceCount.getOrDefault(false, 0L) + trueCount; // non-participants + participants
-                        outComesTargetsAndAchiDtos.add(OutComesTargetsAndAchiDto.builder().agencyName(physicalTarget.getAgency().getAgencyName())
+                        outComesTargetsAndAchiDtos.add(OutComesTargetsAndAchievementDto.builder().agencyName(physicalTarget.getAgency().getAgencyName())
                                 .outComeName("PMFME Scheme")
                                 .outComeTarget((long) targetTotal)
-                                .outComeParticipantAchi(falseCount)
-                                .outComeInfluencerAchi(trueCount).build());
-
-                        break;
-
+                                .outComeParticipantAchievement(falseCount)
+                                .outComeInfluencerAchievement(trueCount).build());
                     }
+                    break;
                     case "ConsortiaTender": {
 
                         PhysicalTarget physicalTarget = physicalTargets.get(i);
@@ -1613,15 +1601,13 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
 
                         long trueCount = influenceCount.getOrDefault(true, 0L); // non-participants
                         long falseCount = influenceCount.getOrDefault(false, 0L) + trueCount; // non-participants + participants
-                        outComesTargetsAndAchiDtos.add(OutComesTargetsAndAchiDto.builder().agencyName(physicalTarget.getAgency().getAgencyName())
+                        outComesTargetsAndAchiDtos.add(OutComesTargetsAndAchievementDto.builder().agencyName(physicalTarget.getAgency().getAgencyName())
                                 .outComeName("Consortia & Tender Marketing")
                                 .outComeTarget((long) targetTotal)
-                                .outComeParticipantAchi(falseCount)
-                                .outComeInfluencerAchi(trueCount).build());
-
-                        break;
-
+                                .outComeParticipantAchievement(falseCount)
+                                .outComeInfluencerAchievement(trueCount).build());
                     }
+                    break;
                     case "DesignRight": {
                         PhysicalTarget physicalTarget = physicalTargets.get(i);
 
@@ -1632,14 +1618,13 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
 
                         long trueCount = influenceCount.getOrDefault(true, 0L); // non-participants
                         long falseCount = influenceCount.getOrDefault(false, 0L) + trueCount; // non-participants + participants
-                        outComesTargetsAndAchiDtos.add(OutComesTargetsAndAchiDto.builder().agencyName(physicalTarget.getAgency().getAgencyName())
+                        outComesTargetsAndAchiDtos.add(OutComesTargetsAndAchievementDto.builder().agencyName(physicalTarget.getAgency().getAgencyName())
                                 .outComeName("Design Right")
                                 .outComeTarget((long) targetTotal)
-                                .outComeParticipantAchi(falseCount)
-                                .outComeInfluencerAchi(trueCount).build());
-
-                        break;
+                                .outComeParticipantAchievement(falseCount)
+                                .outComeInfluencerAchievement(trueCount).build());
                     }
+                    break;
                     case "CopyRight": {
 
                         PhysicalTarget physicalTarget = physicalTargets.get(i);
@@ -1651,16 +1636,34 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
 
                         long trueCount = influenceCount.getOrDefault(true, 0L); // non-participants
                         long falseCount = influenceCount.getOrDefault(false, 0L) + trueCount; // non-participants + participants
-                        outComesTargetsAndAchiDtos.add(OutComesTargetsAndAchiDto.builder().agencyName(physicalTarget.getAgency().getAgencyName())
+                        outComesTargetsAndAchiDtos.add(OutComesTargetsAndAchievementDto.builder().agencyName(physicalTarget.getAgency().getAgencyName())
                                 .outComeName("Copy Right")
                                 .outComeTarget((long) targetTotal)
-                                .outComeParticipantAchi(falseCount)
-                                .outComeInfluencerAchi(trueCount).build());
-                        break;
+                                .outComeParticipantAchievement(falseCount)
+                                .outComeInfluencerAchievement(trueCount).build());
                     }
+                    break;
                 }
             }
         }
-        return outComesTargetsAndAchiDtos;
+
+        if (outcomeId != null && !outcomeId.equals(-1L) && !agencyId.equals(-1L)) {
+            Optional<ProgramOutcomeTable> byId = programOutcomeTableRepository.findById(Math.toIntExact(outcomeId));
+            ProgramOutcomeTable programOutcomeTable = byId.get();
+            String outcomeTableDisplayName = programOutcomeTable.getOutcomeTableDisplayName();
+
+
+            List<OutComesTargetsAndAchievementDto> dtoList = new ArrayList<>();
+//            Map<String, List<OutComesTargetsAndAchievementDto>> outComesTargetsAndAchievementDtoMap = new HashMap<>();
+            for (OutComesTargetsAndAchievementDto dto : outComesTargetsAndAchiDtos) {
+                if (outcomeTableDisplayName.equals(dto.getOutComeName())) {
+                    dtoList.add(dto);
+                }
+            }
+
+//            outComesTargetsAndAchievementDtoMap.put(outcomeTableDisplayName, dtoList);
+            return (T) dtoList;
+        }
+        return (T) outComesTargetsAndAchiDtos;
     }
 }
