@@ -1,5 +1,6 @@
 package com.metaverse.workflow.programoutcome.repository;
 
+import com.metaverse.workflow.model.outcomes.CopyRights;
 import com.metaverse.workflow.model.outcomes.ZEDCertification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -28,7 +29,6 @@ public interface ZEDCertificationRepository extends JpaRepository<ZEDCertificati
         }
 
     }
-
-
+    List<ZEDCertification> findByAgencyAgencyId(Long agencyId);
     List<ZEDCertification> findByInfluencedParticipant_InfluencedId(Long participantId);
 }
