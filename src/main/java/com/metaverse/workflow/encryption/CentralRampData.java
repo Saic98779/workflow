@@ -34,19 +34,19 @@ public class CentralRampData {
     private String address;
 
     // RAMP Dashboard Data
-    private String statelgdCode;
+    private Integer statelgdCode;
     private String intervention;
     private String component;
     private String activity;
     private String year;
     private String quarter;
-    private double physicalTarget;
-    private double physicalAchieved;
-    private double financialTarget;
-    private double financialAchieved;
-    private int msmesBenefittedTotal;
-    private int msmesBenefittedWoman;
-    private int msmesBenefittedSC;
-    private int msmesBenefittedST;
-    private int msmesBenefittedOBC;
+    private Double physicalTarget;
+    private Double physicalAchieved;
+    private Double financialTarget;
+    private Double financialAchieved;
+    private Integer msmesBenefittedTotal;
+    private Integer msmesBenefittedWoman;
+    private Integer msmesBenefittedSC;
+    private Integer msmesBenefittedST;
+    private Integer msmesBenefittedOBC;
 }
