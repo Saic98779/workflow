@@ -37,4 +37,6 @@ public interface TReDSRegistrationRepository extends JpaRepository<TReDSRegistra
     List<TReDSRegistration> findByAgencyAgencyId(Long agencyId);
 
     boolean existsByInfluencedParticipant_InfluencedId(Long influencedId);
+
+    List<TReDSRegistration> findByInfluencedParticipant_InfluencedId(Long participantId);
 }

@@ -29,7 +29,6 @@ public interface ZEDCertificationRepository extends JpaRepository<ZEDCertificati
         }
 
     }
-
-
     List<ZEDCertification> findByAgencyAgencyId(Long agencyId);
+    List<ZEDCertification> findByInfluencedParticipant_InfluencedId(Long participantId);
 }
