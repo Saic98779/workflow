@@ -1,10 +1,11 @@
 package com.metaverse.workflow.encryption;
 
 import java.nio.charset.StandardCharsets;
-import java.security.PrivateKey;
-import java.security.PublicKey;
-import java.security.SecureRandom;
-import java.security.Signature;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.security.*;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
 import java.util.Arrays;
 import java.util.Base64;
 
@@ -38,50 +39,50 @@ public class SecureServiceA {
 
 
     public String encryptAndSign(CentralRampRequestDto payload) throws Exception {
-        // 1. Generate AES 256-bit key
+        ObjectMapper mapper = new ObjectMapper();
+        String payloadJson = mapper.writeValueAsString(payload);
+
+        // 1. Generate 32-byte AES key
         byte[] aesKey = new byte[32];
         new SecureRandom().nextBytes(aesKey);
-        SecretKey secretKey = new SecretKeySpec(aesKey, "AES");
 
         // 2. IV = first 12 bytes
-        byte[] iv = Arrays.copyOfRange(aesKey, 0, 12);
-        GCMParameterSpec gcmSpec = new GCMParameterSpec(128, iv);
+        byte[] iv = Arrays.copyOf(aesKey, 12);
 
-        // 3. Serialize payload
-        ObjectMapper mapper = new ObjectMapper();
-        byte[] plainBytes = mapper.writeValueAsBytes(payload);
-
-        // 4. AES-GCM encryption
+        // 3. AES/GCM encryption
         Cipher aesCipher = Cipher.getInstance("AES/GCM/NoPadding");
-        aesCipher.init(Cipher.ENCRYPT_MODE, secretKey, gcmSpec);
-        byte[] cipherWithTag = aesCipher.doFinal(plainBytes);
+        SecretKeySpec keySpec = new SecretKeySpec(aesKey, "AES");
+        GCMParameterSpec gcmSpec = new GCMParameterSpec(128, iv);
+        aesCipher.init(Cipher.ENCRYPT_MODE, keySpec, gcmSpec);
 
-        // 5. Split ciphertext and tag
+        byte[] encryptedWithTag = aesCipher.doFinal(payloadJson.getBytes(StandardCharsets.UTF_8));
+
+        // 4. Split ciphertext and tag (last 16 bytes)
         int tagLength = 16;
-        byte[] ciphertext = Arrays.copyOf(cipherWithTag, cipherWithTag.length - tagLength);
-        byte[] tag = Arrays.copyOfRange(cipherWithTag, cipherWithTag.length - tagLength, cipherWithTag.length);
+        byte[] ciphertext = Arrays.copyOf(encryptedWithTag, encryptedWithTag.length - tagLength);
+        byte[] tag = Arrays.copyOfRange(encryptedWithTag, encryptedWithTag.length - tagLength, encryptedWithTag.length);
 
-        // 6. Sign raw ciphertext
+        // 5. Sign only ciphertext
         Signature signer = Signature.getInstance("SHA256withRSA");
-        signer.initSign(appAPrivateKey);
-        signer.update(ciphertext); // raw ciphertext bytes
-        byte[] signatureBytes = signer.sign();
+        signer.initSign(appBPrivateKey); // PHP consuming server private key
+        signer.update(ciphertext);
+        byte[] signature = signer.sign();
 
-        // 7. Encrypt AES key with destination RSA public key (OAEP SHA-1)
+        // 6. Encrypt AES key with RSA public key
         Cipher rsaCipher = Cipher.getInstance("RSA/ECB/OAEPWithSHA-1AndMGF1Padding");
-        rsaCipher.init(Cipher.ENCRYPT_MODE, appBPublicKey);
-        byte[] encryptedKeyBytes = rsaCipher.doFinal(aesKey);
+        rsaCipher.init(Cipher.ENCRYPT_MODE, appAPublicKey); // PHP destination server public key
+        byte[] encryptedAesKey = rsaCipher.doFinal(aesKey);
 
-        // 8. Base64 encode individual parts
-        String aesKeyBase64 = Base64.getEncoder().encodeToString(encryptedKeyBytes);
-        String ciphertextBase64 = Base64.getEncoder().encodeToString(ciphertext);
-        String signatureBase64 = Base64.getEncoder().encodeToString(signatureBytes);
-        String tagBase64 = Base64.getEncoder().encodeToString(tag);
+        // 7. Base64 encode all parts separately
+        String b64Key = Base64.getEncoder().encodeToString(encryptedAesKey);
+        String b64Cipher = Base64.getEncoder().encodeToString(ciphertext);
+        String b64Sig = Base64.getEncoder().encodeToString(signature);
+        String b64Tag = Base64.getEncoder().encodeToString(tag);
 
-        // 9. Combine with ':' separator
-        String combined = aesKeyBase64 + ":" + ciphertextBase64 + ":" + signatureBase64 + ":" + tagBase64;
+        // 8. Combine as "key:ciphertext:signature:tag"
+        String combined = b64Key + ":" + b64Cipher + ":" + b64Sig + ":" + b64Tag;
 
-        // 10. Base64 encode the final combined string
+        // 9. Base64 wrap the entire string
         return Base64.getEncoder().encodeToString(combined.getBytes(StandardCharsets.UTF_8));
     }
 

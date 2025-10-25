@@ -30,5 +30,7 @@ public interface ONDCTransactionRepository extends JpaRepository<ONDCTransaction
 
     }
 
+    List<ONDCTransaction> findByOndcRegistration_Agency_AgencyId(Long agencyId);
+
 //    List<ONDCTransaction> findByAgencyAgencyId(Long agencyId);
 }
