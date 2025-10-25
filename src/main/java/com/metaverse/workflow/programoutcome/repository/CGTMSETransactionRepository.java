@@ -24,6 +24,4 @@ public interface CGTMSETransactionRepository extends JpaRepository<CGTMSETransac
            return countByAgencyAgencyIdAndAmountReleaseDateBetween(agencyId, dQ1Start, dQ1End);
        }
    }
-
-    List<CGTMSETransaction> findByOndcRegistration_Agency_AgencyId(Long agencyId);
 }

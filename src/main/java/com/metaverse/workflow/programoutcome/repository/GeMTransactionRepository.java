@@ -7,7 +7,7 @@ import java.util.Date;
 import java.util.List;
 
 public interface GeMTransactionRepository extends JpaRepository<GeMTransaction,Long> {
-    List<GeMTransaction> findByOndcRegistration_Agency_AgencyId(Long agencyId);
+    List<GeMTransaction> findByGemRegistration_Agency_AgencyId(Long agencyId);
 //    List<GeMTransaction> findByAgencyAgencyId(Long agencyId);
 
 //   default long countGeMTransaction(Long agencyId, Date start, Date end){

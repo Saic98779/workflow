@@ -1366,7 +1366,7 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                         break;
 
                     case "TReDSTransaction":
-                        List<TReDSTransaction>  tReDSTransactions = tredsTransactionRepository.findByOndcRegistration_Agency_AgencyId(agency.getAgencyId());
+                        List<TReDSTransaction>  tReDSTransactions = tredsTransactionRepository.findByTredsRegistration_Agency_AgencyId(agency.getAgencyId());
 
                         Map<Boolean, Long> tReDSTransactionsCount = tReDSTransactions.stream()
                                 .collect(Collectors.groupingBy(
@@ -1471,7 +1471,7 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                         participantAchievement = geMCount.getOrDefault(false, 0L);
                         break;
                     case "GeMTransaction":
-                        List<GeMTransaction> geMTransactions = geMTransactionRepository.findByOndcRegistration_Agency_AgencyId(agency.getAgencyId());
+                        List<GeMTransaction> geMTransactions = geMTransactionRepository.findByGemRegistration_Agency_AgencyId(agency.getAgencyId());
                         Map<Boolean, Long> geMTransactionsCount = geMTransactions.stream()
                                 .collect(Collectors.groupingBy(
                                         t -> {

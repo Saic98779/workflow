@@ -29,5 +29,5 @@ public interface TReDSTransactionRepository extends JpaRepository<TReDSTransacti
 
     }
 
-    List<TReDSTransaction> findByOndcRegistration_Agency_AgencyId(Long agencyId);
+    List<TReDSTransaction> findByTredsRegistration_Agency_AgencyId(Long agencyId);
 }
