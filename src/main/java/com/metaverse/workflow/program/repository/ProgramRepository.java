@@ -263,4 +263,6 @@ public interface ProgramRepository extends JpaRepository<Program, Long> {
                                         Pageable pageable);
 
 
+
+    List<Program> findByAgency_AgencyIdAndActivityId(Long agencyId, Long activityId);
 }
