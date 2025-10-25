@@ -1332,7 +1332,7 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                 switch (outcome.getOutcomeTableName()) {
                     case "ONDCRegistration":
                         List<ONDCRegistration> ondc = ondcRegistrationRepository.findByAgencyAgencyId(agency.getAgencyId());
-                        Map<Boolean, Long> ondcCount = ondc.stream().collect(Collectors.groupingBy(ONDCRegistration::getIsInfluenced, Collectors.counting()));
+                        Map<Boolean, Long> ondcCount = ondc.stream().filter(b -> b.getIsInfluenced() != null).collect(Collectors.groupingBy(ONDCRegistration::getIsInfluenced, Collectors.counting()));
                         influencerAchievement = ondcCount.getOrDefault(true, 0L);
                         participantAchievement = ondcCount.getOrDefault(false, 0L);
                         break;
@@ -1353,14 +1353,14 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
 
                     case "UdyamRegistration":
                         List<UdyamRegistration> udyam = udyamRegistrationRepository.findByAgencyAgencyId(agency.getAgencyId());
-                        Map<Boolean, Long> udyamCount = udyam.stream().collect(Collectors.groupingBy(UdyamRegistration::getIsInfluenced, Collectors.counting()));
+                        Map<Boolean, Long> udyamCount = udyam.stream().filter(b -> b.getIsInfluenced() != null).collect(Collectors.groupingBy(UdyamRegistration::getIsInfluenced, Collectors.counting()));
                         influencerAchievement = udyamCount.getOrDefault(true, 0L);
                         participantAchievement = udyamCount.getOrDefault(false, 0L);
                         break;
 
                     case "TReDSRegistration":
                         List<TReDSRegistration> treds = tredsRegistrationRepository.findByAgencyAgencyId(agency.getAgencyId());
-                        Map<Boolean, Long> tredsCount = treds.stream().collect(Collectors.groupingBy(TReDSRegistration::getIsInfluenced, Collectors.counting()));
+                        Map<Boolean, Long> tredsCount = treds.stream().filter(b -> b.getIsInfluenced() != null).collect(Collectors.groupingBy(TReDSRegistration::getIsInfluenced, Collectors.counting()));
                         influencerAchievement = tredsCount.getOrDefault(true, 0L);
                         participantAchievement = tredsCount.getOrDefault(false, 0L);
                         break;
@@ -1382,91 +1382,90 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
 
                     case "PMEGP":
                         List<PMEGP> pmegps = pmegpRepository.findByAgencyAgencyId(agency.getAgencyId());
-                        Map<Boolean, Long> pmegpsCount = pmegps.stream().collect(Collectors.groupingBy(PMEGP::getIsInfluenced, Collectors.counting()));
+                        Map<Boolean, Long> pmegpsCount = pmegps.stream().filter(b -> b.getIsInfluenced() != null).collect(Collectors.groupingBy(PMEGP::getIsInfluenced, Collectors.counting()));
                         influencerAchievement = pmegpsCount.getOrDefault(true, 0L);
                         participantAchievement = pmegpsCount.getOrDefault(false, 0L);
                         break;
 
                     case "PMMY":
                         List<PMMY> pmmies = pmmyRepository.findByAgencyAgencyId(agency.getAgencyId());
-                        Map<Boolean, Long> pmmiesCount = pmmies.stream().collect(Collectors.groupingBy(PMMY::getIsInfluenced, Collectors.counting()));
+                        Map<Boolean, Long> pmmiesCount = pmmies.stream().filter(b -> b.getIsInfluenced() != null).collect(Collectors.groupingBy(PMMY::getIsInfluenced, Collectors.counting()));
                         influencerAchievement = pmmiesCount.getOrDefault(true, 0L);
                         participantAchievement = pmmiesCount.getOrDefault(false, 0L) ;
                         break;
 
                     case "PMS":
                         List<PMS> pmsList = pmsRepository.findByAgencyAgencyId(agency.getAgencyId());
-                        Map<Boolean, Long> pmsCount = pmsList.stream().collect(Collectors.groupingBy(PMS::getIsInfluenced, Collectors.counting()));
+                        Map<Boolean, Long> pmsCount = pmsList.stream().filter(b -> b.getIsInfluenced() != null).collect(Collectors.groupingBy(PMS::getIsInfluenced, Collectors.counting()));
                         influencerAchievement = pmsCount.getOrDefault(true, 0L);
                         participantAchievement = pmsCount.getOrDefault(false, 0L);
                         break;
 
                     case "ICScheme":
                         List<ICScheme> icSchemes = icSchemeRepository.findByAgencyAgencyId(agency.getAgencyId());
-                        Map<Boolean, Long> icCount = icSchemes.stream().collect(Collectors.groupingBy(ICScheme::getIsInfluenced, Collectors.counting()));
+                        Map<Boolean, Long> icCount = icSchemes.stream().filter(b -> b.getIsInfluenced() != null).collect(Collectors.groupingBy(ICScheme::getIsInfluenced, Collectors.counting()));
                         influencerAchievement = icCount.getOrDefault(true, 0L);
                         participantAchievement = icCount.getOrDefault(false, 0L);
                         break;
 
                     case "NSIC":
                         List<NSIC> nsics = nsicRepository.findByAgencyAgencyId(agency.getAgencyId());
-                        Map<Boolean, Long> nsicCount = nsics.stream().collect(Collectors.groupingBy(NSIC::getIsInfluenced, Collectors.counting()));
+                        Map<Boolean, Long> nsicCount = nsics.stream().filter(b -> b.getIsInfluenced() != null).collect(Collectors.groupingBy(NSIC::getIsInfluenced, Collectors.counting()));
                         influencerAchievement = nsicCount.getOrDefault(true, 0L);
                         participantAchievement = nsicCount.getOrDefault(false, 0L);
                         break;
 
                     case "Patents":
                         List<Patents> patents = patentsRepository.findByAgencyAgencyId(agency.getAgencyId());
-                        Map<Boolean, Long> patentsCount = patents.stream().collect(Collectors.groupingBy(Patents::getIsInfluenced, Collectors.counting()));
+                        Map<Boolean, Long> patentsCount = patents.stream().filter(b -> b.getIsInfluenced() != null).collect(Collectors.groupingBy(Patents::getIsInfluenced, Collectors.counting()));
                         influencerAchievement = patentsCount.getOrDefault(true, 0L);
                         participantAchievement = patentsCount.getOrDefault(false, 0L);
                         break;
 
                     case "GIProduct":
                         List<GIProduct> giProducts = giProductRepository.findByAgencyAgencyId(agency.getAgencyId());
-                        Map<Boolean, Long> giCount = giProducts.stream().collect(Collectors.groupingBy(GIProduct::getIsInfluenced, Collectors.counting()));
+                        Map<Boolean, Long> giCount = giProducts.stream().filter(b -> b.getIsInfluenced() != null).collect(Collectors.groupingBy(GIProduct::getIsInfluenced, Collectors.counting()));
                         influencerAchievement = giCount.getOrDefault(true, 0L);
                         participantAchievement = giCount.getOrDefault(false, 0L);
                         break;
 
                     case "Barcode":
                         List<Barcode> barcodes = barcodeRepository.findByAgencyAgencyId(agency.getAgencyId());
-                        Map<Boolean, Long> barcodeCount = barcodes.stream().collect(Collectors.groupingBy(Barcode::getIsInfluenced, Collectors.counting()));
-                        influencerAchievement = barcodeCount.getOrDefault(true, 0L);
+                        Map<Boolean, Long> barcodeCount = barcodes.stream().filter(b -> b.getIsInfluenced() != null).filter(b -> b.getIsInfluenced() != null).collect(Collectors.groupingBy(Barcode::getIsInfluenced, Collectors.counting()));                        influencerAchievement = barcodeCount.getOrDefault(true, 0L);
                         participantAchievement = barcodeCount.getOrDefault(false, 0L);
                         break;
 
                     case "CGTMSETransaction":
                         List<CGTMSETransaction> cgtmseTransactions = cgtmseTransactionRepository.findByAgencyAgencyId(agency.getAgencyId());
-                        Map<Boolean, Long> cgtmseTransactionsCount = cgtmseTransactions.stream().collect(Collectors.groupingBy(CGTMSETransaction::getIsInfluenced, Collectors.counting()));
+                        Map<Boolean, Long> cgtmseTransactionsCount = cgtmseTransactions.stream().filter(b -> b.getIsInfluenced() != null).collect(Collectors.groupingBy(CGTMSETransaction::getIsInfluenced, Collectors.counting()));
                         influencerAchievement = cgtmseTransactionsCount.getOrDefault(true, 0L);
                         participantAchievement = cgtmseTransactionsCount.getOrDefault(false, 0L);
                         break;
 
                     case "TreadMark":
                         List<TreadMark> treadMarks = treadMarkRepository.findByAgencyAgencyId(agency.getAgencyId());
-                        Map<Boolean, Long> treadCount = treadMarks.stream().collect(Collectors.groupingBy(TreadMark::getIsInfluenced, Collectors.counting()));
+                        Map<Boolean, Long> treadCount = treadMarks.stream().filter(b -> b.getIsInfluenced() != null).collect(Collectors.groupingBy(TreadMark::getIsInfluenced, Collectors.counting()));
                         influencerAchievement = treadCount.getOrDefault(true, 0L);
                         participantAchievement = treadCount.getOrDefault(false, 0L);
                         break;
 
                     case "Lean":
                         List<Lean> leans = leanRepository.findByAgencyAgencyId(agency.getAgencyId());
-                        Map<Boolean, Long> leanCount = leans.stream().collect(Collectors.groupingBy(Lean::getIsInfluenced, Collectors.counting()));
+                        Map<Boolean, Long> leanCount = leans.stream().filter(b -> b.getIsInfluenced() != null).collect(Collectors.groupingBy(Lean::getIsInfluenced, Collectors.counting()));
                         influencerAchievement = leanCount.getOrDefault(true, 0L);
                         participantAchievement = leanCount.getOrDefault(false, 0L);
                         break;
 
                     case "PMViswakarma":
                         List<PMViswakarma> pmViswakarmas = pmViswakarmaReposiroty.findByAgencyAgencyId(agency.getAgencyId());
-                        Map<Boolean, Long> pmVisCount = pmViswakarmas.stream().collect(Collectors.groupingBy(PMViswakarma::getIsInfluenced, Collectors.counting()));
+                        Map<Boolean, Long> pmVisCount = pmViswakarmas.stream().filter(b -> b.getIsInfluenced() != null).collect(Collectors.groupingBy(PMViswakarma::getIsInfluenced, Collectors.counting()));
                         influencerAchievement = pmVisCount.getOrDefault(true, 0L);
                         participantAchievement = pmVisCount.getOrDefault(false, 0L);
                         break;
 
                     case "GeMRegistration":
                         List<GeMRegistration> geMRegs = geMRegistrationRepository.findByAgencyAgencyId(agency.getAgencyId());
-                        Map<Boolean, Long> geMCount = geMRegs.stream().collect(Collectors.groupingBy(GeMRegistration::getIsInfluenced, Collectors.counting()));
+                        Map<Boolean, Long> geMCount = geMRegs.stream().filter(b -> b.getIsInfluenced() != null).collect(Collectors.groupingBy(GeMRegistration::getIsInfluenced, Collectors.counting()));
                         influencerAchievement = geMCount.getOrDefault(true, 0L);
                         participantAchievement = geMCount.getOrDefault(false, 0L);
                         break;
@@ -1486,43 +1485,73 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
 
                     case "OEM":
                         List<OEM> oems = oemRepository.findByAgencyAgencyId(agency.getAgencyId());
-                        Map<Boolean, Long> oemCount = oems.stream().collect(Collectors.groupingBy(OEM::getIsInfluenced, Collectors.counting()));
+                        Map<Boolean, Long> oemCount = oems.stream().filter(b -> b.getIsInfluenced() != null).collect(Collectors.groupingBy(OEM::getIsInfluenced, Collectors.counting()));
                         influencerAchievement = oemCount.getOrDefault(true, 0L);
                         participantAchievement = oemCount.getOrDefault(false, 0L);
                         break;
 
                     case "PMFMEScheme":
                         List<PMFMEScheme> pmfmes = pmfmeSchemeRepository.findByAgencyAgencyId(agency.getAgencyId());
-                        Map<Boolean, Long> pmfmeCount = pmfmes.stream().collect(Collectors.groupingBy(PMFMEScheme::getIsInfluenced, Collectors.counting()));
+                        Map<Boolean, Long> pmfmeCount = pmfmes.stream().filter(b -> b.getIsInfluenced() != null).collect(Collectors.groupingBy(PMFMEScheme::getIsInfluenced, Collectors.counting()));
                         influencerAchievement = pmfmeCount.getOrDefault(true, 0L);
                         participantAchievement = pmfmeCount.getOrDefault(false, 0L);
                         break;
 
                     case "ConsortiaTender":
                         List<ConsortiaTender> consortias = consortiaTenderRepository.findByAgencyAgencyId(agency.getAgencyId());
-                        Map<Boolean, Long> consortiaCount = consortias.stream().collect(Collectors.groupingBy(ConsortiaTender::getIsInfluenced, Collectors.counting()));
+                        Map<Boolean, Long> consortiaCount = consortias.stream().filter(b -> b.getIsInfluenced() != null).collect(Collectors.groupingBy(ConsortiaTender::getIsInfluenced, Collectors.counting()));
                         influencerAchievement = consortiaCount.getOrDefault(true, 0L);
                         participantAchievement = consortiaCount.getOrDefault(false, 0L);
                         break;
 
                     case "DesignRight":
                         List<DesignRights> designRights = designRightsRepository.findByAgencyAgencyId(agency.getAgencyId());
-                        Map<Boolean, Long> designCount = designRights.stream().collect(Collectors.groupingBy(DesignRights::getIsInfluenced, Collectors.counting()));
+                        Map<Boolean, Long> designCount = designRights.stream().filter(b -> b.getIsInfluenced() != null).collect(Collectors.groupingBy(DesignRights::getIsInfluenced, Collectors.counting()));
                         influencerAchievement = designCount.getOrDefault(true, 0L);
                         participantAchievement = designCount.getOrDefault(false, 0L);
                         break;
 
                     case "CopyRight":
                         List<CopyRights> copyRights = copyRightsRepository.findByAgencyAgencyId(agency.getAgencyId());
-                        Map<Boolean, Long> copyCount = copyRights.stream().collect(Collectors.groupingBy(CopyRights::getIsInfluenced, Collectors.counting()));
+                        Map<Boolean, Long> copyCount = copyRights.stream().filter(b -> b.getIsInfluenced() != null).collect(Collectors.groupingBy(CopyRights::getIsInfluenced, Collectors.counting()));
                         influencerAchievement = copyCount.getOrDefault(true, 0L);
                         participantAchievement = copyCount.getOrDefault(false, 0L);
                         break;
                     case "ZEDCertification":
-                        List<ZEDCertification> ZEDRights = zedCertificationRepository.findByAgencyAgencyId(agency.getAgencyId());
-                        Map<Boolean, Long> ZEDCount = ZEDRights.stream().collect(Collectors.groupingBy(ZEDCertification::getIsInfluenced, Collectors.counting()));
-                        influencerAchievement = ZEDCount.getOrDefault(true, 0L);
-                        participantAchievement = ZEDCount.getOrDefault(false, 0L);
+                        switch (outcome.getOutcomeTableDisplayName()) {
+                            case "ZED Certification Bronze" -> {
+                                List<ZEDCertification> bronzeCerts =
+                                        zedCertificationRepository.findByAgencyAgencyIdAndZedCertificationType(agency.getAgencyId(), "Bronze");
+                                Map<Boolean, Long> bronzeCount = bronzeCerts.stream().filter(c -> c.getIsInfluenced() != null)
+                                        .collect(Collectors.groupingBy(ZEDCertification::getIsInfluenced, Collectors.counting()));
+                                influencerAchievement = bronzeCount.getOrDefault(true, 0L);
+                                participantAchievement = bronzeCount.getOrDefault(false, 0L);
+                            }
+
+                            case "ZED Certification Silver" -> {
+                                List<ZEDCertification> silverCerts =
+                                        zedCertificationRepository.findByAgencyAgencyIdAndZedCertificationType(agency.getAgencyId(), "Silver");
+                                Map<Boolean, Long> silverCount = silverCerts.stream().filter(c -> c.getIsInfluenced() != null)
+                                        .collect(Collectors.groupingBy(ZEDCertification::getIsInfluenced, Collectors.counting()));
+                                influencerAchievement = silverCount.getOrDefault(true, 0L);
+                                participantAchievement = silverCount.getOrDefault(false, 0L);
+                            }
+
+                            case "ZED Certification Gold" -> {
+                                List<ZEDCertification> goldCerts =
+                                        zedCertificationRepository.findByAgencyAgencyIdAndZedCertificationType(agency.getAgencyId(), "Gold");
+                                Map<Boolean, Long> goldCount = goldCerts.stream().filter(c -> c.getIsInfluenced() != null)
+                                        .collect(Collectors.groupingBy(ZEDCertification::getIsInfluenced, Collectors.counting()));
+                                influencerAchievement = goldCount.getOrDefault(true, 0L);
+                                participantAchievement = goldCount.getOrDefault(false, 0L);
+                            }
+
+                            default -> {
+                                influencerAchievement = 0L;
+                                participantAchievement = 0L;
+                            }
+                        }
+
                         break;
 
                     default:
