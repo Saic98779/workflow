@@ -70,37 +70,38 @@ public class SecureService {
     }
 
     public String encryptAndSign(Employee payload) throws Exception {
-        // 1️. AES key + IV
+        // 1. Generate AES key and derive IV from first 12 bytes
         byte[] aesKey = new byte[AES_KEY_SIZE];
         new SecureRandom().nextBytes(aesKey);
         byte[] iv = new byte[IV_SIZE];
-        System.arraycopy(aesKey, 0, iv, 0, IV_SIZE);
+        System.arraycopy(aesKey, 0, iv, 0, IV_SIZE); // Same as PHP substr($key, 0, 12)
 
         ObjectMapper mapper = new ObjectMapper();
         String payloadJson = mapper.writeValueAsString(payload);
 
-        // 2️. AES-GCM Encryption
+        // 2. AES-GCM Encryption
         Cipher aesCipher = Cipher.getInstance("AES/GCM/NoPadding");
-        SecretKey secretKey = new SecretKeySpec(aesKey, "AES");
+        SecretKeySpec secretKey = new SecretKeySpec(aesKey, "AES");
         GCMParameterSpec gcmSpec = new GCMParameterSpec(GCM_TAG_LENGTH, iv);
         aesCipher.init(Cipher.ENCRYPT_MODE, secretKey, gcmSpec);
 
         byte[] encryptedPayloadBytes = aesCipher.doFinal(payloadJson.getBytes(StandardCharsets.UTF_8));
         String encryptedPayloadBase64 = Base64.getEncoder().encodeToString(encryptedPayloadBytes);
 
-        // 3️. Sign encrypted payload
+        // 3. Sign encrypted payload
         Signature signer = Signature.getInstance("SHA256withRSA");
         signer.initSign(appBPrivateKey);
         signer.update(encryptedPayloadBase64.getBytes(StandardCharsets.UTF_8));
-        String signatureBase64 = Base64.getEncoder().encodeToString(signer.sign());
+        byte[] signature = signer.sign();
+        String signatureBase64 = Base64.getEncoder().encodeToString(signature);
 
-        // 4️. Encrypt AES key with App B public key
+        // 4. Encrypt AES key with App A public key using OAEP
         Cipher rsaCipher = Cipher.getInstance("RSA/ECB/OAEPPadding");
         rsaCipher.init(Cipher.ENCRYPT_MODE, appAPublicKey);
         byte[] encryptedAesKeyBytes = rsaCipher.doFinal(aesKey);
         String encryptedAesKeyBase64 = Base64.getEncoder().encodeToString(encryptedAesKeyBytes);
 
-        // 5️. Combine all
+        // 5. Combine components
         String combined = encryptedAesKeyBase64 + ":" + encryptedPayloadBase64 + ":" + signatureBase64;
         return Base64.getEncoder().encodeToString(combined.getBytes(StandardCharsets.UTF_8));
     }
