@@ -37,4 +37,5 @@ public interface  ProgramService {
     List<ProgramFilePathInfo> getProgramFileByType(FileType fileType);
     WorkflowResponse getProgramStatusSummery(Long agencyId, Date fromDate,Date toDate);
     WorkflowResponse getProgramSessionsByProgramId(Long programId)throws DataException;
+    List<String> getProgramByAgencyAndActivity(Long agencyId,Long activityId) throws DataException;
 }

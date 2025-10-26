@@ -682,6 +682,8 @@ public class ProgramServiceAdapter implements ProgramService {
 
     }
 
+
+
     public void updateOverduePrograms() {
         Date twoDaysAgo = java.sql.Date.valueOf(LocalDate.now().plusDays(2));
         List<Program> overdueProgramUpdate = new ArrayList<>();
@@ -703,7 +705,16 @@ public class ProgramServiceAdapter implements ProgramService {
         programRepository.saveAll(overdueProgramUpdate);
     }
 
+    @Override
+    public List<String> getProgramByAgencyAndActivity(Long agencyId, Long activityId) throws DataException {
+       List<Program> programs= programRepository.findByAgency_AgencyIdAndActivityId(agencyId,activityId);
+       if(programs.isEmpty())
+       {
+           throw new DataException("Program data not found", "PROGRAM-DATA-NOT-FOUND", 400);
+       }
+        return programs.stream().map(Program::getProgramTitle).toList();
 
+    }
 }
 
 

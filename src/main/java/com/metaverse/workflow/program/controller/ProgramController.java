@@ -46,9 +46,19 @@ public class ProgramController {
 //    @Autowired
 //    OverdueProgramUpdater overdueProgramUpdater;
 
+    @GetMapping("/programs/by-agency-and-activity")
+    public ResponseEntity<?> getProgramByAgencyAndActivity(@RequestParam("agencyId") Long agencyId,
+                                                           @RequestParam("activityId")Long activityId) {
+        try {
+            return ResponseEntity.ok(programService.getProgramByAgencyAndActivity(agencyId,activityId));
+        } catch (DataException exception) {
+            return RestControllerBase.error(exception);
+        }
+
+    }
 
     @GetMapping("/program/sessions/{programId}")
-    public ResponseEntity<?> getProgramSessionByProgramId(@PathVariable("programId") Long programId) {
+    public ResponseEntity<?> getProgramSessionByProgramId(@RequestParam("programId") Long programId) {
         try {
             return ResponseEntity.ok(programService.getProgramSessionsByProgramId(programId));
         } catch (DataException exception) {
