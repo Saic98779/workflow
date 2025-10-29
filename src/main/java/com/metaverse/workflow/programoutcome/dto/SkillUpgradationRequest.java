@@ -5,13 +5,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
 public class SkillUpgradationRequest {
 
-    private String typeOfTrainingReceived;
+    private List<String> typeOfTrainingReceived;
     public String trainingCompletionDate;
     public String businessPlanSubmissionDate;
     public String amountSanctionedDate;

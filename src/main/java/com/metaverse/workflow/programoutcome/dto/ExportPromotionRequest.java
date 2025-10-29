@@ -15,7 +15,7 @@ public class ExportPromotionRequest {
     public String sectorName;
     public String productName;
     public String exportImportLicenceNo;
-    public Boolean mappingWithInternationalBuyer;
+    public Boolean isMappingWithInternationalBuyer;
     public Double monthlyTurnoverInLakhs;
     public String isExport; // Yes/No
     public String exportDate;

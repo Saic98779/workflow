@@ -13,7 +13,7 @@ public class ImportSubsititutionRequest {
 
     public String sectorName;
     public String productName;
-    public Boolean prototypeSelected;
+    public Boolean isPrototypeSelected;
     public String businessPlanSubmissionDate;
     public String amountSanctionedDate;
     public String amountReleasedDate;
@@ -21,7 +21,7 @@ public class ImportSubsititutionRequest {
     public String bankProvidedLoan;
     public String groundingDate;
     public Double monthlyTurnoverInLakhs;
-    public Boolean marketOfProduct;
+    public Boolean isMarketOfProduct;
     public String marketDate;
     public Double marketValueInLakhs;
     public Double marketVolumeInMts;

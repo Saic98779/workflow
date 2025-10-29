@@ -10,6 +10,8 @@ import net.minidev.json.annotate.JsonIgnore;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import java.util.Date;
+import java.util.List;
+
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
@@ -22,8 +24,13 @@ public class SkillUpgradation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ElementCollection
+    @CollectionTable(
+            name = "skill_upgradation_training_types",
+            joinColumns = @JoinColumn(name = "skill_upgradation_id")
+    )
     @Column(name = "type_of_training_received")
-    private String typeOfTrainingReceived;
+    private List<String> typeOfTrainingReceived;
 
     @Column(name = "training_completion_date")
     private Date trainingCompletionDate;

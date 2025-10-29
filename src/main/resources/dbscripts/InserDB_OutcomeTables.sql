@@ -31,5 +31,11 @@ insert into program_outcome_tables (outcome_table_id, outcome_table_display_name
 (28,'Consortia & Tender Marketing','ConsortiaTender'),
 (29,'Design Right','DesignRight')
 (30,'Copy Right','CopyRight'),
-(31,'Greening Of MSME','GreeningOfMSME');
+(31,'Greening Of MSME','GreeningOfMSME'),
+(32	,"E-Commerce Registration",	"eCommerceRegistration"),
+(33	,"E-Commerce Transaction",	"eCommerceTransaction"),
+(34	,"Loan" ,"Loan")
+(35,"Export Promotion","ExportPromotion"),
+(36,"ESDP Trainin Fro SHD/startup","SkillUpgradation")
+(37,"Import Subsititution","ImportSubsititution");
 
