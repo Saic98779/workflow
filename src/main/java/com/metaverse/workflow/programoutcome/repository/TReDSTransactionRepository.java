@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.Date;
+import java.util.List;
 
 public interface TReDSTransactionRepository extends JpaRepository<TReDSTransaction,Long> {
     @Query("SELECT COUNT(t) FROM TReDSTransaction t WHERE t.tredsRegistration.agency.agencyId = :agencyId AND t.tredsTransactionDate BETWEEN :startDate AND :endDate")
@@ -27,4 +28,6 @@ public interface TReDSTransactionRepository extends JpaRepository<TReDSTransacti
         }
 
     }
+
+    List<TReDSTransaction> findByTredsRegistration_Agency_AgencyId(Long agencyId);
 }

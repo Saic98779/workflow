@@ -3,11 +3,7 @@ package com.metaverse.workflow.programoutcome.service;
 import com.metaverse.workflow.agency.repository.AgencyRepository;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.exceptions.DataException;
-import com.metaverse.workflow.model.Agency;
-import com.metaverse.workflow.model.InfluencedParticipant;
-import com.metaverse.workflow.model.Organization;
-import com.metaverse.workflow.model.Participant;
-import com.metaverse.workflow.model.PhysicalTarget;
+import com.metaverse.workflow.model.*;
 import com.metaverse.workflow.model.outcomes.*;
 import com.metaverse.workflow.organization.repository.OrganizationRepository;
 import com.metaverse.workflow.participant.repository.InfluencedParticipantRepository;
@@ -22,10 +18,7 @@ import net.minidev.json.parser.ParseException;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -1515,420 +1508,324 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
         return displayname;
     }
 
-    @Override
-    public WorkflowResponse getApiForOutcomes(Long agencyId) {
+    public WorkflowResponse getApiForOutcomes(Long agencyId, Long outcomeId) {
         List<Long> integers = List.of(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L, 12L);
-        List<List<OutComesTargetsAndAchiDto>> lists = new ArrayList<>();
+        List<Object> lists = new ArrayList<>();
+        Boolean b = false;
+
         if (agencyId == -1) {
             for (Long i : integers) {
-                List<OutComesTargetsAndAchiDto> apiForOutcomes1 = getApiForOutcomes1(i);
-                if (!apiForOutcomes1.isEmpty())
+                Object apiForOutcomes1 = getApiForOutcomes1(i, outcomeId);
+                if (outcomeId == null || outcomeId == -1) {
+                    List<?> list = (List<?>) apiForOutcomes1;
+                    if (!list.isEmpty())
+                        lists.add(list);
+                } else {
                     lists.add(apiForOutcomes1);
-            }
-        } else {
-            lists.add(getApiForOutcomes1(agencyId));
-        }
-        return WorkflowResponse.builder().data(lists).status(200).message("Fetched Successfully").build();
-
-    }
-
-    public List<OutComesTargetsAndAchiDto> getApiForOutcomes1(Long agencyId) {
-
-
-        List<OutComesTargetsAndAchiDto> outComesTargetsAndAchiDtos = new ArrayList<>();
-        List<PhysicalTarget> physicalTargets = new ArrayList<>();
-        List.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
-        // tragets
-        if (agencyId != -1) {
-            physicalTargets = physicalRepository.findByAgencyAgencyId(agencyId);
-
-            for (int i = 0; i < physicalTargets.size(); i++) {
-
-                switch (physicalTargets.get(i).getProgramOutcomeTable().getOutcomeTableName()) {
-                    case "ONDCRegistration": {
-
-                        PhysicalTarget physicalTarget = physicalTargets.get(i);
-
-                        double targetTotal = physicalTarget.getQ1() + physicalTarget.getQ2() + physicalTarget.getQ3() + physicalTarget.getQ4();
-
-                        List<ONDCRegistration> ondcRegistrations = ondcRegistrationRepository.findByAgencyAgencyId(agencyId);
-
-                        Map<Boolean, Long> influenceCount = ondcRegistrations.stream()
-                                .collect(Collectors.groupingBy(ONDCRegistration::getIsInfluenced, Collectors.counting()));
-                        long trueCount = influenceCount.getOrDefault(true, 0L); // non-participants
-                        long falseCount = influenceCount.getOrDefault(false, 0L) + trueCount; // non-participants + participants
-
-                        outComesTargetsAndAchiDtos.add(OutComesTargetsAndAchiDto.builder().agencyName(physicalTarget.getAgency().getAgencyName())
-                                .outComeName("ONDC Registration")
-                                .outComeTarget((long) targetTotal)
-                                .outComeParticipantAchi(falseCount)
-                                .outComeInfluencerAchi(trueCount).build());
-
-                    }
-                    break;
-
-                    case "UdyamRegistration": {
-
-                        PhysicalTarget physicalTarget = physicalTargets.get(i);
-
-                        double targetTotal = physicalTarget.getQ1() + physicalTarget.getQ2() + physicalTarget.getQ3() + physicalTarget.getQ4();
-
-                        List<UdyamRegistration> udyamRegistrations = udyamRegistrationRepository.findByAgencyAgencyId(agencyId);
-                        Map<Boolean, Long> influenceCount = udyamRegistrations.stream().collect(Collectors.groupingBy(UdyamRegistration::getIsInfluenced, Collectors.counting()));
-
-                        long trueCount = influenceCount.getOrDefault(true, 0L); // non-participants
-                        long falseCount = influenceCount.getOrDefault(false, 0L) + trueCount; // non-participants + participants
-
-                        outComesTargetsAndAchiDtos.add(OutComesTargetsAndAchiDto.builder().agencyName(physicalTarget.getAgency().getAgencyName())
-                                .outComeName("Udyam Registration")
-                                .outComeTarget((long) targetTotal)
-                                .outComeParticipantAchi(falseCount)
-                                .outComeInfluencerAchi(trueCount).build());
-                        break;
-                    }
-                    case "TReDSRegistration": {
-                        PhysicalTarget physicalTarget = physicalTargets.get(i);
-
-                        double targetTotal = physicalTarget.getQ1() + physicalTarget.getQ2() + physicalTarget.getQ3() + physicalTarget.getQ4();
-
-                        List<TReDSRegistration> tReDSRegistrations = tredsRegistrationRepository.findByAgencyAgencyId(agencyId);
-                        Map<Boolean, Long> influenceCount = tReDSRegistrations.stream().collect(Collectors.groupingBy(TReDSRegistration::getIsInfluenced, Collectors.counting()));
-
-                        long trueCount = influenceCount.getOrDefault(true, 0L); // non-participants
-                        long falseCount = influenceCount.getOrDefault(false, 0L) + trueCount; // non-participants + participants
-
-                        outComesTargetsAndAchiDtos.add(OutComesTargetsAndAchiDto.builder().agencyName(physicalTarget.getAgency().getAgencyName())
-                                .outComeName("TReDS Registration")
-                                .outComeTarget((long) targetTotal)
-                                .outComeParticipantAchi(falseCount)
-                                .outComeInfluencerAchi(trueCount).build());
-
-                        break;
-                    }
-                    case "PMEGP": {
-                        PhysicalTarget physicalTarget = physicalTargets.get(i);
-
-                        double targetTotal = physicalTarget.getQ1() + physicalTarget.getQ2() + physicalTarget.getQ3() + physicalTarget.getQ4();
-
-                        List<PMEGP> pmegps = pmegpRepository.findByAgencyAgencyId(agencyId);
-                        Map<Boolean, Long> influenceCount = pmegps.stream().collect(Collectors.groupingBy(PMEGP::getIsInfluenced, Collectors.counting()));
-
-                        long trueCount = influenceCount.getOrDefault(true, 0L); // non-participants
-                        long falseCount = influenceCount.getOrDefault(false, 0L) + trueCount; // non-participants + participants
-                        outComesTargetsAndAchiDtos.add(OutComesTargetsAndAchiDto.builder().agencyName(physicalTarget.getAgency().getAgencyName())
-                                .outComeName("PMEGP")
-                                .outComeTarget((long) targetTotal)
-                                .outComeParticipantAchi(falseCount)
-                                .outComeInfluencerAchi(trueCount).build());
-                        break;
-                    }
-                    case "PMMY": {
-
-                        PhysicalTarget physicalTarget = physicalTargets.get(i);
-
-                        double targetTotal = physicalTarget.getQ1() + physicalTarget.getQ2() + physicalTarget.getQ3() + physicalTarget.getQ4();
-
-                        List<PMMY> pmmies = pmmyRepository.findByAgencyAgencyId(agencyId);
-                        Map<Boolean, Long> influenceCount = pmmies.stream().collect(Collectors.groupingBy(PMMY::getIsInfluenced, Collectors.counting()));
-
-                        long trueCount = influenceCount.getOrDefault(true, 0L); // non-participants
-                        long falseCount = influenceCount.getOrDefault(false, 0L) + trueCount; // non-participants + participants
-                        outComesTargetsAndAchiDtos.add(OutComesTargetsAndAchiDto.builder().agencyName(physicalTarget.getAgency().getAgencyName())
-                                .outComeName("PMMY")
-                                .outComeTarget((long) targetTotal)
-                                .outComeParticipantAchi(falseCount)
-                                .outComeInfluencerAchi(trueCount).build());
-
-                        break;
-                    }
-                    case "PMS": {
-                        PhysicalTarget physicalTarget = physicalTargets.get(i);
-
-                        double targetTotal = physicalTarget.getQ1() + physicalTarget.getQ2() + physicalTarget.getQ3() + physicalTarget.getQ4();
-
-                        List<PMS> pms = pmsRepository.findByAgencyAgencyId(agencyId);
-                        Map<Boolean, Long> influenceCount = pms.stream().collect(Collectors.groupingBy(PMS::getIsInfluenced, Collectors.counting()));
-
-                        long trueCount = influenceCount.getOrDefault(true, 0L); // non-participants
-                        long falseCount = influenceCount.getOrDefault(false, 0L) + trueCount; // non-participants + participants
-                        outComesTargetsAndAchiDtos.add(OutComesTargetsAndAchiDto.builder().agencyName(physicalTarget.getAgency().getAgencyName())
-                                .outComeName("PMS")
-                                .outComeTarget((long) targetTotal)
-                                .outComeParticipantAchi(falseCount)
-                                .outComeInfluencerAchi(trueCount).build());
-
-                        break;
-                    }
-                    case "ICScheme": {
-                        PhysicalTarget physicalTarget = physicalTargets.get(i);
-
-                        double targetTotal = physicalTarget.getQ1() + physicalTarget.getQ2() + physicalTarget.getQ3() + physicalTarget.getQ4();
-
-                        List<ICScheme> icSchemes = icSchemeRepository.findByAgencyAgencyId(agencyId);
-                        Map<Boolean, Long> influenceCount = icSchemes.stream().collect(Collectors.groupingBy(ICScheme::getIsInfluenced, Collectors.counting()));
-
-                        long trueCount = influenceCount.getOrDefault(true, 0L); // non-participants
-                        long falseCount = influenceCount.getOrDefault(false, 0L) + trueCount; // non-participants + participants
-                        outComesTargetsAndAchiDtos.add(OutComesTargetsAndAchiDto.builder().agencyName(physicalTarget.getAgency().getAgencyName())
-                                .outComeName("IC Scheme")
-                                .outComeTarget((long) targetTotal)
-                                .outComeParticipantAchi(falseCount)
-                                .outComeInfluencerAchi(trueCount).build());
-
-                        break;
-                    }
-                    case "NSIC": {
-                        PhysicalTarget physicalTarget = physicalTargets.get(i);
-
-                        double targetTotal = physicalTarget.getQ1() + physicalTarget.getQ2() + physicalTarget.getQ3() + physicalTarget.getQ4();
-
-                        List<NSIC> nsics = nsicRepository.findByAgencyAgencyId(agencyId);
-                        Map<Boolean, Long> influenceCount = nsics.stream().collect(Collectors.groupingBy(NSIC::getIsInfluenced, Collectors.counting()));
-
-                        long trueCount = influenceCount.getOrDefault(true, 0L); // non-participants
-                        long falseCount = influenceCount.getOrDefault(false, 0L) + trueCount; // non-participants + participants
-
-                        outComesTargetsAndAchiDtos.add(OutComesTargetsAndAchiDto.builder().agencyName(physicalTarget.getAgency().getAgencyName())
-                                .outComeName("NSIC")
-                                .outComeTarget((long) targetTotal)
-                                .outComeParticipantAchi(falseCount)
-                                .outComeInfluencerAchi(trueCount).build());
-
-                        break;
-
-                    }
-                    case "Patents": {
-                        PhysicalTarget physicalTarget = physicalTargets.get(i);
-
-                        double targetTotal = physicalTarget.getQ1() + physicalTarget.getQ2() + physicalTarget.getQ3() + physicalTarget.getQ4();
-
-                        List<Patents> patents = patentsRepository.findByAgencyAgencyId(agencyId);
-                        Map<Boolean, Long> influenceCount = patents.stream().collect(Collectors.groupingBy(Patents::getIsInfluenced, Collectors.counting()));
-
-                        long trueCount = influenceCount.getOrDefault(true, 0L); // non-participants
-                        long falseCount = influenceCount.getOrDefault(false, 0L) + trueCount; // non-participants + participants
-                        outComesTargetsAndAchiDtos.add(OutComesTargetsAndAchiDto.builder().agencyName(physicalTarget.getAgency().getAgencyName())
-                                .outComeName("Patents")
-                                .outComeTarget((long) targetTotal)
-                                .outComeParticipantAchi(falseCount)
-                                .outComeInfluencerAchi(trueCount).build());
-                        break;
-                    }
-                    case "GIProduct": {
-
-                        PhysicalTarget physicalTarget = physicalTargets.get(i);
-
-                        double targetTotal = physicalTarget.getQ1() + physicalTarget.getQ2() + physicalTarget.getQ3() + physicalTarget.getQ4();
-
-                        List<GIProduct> giProducts = giProductRepository.findByAgencyAgencyId(agencyId);
-                        Map<Boolean, Long> influenceCount = giProducts.stream().collect(Collectors.groupingBy(GIProduct::getIsInfluenced, Collectors.counting()));
-
-                        long trueCount = influenceCount.getOrDefault(true, 0L); // non-participants
-                        long falseCount = influenceCount.getOrDefault(false, 0L) + trueCount; // non-participants + participants
-                        outComesTargetsAndAchiDtos.add(OutComesTargetsAndAchiDto.builder().agencyName(physicalTarget.getAgency().getAgencyName())
-                                .outComeName("GIProduct")
-                                .outComeTarget((long) targetTotal)
-                                .outComeParticipantAchi(falseCount)
-                                .outComeInfluencerAchi(trueCount).build());
-
-                        break;
-                    }
-                    case "Barcode": {
-                        PhysicalTarget physicalTarget = physicalTargets.get(i);
-
-                        double targetTotal = physicalTarget.getQ1() + physicalTarget.getQ2() + physicalTarget.getQ3() + physicalTarget.getQ4();
-
-                        List<Barcode> barcodes = barcodeRepository.findByAgencyAgencyId(agencyId);
-                        Map<Boolean, Long> influenceCount = barcodes.stream().collect(Collectors.groupingBy(Barcode::getIsInfluenced, Collectors.counting()));
-
-                        long trueCount = influenceCount.getOrDefault(true, 0L); // non-participants
-                        long falseCount = influenceCount.getOrDefault(false, 0L) + trueCount; // non-participants + participants
-
-                        outComesTargetsAndAchiDtos.add(OutComesTargetsAndAchiDto.builder().agencyName(physicalTarget.getAgency().getAgencyName())
-                                .outComeName("Barcode")
-                                .outComeTarget((long) targetTotal)
-                                .outComeParticipantAchi(falseCount)
-                                .outComeInfluencerAchi(trueCount).build());
-                        break;
-                    }
-                    case "TreadMark": {
-
-                        PhysicalTarget physicalTarget = physicalTargets.get(i);
-
-                        double targetTotal = physicalTarget.getQ1() + physicalTarget.getQ2() + physicalTarget.getQ3() + physicalTarget.getQ4();
-
-                        List<TreadMark> treadMarks = treadMarkRepository.findByAgencyAgencyId(agencyId);
-                        Map<Boolean, Long> influenceCount = treadMarks.stream().collect(Collectors.groupingBy(TreadMark::getIsInfluenced, Collectors.counting()));
-
-                        long trueCount = influenceCount.getOrDefault(true, 0L); // non-participants
-                        long falseCount = influenceCount.getOrDefault(false, 0L) + trueCount; // non-participants + participants
-                        outComesTargetsAndAchiDtos.add(OutComesTargetsAndAchiDto.builder().agencyName(physicalTarget.getAgency().getAgencyName())
-                                .outComeName("TreadMark")
-                                .outComeTarget((long) targetTotal)
-                                .outComeParticipantAchi(falseCount)
-                                .outComeInfluencerAchi(trueCount).build());
-
-                        break;
-                    }
-                    case "Lean": {
-
-                        PhysicalTarget physicalTarget = physicalTargets.get(i);
-
-                        double targetTotal = physicalTarget.getQ1() + physicalTarget.getQ2() + physicalTarget.getQ3() + physicalTarget.getQ4();
-
-                        List<Lean> leans = leanRepository.findByAgencyAgencyId(agencyId);
-                        Map<Boolean, Long> influenceCount = leans.stream().collect(Collectors.groupingBy(Lean::getIsInfluenced, Collectors.counting()));
-
-                        long trueCount = influenceCount.getOrDefault(true, 0L); // non-participants
-                        long falseCount = influenceCount.getOrDefault(false, 0L) + trueCount; // non-participants + participants
-                        outComesTargetsAndAchiDtos.add(OutComesTargetsAndAchiDto.builder().agencyName(physicalTarget.getAgency().getAgencyName())
-                                .outComeName("Lean")
-                                .outComeTarget((long) targetTotal)
-                                .outComeParticipantAchi(falseCount)
-                                .outComeInfluencerAchi(trueCount).build());
-
-                        break;
-
-                    }
-                    case "PMViswakarma": {
-
-                        PhysicalTarget physicalTarget = physicalTargets.get(i);
-
-                        double targetTotal = physicalTarget.getQ1() + physicalTarget.getQ2() + physicalTarget.getQ3() + physicalTarget.getQ4();
-
-                        List<PMViswakarma> pmViswakarmas = pmViswakarmaReposiroty.findByAgencyAgencyId(agencyId);
-                        Map<Boolean, Long> influenceCount = pmViswakarmas.stream().collect(Collectors.groupingBy(PMViswakarma::getIsInfluenced, Collectors.counting()));
-
-                        long trueCount = influenceCount.getOrDefault(true, 0L); // non-participants
-                        long falseCount = influenceCount.getOrDefault(false, 0L) + trueCount; // non-participants + participants
-
-                        outComesTargetsAndAchiDtos.add(OutComesTargetsAndAchiDto.builder().agencyName(physicalTarget.getAgency().getAgencyName())
-                                .outComeName("PM Viswakarma")
-                                .outComeTarget((long) targetTotal)
-                                .outComeParticipantAchi(falseCount)
-                                .outComeInfluencerAchi(trueCount).build());
-                        break;
-
-                    }
-                    case "GeMRegistration": {
-
-                        PhysicalTarget physicalTarget = physicalTargets.get(i);
-
-                        double targetTotal = physicalTarget.getQ1() + physicalTarget.getQ2() + physicalTarget.getQ3() + physicalTarget.getQ4();
-
-                        List<GeMRegistration> geMRegistrations = geMRegistrationRepository.findByAgencyAgencyId(agencyId);
-                        Map<Boolean, Long> influenceCount = geMRegistrations.stream().collect(Collectors.groupingBy(GeMRegistration::getIsInfluenced, Collectors.counting()));
-
-                        long trueCount = influenceCount.getOrDefault(true, 0L); // non-participants
-                        long falseCount = influenceCount.getOrDefault(false, 0L) + trueCount; // non-participants + participants
-                        outComesTargetsAndAchiDtos.add(OutComesTargetsAndAchiDto.builder().agencyName(physicalTarget.getAgency().getAgencyName())
-                                .outComeName("GeM Registration")
-                                .outComeTarget((long) targetTotal)
-                                .outComeParticipantAchi(falseCount)
-                                .outComeInfluencerAchi(trueCount).build());
-
-                        break;
-
-                    }
-                    case "OEM": {
-
-                        PhysicalTarget physicalTarget = physicalTargets.get(i);
-
-                        double targetTotal = physicalTarget.getQ1() + physicalTarget.getQ2() + physicalTarget.getQ3() + physicalTarget.getQ4();
-
-                        List<OEM> oems = oemRepository.findByAgencyAgencyId(agencyId);
-                        Map<Boolean, Long> influenceCount = oems.stream().collect(Collectors.groupingBy(OEM::getIsInfluenced, Collectors.counting()));
-
-                        long trueCount = influenceCount.getOrDefault(true, 0L); // non-participants
-                        long falseCount = influenceCount.getOrDefault(false, 0L) + trueCount; // non-participants + participants
-                        outComesTargetsAndAchiDtos.add(OutComesTargetsAndAchiDto.builder().agencyName(physicalTarget.getAgency().getAgencyName())
-                                .outComeName("OEM")
-                                .outComeTarget((long) targetTotal)
-                                .outComeParticipantAchi(falseCount)
-                                .outComeInfluencerAchi(trueCount).build());
-
-                        break;
-
-                    }
-                    case "PMFMEScheme": {
-
-                        PhysicalTarget physicalTarget = physicalTargets.get(i);
-
-                        double targetTotal = physicalTarget.getQ1() + physicalTarget.getQ2() + physicalTarget.getQ3() + physicalTarget.getQ4();
-
-                        List<PMFMEScheme> pmfmeSchemes = pmfmeSchemeRepository.findByAgencyAgencyId(agencyId);
-                        Map<Boolean, Long> influenceCount = pmfmeSchemes.stream().collect(Collectors.groupingBy(PMFMEScheme::getIsInfluenced, Collectors.counting()));
-
-                        long trueCount = influenceCount.getOrDefault(true, 0L); // non-participants
-                        long falseCount = influenceCount.getOrDefault(false, 0L) + trueCount; // non-participants + participants
-                        outComesTargetsAndAchiDtos.add(OutComesTargetsAndAchiDto.builder().agencyName(physicalTarget.getAgency().getAgencyName())
-                                .outComeName("PMFME Scheme")
-                                .outComeTarget((long) targetTotal)
-                                .outComeParticipantAchi(falseCount)
-                                .outComeInfluencerAchi(trueCount).build());
-
-                        break;
-
-                    }
-                    case "ConsortiaTender": {
-
-                        PhysicalTarget physicalTarget = physicalTargets.get(i);
-
-                        double targetTotal = physicalTarget.getQ1() + physicalTarget.getQ2() + physicalTarget.getQ3() + physicalTarget.getQ4();
-
-                        List<ConsortiaTender> consortiaTenders = consortiaTenderRepository.findByAgencyAgencyId(agencyId);
-                        Map<Boolean, Long> influenceCount = consortiaTenders.stream().collect(Collectors.groupingBy(ConsortiaTender::getIsInfluenced, Collectors.counting()));
-
-                        long trueCount = influenceCount.getOrDefault(true, 0L); // non-participants
-                        long falseCount = influenceCount.getOrDefault(false, 0L) + trueCount; // non-participants + participants
-                        outComesTargetsAndAchiDtos.add(OutComesTargetsAndAchiDto.builder().agencyName(physicalTarget.getAgency().getAgencyName())
-                                .outComeName("Consortia & Tender Marketing")
-                                .outComeTarget((long) targetTotal)
-                                .outComeParticipantAchi(falseCount)
-                                .outComeInfluencerAchi(trueCount).build());
-
-                        break;
-
-                    }
-                    case "DesignRight": {
-                        PhysicalTarget physicalTarget = physicalTargets.get(i);
-
-                        double targetTotal = physicalTarget.getQ1() + physicalTarget.getQ2() + physicalTarget.getQ3() + physicalTarget.getQ4();
-
-                        List<DesignRights> designRights = designRightsRepository.findByAgencyAgencyId(agencyId);
-                        Map<Boolean, Long> influenceCount = designRights.stream().collect(Collectors.groupingBy(DesignRights::getIsInfluenced, Collectors.counting()));
-
-                        long trueCount = influenceCount.getOrDefault(true, 0L); // non-participants
-                        long falseCount = influenceCount.getOrDefault(false, 0L) + trueCount; // non-participants + participants
-                        outComesTargetsAndAchiDtos.add(OutComesTargetsAndAchiDto.builder().agencyName(physicalTarget.getAgency().getAgencyName())
-                                .outComeName("Design Right")
-                                .outComeTarget((long) targetTotal)
-                                .outComeParticipantAchi(falseCount)
-                                .outComeInfluencerAchi(trueCount).build());
-
-                        break;
-                    }
-                    case "CopyRight": {
-
-                        PhysicalTarget physicalTarget = physicalTargets.get(i);
-
-                        double targetTotal = physicalTarget.getQ1() + physicalTarget.getQ2() + physicalTarget.getQ3() + physicalTarget.getQ4();
-
-                        List<CopyRights> copyRights = copyRightsRepository.findByAgencyAgencyId(agencyId);
-                        Map<Boolean, Long> influenceCount = copyRights.stream().collect(Collectors.groupingBy(CopyRights::getIsInfluenced, Collectors.counting()));
-
-                        long trueCount = influenceCount.getOrDefault(true, 0L); // non-participants
-                        long falseCount = influenceCount.getOrDefault(false, 0L) + trueCount; // non-participants + participants
-                        outComesTargetsAndAchiDtos.add(OutComesTargetsAndAchiDto.builder().agencyName(physicalTarget.getAgency().getAgencyName())
-                                .outComeName("Copy Right")
-                                .outComeTarget((long) targetTotal)
-                                .outComeParticipantAchi(falseCount)
-                                .outComeInfluencerAchi(trueCount).build());
-                        break;
-                    }
                 }
             }
+        } else {
+            lists.add(getApiForOutcomes1(agencyId, outcomeId));
         }
-        return outComesTargetsAndAchiDtos;
+
+        if (agencyId.equals(-1L) && outcomeId.equals(-1L)) {
+            List<OutComesTargetsAndAchievementDto> flatList = lists.stream()
+                    .flatMap(o -> ((List<OutComesTargetsAndAchievementDto>) o).stream())
+                    .toList();
+
+            Map<String, List<OutComesTargetsAndAchievementDto>> grouped =
+                    flatList.stream().collect(Collectors.groupingBy(OutComesTargetsAndAchievementDto::getOutComeName));
+
+            return WorkflowResponse.builder()
+                    .data(grouped).status(200)
+                    .message("Fetched Successfully").build();
+        }
+
+        return WorkflowResponse.builder()
+                .data(lists).status(200)
+                .message("Fetched Successfully").build();
+    }
+
+    public <T> T getApiForOutcomes1(Long agencyId, Long outcomeId) {
+
+        List<ProgramOutcomeTable> allOutcomeEntities = programOutcomeTableRepository.findAll();
+        List<Agency> allAgencies = agencyRepository.findAll();
+        List<OutComesTargetsAndAchievementDto> outComesTargetsAndAchiDtos = new ArrayList<>();
+
+        List<Agency> agenciesToProcess = (agencyId == -1) ? allAgencies
+                : allAgencies.stream().filter(a -> a.getAgencyId().equals(agencyId)).toList();
+
+        for (Agency agency : agenciesToProcess) {
+            for (ProgramOutcomeTable outcome : allOutcomeEntities) {
+
+                // Skip if specific outcomeId is passed
+                if (outcomeId != -1 && outcomeId != null && !outcome.getOutcomeTableId().equals(outcomeId.intValue())) {
+                    continue;
+                }
+
+                PhysicalTarget physicalTarget = physicalRepository
+                        .findByAgencyAgencyIdAndProgramOutcomeTableOutcomeTableId(
+                                agency.getAgencyId(), outcome.getOutcomeTableId())
+                        .orElse(null);
+
+                double targetTotal = (physicalTarget != null)
+                        ? physicalTarget.getQ1() + physicalTarget.getQ2() + physicalTarget.getQ3() + physicalTarget.getQ4()
+                        : 0;
+
+                long influencerAchievement = 0L;
+                long participantAchievement = 0L;
+
+                switch (outcome.getOutcomeTableName()) {
+                    case "ONDCRegistration":
+                        List<ONDCRegistration> ondc = ondcRegistrationRepository.findByAgencyAgencyId(agency.getAgencyId());
+                        Map<Boolean, Long> ondcCount = ondc.stream().filter(b -> b.getIsInfluenced() != null).collect(Collectors.groupingBy(ONDCRegistration::getIsInfluenced, Collectors.counting()));
+                        influencerAchievement = ondcCount.getOrDefault(true, 0L);
+                        participantAchievement = ondcCount.getOrDefault(false, 0L);
+                        break;
+                    case "ONDCTransaction":
+                        List<ONDCTransaction> ondcTransactions = ondcTransactionRepository.findByOndcRegistration_Agency_AgencyId(agency.getAgencyId());
+
+                        Map<Boolean, Long> ondcTransactionCount = ondcTransactions.stream()
+                                .collect(Collectors.groupingBy(
+                                        t -> {
+                                            ONDCRegistration reg = t.getOndcRegistration();
+                                            return reg != null && Boolean.TRUE.equals(reg.getIsInfluenced());
+                                        },
+                                        Collectors.counting()
+                                ));
+                        influencerAchievement = ondcTransactionCount.getOrDefault(true, 0L);
+                        participantAchievement = ondcTransactionCount.getOrDefault(false, 0L);
+                        break;
+
+                    case "UdyamRegistration":
+                        List<UdyamRegistration> udyam = udyamRegistrationRepository.findByAgencyAgencyId(agency.getAgencyId());
+                        Map<Boolean, Long> udyamCount = udyam.stream().filter(b -> b.getIsInfluenced() != null).collect(Collectors.groupingBy(UdyamRegistration::getIsInfluenced, Collectors.counting()));
+                        influencerAchievement = udyamCount.getOrDefault(true, 0L);
+                        participantAchievement = udyamCount.getOrDefault(false, 0L);
+                        break;
+
+                    case "TReDSRegistration":
+                        List<TReDSRegistration> treds = tredsRegistrationRepository.findByAgencyAgencyId(agency.getAgencyId());
+                        Map<Boolean, Long> tredsCount = treds.stream().filter(b -> b.getIsInfluenced() != null).collect(Collectors.groupingBy(TReDSRegistration::getIsInfluenced, Collectors.counting()));
+                        influencerAchievement = tredsCount.getOrDefault(true, 0L);
+                        participantAchievement = tredsCount.getOrDefault(false, 0L);
+                        break;
+
+                    case "TReDSTransaction":
+                        List<TReDSTransaction>  tReDSTransactions = tredsTransactionRepository.findByTredsRegistration_Agency_AgencyId(agency.getAgencyId());
+
+                        Map<Boolean, Long> tReDSTransactionsCount = tReDSTransactions.stream()
+                                .collect(Collectors.groupingBy(
+                                        t -> {
+                                            TReDSRegistration reg = t.getTredsRegistration();
+                                            return reg != null && Boolean.TRUE.equals(reg.getIsInfluenced());
+                                        },
+                                        Collectors.counting()
+                                ));
+                        influencerAchievement = tReDSTransactionsCount.getOrDefault(true, 0L);
+                        participantAchievement = tReDSTransactionsCount.getOrDefault(false, 0L);
+                        break;
+
+                    case "PMEGP":
+                        List<PMEGP> pmegps = pmegpRepository.findByAgencyAgencyId(agency.getAgencyId());
+                        Map<Boolean, Long> pmegpsCount = pmegps.stream().filter(b -> b.getIsInfluenced() != null).collect(Collectors.groupingBy(PMEGP::getIsInfluenced, Collectors.counting()));
+                        influencerAchievement = pmegpsCount.getOrDefault(true, 0L);
+                        participantAchievement = pmegpsCount.getOrDefault(false, 0L);
+                        break;
+
+                    case "PMMY":
+                        List<PMMY> pmmies = pmmyRepository.findByAgencyAgencyId(agency.getAgencyId());
+                        Map<Boolean, Long> pmmiesCount = pmmies.stream().filter(b -> b.getIsInfluenced() != null).collect(Collectors.groupingBy(PMMY::getIsInfluenced, Collectors.counting()));
+                        influencerAchievement = pmmiesCount.getOrDefault(true, 0L);
+                        participantAchievement = pmmiesCount.getOrDefault(false, 0L) ;
+                        break;
+
+                    case "PMS":
+                        List<PMS> pmsList = pmsRepository.findByAgencyAgencyId(agency.getAgencyId());
+                        Map<Boolean, Long> pmsCount = pmsList.stream().filter(b -> b.getIsInfluenced() != null).collect(Collectors.groupingBy(PMS::getIsInfluenced, Collectors.counting()));
+                        influencerAchievement = pmsCount.getOrDefault(true, 0L);
+                        participantAchievement = pmsCount.getOrDefault(false, 0L);
+                        break;
+
+                    case "ICScheme":
+                        List<ICScheme> icSchemes = icSchemeRepository.findByAgencyAgencyId(agency.getAgencyId());
+                        Map<Boolean, Long> icCount = icSchemes.stream().filter(b -> b.getIsInfluenced() != null).collect(Collectors.groupingBy(ICScheme::getIsInfluenced, Collectors.counting()));
+                        influencerAchievement = icCount.getOrDefault(true, 0L);
+                        participantAchievement = icCount.getOrDefault(false, 0L);
+                        break;
+
+                    case "NSIC":
+                        List<NSIC> nsics = nsicRepository.findByAgencyAgencyId(agency.getAgencyId());
+                        Map<Boolean, Long> nsicCount = nsics.stream().filter(b -> b.getIsInfluenced() != null).collect(Collectors.groupingBy(NSIC::getIsInfluenced, Collectors.counting()));
+                        influencerAchievement = nsicCount.getOrDefault(true, 0L);
+                        participantAchievement = nsicCount.getOrDefault(false, 0L);
+                        break;
+
+                    case "Patents":
+                        List<Patents> patents = patentsRepository.findByAgencyAgencyId(agency.getAgencyId());
+                        Map<Boolean, Long> patentsCount = patents.stream().filter(b -> b.getIsInfluenced() != null).collect(Collectors.groupingBy(Patents::getIsInfluenced, Collectors.counting()));
+                        influencerAchievement = patentsCount.getOrDefault(true, 0L);
+                        participantAchievement = patentsCount.getOrDefault(false, 0L);
+                        break;
+
+                    case "GIProduct":
+                        List<GIProduct> giProducts = giProductRepository.findByAgencyAgencyId(agency.getAgencyId());
+                        Map<Boolean, Long> giCount = giProducts.stream().filter(b -> b.getIsInfluenced() != null).collect(Collectors.groupingBy(GIProduct::getIsInfluenced, Collectors.counting()));
+                        influencerAchievement = giCount.getOrDefault(true, 0L);
+                        participantAchievement = giCount.getOrDefault(false, 0L);
+                        break;
+
+                    case "Barcode":
+                        List<Barcode> barcodes = barcodeRepository.findByAgencyAgencyId(agency.getAgencyId());
+                        Map<Boolean, Long> barcodeCount = barcodes.stream().filter(b -> b.getIsInfluenced() != null).filter(b -> b.getIsInfluenced() != null).collect(Collectors.groupingBy(Barcode::getIsInfluenced, Collectors.counting()));                        influencerAchievement = barcodeCount.getOrDefault(true, 0L);
+                        participantAchievement = barcodeCount.getOrDefault(false, 0L);
+                        break;
+
+                    case "CGTMSETransaction":
+                        List<CGTMSETransaction> cgtmseTransactions = cgtmseTransactionRepository.findByAgencyAgencyId(agency.getAgencyId());
+                        Map<Boolean, Long> cgtmseTransactionsCount = cgtmseTransactions.stream().filter(b -> b.getIsInfluenced() != null).collect(Collectors.groupingBy(CGTMSETransaction::getIsInfluenced, Collectors.counting()));
+                        influencerAchievement = cgtmseTransactionsCount.getOrDefault(true, 0L);
+                        participantAchievement = cgtmseTransactionsCount.getOrDefault(false, 0L);
+                        break;
+
+                    case "TreadMark":
+                        List<TreadMark> treadMarks = treadMarkRepository.findByAgencyAgencyId(agency.getAgencyId());
+                        Map<Boolean, Long> treadCount = treadMarks.stream().filter(b -> b.getIsInfluenced() != null).collect(Collectors.groupingBy(TreadMark::getIsInfluenced, Collectors.counting()));
+                        influencerAchievement = treadCount.getOrDefault(true, 0L);
+                        participantAchievement = treadCount.getOrDefault(false, 0L);
+                        break;
+
+                    case "Lean":
+                        List<Lean> leans = leanRepository.findByAgencyAgencyId(agency.getAgencyId());
+                        Map<Boolean, Long> leanCount = leans.stream().filter(b -> b.getIsInfluenced() != null).collect(Collectors.groupingBy(Lean::getIsInfluenced, Collectors.counting()));
+                        influencerAchievement = leanCount.getOrDefault(true, 0L);
+                        participantAchievement = leanCount.getOrDefault(false, 0L);
+                        break;
+
+                    case "PMViswakarma":
+                        List<PMViswakarma> pmViswakarmas = pmViswakarmaReposiroty.findByAgencyAgencyId(agency.getAgencyId());
+                        Map<Boolean, Long> pmVisCount = pmViswakarmas.stream().filter(b -> b.getIsInfluenced() != null).collect(Collectors.groupingBy(PMViswakarma::getIsInfluenced, Collectors.counting()));
+                        influencerAchievement = pmVisCount.getOrDefault(true, 0L);
+                        participantAchievement = pmVisCount.getOrDefault(false, 0L);
+                        break;
+
+                    case "GeMRegistration":
+                        List<GeMRegistration> geMRegs = geMRegistrationRepository.findByAgencyAgencyId(agency.getAgencyId());
+                        Map<Boolean, Long> geMCount = geMRegs.stream().filter(b -> b.getIsInfluenced() != null).collect(Collectors.groupingBy(GeMRegistration::getIsInfluenced, Collectors.counting()));
+                        influencerAchievement = geMCount.getOrDefault(true, 0L);
+                        participantAchievement = geMCount.getOrDefault(false, 0L);
+                        break;
+                    case "GeMTransaction":
+                        List<GeMTransaction> geMTransactions = geMTransactionRepository.findByGemRegistration_Agency_AgencyId(agency.getAgencyId());
+                        Map<Boolean, Long> geMTransactionsCount = geMTransactions.stream()
+                                .collect(Collectors.groupingBy(
+                                        t -> {
+                                            GeMRegistration reg = t.getGemRegistration();
+                                            return reg != null && Boolean.TRUE.equals(reg.getIsInfluenced());
+                                        },
+                                        Collectors.counting()
+                                ));
+                        influencerAchievement = geMTransactionsCount.getOrDefault(true, 0L);
+                        participantAchievement = geMTransactionsCount.getOrDefault(false, 0L);
+                        break;
+
+                    case "OEM":
+                        List<OEM> oems = oemRepository.findByAgencyAgencyId(agency.getAgencyId());
+                        Map<Boolean, Long> oemCount = oems.stream().filter(b -> b.getIsInfluenced() != null).collect(Collectors.groupingBy(OEM::getIsInfluenced, Collectors.counting()));
+                        influencerAchievement = oemCount.getOrDefault(true, 0L);
+                        participantAchievement = oemCount.getOrDefault(false, 0L);
+                        break;
+
+                    case "PMFMEScheme":
+                        List<PMFMEScheme> pmfmes = pmfmeSchemeRepository.findByAgencyAgencyId(agency.getAgencyId());
+                        Map<Boolean, Long> pmfmeCount = pmfmes.stream().filter(b -> b.getIsInfluenced() != null).collect(Collectors.groupingBy(PMFMEScheme::getIsInfluenced, Collectors.counting()));
+                        influencerAchievement = pmfmeCount.getOrDefault(true, 0L);
+                        participantAchievement = pmfmeCount.getOrDefault(false, 0L);
+                        break;
+
+                    case "ConsortiaTender":
+                        List<ConsortiaTender> consortias = consortiaTenderRepository.findByAgencyAgencyId(agency.getAgencyId());
+                        Map<Boolean, Long> consortiaCount = consortias.stream().filter(b -> b.getIsInfluenced() != null).collect(Collectors.groupingBy(ConsortiaTender::getIsInfluenced, Collectors.counting()));
+                        influencerAchievement = consortiaCount.getOrDefault(true, 0L);
+                        participantAchievement = consortiaCount.getOrDefault(false, 0L);
+                        break;
+
+                    case "DesignRight":
+                        List<DesignRights> designRights = designRightsRepository.findByAgencyAgencyId(agency.getAgencyId());
+                        Map<Boolean, Long> designCount = designRights.stream().filter(b -> b.getIsInfluenced() != null).collect(Collectors.groupingBy(DesignRights::getIsInfluenced, Collectors.counting()));
+                        influencerAchievement = designCount.getOrDefault(true, 0L);
+                        participantAchievement = designCount.getOrDefault(false, 0L);
+                        break;
+
+                    case "CopyRight":
+                        List<CopyRights> copyRights = copyRightsRepository.findByAgencyAgencyId(agency.getAgencyId());
+                        Map<Boolean, Long> copyCount = copyRights.stream().filter(b -> b.getIsInfluenced() != null).collect(Collectors.groupingBy(CopyRights::getIsInfluenced, Collectors.counting()));
+                        influencerAchievement = copyCount.getOrDefault(true, 0L);
+                        participantAchievement = copyCount.getOrDefault(false, 0L);
+                        break;
+                    case "ZEDCertification":
+                        switch (outcome.getOutcomeTableDisplayName()) {
+                            case "ZED Certification Bronze" -> {
+                                List<ZEDCertification> bronzeCerts =
+                                        zedCertificationRepository.findByAgencyAgencyIdAndZedCertificationType(agency.getAgencyId(), "Bronze");
+                                Map<Boolean, Long> bronzeCount = bronzeCerts.stream().filter(c -> c.getIsInfluenced() != null)
+                                        .collect(Collectors.groupingBy(ZEDCertification::getIsInfluenced, Collectors.counting()));
+                                influencerAchievement = bronzeCount.getOrDefault(true, 0L);
+                                participantAchievement = bronzeCount.getOrDefault(false, 0L);
+                            }
+
+                            case "ZED Certification Silver" -> {
+                                List<ZEDCertification> silverCerts =
+                                        zedCertificationRepository.findByAgencyAgencyIdAndZedCertificationType(agency.getAgencyId(), "Silver");
+                                Map<Boolean, Long> silverCount = silverCerts.stream().filter(c -> c.getIsInfluenced() != null)
+                                        .collect(Collectors.groupingBy(ZEDCertification::getIsInfluenced, Collectors.counting()));
+                                influencerAchievement = silverCount.getOrDefault(true, 0L);
+                                participantAchievement = silverCount.getOrDefault(false, 0L);
+                            }
+
+                            case "ZED Certification Gold" -> {
+                                List<ZEDCertification> goldCerts =
+                                        zedCertificationRepository.findByAgencyAgencyIdAndZedCertificationType(agency.getAgencyId(), "Gold");
+                                Map<Boolean, Long> goldCount = goldCerts.stream().filter(c -> c.getIsInfluenced() != null)
+                                        .collect(Collectors.groupingBy(ZEDCertification::getIsInfluenced, Collectors.counting()));
+                                influencerAchievement = goldCount.getOrDefault(true, 0L);
+                                participantAchievement = goldCount.getOrDefault(false, 0L);
+                            }
+
+                            default -> {
+                                influencerAchievement = 0L;
+                                participantAchievement = 0L;
+                            }
+                        }
+
+                        break;
+
+                    default:
+                        influencerAchievement = 0L;
+                        participantAchievement = 0L;
+                }
+
+                outComesTargetsAndAchiDtos.add(OutComesTargetsAndAchievementDto.builder()
+                        .agencyName(agency.getAgencyName())
+                        .outComeName(outcome.getOutcomeTableDisplayName())
+                        .outComeTarget((long) targetTotal)
+                        .outComeParticipantAchievement(participantAchievement)
+                        .outComeInfluencerAchievement(influencerAchievement)
+                        .build());
+            }
+        }
+
+        // agencyId=-1 and outcomeId=-1
+        if (agencyId == -1 && (outcomeId == -1 || outcomeId == null)) {
+            Map<String, List<OutComesTargetsAndAchievementDto>> map = new LinkedHashMap<>();
+            for (ProgramOutcomeTable outcome : allOutcomeEntities) {
+                List<OutComesTargetsAndAchievementDto> list = outComesTargetsAndAchiDtos.stream()
+                        .filter(d -> d.getOutComeName().equals(outcome.getOutcomeTableDisplayName()))
+                        .toList();
+                map.put(outcome.getOutcomeTableDisplayName(), list);
+            }
+            return (T) map;
+        }
+        return (T) outComesTargetsAndAchiDtos;
     }
 }

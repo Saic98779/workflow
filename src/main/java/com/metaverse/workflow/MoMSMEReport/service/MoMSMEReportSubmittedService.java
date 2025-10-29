@@ -1,17 +1,22 @@
 package com.metaverse.workflow.MoMSMEReport.service;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.metaverse.workflow.MoMSMEReport.repository.MoMSMEReportRepo;
 import com.metaverse.workflow.MoMSMEReport.repository.MoMSMEReportSubmittedRepository;
 import com.metaverse.workflow.common.response.WorkflowResponse;
+import com.metaverse.workflow.dto.CentralRampRequestDto;
+import com.metaverse.workflow.encryption.EncryptService;
 import com.metaverse.workflow.exceptions.DataException;
 import com.metaverse.workflow.model.MoMSMEReport;
 import com.metaverse.workflow.model.MoMSMEReportSubmitted;
 import com.metaverse.workflow.model.MoMSMEReportSubmittedMonthly;
 import com.metaverse.workflow.model.MoMSMEReportSubmittedQuarterly;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
 
@@ -22,6 +27,10 @@ public class MoMSMEReportSubmittedService {
     private final MoMSMEReportRepo moMSMEReportRepo;
     private final com.metaverse.workflow.MoMSMEReport.repository.MoMSMEReportSubmittedMonthlyRepository monthlyRepo;
     private final com.metaverse.workflow.MoMSMEReport.repository.MoMSMEReportSubmittedQuarterlyRepository quarterlyRepo;
+    private final EncryptService encryptService;
+    private final ObjectMapper objectMapper = new ObjectMapper();
+    private static final String MOMSME_URL = "https://ramp.msme.gov.in/ramp_staging/api/recieve.php";
+
 
     @Transactional
     public WorkflowResponse saveReport(MoMSMEReportSubmittedDto dto) throws DataException {
@@ -253,5 +262,79 @@ public class MoMSMEReportSubmittedService {
         };
     }
 
+
+    /**
+     * Main method to handle full flow:
+     * 1️⃣ Convert request to JSON
+     * 2️⃣ Encrypt JSON
+     * 3️⃣ Push to MoMSME endpoint using exchange()
+     * 4️⃣ Return result
+     */
+    public ResponseEntity<?> pushToMoMSME(CentralRampRequestDto requestDto) {
+        try {
+            // Step 1️⃣: Convert DTO to JSON string
+            String jsonData = convertToJson(requestDto);
+
+            // Step 2️⃣: Encrypt JSON (returns {"payload":"..."} )
+            String encryptedPayload = encryptPayload(jsonData);
+
+            // Step 3️⃣: Send encrypted payload to MoMSME (with exchange)
+            ResponseEntity<String> responseEntity = sendToMoMSME(encryptedPayload);
+
+            // Step 4️⃣: Build and return full response
+            return ResponseEntity.ok(
+                    buildResponse(encryptedPayload, responseEntity)
+            );
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(createErrorResponse(e.getMessage()));
+        }
+    }
+
+    // 🔹 Step 1: Convert DTO to JSON
+    private String convertToJson(CentralRampRequestDto requestDto) throws Exception {
+        return objectMapper.writeValueAsString(requestDto);
+    }
+
+    // 🔹 Step 2: Encrypt JSON using EncryptService
+    private String encryptPayload(String jsonData) throws Exception {
+        return encryptService.encryptAndSign(jsonData);
+    }
+
+    // 🔹 Step 3: Send encrypted payload to MoMSME endpoint using exchange()
+    private ResponseEntity<String> sendToMoMSME(String finalPayload) {
+        RestTemplate restTemplate = new RestTemplate();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<String> entity = new HttpEntity<>(finalPayload, headers);
+
+        // ✅ Using exchange() gives better control over HTTP status and headers
+        return restTemplate.exchange(
+                MOMSME_URL,
+                HttpMethod.POST,
+                entity,
+                String.class
+        );
+    }
+
+    // 🔹 Step 4: Build final response
+    private Map<String, Object> buildResponse(String encryptedPayload, ResponseEntity<String> responseEntity) {
+        return Map.of(
+                "encryptedPayload", encryptedPayload,
+                "statusCode", responseEntity.getStatusCodeValue(),
+                "responseHeaders", responseEntity.getHeaders(),
+                "responseFromMoMSME", responseEntity.getBody()
+        );
+    }
+
+    // 🔹 Error Response
+    private Map<String, Object> createErrorResponse(String message) {
+        return Map.of(
+                "error", message
+        );
+    }
 
 }

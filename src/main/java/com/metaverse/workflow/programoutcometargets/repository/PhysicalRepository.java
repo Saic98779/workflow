@@ -38,4 +38,5 @@ public interface PhysicalRepository extends JpaRepository<PhysicalTarget,Long> {
                               @Param("agencyId") Long agencyId);
 
 
+    Optional<PhysicalTarget> findByAgencyAgencyIdAndProgramOutcomeTableOutcomeTableId(Long agencyId, Integer outcomeId);
 }

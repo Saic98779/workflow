@@ -97,10 +97,10 @@ public class ProgramOutcomeController {
     }
 
     @GetMapping(path = "/get/outcome-targets/{agencyId}")
-    public ResponseEntity<?> getApiForOutcomes(@PathVariable Long agencyId){
+    public ResponseEntity<?> getApiForOutcomes(@PathVariable Long agencyId, @RequestParam(required = false) Long outcomeId){
 
         try {
-           return ResponseEntity.ok(programOutcomeService.getApiForOutcomes(agencyId));
+           return ResponseEntity.ok(programOutcomeService.getApiForOutcomes(agencyId,outcomeId));
         }catch (Exception e) {
           return   ResponseEntity.status(400).body(WorkflowResponse.builder().status(400).message(e.getMessage()).build());
         }
