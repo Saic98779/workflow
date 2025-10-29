@@ -13,11 +13,21 @@ import com.metaverse.workflow.model.MoMSMEReportSubmitted;
 import com.metaverse.workflow.model.MoMSMEReportSubmittedMonthly;
 import com.metaverse.workflow.model.MoMSMEReportSubmittedQuarterly;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.*;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import okhttp3.MediaType;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+import java.time.Duration;
 import java.util.*;
 
 @Service
@@ -265,23 +275,23 @@ public class MoMSMEReportSubmittedService {
 
     /**
      * Main method to handle full flow:
-     * 1️⃣ Convert request to JSON
-     * 2️⃣ Encrypt JSON
-     * 3️⃣ Push to MoMSME endpoint using exchange()
-     * 4️⃣ Return result
+     * 1 Convert request to JSON
+     * 2️ Encrypt JSON
+     * 3️ Push to MoMSME endpoint
+     * 4️ Return result
      */
     public ResponseEntity<?> pushToMoMSME(CentralRampRequestDto requestDto) {
         try {
-            // Step 1️⃣: Convert DTO to JSON string
+            // Step 1 : Convert DTO to JSON string
             String jsonData = convertToJson(requestDto);
 
-            // Step 2️⃣: Encrypt JSON (returns {"payload":"..."} )
+            // Step 2: Encrypt JSON (returns {"payload":"..."} )
             String encryptedPayload = encryptPayload(jsonData);
 
-            // Step 3️⃣: Send encrypted payload to MoMSME (with exchange)
+            // Step 3️ : Send encrypted payload using OkHttp
             ResponseEntity<String> responseEntity = sendToMoMSME(encryptedPayload);
 
-            // Step 4️⃣: Build and return full response
+            // Step 4️ : Build and return full response
             return ResponseEntity.ok(
                     buildResponse(encryptedPayload, responseEntity)
             );
@@ -302,39 +312,51 @@ public class MoMSMEReportSubmittedService {
         return encryptService.encryptAndSign(jsonData);
     }
 
-    // 🔹 Step 3: Send encrypted payload to MoMSME endpoint using exchange()
-    private ResponseEntity<String> sendToMoMSME(String finalPayload) {
-        RestTemplate restTemplate = new RestTemplate();
+    // 🔹 Step 3: Send encrypted payload using OkHttp (Trust-All SSL)
+    private ResponseEntity<String> sendToMoMSME(String finalPayload) throws Exception {
+        OkHttpClient client = createTrustAllOkHttpClient();
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
+        RequestBody body = RequestBody.create(finalPayload, MediaType.parse("application/json"));
+        Request request = new Request.Builder()
+                .url(MOMSME_URL)
+                .post(body)
+                .build();
 
-        HttpEntity<String> entity = new HttpEntity<>(finalPayload, headers);
+        try (Response response = client.newCall(request).execute()) {
+            String responseBody = response.body() != null ? response.body().string() : "";
+            return new ResponseEntity<>(responseBody, HttpStatus.valueOf(response.code()));
+        }
+    }
 
-        // ✅ Using exchange() gives better control over HTTP status and headers
-        return restTemplate.exchange(
-                MOMSME_URL,
-                HttpMethod.POST,
-                entity,
-                String.class
-        );
+    // OkHttp Trust-All SSL configuration (for staging)
+    private OkHttpClient createTrustAllOkHttpClient() throws Exception {
+        TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager() {
+            public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) {}
+            public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) {}
+            public java.security.cert.X509Certificate[] getAcceptedIssuers() { return new java.security.cert.X509Certificate[0]; }
+        }};
+
+        SSLContext sslContext = SSLContext.getInstance("SSL");
+        sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
+
+        return new OkHttpClient.Builder()
+                .sslSocketFactory(sslContext.getSocketFactory(), (X509TrustManager) trustAllCerts[0])
+                .hostnameVerifier((hostname, session) -> true)
+                .connectTimeout(Duration.ofSeconds(15))
+                .readTimeout(Duration.ofSeconds(30))
+                .build();
     }
 
     // 🔹 Step 4: Build final response
     private Map<String, Object> buildResponse(String encryptedPayload, ResponseEntity<String> responseEntity) {
         return Map.of(
-                "encryptedPayload", encryptedPayload,
                 "statusCode", responseEntity.getStatusCodeValue(),
-                "responseHeaders", responseEntity.getHeaders(),
                 "responseFromMoMSME", responseEntity.getBody()
         );
     }
 
     // 🔹 Error Response
     private Map<String, Object> createErrorResponse(String message) {
-        return Map.of(
-                "error", message
-        );
+        return Map.of("error", message);
     }
-
 }
