@@ -50,8 +50,11 @@ public class SIDBIAspire {
     @Column(name = "production_started_date")
     private Date productionStartedDate;
 
-    @Column(name = "monthly_production_units")
-    private Integer monthlyProductionUnits;
+    @Column(name="production")
+    public String production;
+
+    @Column(name = "production_units")
+    private String productionUnits;
 
     @Column(name = "market_linkage_enabled")
     private Boolean marketLinkageEnabled;
@@ -65,8 +68,8 @@ public class SIDBIAspire {
     @Column(name = "market_linkage_value")
     private Double marketLinkageValue;
 
-    @Column(name = "monthly_turnover")
-    private Double monthlyTurnover;
+    @Column(name = "turnover")
+    private Double turnover;
 
     @Column(name = "is_influenced")
     private Boolean isInfluenced;

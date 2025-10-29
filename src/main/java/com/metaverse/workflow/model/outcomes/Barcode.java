@@ -25,11 +25,8 @@ public class Barcode {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long barcodeId;
 
-    @Column(name = "industry")
-    private String industry;
-
-    @Column(name = "location")
-    private String location;
+    @Column(name = "type_of_market")
+    private String typeOfMarket;
 
     @Column(name = "bar_code_type")
     private String barCodeType;

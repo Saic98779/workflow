@@ -190,14 +190,14 @@ public class OutcomeTargetServiceImpl implements OutcomeTargetService {
                 giProductRepository.countGIProduct(agencyId, dQ4Start, dQ4End)
         ));
 
-        //IC Scheme
-        dtoList.add(createOutcomeDto("IC Scheme", financialYear,
-                physicalTargetRepository.findTarget("ICScheme", financialYear, agencyId),
-                icSchemeRepository.countICScheme(agencyId, dQ1Start, dQ1End),
-                icSchemeRepository.countICScheme(agencyId, dQ2Start, dQ2End),
-                icSchemeRepository.countICScheme(agencyId, dQ3Start, dQ3End),
-                icSchemeRepository.countICScheme(agencyId, dQ4Start, dQ4End)
-        ));
+//        //IC Scheme
+//        dtoList.add(createOutcomeDto("IC Scheme", financialYear,
+//                physicalTargetRepository.findTarget("ICScheme", financialYear, agencyId),
+//                icSchemeRepository.countICScheme(agencyId, dQ1Start, dQ1End),
+//                icSchemeRepository.countICScheme(agencyId, dQ2Start, dQ2End),
+//                icSchemeRepository.countICScheme(agencyId, dQ3Start, dQ3End),
+//                icSchemeRepository.countICScheme(agencyId, dQ4Start, dQ4End)
+//        ));
 
         //Patents
         dtoList.add(createOutcomeDto("Patents", financialYear,

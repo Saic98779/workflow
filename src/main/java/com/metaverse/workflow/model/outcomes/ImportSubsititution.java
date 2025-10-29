@@ -5,74 +5,75 @@ import com.metaverse.workflow.model.InfluencedParticipant;
 import com.metaverse.workflow.model.Organization;
 import com.metaverse.workflow.model.Participant;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import net.minidev.json.annotate.JsonIgnore;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-
 import java.util.Date;
-
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Getter
-@Table(name = "outcome_pmmy")
-public class PMMY{
+@Setter
+@Table(name="outcome_import_subsititution")
+public class ImportSubsititution {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "pmmy_id")
-    private Long pmmyId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    @Column(name = "category")
-    private String category;
+    @Column(name = "sector_name")
+    private String sectorName;
 
-    @Column(name = "loan_amount_released")
-    private Double loanAmountReleased;
+    @Column(name = "product_name")
+    private String productName;
 
-    @Column(name = "loan_sanctioned_date")
-    @Temporal(TemporalType.DATE)
-    private Date loanSanctionedDate;
+    @Column(name = "prototype_selected")
+    private Boolean prototypeSelected;
+
+    @Column(name = "business_plan_submission_date")
+    private  Date businessPlanSubmissionDate;
+
+    @Column(name = "amount_sanctioned_date")
+    private  Date amountSanctionedDate;
+
+    @Column(name = "amount_released_date")
+    private  Date amountReleasedDate;
+
+    @Column(name = "amount_released_in_lakhs")
+    private Double amountReleasedInLakhs;
+
+    @Column(name = "bank_provided_loan")
+    private String bankProvidedLoan;
 
     @Column(name = "grounding_date")
-    @Temporal(TemporalType.DATE)
     private Date groundingDate;
 
-    @Column(name = "business_turnover")
-    private Double businessTurnover;
+    @Column(name = "monthly_turnover_in_lakhs")
+    private Double monthlyTurnoverInLakhs;
 
-    @Column(name = "market_linkage_date")
-    @Temporal(TemporalType.DATE)
-    private Date marketLinkageDate;
+    @Column(name = "market_of_product")
+    private Boolean marketOfProduct;
 
-    @Column(name = "market_volume_mt")
-    private Double marketVolume;
+    @Column(name = "market_date")
+    private  Date marketDate;
 
-    @Column(name = "units")
-    private String units;
+    @Column(name = "market_value_in_lakhs")
+    private Double marketValueInLakhs;
 
-    @Column(name = "market_value")
-    private Double marketValue;
-
-    @Column(name = "product_marketed_name")
-    private String productMarketedName;
+    @Column(name = "market_volume_in_mts")
+    private Double marketVolumeInMts;
 
     @Column(name="Influenced")
     Boolean isInfluenced;
 
-    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "agency_id")
     private Agency agency;
-    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "participant_id")
     private Participant participant;
-    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "organization_id")
     private Organization organization;

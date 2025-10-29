@@ -11,93 +11,63 @@ import com.metaverse.workflow.participant.repository.ParticipantRepository;
 import com.metaverse.workflow.programoutcome.dto.*;
 import com.metaverse.workflow.programoutcome.repository.*;
 import com.metaverse.workflow.programoutcometargets.repository.PhysicalRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@RequiredArgsConstructor
 @Service
 @Slf4j
 public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
 
-    @Autowired
-    ProgramOutcomeTableRepository programOutcomeTableRepository;
-    @Autowired
-    ONDCRegistrationRepository ondcRegistrationRepository;
-    @Autowired
-    ONDCTransactionRepository ondcTransactionRepository;
-    @Autowired
-    UdyamRegistrationRepository udyamRegistrationRepository;
-    @Autowired
-    CGTMSETransactionRepository cgtmseTransactionRepository;
-    @Autowired
-    GeMTransactionRepository geMTransactionRepository;
-    @Autowired
-    AgencyRepository agencyRepository;
-    @Autowired
-    OrganizationRepository organizationRepository;
-    @Autowired
-    ParticipantRepository participantRepository;
-    @Autowired
-    TReDSRegistrationRepository tredsRegistrationRepository;
-    @Autowired
-    TReDSTransactionRepository tredsTransactionRepository;
-    @Autowired
-    PMEGPRepository pmegpRepository;
-    @Autowired
-    PMMYRepository pmmyRepository;
-    @Autowired
-    InfluencedParticipantRepository influencedParticipantRepository;
-    @Autowired
-    PMSRepository pmsRepository;
 
-    @Autowired
-    ICSchemeRepository icSchemeRepository;
-
-    @Autowired
-    NSICRepository nsicRepository;
-    @Autowired
-    PatentsRepository patentsRepository;
-    @Autowired
-    GIProductRepository giProductRepository;
-    @Autowired
-    BarcodeRepository barcodeRepository;
-    @Autowired
-    TreadMarkRepository treadMarkRepository;
-    @Autowired
-    LeanRepository leanRepository;
-    @Autowired
-    ZEDCertificationRepository zedCertificationRepository;
-    @Autowired
-    ConsortiaTenderRepository consortiaTenderRepository;
-    @Autowired
-    OEMRepository oemRepository;
-    @Autowired
-    PMFMESchemeRepository pmfmeSchemeRepository;
-    @Autowired
-    PMViswakarmaReposiroty pmViswakarmaReposiroty;
-    @Autowired
-    VendorDevelopmentRepository vendorDevelopmentRepository;
-    @Autowired
-    ScStHubRepository scStHubRepository;
-    @Autowired
-    SIDBIAspireRepository sidbiAspireRepository;
-    @Autowired
-    GeMRegistrationRepository geMRegistrationRepository;
-    @Autowired
-    DesignRightsRepository designRightsRepository;
-    @Autowired
-    CopyRightsRepository copyRightsRepository;
-    @Autowired
-    GreeningOfMSMERepository greeningOfMSMERepository;
-
-    @Autowired
-    PhysicalRepository physicalRepository;
+    private final ProgramOutcomeTableRepository programOutcomeTableRepository;
+    private final ONDCRegistrationRepository ondcRegistrationRepository;
+    private final ONDCTransactionRepository ondcTransactionRepository;
+    private final UdyamRegistrationRepository udyamRegistrationRepository;
+    private final CGTMSETransactionRepository cgtmseTransactionRepository;
+    private final GeMTransactionRepository geMTransactionRepository;
+    private final AgencyRepository agencyRepository;
+    private final OrganizationRepository organizationRepository;
+    private final ParticipantRepository participantRepository;
+    private final TReDSRegistrationRepository tredsRegistrationRepository;
+    private final TReDSTransactionRepository tredsTransactionRepository;
+    private final PMEGPRepository pmegpRepository;
+    private final PMMYRepository pmmyRepository;
+    private final InfluencedParticipantRepository influencedParticipantRepository;
+    private final PMSRepository pmsRepository;
+    private final ICSchemeRepository icSchemeRepository;
+    private final NSICRepository nsicRepository;
+    private final PatentsRepository patentsRepository;
+    private final GIProductRepository giProductRepository;
+    private final BarcodeRepository barcodeRepository;
+    private final TreadMarkRepository treadMarkRepository;
+    private final LeanRepository leanRepository;
+    private final ZEDCertificationRepository zedCertificationRepository;
+    private final ConsortiaTenderRepository consortiaTenderRepository;
+    private final OEMRepository oemRepository;
+    private final PMFMESchemeRepository pmfmeSchemeRepository;
+    private final PMViswakarmaReposiroty pmViswakarmaReposiroty;
+    private final VendorDevelopmentRepository vendorDevelopmentRepository;
+    private final ScStHubRepository scStHubRepository;
+    private final SIDBIAspireRepository sidbiAspireRepository;
+    private final GeMRegistrationRepository geMRegistrationRepository;
+    private final DesignRightsRepository designRightsRepository;
+    private final CopyRightsRepository copyRightsRepository;
+    private final GreeningOfMSMERepository greeningOfMSMERepository;
+    private final PhysicalRepository physicalRepository;
+    private final eCommerceRegistrationRepository eCommerceRegistrationRepository;
+    private final eCommerceTransactionRepository eCommerceTransactionRepository;
+    private final LoanRepository loanRepository;
+    private final ImportSubsititutionRepository importSubsititutionRepository;
+    private final ExportPromotionRepository exportPromotionRepository;
+    private final SkillUpgradationRepository skillUpgradationRepository;
 
     @Override
     public List<ProgramOutcomeTable> getProgramOutcomeTables() {
@@ -105,7 +75,7 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
     }
 
     @Override
-    public WorkflowResponse getOutcomeDetails(Long participantId, String outcome, String type ,Boolean isInfluenced) {
+    public WorkflowResponse getOutcomeDetails(Long participantId, String outcome, String type, Boolean isInfluenced) {
         String className = "com.metaverse.workflow.programoutcome.dto." + outcome + "Request";
         try {
             Field[] fields = Class.forName(className).getFields();
@@ -121,10 +91,10 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
             }
             switch (outcome) {
                 case "ONDCTransaction": {
-                    List<ONDCRegistration> ondcRegistration ;
-                    if(isInfluenced) {
+                    List<ONDCRegistration> ondcRegistration;
+                    if (isInfluenced) {
                         ondcRegistration = ondcRegistrationRepository.findByInfluencedParticipant_InfluencedId(participantId);
-                    }else {
+                    } else {
                         ondcRegistration = ondcRegistrationRepository.findByParticipantId(participantId);
                     }
                     if (ondcRegistration == null || ondcRegistration.isEmpty())
@@ -143,10 +113,10 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                 }
                 case "GeMTransaction": {
                     GeMRegistration gemRegistration;
-                    if(isInfluenced) {
+                    if (isInfluenced) {
                         gemRegistration = geMRegistrationRepository.findByInfluencedParticipant_InfluencedId(participantId);
-                    }else {
-                        gemRegistration =  geMRegistrationRepository.findByParticipantParticipantId(participantId);
+                    } else {
+                        gemRegistration = geMRegistrationRepository.findByParticipantParticipantId(participantId);
                     }
                     geMRegistrationRepository.findByParticipantParticipantId(participantId);
                     if (gemRegistration == null)
@@ -172,10 +142,10 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                 }
                 case "TReDSTransaction": {
                     List<TReDSRegistration> tReDSRegistrations;
-                    if(isInfluenced) {
+                    if (isInfluenced) {
                         tReDSRegistrations = tredsRegistrationRepository.findByInfluencedParticipant_InfluencedId(participantId);
-                    }else {
-                        tReDSRegistrations =  tredsRegistrationRepository.findByParticipantId(participantId);
+                    } else {
+                        tReDSRegistrations = tredsRegistrationRepository.findByParticipantId(participantId);
                     }
 
                     if (tReDSRegistrations == null || tReDSRegistrations.isEmpty())
@@ -194,11 +164,11 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                     break;
                 }
                 case "ZEDCertification": {
-                    List<ZEDCertification> zedCertifications ;
-                    if(isInfluenced) {
+                    List<ZEDCertification> zedCertifications;
+                    if (isInfluenced) {
                         zedCertifications = zedCertificationRepository.findByInfluencedParticipant_InfluencedId(participantId);
-                    }else {
-                        zedCertifications =  zedCertificationRepository.findByParticipantId(participantId);
+                    } else {
+                        zedCertifications = zedCertificationRepository.findByParticipantId(participantId);
                     }
 
                     String currentType = zedCertifications != null && !zedCertifications.isEmpty()
@@ -226,7 +196,7 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                                     .fieldDisplayName(getFieldDisplayName("Zed Certifications Type"))
                                     .fieldName("zedCertificationType")
                                     .fieldType("label")
-                                    .fieldValue(currentType == null ? "Bronze" : currentType)
+                                    .fieldValue(currentType == null ? "Bronze" : type)
                                     .build()
                     );
 
@@ -262,6 +232,7 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                     );
                     break;
                 }
+
                 case "Lean": {
                     columnList.add(
                             OutcomeDetails.OutcomeDataSet.builder()
@@ -270,6 +241,36 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                                     .fieldType("dropdown")
                                     .fieldOptions(Arrays.asList(
                                             "Basic", "Intermediate", "Advanced"
+                                    ))
+                                    .build()
+                    );
+                    break;
+                }
+                case "SkillUpgradation": {
+                    columnList.add(
+                            OutcomeDetails.OutcomeDataSet.builder()
+                                    .fieldDisplayName(getFieldDisplayName("Type Of Trainings Received"))
+                                    .fieldName("typeOfTrainingReceived")
+                                    .fieldType("array")
+                                    .build()
+                    );
+                    columnList.add(
+                            OutcomeDetails.OutcomeDataSet.builder()
+                                    .fieldDisplayName(getFieldDisplayName("Type Of Loan"))
+                                    .fieldName("loanType")
+                                    .fieldType("dropdown")
+                                    .fieldOptions(Arrays.asList(
+                                            "Term Loan", "Working Capital Loan"
+                                    ))
+                                    .build()
+                    );
+                    columnList.add(
+                            OutcomeDetails.OutcomeDataSet.builder()
+                                    .fieldDisplayName(getFieldDisplayName("Purpose of Loan utilized"))
+                                    .fieldName("loanPurpose")
+                                    .fieldType("dropdown")
+                                    .fieldOptions(Arrays.asList(
+                                             "Product Diversivation" , "Upgrading of Machinery"
                                     ))
                                     .build()
                     );
@@ -293,6 +294,20 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                                     .fieldType("dropdown")
                                     .fieldOptions(Arrays.asList(
                                             "Awarded", "Not Awarded"
+                                    ))
+                                    .build()
+                    );
+                    break;
+                }
+                case "Barcode": {
+
+                    columnList.add(
+                            OutcomeDetails.OutcomeDataSet.builder()
+                                    .fieldDisplayName(getFieldDisplayName("Type of Market"))
+                                    .fieldName("typeOfMarket")
+                                    .fieldType("dropdown")
+                                    .fieldOptions(Arrays.asList(
+                                            "Online", "Export", "Local"
                                     ))
                                     .build()
                     );
@@ -393,6 +408,57 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                     );
                     break;
                 }
+                case "NSIC": {
+                    columnList.add(
+                            OutcomeDetails.OutcomeDataSet.builder()
+                                    .fieldDisplayName(getFieldDisplayName("Procurement Type"))
+                                    .fieldName("typeOfProcurement")
+                                    .fieldType("dropdown")
+                                    .fieldOptions(Arrays.asList(
+                                            "GEM", "ONDC", "OEM"
+                                    ))
+                                    .build()
+                    );
+                    break;
+                }
+                case "PMMY": {
+                    columnList.add(
+                            OutcomeDetails.OutcomeDataSet.builder()
+                                    .fieldDisplayName(getFieldDisplayName("Category"))
+                                    .fieldName("category")
+                                    .fieldType("dropdown")
+                                    .fieldOptions(Arrays.asList(
+                                            "Sishu", "Kishor", "Tarun"
+                                    ))
+                                    .build()
+                    );
+                    break;
+                }
+                case "eCommerceTransaction": {
+                    eCommerceRegistration eCommerceRegistration;
+                    if (isInfluenced) {
+                        eCommerceRegistration = eCommerceRegistrationRepository.findByInfluencedParticipant_InfluencedId(participantId);
+                    } else {
+                        eCommerceRegistration = eCommerceRegistrationRepository.findByParticipant_ParticipantId(participantId);
+                    }
+
+                    if (eCommerceRegistration == null)
+                        return WorkflowResponse.builder()
+                                .status(400)
+                                .message("eCommerce Registration not completed")
+                                .build();
+
+                    columnList.add(
+                            OutcomeDetails.OutcomeDataSet.builder()
+                                    .fieldDisplayName(getFieldDisplayName("eCommerce Registration No"))
+                                    .fieldName("registrationDetails").fieldType("label")
+                                    .fieldValue(eCommerceRegistration.getRegistrationDetails())
+                                    .build()
+                    );
+                    break;
+
+                }
+
 
             }
             return WorkflowResponse.builder().status(200)
@@ -449,7 +515,7 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                     }
                 }
 
-                ondcRegistrationRepository.save(OutcomeRequestMapper.mapOndcRegistration(request, agency, participant, organization,influencedParticipant));
+                ondcRegistrationRepository.save(OutcomeRequestMapper.mapOndcRegistration(request, agency, participant, organization, influencedParticipant));
                 status = outcomeName + " Saved Successfully.";
                 break;
             }
@@ -532,7 +598,7 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                             .orElseThrow(() -> new DataException("Participant data not found",
                                     "PARTICIPANT-DATA-NOT-FOUND", 400));
                 }
-                cgtmseTransactionRepository.save(OutcomeRequestMapper.mapCGTMSETransaction(request, agency, participant, organization,influencedParticipant));
+                cgtmseTransactionRepository.save(OutcomeRequestMapper.mapCGTMSETransaction(request, agency, participant, organization, influencedParticipant));
                 status = outcomeName + " Saved Successfully.";
                 break;
             }
@@ -586,9 +652,9 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
             case "GeMTransaction": {
                 GeMTransactionRequest request = parser.parse(data, GeMTransactionRequest.class);
                 GeMRegistration gemRegistration = geMRegistrationRepository.findByParticipantParticipantId(request.getParticipantId());
-                if(gemRegistration == null)
+                if (gemRegistration == null)
                     return WorkflowResponse.builder().status(400).message("Invalid Gem Registration").build();
-                geMTransactionRepository.save(OutcomeRequestMapper.mapGeMTransaction(request,gemRegistration));
+                geMTransactionRepository.save(OutcomeRequestMapper.mapGeMTransaction(request, gemRegistration));
                 status = outcomeName + " Saved Successfully.";
                 break;
             }
@@ -727,7 +793,7 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                             .orElseThrow(() -> new DataException("Participant data not found",
                                     "PARTICIPANT-DATA-NOT-FOUND", 400));
                 }
-                pmsRepository.save(OutcomeRequestMapper.mapPms(request, agency, participant, organization,influencedParticipant));
+                pmsRepository.save(OutcomeRequestMapper.mapPms(request, agency, participant, organization, influencedParticipant));
                 status = outcomeName + " Saved Successfully.";
                 break;
             }
@@ -735,7 +801,7 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                 ICSchemeRequest request = parser.parse(data, ICSchemeRequest.class);
                 Agency agency = agencyRepository.findById(request.getAgencyId() == null ? 0 : request.getAgencyId())
                         .orElseThrow(() -> new DataException("Agency data not found", "AGENCY-DATA-NOT-FOUND", 400));
-                
+
                 Organization organization = organizationRepository.findById(request.getOrganizationId() == null ? 0 : request.getOrganizationId())
                         .orElseThrow(() -> new DataException("Organization data not found", "ORGANIZATION-DATA-NOT-FOUND", 400));
 
@@ -754,7 +820,7 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                             .orElseThrow(() -> new DataException("Participant data not found",
                                     "PARTICIPANT-DATA-NOT-FOUND", 400));
                 }
-                icSchemeRepository.save(OutcomeRequestMapper.mapIcScheme(request, agency, participant, organization,influencedParticipant));
+                icSchemeRepository.save(OutcomeRequestMapper.mapIcScheme(request, agency, participant, organization, influencedParticipant));
                 status = outcomeName + " Saved Successfully.";
                 break;
             }
@@ -781,7 +847,7 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                             .orElseThrow(() -> new DataException("Participant data not found",
                                     "PARTICIPANT-DATA-NOT-FOUND", 400));
                 }
-                nsicRepository.save(OutcomeRequestMapper.mapNsic(request, agency, participant, organization,influencedParticipant));
+                nsicRepository.save(OutcomeRequestMapper.mapNsic(request, agency, participant, organization, influencedParticipant));
                 status = outcomeName + " Saved Successfully.";
                 break;
             }
@@ -807,7 +873,7 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                             .orElseThrow(() -> new DataException("Participant data not found",
                                     "PARTICIPANT-DATA-NOT-FOUND", 400));
                 }
-                patentsRepository.save(OutcomeRequestMapper.mapPatents(request, agency, participant, organization,influencedParticipant));
+                patentsRepository.save(OutcomeRequestMapper.mapPatents(request, agency, participant, organization, influencedParticipant));
                 status = outcomeName + " Saved Successfully.";
                 break;
             }
@@ -887,7 +953,7 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                             .orElseThrow(() -> new DataException("Participant data not found",
                                     "PARTICIPANT-DATA-NOT-FOUND", 400));
                 }
-                treadMarkRepository.save(OutcomeRequestMapper.mapTreadMark(request, agency, participant, organization,influencedParticipant));
+                treadMarkRepository.save(OutcomeRequestMapper.mapTreadMark(request, agency, participant, organization, influencedParticipant));
                 status = outcomeName + " Saved Successfully.";
                 break;
             }
@@ -914,7 +980,7 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                             .orElseThrow(() -> new DataException("Participant data not found",
                                     "PARTICIPANT-DATA-NOT-FOUND", 400));
                 }
-                leanRepository.save(OutcomeRequestMapper.mapLean(request, agency, participant, organization,influencedParticipant));
+                leanRepository.save(OutcomeRequestMapper.mapLean(request, agency, participant, organization, influencedParticipant));
                 status = outcomeName + " Saved Successfully.";
                 break;
             }
@@ -942,7 +1008,7 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                                     "PARTICIPANT-DATA-NOT-FOUND", 400));
                 }
 
-                zedCertificationRepository.save(OutcomeRequestMapper.mapZEDCertification(request, agency, participant, organization,influencedParticipant));
+                zedCertificationRepository.save(OutcomeRequestMapper.mapZEDCertification(request, agency, participant, organization, influencedParticipant));
                 status = outcomeName + " Saved Successfully.";
                 break;
             }
@@ -969,7 +1035,7 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                             .orElseThrow(() -> new DataException("Participant data not found",
                                     "PARTICIPANT-DATA-NOT-FOUND", 400));
                 }
-                consortiaTenderRepository.save(OutcomeRequestMapper.mapConsortiaTender(request, agency, participant, organization,influencedParticipant));
+                consortiaTenderRepository.save(OutcomeRequestMapper.mapConsortiaTender(request, agency, participant, organization, influencedParticipant));
                 status = outcomeName + " Saved Successfully.";
                 break;
             }
@@ -996,7 +1062,7 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                             .orElseThrow(() -> new DataException("Participant data not found",
                                     "PARTICIPANT-DATA-NOT-FOUND", 400));
                 }
-                oemRepository.save(OutcomeRequestMapper.mapOem(request, agency, participant, organization,influencedParticipant));
+                oemRepository.save(OutcomeRequestMapper.mapOem(request, agency, participant, organization, influencedParticipant));
 
                 status = outcomeName + " Saved Successfully.";
                 break;
@@ -1024,7 +1090,7 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                             .orElseThrow(() -> new DataException("Participant data not found",
                                     "PARTICIPANT-DATA-NOT-FOUND", 400));
                 }
-                pmfmeSchemeRepository.save(OutcomeRequestMapper.mapPmfmseScheme(request, agency, participant, organization,influencedParticipant));
+                pmfmeSchemeRepository.save(OutcomeRequestMapper.mapPmfmseScheme(request, agency, participant, organization, influencedParticipant));
                 status = outcomeName + " Saved Successfully.";
                 break;
             }
@@ -1056,6 +1122,92 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                 status = outcomeName + " Saved Successfully.";
                 break;
             }
+            case "ImportSubsititution": {
+                ImportSubsititutionRequest request = parser.parse(data, ImportSubsititutionRequest.class);
+                Agency agency = agencyRepository.findById(request.getAgencyId() == null ? 0 : request.getAgencyId())
+                        .orElseThrow(() -> new DataException("Agency data not found", "AGENCY-DATA-NOT-FOUND", 400));
+
+                Organization organization = organizationRepository.findById(request.getOrganizationId() == null ? 0 : request.getOrganizationId())
+                        .orElseThrow(() -> new DataException("Organization data not found", "ORGANIZATION-DATA-NOT-FOUND", 400));
+
+                Participant participant = null;
+                InfluencedParticipant influencedParticipant = null;
+
+                if (Boolean.TRUE.equals(request.getIsInfluenced())) {
+                    influencedParticipant = influencedParticipantRepository.findById(
+                                    request.getInfluencedId() == null ? 0 : request.getInfluencedId())
+                            .orElseThrow(() -> new DataException("Influenced Participant data not found",
+                                    "INFLUENCED-PARTICIPANT-DATA-NOT-FOUND", 400));
+                } else {
+                    participant = participantRepository.findById(
+                                    request.getParticipantId() == null ? 0 : request.getParticipantId())
+                            .orElseThrow(() -> new DataException("Participant data not found",
+                                    "PARTICIPANT-DATA-NOT-FOUND", 400));
+                }
+
+                importSubsititutionRepository.save(
+                        OutcomeRequestMapper.mapImportSubsititution(request, agency, participant, organization, influencedParticipant));
+                status = outcomeName + " Saved Successfully.";
+                break;
+            }
+            case "SkillUpgradation": {
+                SkillUpgradationRequest request = parser.parse(data, SkillUpgradationRequest.class);
+                Agency agency = agencyRepository.findById(request.getAgencyId() == null ? 0 : request.getAgencyId())
+                        .orElseThrow(() -> new DataException("Agency data not found", "AGENCY-DATA-NOT-FOUND", 400));
+
+                Organization organization = organizationRepository.findById(request.getOrganizationId() == null ? 0 : request.getOrganizationId())
+                        .orElseThrow(() -> new DataException("Organization data not found", "ORGANIZATION-DATA-NOT-FOUND", 400));
+
+                Participant participant = null;
+                InfluencedParticipant influencedParticipant = null;
+
+                if (Boolean.TRUE.equals(request.getIsInfluenced())) {
+                    influencedParticipant = influencedParticipantRepository.findById(
+                                    request.getInfluencedId() == null ? 0 : request.getInfluencedId())
+                            .orElseThrow(() -> new DataException("Influenced Participant data not found",
+                                    "INFLUENCED-PARTICIPANT-DATA-NOT-FOUND", 400));
+                } else {
+                    participant = participantRepository.findById(
+                                    request.getParticipantId() == null ? 0 : request.getParticipantId())
+                            .orElseThrow(() -> new DataException("Participant data not found",
+                                    "PARTICIPANT-DATA-NOT-FOUND", 400));
+                }
+
+                skillUpgradationRepository.save(
+                        OutcomeRequestMapper.mapESDPTraining(request, agency, participant, organization, influencedParticipant));
+                status = outcomeName + " Saved Successfully.";
+                break;
+            }
+            case "ExportPromotion": {
+                ExportPromotionRequest request = parser.parse(data, ExportPromotionRequest.class);
+                Agency agency = agencyRepository.findById(request.getAgencyId() == null ? 0 : request.getAgencyId())
+                        .orElseThrow(() -> new DataException("Agency data not found", "AGENCY-DATA-NOT-FOUND", 400));
+
+                Organization organization = organizationRepository.findById(request.getOrganizationId() == null ? 0 : request.getOrganizationId())
+                        .orElseThrow(() -> new DataException("Organization data not found", "ORGANIZATION-DATA-NOT-FOUND", 400));
+
+                Participant participant = null;
+                InfluencedParticipant influencedParticipant = null;
+
+                if (Boolean.TRUE.equals(request.getIsInfluenced())) {
+                    influencedParticipant = influencedParticipantRepository.findById(
+                                    request.getInfluencedId() == null ? 0 : request.getInfluencedId())
+                            .orElseThrow(() -> new DataException("Influenced Participant data not found",
+                                    "INFLUENCED-PARTICIPANT-DATA-NOT-FOUND", 400));
+                } else {
+                    participant = participantRepository.findById(
+                                    request.getParticipantId() == null ? 0 : request.getParticipantId())
+                            .orElseThrow(() -> new DataException("Participant data not found",
+                                    "PARTICIPANT-DATA-NOT-FOUND", 400));
+                }
+
+                exportPromotionRepository.save(
+                        OutcomeRequestMapper.mapExportPromotion(request, agency, participant, organization, influencedParticipant));
+                status = outcomeName + " Saved Successfully.";
+                break;
+            }
+
+
             case "VendorDevelopment": {
                 VendorDevelopmentRequest request = parser.parse(data, VendorDevelopmentRequest.class);
                 Agency agency = agencyRepository.findById(request.getAgencyId() == null ? 0 : request.getAgencyId())
@@ -1107,7 +1259,7 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                             .orElseThrow(() -> new DataException("Participant data not found",
                                     "PARTICIPANT-DATA-NOT-FOUND", 400));
                 }
-                scStHubRepository.save(OutcomeRequestMapper.mapScStHub(request, agency, participant, organization,influencedParticipant));
+                scStHubRepository.save(OutcomeRequestMapper.mapScStHub(request, agency, participant, organization, influencedParticipant));
                 status = outcomeName + " Saved Successfully.";
                 break;
             }
@@ -1116,7 +1268,7 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                 Agency agency = agencyRepository.findById(request.getAgencyId() == null ? 0 : request.getAgencyId())
                         .orElseThrow(() -> new DataException("Agency data not found", "AGENCY-DATA-NOT-FOUND", 400));
 
-                                 Organization organization = organizationRepository.findById(request.getOrganizationId() == null ? 0 : request.getOrganizationId())
+                Organization organization = organizationRepository.findById(request.getOrganizationId() == null ? 0 : request.getOrganizationId())
                         .orElseThrow(() -> new DataException("Organization data not found", "ORGANIZATION-DATA-NOT-FOUND", 400));
 
                 Participant participant = null;
@@ -1134,7 +1286,7 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                             .orElseThrow(() -> new DataException("Participant data not found",
                                     "PARTICIPANT-DATA-NOT-FOUND", 400));
                 }
-                sidbiAspireRepository.save(OutcomeRequestMapper.mapSidbiAspire(request, agency, participant, organization,influencedParticipant));
+                sidbiAspireRepository.save(OutcomeRequestMapper.mapSidbiAspire(request, agency, participant, organization, influencedParticipant));
                 status = outcomeName + " Saved Successfully.";
                 break;
             }
@@ -1188,7 +1340,7 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                             .orElseThrow(() -> new DataException("Participant data not found",
                                     "PARTICIPANT-DATA-NOT-FOUND", 400));
                 }
-                copyRightsRepository.save(OutcomeRequestMapper.mapCopyRights(request, agency, participant, organization,influencedParticipant));
+                copyRightsRepository.save(OutcomeRequestMapper.mapCopyRights(request, agency, participant, organization, influencedParticipant));
                 status = outcomeName + " Saved Successfully.";
                 break;
             }
@@ -1215,10 +1367,105 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                             .orElseThrow(() -> new DataException("Participant data not found",
                                     "PARTICIPANT-DATA-NOT-FOUND", 400));
                 }
-                greeningOfMSMERepository.save(OutcomeRequestMapper.mapGreeningOfMSME(request, agency, participant, organization,influencedParticipant));
+                greeningOfMSMERepository.save(OutcomeRequestMapper.mapGreeningOfMSME(request, agency, participant, organization, influencedParticipant));
                 status = outcomeName + " Saved Successfully.";
                 break;
             }
+            case "eCommerceRegistration": {
+                eCommerceRegistrationRequest request = parser.parse(data, eCommerceRegistrationRequest.class);
+
+                Agency agency = agencyRepository.findById(request.getAgencyId() == null ? 0 : request.getAgencyId())
+                        .orElseThrow(() -> new DataException("Agency data not found", "AGENCY-DATA-NOT-FOUND", 400));
+
+                Organization organization = organizationRepository.findById(request.getOrganizationId() == null ? 0 : request.getOrganizationId())
+                        .orElseThrow(() -> new DataException("Organization data not found", "ORGANIZATION-DATA-NOT-FOUND", 400));
+
+                Participant participant = null;
+                InfluencedParticipant influencedParticipant = null;
+
+                if (Boolean.TRUE.equals(request.getIsInfluenced())) {
+                    influencedParticipant = influencedParticipantRepository.findById(
+                                    request.getInfluencedId() == null ? 0 : request.getInfluencedId())
+                            .orElseThrow(() -> new DataException("Influenced Participant data not found",
+                                    "INFLUENCED-PARTICIPANT-DATA-NOT-FOUND", 400));
+
+                    if (eCommerceRegistrationRepository.existsByInfluencedParticipant_InfluencedId(request.getInfluencedId())) {
+                        return WorkflowResponse.builder()
+                                .status(400)
+                                .message("E-Commerce registration already exists for the given influenced participant.")
+                                .build();
+                    }
+
+                } else {
+                    participant = participantRepository.findById(
+                                    request.getParticipantId() == null ? 0 : request.getParticipantId())
+                            .orElseThrow(() -> new DataException("Participant data not found",
+                                    "PARTICIPANT-DATA-NOT-FOUND", 400));
+
+                    if (eCommerceRegistrationRepository.existsByParticipant_ParticipantId(request.getParticipantId())) {
+                        return WorkflowResponse.builder()
+                                .status(400)
+                                .message("E-Commerce registration already exists for the given participant.")
+                                .build();
+                    }
+                }
+
+                eCommerceRegistrationRepository.save(
+                        OutcomeRequestMapper.mapECommerceRegistration(request, agency, participant, organization, influencedParticipant)
+                );
+
+                status = outcomeName + " Saved Successfully.";
+                break;
+            }
+
+            case "eCommerceTransaction": {
+                eCommerceTransactionRequest eCommerceTransactionRequest = parser.parse(data, eCommerceTransactionRequest.class);
+
+                eCommerceRegistration eCommerceRegistration =
+                        eCommerceRegistrationRepository.findByParticipant_ParticipantId(eCommerceTransactionRequest.getParticipantId());
+
+                if (eCommerceRegistration == null) {
+                    return WorkflowResponse.builder()
+                            .status(400)
+                            .message("Invalid E-Commerce Registration")
+                            .build();
+                }
+
+                eCommerceTransactionRepository.save(
+                        OutcomeRequestMapper.mapECommerceTransaction(eCommerceTransactionRequest, eCommerceRegistration)
+                );
+
+                status = outcomeName + " Saved Successfully.";
+                break;
+            }
+            case "Loan": {
+                LoanRequest request = parser.parse(data, LoanRequest.class);
+                Agency agency = agencyRepository.findById(request.getAgencyId() == null ? 0 : request.getAgencyId())
+                        .orElseThrow(() -> new DataException("Agency data not found", "AGENCY-DATA-NOT-FOUND", 400));
+
+                Organization organization = organizationRepository.findById(request.getOrganizationId() == null ? 0 : request.getOrganizationId())
+                        .orElseThrow(() -> new DataException("Organization data not found", "ORGANIZATION-DATA-NOT-FOUND", 400));
+
+                Participant participant = null;
+                InfluencedParticipant influencedParticipant = null;
+
+                // Check whether registration is for InfluencedParticipant or normal Participant
+                if (Boolean.TRUE.equals(request.getIsInfluenced())) {
+                    influencedParticipant = influencedParticipantRepository.findById(
+                                    request.getInfluencedId() == null ? 0 : request.getInfluencedId())
+                            .orElseThrow(() -> new DataException("Influenced Participant data not found",
+                                    "INFLUENCED-PARTICIPANT-DATA-NOT-FOUND", 400));
+                } else {
+                    participant = participantRepository.findById(
+                                    request.getParticipantId() == null ? 0 : request.getParticipantId())
+                            .orElseThrow(() -> new DataException("Participant data not found",
+                                    "PARTICIPANT-DATA-NOT-FOUND", 400));
+                }
+                loanRepository.save(OutcomeRequestMapper.mapLoan(request, agency, participant, organization, influencedParticipant));
+                status = outcomeName + " Saved Successfully.";
+                break;
+            }
+
 
         }
         return WorkflowResponse.builder().status(200).message("Success").data(status).build();
@@ -1298,7 +1545,6 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                 .data(lists).status(200)
                 .message("Fetched Successfully").build();
     }
-
 
     public <T> T getApiForOutcomes1(Long agencyId, Long outcomeId) {
 

@@ -41,15 +41,20 @@ public class Lean {
     @Column(name = "raw_material_wastage")
     private Double rawMaterialWastage;
 
-    @Column(name = "production_rate")
-    private Double productionRate; // units/hour
+    @Column(name = "raw_material_wastage_units")
+    private String rawMaterialWastageUnits;
 
-    @Column(name = "defect_rate")
-    private Double defectRate; //
+    @Column(name = "production_output")
+    private Double productionOutput; // units/hour
+
+    @Column(name = "production_output_units")
+    private String  productionOutputUnits;
     // in percentage
     @Column(name = "power_usage")
     private Double powerUsage; // in Kwh
 
+    @Column(name = "power_usage_units")
+    private String powerUsageUnits;
 
     @Column(name = "Influenced")
     Boolean isInfluenced;

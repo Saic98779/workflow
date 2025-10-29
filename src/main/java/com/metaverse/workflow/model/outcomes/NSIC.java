@@ -32,6 +32,9 @@ public class NSIC {
     @Column(name = "date_of_procurement")
     private Date dateOfProcurement;
 
+    @Column(name = "type_of_procurement")
+    private String typeOfProcurement;
+
     @Column(name = "type_of_product_supplied")
     private String typeOfProductSupplied;
 

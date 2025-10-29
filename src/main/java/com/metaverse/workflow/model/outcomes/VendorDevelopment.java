@@ -38,8 +38,13 @@ public class VendorDevelopment {
     @Column(name = "product_showcased")
     private String productShowcased;
 
-    @Column(name = "name_buyers_interested")
-    private List<String> nameOfBuyersInterested;//doubt have to use list
+    @ElementCollection
+    @CollectionTable(
+            name = "skill_upgradation_buyers_interested",
+            joinColumns = @JoinColumn(name = "skill_upgradation_id")
+    )
+    @Column(name = "name_of_buyer_interested")
+    private List<String> nameOfBuyersInterested;
 
     @Column(name = "vendor_registered_with")
     private String vendorRegisteredWith;

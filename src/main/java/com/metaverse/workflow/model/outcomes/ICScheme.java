@@ -42,23 +42,9 @@ public class ICScheme {
     @Column(name = "domestic_sales")
     private Double domesticSales;
 
-    @Column(name = "export_market_amount")
-    private Double exportMarket;
+    @Column(name = "investment")
+    private Double investment;
 
-    @Column(name = "employment_direct")
-    private Integer employmentDirect;
-
-    @Column(name = "employment_indirect")
-    private Integer employmentIndirect;
-
-    @Temporal(TemporalType.DATE)
-    private Date dateOfExport;
-
-    @Column(name = "value_of_export")
-    private Double valueOfExport;
-
-    @Column(name = "export_market_details")
-    private String exportMarketDetails;
 
     @Column(name="Influenced")
     Boolean isInfluenced;
