@@ -7,63 +7,36 @@ import com.metaverse.workflow.model.Participant;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 import net.minidev.json.annotate.JsonIgnore;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.util.Date;
-
+import java.util.List;
 @Entity
+@Table(name = "outcome_e_commerce_registration")
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Getter
-@Table(name = "outcome_pmmy")
-public class PMMY{
+public class eCommerceRegistration {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "pmmy_id")
-    private Long pmmyId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    @Column(name = "category")
-    private String category;
+    private String platformName;
+    private Date dateOfOnboarding;
+    private String registrationDetails; // can store Reg No / Email / Mobile
 
-    @Column(name = "loan_amount_released")
-    private Double loanAmountReleased;
+    @OneToMany(mappedBy = "ecommerceRegistration", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<eCommerceTransaction> transactions;
 
-    @Column(name = "loan_sanctioned_date")
-    @Temporal(TemporalType.DATE)
-    private Date loanSanctionedDate;
 
-    @Column(name = "grounding_date")
-    @Temporal(TemporalType.DATE)
-    private Date groundingDate;
-
-    @Column(name = "business_turnover")
-    private Double businessTurnover;
-
-    @Column(name = "market_linkage_date")
-    @Temporal(TemporalType.DATE)
-    private Date marketLinkageDate;
-
-    @Column(name = "market_volume_mt")
-    private Double marketVolume;
-
-    @Column(name = "units")
-    private String units;
-
-    @Column(name = "market_value")
-    private Double marketValue;
-
-    @Column(name = "product_marketed_name")
-    private String productMarketedName;
-
-    @Column(name="Influenced")
-    Boolean isInfluenced;
-
+    @Column(name = "is_influenced")
+    private Boolean isInfluenced;
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "agency_id")
@@ -82,7 +55,7 @@ public class PMMY{
     @Column(name = "updated_on", insertable = false, updatable = true)
     @UpdateTimestamp
     private Date updatedOn;
-    @JsonIgnore
+    @com.fasterxml.jackson.annotation.JsonIgnore
     @ManyToOne
     @JoinColumn(name = "influenced_id")
     private InfluencedParticipant influencedParticipant;

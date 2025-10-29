@@ -14,14 +14,9 @@ public class ICSchemeRequest {
     public String industryName;
     public String location;
     public String typeOfMsme;
+    public Double investment;
     public Double annualTurnover;
     public Double domesticSales;
-    public Double exportMarket;
-    public Integer employmentDirect;
-    public Integer employmentIndirect;
-    public Date dateOfExport;
-    public Double valueOfExport;
-    public String exportMarketDetails;
     public Boolean isInfluenced;
     private Long agencyId;
     private Long participantId;

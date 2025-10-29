@@ -61,6 +61,12 @@ public class PMS {
     @Column(name = "online_platform_used")
     private String onlinePlatformUsed;
 
+    @Column(name = "date_of_grounding")
+    public Date dateOfGrounding;
+
+    @Column(name="revenue")
+    public Double revenue;
+
     @Column(name="Influenced")
     Boolean isInfluenced;
     @JsonIgnore

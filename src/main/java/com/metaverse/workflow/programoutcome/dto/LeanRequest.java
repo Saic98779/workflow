@@ -13,9 +13,11 @@ public class LeanRequest {
     public Boolean isLeanConsultantAppointed;
     public String dateOfAppointed;
     public Double rawMaterialWastage;
-    public Double productionRate;
-    public Double defectRate;
+    public String rawMaterialWastageUnits;
+    public Double productionOutput;
+    public String productionOutputUnits;
     public Double powerUsage;
+    public String powerUsageUnits;
     public Boolean isInfluenced;
     private Long agencyId;
     private Long participantId;

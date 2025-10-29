@@ -66,8 +66,17 @@ public class GreeningOfMSME {
     @Column(name = "parameter_2")
     private String parameter2;
 
-    @Column(name = "unit_of_measurement")
-    private String unitForMeasurementOfProduction;
+    @Column(name = "parameter_1_value")
+    private Double parameter1Value;
+
+    @Column(name = "parameter_1_units")
+    private String parameter1Units;
+
+    @Column(name = "parameter_2_value")
+    private String parameter2Value;
+
+    @Column(name = "parameter_2_units")
+    private String parameter2Units;
 
     @Column(name = "production_per_hour")
     private Double productionPerHour;

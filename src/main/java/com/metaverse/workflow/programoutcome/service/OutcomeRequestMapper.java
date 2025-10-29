@@ -36,7 +36,7 @@ public class OutcomeRequestMapper {
                 .build();
     }
 
-    public static UdyamRegistration mapUdyamRegistration(UdyamRegistrationRequest request, Agency agency, Participant participant, Organization organization,InfluencedParticipant influencedParticipant) {
+    public static UdyamRegistration mapUdyamRegistration(UdyamRegistrationRequest request, Agency agency, Participant participant, Organization organization, InfluencedParticipant influencedParticipant) {
         return UdyamRegistration.builder()
                 .udyamRegistationDate(DateUtil.stringToDate(request.getUdyamRegistrationDate(), DATE_FORMAT))
                 .udyamRegistrationNo(request.getUdyamRegistrationNo())
@@ -48,7 +48,7 @@ public class OutcomeRequestMapper {
                 .build();
     }
 
-    public static CGTMSETransaction mapCGTMSETransaction(CGTMSETransactionRequest request, Agency agency, Participant participant, Organization organization,InfluencedParticipant influencedParticipant) {
+    public static CGTMSETransaction mapCGTMSETransaction(CGTMSETransactionRequest request, Agency agency, Participant participant, Organization organization, InfluencedParticipant influencedParticipant) {
         return CGTMSETransaction.builder()
                 .creditApplicationDate(DateUtil.stringToDate(request.getCreditApplicationDate(), DATE_FORMAT))
                 .dprSubmissionDate(DateUtil.stringToDate(request.getDprSubmissionDate(), DATE_FORMAT))
@@ -76,7 +76,7 @@ public class OutcomeRequestMapper {
                 .build();
     }
 
-    public static GeMRegistration mapGeMRegistration(GeMRegistrationRequest request, Agency agency, Participant participant, Organization organization,InfluencedParticipant influencedParticipant) {
+    public static GeMRegistration mapGeMRegistration(GeMRegistrationRequest request, Agency agency, Participant participant, Organization organization, InfluencedParticipant influencedParticipant) {
         return GeMRegistration.builder()
                 .gemRegistrationDate(DateUtil.stringToDate(request.getGemRegistrationDate(), DATE_FORMAT))
                 .gemRegistrationId(request.getGemRegistrationId())
@@ -132,7 +132,7 @@ public class OutcomeRequestMapper {
                 .build();
     }
 
-    public static PMEGP mapPmegp(PMEGPRequest request, Agency agency, Participant participant, Organization organization, InfluencedParticipant  influencedParticipant) {
+    public static PMEGP mapPmegp(PMEGPRequest request, Agency agency, Participant participant, Organization organization, InfluencedParticipant influencedParticipant) {
         return PMEGP.builder()
                 .loanSanctionedDate(DateUtil.stringToDate(request.getLoanSanctionedDate(), DATE_FORMAT))
                 .loanAmountReleased(request.getLoanAmountReleased())
@@ -155,7 +155,7 @@ public class OutcomeRequestMapper {
                 .build();
     }
 
-    public static PMMY mapPmmy(PMMYRequest request, Agency agency, Participant participant, Organization organization,InfluencedParticipant influencedParticipant) {
+    public static PMMY mapPmmy(PMMYRequest request, Agency agency, Participant participant, Organization organization, InfluencedParticipant influencedParticipant) {
         return PMMY.builder()
                 .loanAmountReleased(request.getLoanAmountReleased())
                 .loanSanctionedDate(DateUtil.stringToDate(request.getLoanSanctionedDate(), DATE_FORMAT))
@@ -174,7 +174,7 @@ public class OutcomeRequestMapper {
                 .build();
     }
 
-    public static PMS mapPms(PMSRequest request, Agency agency, Participant participant, Organization organization,InfluencedParticipant influencedParticipant) {
+    public static PMS mapPms(PMSRequest request, Agency agency, Participant participant, Organization organization, InfluencedParticipant influencedParticipant) {
         return PMS.builder()
                 .businessTurnover(request.getBusinessTurnover())
                 .loanNumber(request.getLoanNumber())
@@ -188,6 +188,8 @@ public class OutcomeRequestMapper {
                 .isUpiOrQrAvailable(request.getIsUpiOrQrAvailable())
                 .onlinePlatformUsed(request.getOnlinePlatformUsed())
                 .isInfluenced(request.getIsInfluenced())
+                .dateOfGrounding(DateUtil.covertStringToDate(request.getDateOfGrounding()))
+                .revenue(request.getRevenue())
                 .agency(agency)
                 .participant(participant)
                 .organization(organization)
@@ -195,19 +197,14 @@ public class OutcomeRequestMapper {
                 .build();
     }
 
-    public static ICScheme mapIcScheme(ICSchemeRequest request, Agency agency, Participant participant, Organization organization,InfluencedParticipant influencedParticipant) {
+    public static ICScheme mapIcScheme(ICSchemeRequest request, Agency agency, Participant participant, Organization organization, InfluencedParticipant influencedParticipant) {
         return ICScheme.builder()
                 .industryName(request.getIndustryName())
                 .location(request.getLocation())
                 .typeOfMsme(request.getTypeOfMsme())
                 .annualTurnover(request.getAnnualTurnover())
                 .domesticSales(request.getDomesticSales())
-                .exportMarket(request.getExportMarket())
-                .employmentDirect(request.getEmploymentDirect())
-                .employmentIndirect(request.getEmploymentIndirect())
-                .dateOfExport(request.getDateOfExport())
-                .valueOfExport(request.getValueOfExport())
-                .exportMarketDetails(request.getExportMarketDetails())
+                .investment(request.getInvestment())
                 .isInfluenced(request.getIsInfluenced())
                 .agency(agency)
                 .participant(participant)
@@ -216,7 +213,7 @@ public class OutcomeRequestMapper {
                 .build();
     }
 
-    public static NSIC mapNsic(NSICRequest request, Agency agency, Participant participant, Organization organization,InfluencedParticipant influencedParticipant) {
+    public static NSIC mapNsic(NSICRequest request, Agency agency, Participant participant, Organization organization, InfluencedParticipant influencedParticipant) {
         return NSIC.builder()
                 .govtAgencyProcured(request.getGovtAgencyProcured())
                 .dateOfProcurement(DateUtil.stringToDate(request.getDateOfProcurement(), DATE_FORMAT))
@@ -224,6 +221,7 @@ public class OutcomeRequestMapper {
                 .valueOfProcurement(request.getValueOfProcurement())
                 .costSavingsTender(request.getCostSavingsTender())
                 .isInfluenced(request.getIsInfluenced())
+                .typeOfProcurement(request.getTypeOfProcurement())
                 .agency(agency)
                 .participant(participant)
                 .organization(organization)
@@ -231,7 +229,7 @@ public class OutcomeRequestMapper {
                 .build();
     }
 
-    public static Patents mapPatents(PatentsRequest request, Agency agency, Participant participant, Organization organization,InfluencedParticipant influencedParticipant) {
+    public static Patents mapPatents(PatentsRequest request, Agency agency, Participant participant, Organization organization, InfluencedParticipant influencedParticipant) {
         return Patents.builder()
                 .nameOfPatent(request.getNameOfPatent())
                 .typeOfPatent(request.getTypeOfPatent())
@@ -253,7 +251,7 @@ public class OutcomeRequestMapper {
                 .build();
     }
 
-    public static GIProduct mapGIProduct(GIProductRequest request, Agency agency, Participant participant, Organization organization,InfluencedParticipant influencedParticipant) {
+    public static GIProduct mapGIProduct(GIProductRequest request, Agency agency, Participant participant, Organization organization, InfluencedParticipant influencedParticipant) {
         return GIProduct.builder()
                 .companyName(request.getCompanyName())
                 .location(request.getLocation())
@@ -280,10 +278,9 @@ public class OutcomeRequestMapper {
                 .build();
     }
 
-    public static Barcode mapBarcode(BarcodeRequest request, Agency agency, Participant participant, Organization organization,InfluencedParticipant influencedParticipant) {
+    public static Barcode mapBarcode(BarcodeRequest request, Agency agency, Participant participant, Organization organization, InfluencedParticipant influencedParticipant) {
         return Barcode.builder()
-                .industry(request.getIndustry())
-                .location(request.getLocation())
+                .typeOfMarket(request.getTypeOfMarket())
                 .barCodeType(request.getBarCodeType())
                 .gs1RegistrationNumber(request.getGs1RegistrationNumber())
                 .barCodeCoverage(request.getBarCodeCoverage())
@@ -291,9 +288,9 @@ public class OutcomeRequestMapper {
                 .onlineMarketRegistered(request.getOnlineMarketRegistered())
                 .dateOfRegistration(DateUtil.stringToDate(request.getDateOfRegistration(), DATE_FORMAT))
                 .valueOfTransaction(request.getValueOfTransaction())
-                .dateOfExport(DateUtil.stringToDate(request.getDateOfExport(), DATE_FORMAT))
-                .valueOfExport(request.getValueOfExport())
-                .countryExported(request.getCountryExported())
+                .dateOfExport(DateUtil.stringToDate(request.getDateOfMarket(), DATE_FORMAT))
+                .valueOfExport(request.getValueOfMarket())
+                .countryExported(request.getCountryMarket())
                 .isInfluenced(request.getIsInfluenced())
                 .agency(agency)
                 .participant(participant)
@@ -302,7 +299,7 @@ public class OutcomeRequestMapper {
                 .build();
     }
 
-    public static TreadMark mapTreadMark(TreadMarkRequest request, Agency agency, Participant participant, Organization organization,InfluencedParticipant influencedParticipant) {
+    public static TreadMark mapTreadMark(TreadMarkRequest request, Agency agency, Participant participant, Organization organization, InfluencedParticipant influencedParticipant) {
         return TreadMark.builder()
                 .nameOfTradMark(request.getNameOfTradMark())
                 .trademarkClass(request.getTrademarkClass())
@@ -327,16 +324,18 @@ public class OutcomeRequestMapper {
 
     }
 
-    public static Lean mapLean(LeanRequest request, Agency agency, Participant participant, Organization organization,InfluencedParticipant influencedParticipant) {
+    public static Lean mapLean(LeanRequest request, Agency agency, Participant participant, Organization organization, InfluencedParticipant influencedParticipant) {
         return Lean.builder()
                 .certificationType(request.getCertificationType())
                 .dateOfCertification(DateUtil.stringToDate(request.getDateOfCertification(), DATE_FORMAT))
                 .isLeanConsultantAppointed(request.getIsLeanConsultantAppointed())
                 .dateOfAppointed(DateUtil.stringToDate(request.getDateOfAppointed(), DATE_FORMAT))
                 .rawMaterialWastage(request.getRawMaterialWastage())
-                .productionRate(request.getProductionRate())
-                .defectRate(request.getDefectRate())
+                .rawMaterialWastageUnits(request.getRawMaterialWastageUnits())
+                .productionOutput(request.getProductionOutput())
+                .productionOutputUnits(request.getProductionOutputUnits())
                 .powerUsage(request.getPowerUsage())
+                .powerUsageUnits(request.getPowerUsageUnits())
                 .isInfluenced(request.getIsInfluenced())
                 .agency(agency)
                 .participant(participant)
@@ -345,19 +344,16 @@ public class OutcomeRequestMapper {
                 .build();
     }
 
-    public static ZEDCertification mapZEDCertification(ZEDCertificationRequest request, Agency agency, Participant participant, Organization organization,InfluencedParticipant influencedParticipant) {
+    public static ZEDCertification mapZEDCertification(ZEDCertificationRequest request, Agency agency, Participant participant, Organization organization, InfluencedParticipant influencedParticipant) {
         return ZEDCertification.builder()
-                .machineryType(request.getMachineryType())
-                .dprSubmissionDate(DateUtil.stringToDate(request.getDprSubmissionDate(), DATE_FORMAT))
-                .amountReleasedDate(DateUtil.stringToDate(request.getAmountReleasedDate(), DATE_FORMAT))
-                .releasedValue(request.getReleasedValue())
-                .groundingDate(DateUtil.stringToDate(request.getGroundingDate(), DATE_FORMAT))
+                .ownerName(request.getOwnerName())
+                .nicCode(request.getNicCode())
+                .zedCertificationId(request.getZedCertificationId())
+                .unitAddress(request.getUnitAddress())
                 .certificationDate(DateUtil.stringToDate(request.getCertificationDate(), DATE_FORMAT))
                 .zedCertificationType(request.getZedCertificationType())
                 .turnover(request.getTurnover())
                 .energyConsumptionKwhHr(request.getEnergyConsumptionKwhHr())
-                .productionMtHr(request.getProductionMtHr())
-                .defectRatePer100Units(request.getDefectRatePer100Units())
                 .isInfluenced(request.getIsInfluenced())
                 .agency(agency)
                 .participant(participant)
@@ -367,7 +363,7 @@ public class OutcomeRequestMapper {
 
     }
 
-    public static ConsortiaTender mapConsortiaTender(ConsortiaTenderRequest request, Agency agency, Participant participant, Organization organization,InfluencedParticipant influencedParticipant) {
+    public static ConsortiaTender mapConsortiaTender(ConsortiaTenderRequest request, Agency agency, Participant participant, Organization organization, InfluencedParticipant influencedParticipant) {
         return ConsortiaTender.builder()
                 .productOrServiceOffered(request.getProductOrServiceOffered())
                 .consortiaMemberType(request.getConsortiaMemberType())
@@ -388,7 +384,7 @@ public class OutcomeRequestMapper {
                 .build();
     }
 
-    public static OEM mapOem(OEMRequest request, Agency agency, Participant participant, Organization organization,InfluencedParticipant influencedParticipant) {
+    public static OEM mapOem(OEMRequest request, Agency agency, Participant participant, Organization organization, InfluencedParticipant influencedParticipant) {
 
         return OEM.builder()
                 .oemRegistrationDate(DateUtil.stringToDate(request.getOemRegistrationDate(), DATE_FORMAT))
@@ -411,7 +407,7 @@ public class OutcomeRequestMapper {
                 .build();
     }
 
-    public static PMFMEScheme mapPmfmseScheme(PMFMESchemeRequest request, Agency agency, Participant participant, Organization organization,InfluencedParticipant influencedParticipant) {
+    public static PMFMEScheme mapPmfmseScheme(PMFMESchemeRequest request, Agency agency, Participant participant, Organization organization, InfluencedParticipant influencedParticipant) {
         return PMFMEScheme.builder()
                 .dateOfApplicationSubmission(DateUtil.stringToDate(request.getDateOfApplicationSubmission(), DATE_FORMAT))
                 .loanSanctioned(request.getLoanSanctioned())
@@ -421,7 +417,7 @@ public class OutcomeRequestMapper {
                 .isCommonFacilityCentreUsed(request.getIsCommonFacilityCentreUsed())
                 .isBrandingMarketingSupportAvailed(request.getIsBrandingMarketingSupportAvailed())
                 .supportDetails(request.getSupportDetails())
-                .productionCapacity(request.getProductionCapacity())
+                .productionCapacity(request.getProductionCapacityPerHour())
                 .isCertificationSupportAvailed(request.getIsCertificationSupportAvailed())
                 .dateOfMarketLinkage(DateUtil.stringToDate(request.getDateOfMarketLinkage(), DATE_FORMAT))
                 .volumeOfMarketLinkage(request.getVolumeOfMarketLinkage())
@@ -439,7 +435,7 @@ public class OutcomeRequestMapper {
                 .build();
     }
 
-    public static PMViswakarma mapPMViswakarma(PMViswakarmaRequest request, Agency agency, Participant participant, Organization organization,InfluencedParticipant influencedParticipant) {
+    public static PMViswakarma mapPMViswakarma(PMViswakarmaRequest request, Agency agency, Participant participant, Organization organization, InfluencedParticipant influencedParticipant) {
         return PMViswakarma.builder()
                 .artisanCategory(request.getArtisanCategory())
                 .dateOfTraining(DateUtil.stringToDate(request.getDateOfTraining(), DATE_FORMAT))
@@ -457,7 +453,7 @@ public class OutcomeRequestMapper {
     }
 
 
-    public static VendorDevelopment mapVendorDevelopment(VendorDevelopmentRequest request, Agency agency, Participant participant, Organization organization,InfluencedParticipant influencedParticipant) {
+    public static VendorDevelopment mapVendorDevelopment(VendorDevelopmentRequest request, Agency agency, Participant participant, Organization organization, InfluencedParticipant influencedParticipant) {
         return VendorDevelopment.builder()
                 .dateOfParticipation(DateUtil.stringToDate(request.getDateOfParticipation(), DATE_FORMAT))
                 .vdpProgramName(request.getVdpProgramName())
@@ -480,7 +476,7 @@ public class OutcomeRequestMapper {
                 .build();
     }
 
-    public static ScStHub mapScStHub(ScStHubRequest request, Agency agency, Participant participant, Organization organization,InfluencedParticipant influencedParticipant) {
+    public static ScStHub mapScStHub(ScStHubRequest request, Agency agency, Participant participant, Organization organization, InfluencedParticipant influencedParticipant) {
         return ScStHub.builder()
                 .supportAvailedUnderNSSH(request.getSupportAvailedUnderNSSH())
                 .trainingName(request.getTrainingName())
@@ -506,7 +502,7 @@ public class OutcomeRequestMapper {
                 .build();
     }
 
-    public static SIDBIAspire mapSidbiAspire(SIDBIAspireRequest dto, Agency agency, Participant participant, Organization organization,InfluencedParticipant influencedParticipant) {
+    public static SIDBIAspire mapSidbiAspire(SIDBIAspireRequest dto, Agency agency, Participant participant, Organization organization, InfluencedParticipant influencedParticipant) {
         return SIDBIAspire.builder()
                 .applicationSubmissionDate(DateUtil.stringToDate(dto.getApplicationSubmissionDate(), DATE_FORMAT))
                 .dateSanctionUnderAspire(DateUtil.stringToDate(dto.getDateSanctionUnderAspire(), DATE_FORMAT))
@@ -516,12 +512,13 @@ public class OutcomeRequestMapper {
                 .supportAmount(dto.getSupportAmount())
                 .machinerySetupDate(DateUtil.stringToDate(dto.getMachinerySetupDate(), DATE_FORMAT))
                 .productionStartedDate(DateUtil.stringToDate(dto.getProductionStartedDate(), DATE_FORMAT))
-                .monthlyProductionUnits(dto.getMonthlyProductionUnits())
+                .productionUnits(dto.getProductionUnits())
+                .production(dto.getProduction())
                 .marketLinkageEnabled(dto.getIsMarketLinkageEnabled())
                 .marketLinkageDate(DateUtil.stringToDate(dto.getMarketLinkageDate(), DATE_FORMAT))
                 .marketLinkageVolume(dto.getMarketLinkageVolume())
                 .marketLinkageValue(dto.getMarketLinkageValue())
-                .monthlyTurnover(dto.getMonthlyTurnover())
+                .turnover(dto.getTurnover())
                 .isInfluenced(dto.getIsInfluenced())
                 .agency(agency)
                 .participant(participant)
@@ -530,7 +527,7 @@ public class OutcomeRequestMapper {
                 .build();
     }
 
-    public static DesignRights mapDesignRights(DesignRightsRequest dto, Agency agency, Participant participant, Organization organization,InfluencedParticipant influencedParticipant) {
+    public static DesignRights mapDesignRights(DesignRightsRequest dto, Agency agency, Participant participant, Organization organization, InfluencedParticipant influencedParticipant) {
         return DesignRights.builder()
                 .dateOfApplication(DateUtil.stringToDate(dto.getDateOfApplication(), DATE_FORMAT))
                 .dateOfDesignRightsGranted(DateUtil.stringToDate(dto.getDateOfDesignRightsGranted(), DATE_FORMAT))
@@ -552,7 +549,7 @@ public class OutcomeRequestMapper {
                 .build();
     }
 
-    public static CopyRights mapCopyRights(CopyRightsRequest request, Agency agency, Participant participant, Organization organization,InfluencedParticipant influencedParticipant) {
+    public static CopyRights mapCopyRights(CopyRightsRequest request, Agency agency, Participant participant, Organization organization, InfluencedParticipant influencedParticipant) {
         return CopyRights.builder()
                 .dateOfApplicationFiled(DateUtil.stringToDate(request.getDateOfApplicationFiled(), DATE_FORMAT))
                 .typeOfIntellectualWorkRegistered(request.getTypeOfIntellectualWorkRegistered())
@@ -570,7 +567,7 @@ public class OutcomeRequestMapper {
                 .build();
     }
 
-    public static GreeningOfMSME mapGreeningOfMSME(GreeningOfMSMERequest request, Agency agency, Participant participant, Organization organization,InfluencedParticipant influencedParticipant) {
+    public static GreeningOfMSME mapGreeningOfMSME(GreeningOfMSMERequest request, Agency agency, Participant participant, Organization organization, InfluencedParticipant influencedParticipant) {
         return GreeningOfMSME.builder()
                 .typeOfIntervention(request.getTypeOfIntervention())
                 .typeOfPrototypeProposed(request.getTypeOfPrototypeProposed())
@@ -585,7 +582,10 @@ public class OutcomeRequestMapper {
                 .purposeOfLoanUtilised(request.getPurposeOfLoanUtilised())
                 .parameter1(request.getParameter1())
                 .parameter2(request.getParameter2())
-                .unitForMeasurementOfProduction(request.getUnitForMeasurementOfProduction())
+                .parameter1Value(request.getParameter1Value())
+                .parameter1Units(request.getParameter1Units())
+                .parameter2Value(request.getParameter2Value())
+                .parameter2Units(request.getParameter2Units())
                 .productionPerHour(request.getProductionPerHour())
                 .agency(agency)
                 .participant(participant)
@@ -593,5 +593,119 @@ public class OutcomeRequestMapper {
                 .influencedParticipant(influencedParticipant)
                 .build();
     }
+
+    public static Loan mapLoan(LoanRequest request, Agency agency, Participant participant, Organization organization, InfluencedParticipant influencedParticipant) {
+        return Loan.builder()
+                .bankName(request.getBankName())
+                .loanAmount(request.getLoanAmount())
+                .dateOfFirstDisbursement(DateUtil.covertStringToDate(request.getDateOfFirstDisbursement()))
+                .disbursementAmount(request.getDisbursementAmount())
+                .agency(agency)
+                .participant(participant)
+                .organization(organization)
+                .influencedParticipant(influencedParticipant)
+                .build();
+
+    }
+
+    public static eCommerceTransaction mapECommerceTransaction(eCommerceTransactionRequest request, eCommerceRegistration eCommerceRegistration) {
+        return eCommerceTransaction.builder()
+                .year(request.getYear())
+                .month(request.getMonth())
+                .numberOfTransactions(request.getNumberOfTransactions())
+                .totalBusinessAmount(request.getTotalBusinessAmount())
+                .ecommerceRegistration(eCommerceRegistration)
+                .build();
+    }
+
+    public static eCommerceRegistration mapECommerceRegistration(eCommerceRegistrationRequest request, Agency agency, Participant participant, Organization organization, InfluencedParticipant influencedParticipant) {
+        return eCommerceRegistration.builder()
+                .platformName(request.getPlatformName())
+                .dateOfOnboarding(DateUtil.covertStringToDate(request.getDateOfOnboarding()))
+                .registrationDetails(request.getRegistrationDetails())
+                .agency(agency)
+                .participant(participant)
+                .organization(organization)
+                .influencedParticipant(influencedParticipant)
+                .build();
+    }
+
+    public static ImportSubsititution mapImportSubsititution(ImportSubsititutionRequest request,
+                                                             Agency agency,
+                                                             Participant participant,
+                                                             Organization organization,
+                                                             InfluencedParticipant influencedParticipant) {
+        return ImportSubsititution.builder()
+                .sectorName(request.getSectorName())
+                .productName(request.getProductName())
+                .prototypeSelected(request.getPrototypeSelected())
+                .businessPlanSubmissionDate(DateUtil.stringToDate(request.getBusinessPlanSubmissionDate(), DATE_FORMAT))
+                .amountSanctionedDate(DateUtil.stringToDate(request.getAmountSanctionedDate(), DATE_FORMAT))
+                .amountReleasedDate(DateUtil.stringToDate(request.getAmountReleasedDate(), DATE_FORMAT))
+                .amountReleasedInLakhs(request.getAmountReleasedInLakhs())
+                .bankProvidedLoan(request.getBankProvidedLoan())
+                .groundingDate(DateUtil.stringToDate(request.getGroundingDate(), DATE_FORMAT))
+                .monthlyTurnoverInLakhs(request.getMonthlyTurnoverInLakhs())
+                .marketOfProduct(request.getMarketOfProduct())
+                .marketDate(DateUtil.stringToDate(request.getMarketDate(), DATE_FORMAT))
+                .marketValueInLakhs(request.getMarketValueInLakhs())
+                .marketVolumeInMts(request.getMarketVolumeInMts())
+                .isInfluenced(request.getIsInfluenced())
+                .participant(participant)
+                .organization(organization)
+                .agency(agency)
+                .influencedParticipant(influencedParticipant)
+                .build();
+    }
+
+    public static SkillUpgradation mapESDPTraining(SkillUpgradationRequest request,
+                                                   Agency agency,
+                                                   Participant participant,
+                                                   Organization organization,
+                                                   InfluencedParticipant influencedParticipant) {
+        return SkillUpgradation.builder()
+                .typeOfTrainingReceived(request.getTypeOfTrainingReceived())
+                .trainingCompletionDate(DateUtil.stringToDate(request.getTrainingCompletionDate(), DATE_FORMAT))
+                .businessPlanSubmissionDate(DateUtil.stringToDate(request.getBusinessPlanSubmissionDate(), DATE_FORMAT))
+                .amountSanctionedDate(DateUtil.stringToDate(request.getAmountSanctionedDate(), DATE_FORMAT))
+                .amountReleasedDate(DateUtil.stringToDate(request.getAmountReleasedDate(), DATE_FORMAT))
+                .amountReleasedInLakhs(request.getAmountReleasedInLakhs())
+                .bankProvidedLoan(request.getBankProvidedLoan())
+                .loanType(request.getLoanType())
+                .loanPurpose(request.getLoanPurpose())
+                .groundingDate(DateUtil.stringToDate(request.getGroundingDate(), DATE_FORMAT))
+                .sectorType(request.getSectorType())
+                .monthlyTurnoverInLakhs(request.getMonthlyTurnoverInLakhs())
+                .isInfluenced(request.getIsInfluenced())
+                .participant(participant)
+                .organization(organization)
+                .agency(agency)
+                .influencedParticipant(influencedParticipant)
+                .build();
+    }
+
+    public static ExportPromotion mapExportPromotion(ExportPromotionRequest request,
+                                                     Agency agency,
+                                                     Participant participant,
+                                                     Organization organization,
+                                                     InfluencedParticipant influencedParticipant) {
+        return ExportPromotion.builder()
+                .sectorName(request.getSectorName())
+                .productName(request.getProductName())
+                .exportImportLicenceNo(request.getExportImportLicenceNo())
+                .mappingWithInternationalBuyer(request.getMappingWithInternationalBuyer())
+                .monthlyTurnoverInLakhs(request.getMonthlyTurnoverInLakhs())
+                .isExport(request.getIsExport())
+                .exportDate(DateUtil.stringToDate(request.getExportDate(), DATE_FORMAT))
+                .exportValueInLakhs(request.getExportValueInLakhs())
+                .exportVolumeInMts(request.getExportVolumeInMts())
+                .isInfluenced(request.getIsInfluenced())
+                .participant(participant)
+                .organization(organization)
+                .agency(agency)
+                .influencedParticipant(influencedParticipant)
+                .build();
+    }
+
 
 }

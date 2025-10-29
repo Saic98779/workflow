@@ -10,6 +10,7 @@ import lombok.*;
 public class NSICRequest {
     public String govtAgencyProcured;
     public String dateOfProcurement;
+    private String typeOfProcurement;
     public String typeOfProductSupplied;
     public Double valueOfProcurement;
     public Double costSavingsTender;

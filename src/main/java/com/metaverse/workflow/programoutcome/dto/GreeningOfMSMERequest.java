@@ -25,13 +25,16 @@ public class GreeningOfMSMERequest {
     public String nameOfBankProvidedLoan;
     public String dateOfGrounding;
     public String purposeOfLoanUtilised;
-    public String parameter1;
-    public String parameter2;
-    public String unitForMeasurementOfProduction;
     public Double productionPerHour;
+    private String parameter1;
+    public Double parameter1Value;
+    public String parameter1Units;
+    private String parameter2;
+    public String parameter2Value;
+    public String parameter2Units;
     private Long agencyId;
+    private Long influencedId;
     private Long participantId;
     private Long organizationId;
     public Boolean isInfluenced;
-    private Long influencedId;
 }
