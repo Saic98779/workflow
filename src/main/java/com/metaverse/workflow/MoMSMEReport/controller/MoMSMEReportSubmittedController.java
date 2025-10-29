@@ -1,23 +1,32 @@
 package com.metaverse.workflow.MoMSMEReport.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.metaverse.workflow.MoMSMEReport.service.MoMSMEReportDto;
 import com.metaverse.workflow.MoMSMEReport.service.MoMSMEReportSubmittedDto;
 import com.metaverse.workflow.MoMSMEReport.service.MoMSMEReportSubmittedService;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.common.util.RestControllerBase;
+import com.metaverse.workflow.dto.CentralRampRequestDto;
+import com.metaverse.workflow.encryption.EncryptService;
 import com.metaverse.workflow.exceptions.DataException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/momsme")
 public class MoMSMEReportSubmittedController {
+
+    private static final String MOMSME_URL = "https://ramp.msme.gov.in/ramp_staging/api/recieve.php";
     private final MoMSMEReportSubmittedService service;
+    private final EncryptService encryptService;
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
 
     @PostMapping("/submitted-save")
     public ResponseEntity<?> save(@RequestBody MoMSMEReportSubmittedDto dto) {
@@ -122,5 +131,17 @@ public class MoMSMEReportSubmittedController {
                 .build();
 
         return ResponseEntity.ok(response);
+    }
+
+    /**
+     * Accepts MoMSME request, encrypts, and forwards to MoMSME API.
+     */
+    @Operation(
+            summary = "Push data to MoMSME",
+            description = "Accepts CentralRampRequestDto in the required format, encrypts it using the encryption service, and forwards it to the official MoMSME endpoint."
+    )
+    @PostMapping("/push-to-momsme")
+    public ResponseEntity<?> pushToMoMSME(@RequestBody CentralRampRequestDto requestDto) {
+        return service.pushToMoMSME(requestDto);
     }
 }

@@ -8,7 +8,6 @@ import java.security.Signature;
 import java.util.Base64;
 
 import javax.crypto.Cipher;
-import javax.crypto.SecretKey;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import org.springframework.stereotype.Service;
@@ -26,8 +25,8 @@ public class SecureService {
     private final PublicKey appAPublicKey;
 
     public SecureService() throws Exception {
-        this.appBPrivateKey = KeyUtil.loadPrivateKey("keys/AppB_private.pem");
-        this.appAPublicKey = KeyUtil.loadPublicKey("keys/AppA_public.pem");
+        this.appBPrivateKey = KeyUtil.loadPrivateKey("keys/private_key.pem");
+        this.appAPublicKey = KeyUtil.loadPublicKey("keys/public_key.pem");
     }
 
     public Employee decryptAndVerify(String base64Combined) throws Exception {
