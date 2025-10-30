@@ -4,6 +4,7 @@ import com.metaverse.workflow.model.outcomes.VendorDevelopment;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Date;
+import java.util.List;
 
 public interface VendorDevelopmentRepository extends JpaRepository<VendorDevelopment,Long> {
      default  long countVendorDevelopment(Long agencyId, Date start, Date end){
@@ -18,4 +19,6 @@ public interface VendorDevelopmentRepository extends JpaRepository<VendorDevelop
 
     long countByAgencyAgencyIdAndDateOfParticipationBetween(Long agencyId, Date start, Date end);
     long countByDateOfParticipationBetween(Date start, Date start1);
+
+    List<VendorDevelopment> findByAgencyAgencyId(Long agencyId);
 }
