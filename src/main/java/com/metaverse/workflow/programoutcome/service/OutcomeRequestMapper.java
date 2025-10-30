@@ -591,6 +591,7 @@ public class OutcomeRequestMapper {
                 .participant(participant)
                 .organization(organization)
                 .influencedParticipant(influencedParticipant)
+                .isInfluenced(request.getIsInfluenced())
                 .build();
     }
 
@@ -600,6 +601,7 @@ public class OutcomeRequestMapper {
                 .loanAmount(request.getLoanAmount())
                 .dateOfFirstDisbursement(DateUtil.covertStringToDate(request.getDateOfFirstDisbursement()))
                 .disbursementAmount(request.getDisbursementAmount())
+                .isInfluenced(request.getIsInfluenced())
                 .agency(agency)
                 .participant(participant)
                 .organization(organization)
@@ -623,6 +625,7 @@ public class OutcomeRequestMapper {
                 .platformName(request.getPlatformName())
                 .dateOfOnboarding(DateUtil.covertStringToDate(request.getDateOfOnboarding()))
                 .registrationDetails(request.getRegistrationDetails())
+                .isInfluenced(request.getIsInfluenced())
                 .agency(agency)
                 .participant(participant)
                 .organization(organization)

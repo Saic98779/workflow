@@ -1807,7 +1807,7 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                         }
 
                         break;
-                    case "eCommerceRegistration": {
+                    case "ECommerceRegistration": {
                         List<ECommerceRegistration> eCommRegs = eCommerceRegistrationRepository.findByAgencyAgencyId(agency.getAgencyId());
                         Map<Boolean, Long> eCommCount = eCommRegs.stream()
                                 .filter(r -> r.getIsInfluenced() != null)
