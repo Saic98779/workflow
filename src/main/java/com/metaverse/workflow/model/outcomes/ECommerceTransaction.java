@@ -14,26 +14,26 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.util.Date;
-import java.util.List;
 @Entity
-@Table(name = "outcome_e_commerce_registration")
+@Table(name = "outcome_e_commerce_transaction")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class eCommerceRegistration {
+public class ECommerceTransaction {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String platformName;
-    private Date dateOfOnboarding;
-    private String registrationDetails; // can store Reg No / Email / Mobile
+    private Integer year;
+    private String month;
+    private Integer numberOfTransactions;
+    private Double totalBusinessAmount;
 
-    @OneToMany(mappedBy = "ecommerceRegistration", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<eCommerceTransaction> transactions;
-
+    @ManyToOne
+    @JoinColumn(name = "registration_id")
+    private ECommerceRegistration ecommerceRegistration;
 
     @Column(name = "is_influenced")
     private Boolean isInfluenced;

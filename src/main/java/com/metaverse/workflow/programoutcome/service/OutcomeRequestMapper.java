@@ -608,8 +608,8 @@ public class OutcomeRequestMapper {
 
     }
 
-    public static eCommerceTransaction mapECommerceTransaction(eCommerceTransactionRequest request, eCommerceRegistration eCommerceRegistration) {
-        return eCommerceTransaction.builder()
+    public static ECommerceTransaction mapECommerceTransaction(ECommerceTransactionRequest request, ECommerceRegistration eCommerceRegistration) {
+        return ECommerceTransaction.builder()
                 .year(request.getYear())
                 .month(request.getMonth())
                 .numberOfTransactions(request.getNumberOfTransactions())
@@ -618,8 +618,8 @@ public class OutcomeRequestMapper {
                 .build();
     }
 
-    public static eCommerceRegistration mapECommerceRegistration(eCommerceRegistrationRequest request, Agency agency, Participant participant, Organization organization, InfluencedParticipant influencedParticipant) {
-        return eCommerceRegistration.builder()
+    public static ECommerceRegistration mapECommerceRegistration(ECommerceRegistrationRequest request, Agency agency, Participant participant, Organization organization, InfluencedParticipant influencedParticipant) {
+        return ECommerceRegistration.builder()
                 .platformName(request.getPlatformName())
                 .dateOfOnboarding(DateUtil.covertStringToDate(request.getDateOfOnboarding()))
                 .registrationDetails(request.getRegistrationDetails())

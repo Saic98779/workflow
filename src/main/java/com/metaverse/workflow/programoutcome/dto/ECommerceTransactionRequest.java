@@ -1,18 +1,20 @@
 package com.metaverse.workflow.programoutcome.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
-@Builder
-public class eCommerceRegistrationRequest {
-    public String platformName;
-    public String dateOfOnboarding;
-    public String registrationDetails; // Reg No / Email / Mobile
+@Getter
+@Setter
+public class ECommerceTransactionRequest {
+
+    public Integer year;
+    public String month;
+    public Integer numberOfTransactions;
+    public Double totalBusinessAmount;
     public Boolean isInfluenced;
     private Long agencyId;
     private Long participantId;

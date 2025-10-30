@@ -20,60 +20,41 @@ import java.util.List;
 public class OutcomeTargetServiceImpl implements OutcomeTargetService {
 
     private final PhysicalRepository physicalTargetRepository;
-
     private final ONDCRegistrationRepository ondcRegistrationRepository;
-
     private final ONDCTransactionRepository ondcTransactionRepository;
-
     private final UdyamRegistrationRepository udyamRegistrationRepository;
-
     private final TReDSRegistrationRepository tredsRegistrationRepository;
-
     private final TReDSTransactionRepository tReDSTransactionRepository;
-
     private final ZEDCertificationRepository zedCertificationRepository;
-
     private final BarcodeRepository barcodeRepository;
-
     private final GIProductRepository giProductRepository;
-
     private final ICSchemeRepository icSchemeRepository;
-
     private final PatentsRepository patentsRepository;
-
     private final TreadMarkRepository treadMarkRepository;
-
     private final GeMRegistrationRepository geMRegistrationRepository;
-
     private final GeMTransactionRepository geMTransactionRepository;
-
     private final CGTMSETransactionRepository cgtmseTransactionRepository;
-
     private final ConsortiaTenderRepository consortiaTenderRepository;
-
     private final CopyRightsRepository copyRightsRepository;
-
     private final DesignRightsRepository designRightsRepository;
-
     private final NSICRepository nsicRepository;
-
     private final OEMRepository oemRepository;
-
     private final PMEGPRepository pmegpRepository;
-
     private final PMFMESchemeRepository pmfmeSchemeRepository;
-
     private final PMMYRepository pmmyRepository;
-
     private final VendorDevelopmentRepository vendorDevelopmentRepository;
-
     private final PMSRepository pmsRepository;
-
     private final LeanRepository leanRepository;
-
     private final PMViswakarmaReposiroty pmViswakarmaReposiroty;
-
     private final SIDBIAspireRepository sidbiAspireRepository;
+    private final ECommerceTransactionRepository eCommerceTransactionRepository;
+    private final ECommerceRegistrationRepository eCommerceRegistrationRepository;
+    private final ExportPromotionRepository exportPromotionRepository;
+    private final SkillUpgradationRepository skillUpgradationRepository;
+    private final ImportSubsititutionRepository importSubsititutionRepository;
+    private final LoanRepository loanRepository;
+    private final GreeningOfMSMERepository greeningOfMSMERepository;
+    private final ScStHubRepository scStHubRepository;
 
 
     public List<OutcomeTargetDTO> getTargetsByYear(String financialYear, Long agencyId) {
@@ -190,14 +171,14 @@ public class OutcomeTargetServiceImpl implements OutcomeTargetService {
                 giProductRepository.countGIProduct(agencyId, dQ4Start, dQ4End)
         ));
 
-//        //IC Scheme
-//        dtoList.add(createOutcomeDto("IC Scheme", financialYear,
-//                physicalTargetRepository.findTarget("ICScheme", financialYear, agencyId),
-//                icSchemeRepository.countICScheme(agencyId, dQ1Start, dQ1End),
-//                icSchemeRepository.countICScheme(agencyId, dQ2Start, dQ2End),
-//                icSchemeRepository.countICScheme(agencyId, dQ3Start, dQ3End),
-//                icSchemeRepository.countICScheme(agencyId, dQ4Start, dQ4End)
-//        ));
+        //IC Scheme
+        dtoList.add(createOutcomeDto("IC Scheme", financialYear,
+                physicalTargetRepository.findTarget("ICScheme", financialYear, agencyId),
+                icSchemeRepository.countICScheme(agencyId, dQ1Start, dQ1End),
+                icSchemeRepository.countICScheme(agencyId, dQ2Start, dQ2End),
+                icSchemeRepository.countICScheme(agencyId, dQ3Start, dQ3End),
+                icSchemeRepository.countICScheme(agencyId, dQ4Start, dQ4End)
+        ));
 
         //Patents
         dtoList.add(createOutcomeDto("Patents", financialYear,
@@ -226,14 +207,14 @@ public class OutcomeTargetServiceImpl implements OutcomeTargetService {
                 geMRegistrationRepository.countGeMRegistration(agencyId, dQ4Start, dQ4End)
         ));
 
-        //GeM Transaction
-//        dtoList.add(createOutcomeDto("GeM Transaction", financialYear,
-//                physicalTargetRepository.findTarget("GeMTransaction", financialYear, agencyId),
-//                geMTransactionRepository.countGeMTransaction(agencyId, dQ1Start, dQ1End),
-//                geMTransactionRepository.countGeMTransaction(agencyId, dQ2Start, dQ2End),
-//                geMTransactionRepository.countGeMTransaction(agencyId, dQ3Start, dQ3End),
-//                geMTransactionRepository.countGeMTransaction(agencyId, dQ4Start, dQ4End)
-//        ));
+        // GeM Transaction
+        dtoList.add(createOutcomeDto("GeM Transaction", financialYear,
+                physicalTargetRepository.findTarget("GeMTransaction", financialYear, agencyId),
+                geMTransactionRepository.countGeMTransaction(agencyId, dQ1Start, dQ1End),
+                geMTransactionRepository.countGeMTransaction(agencyId, dQ2Start, dQ2End),
+                geMTransactionRepository.countGeMTransaction(agencyId, dQ3Start, dQ3End),
+                geMTransactionRepository.countGeMTransaction(agencyId, dQ4Start, dQ4End)
+        ));
 
         //CGTMSE Transaction
         dtoList.add(createOutcomeDto("CGTMSE Transaction", financialYear,
@@ -355,6 +336,77 @@ public class OutcomeTargetServiceImpl implements OutcomeTargetService {
                 sidbiAspireRepository.countSIDBIAspire(agencyId, dQ2Start, dQ2End),
                 sidbiAspireRepository.countSIDBIAspire(agencyId, dQ3Start, dQ3End),
                 sidbiAspireRepository.countSIDBIAspire(agencyId, dQ4Start, dQ4End)
+        ));
+        // ScSt Hub
+        dtoList.add(createOutcomeDto("ScStHub", financialYear,
+                physicalTargetRepository.findTarget("ScStHub", financialYear, agencyId),
+                scStHubRepository.countScStHub(agencyId, dQ1Start, dQ1End),
+                scStHubRepository.countScStHub(agencyId, dQ2Start, dQ2End),
+                scStHubRepository.countScStHub(agencyId, dQ3Start, dQ3End),
+                scStHubRepository.countScStHub(agencyId, dQ4Start, dQ4End)
+        ));
+
+        // E-Commerce Registration
+        dtoList.add(createOutcomeDto("ECommerceRegistration", financialYear,
+                physicalTargetRepository.findTarget("ECommerceRegistration", financialYear, agencyId),
+                eCommerceRegistrationRepository.countECommerceRegistration(agencyId, dQ1Start, dQ1End),
+                eCommerceRegistrationRepository.countECommerceRegistration(agencyId, dQ2Start, dQ2End),
+                eCommerceRegistrationRepository.countECommerceRegistration(agencyId, dQ3Start, dQ3End),
+                eCommerceRegistrationRepository.countECommerceRegistration(agencyId, dQ4Start, dQ4End)
+        ));
+
+        // E-Commerce Transaction
+        dtoList.add(createOutcomeDto("ECommerceTransaction", financialYear,
+                physicalTargetRepository.findTarget("ECommerceTransaction", financialYear, agencyId),
+                eCommerceTransactionRepository.countECommerceTransaction(agencyId, dQ1Start, dQ1End),
+                eCommerceTransactionRepository.countECommerceTransaction(agencyId, dQ2Start, dQ2End),
+                eCommerceTransactionRepository.countECommerceTransaction(agencyId, dQ3Start, dQ3End),
+                eCommerceTransactionRepository.countECommerceTransaction(agencyId, dQ4Start, dQ4End)
+        ));
+
+        // Export Promotion
+        dtoList.add(createOutcomeDto("ExportPromotion", financialYear,
+                physicalTargetRepository.findTarget("ExportPromotion", financialYear, agencyId),
+                exportPromotionRepository.countExportPromotion(agencyId, dQ1Start, dQ1End),
+                exportPromotionRepository.countExportPromotion(agencyId, dQ2Start, dQ2End),
+                exportPromotionRepository.countExportPromotion(agencyId, dQ3Start, dQ3End),
+                exportPromotionRepository.countExportPromotion(agencyId, dQ4Start, dQ4End)
+        ));
+
+        // Skill Upgradation
+        dtoList.add(createOutcomeDto("SkillUpgradation", financialYear,
+                physicalTargetRepository.findTarget("SkillUpgradation", financialYear, agencyId),
+                skillUpgradationRepository.countSkillUpgradation(agencyId, dQ1Start, dQ1End),
+                skillUpgradationRepository.countSkillUpgradation(agencyId, dQ2Start, dQ2End),
+                skillUpgradationRepository.countSkillUpgradation(agencyId, dQ3Start, dQ3End),
+                skillUpgradationRepository.countSkillUpgradation(agencyId, dQ4Start, dQ4End)
+        ));
+
+        // Import Subsititution
+        dtoList.add(createOutcomeDto("ImportSubsititution", financialYear,
+                physicalTargetRepository.findTarget("ImportSubsititution", financialYear, agencyId),
+                importSubsititutionRepository.countImportSubsititution(agencyId, dQ1Start, dQ1End),
+                importSubsititutionRepository.countImportSubsititution(agencyId, dQ2Start, dQ2End),
+                importSubsititutionRepository.countImportSubsititution(agencyId, dQ3Start, dQ3End),
+                importSubsititutionRepository.countImportSubsititution(agencyId, dQ4Start, dQ4End)
+        ));
+
+        // Loan
+        dtoList.add(createOutcomeDto("Loan", financialYear,
+                physicalTargetRepository.findTarget("Loan", financialYear, agencyId),
+                loanRepository.countLoan(agencyId, dQ1Start, dQ1End),
+                loanRepository.countLoan(agencyId, dQ2Start, dQ2End),
+                loanRepository.countLoan(agencyId, dQ3Start, dQ3End),
+                loanRepository.countLoan(agencyId, dQ4Start, dQ4End)
+        ));
+
+        // Greening of MSME
+        dtoList.add(createOutcomeDto("GreeningOfMSME", financialYear,
+                physicalTargetRepository.findTarget("GreeningOfMSME", financialYear, agencyId),
+                greeningOfMSMERepository.countGreeningOfMSME(agencyId, dQ1Start, dQ1End),
+                greeningOfMSMERepository.countGreeningOfMSME(agencyId, dQ2Start, dQ2End),
+                greeningOfMSMERepository.countGreeningOfMSME(agencyId, dQ3Start, dQ3End),
+                greeningOfMSMERepository.countGreeningOfMSME(agencyId, dQ4Start, dQ4End)
         ));
 
 

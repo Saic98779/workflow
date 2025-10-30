@@ -40,7 +40,7 @@ public class GreeningOfMSME {
     private Date trainingCompletionDate;
 
     @Column(name = "business_plan_submission_date")
-    private Date businessPlanSubmissionDate;
+        private Date businessPlanSubmissionDate;
 
     @Column(name = "amount_sanctioned_date")
     private Date amountSanctionedDate;

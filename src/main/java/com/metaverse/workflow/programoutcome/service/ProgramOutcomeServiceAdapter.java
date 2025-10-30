@@ -62,8 +62,8 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
     private final CopyRightsRepository copyRightsRepository;
     private final GreeningOfMSMERepository greeningOfMSMERepository;
     private final PhysicalRepository physicalRepository;
-    private final eCommerceRegistrationRepository eCommerceRegistrationRepository;
-    private final eCommerceTransactionRepository eCommerceTransactionRepository;
+    private final ECommerceRegistrationRepository eCommerceRegistrationRepository;
+    private final ECommerceTransactionRepository eCommerceTransactionRepository;
     private final LoanRepository loanRepository;
     private final ImportSubsititutionRepository importSubsititutionRepository;
     private final ExportPromotionRepository exportPromotionRepository;
@@ -270,7 +270,7 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                                     .fieldName("loanPurpose")
                                     .fieldType("dropdown")
                                     .fieldOptions(Arrays.asList(
-                                             "Product Diversivation" , "Upgrading of Machinery"
+                                            "Product Diversivation", "Upgrading of Machinery"
                                     ))
                                     .build()
                     );
@@ -434,8 +434,8 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                     );
                     break;
                 }
-                case "eCommerceTransaction": {
-                    eCommerceRegistration eCommerceRegistration;
+                case "ECommerceTransaction": {
+                    ECommerceRegistration eCommerceRegistration;
                     if (isInfluenced) {
                         eCommerceRegistration = eCommerceRegistrationRepository.findByInfluencedParticipant_InfluencedId(participantId);
                     } else {
@@ -1371,8 +1371,8 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                 status = outcomeName + " Saved Successfully.";
                 break;
             }
-            case "eCommerceRegistration": {
-                eCommerceRegistrationRequest request = parser.parse(data, eCommerceRegistrationRequest.class);
+            case "ECommerceRegistration": {
+                ECommerceRegistrationRequest request = parser.parse(data, ECommerceRegistrationRequest.class);
 
                 Agency agency = agencyRepository.findById(request.getAgencyId() == null ? 0 : request.getAgencyId())
                         .orElseThrow(() -> new DataException("Agency data not found", "AGENCY-DATA-NOT-FOUND", 400));
@@ -1418,10 +1418,10 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                 break;
             }
 
-            case "eCommerceTransaction": {
-                eCommerceTransactionRequest eCommerceTransactionRequest = parser.parse(data, eCommerceTransactionRequest.class);
+            case "ECommerceTransaction": {
+                ECommerceTransactionRequest eCommerceTransactionRequest = parser.parse(data, ECommerceTransactionRequest.class);
 
-                eCommerceRegistration eCommerceRegistration =
+                ECommerceRegistration eCommerceRegistration =
                         eCommerceRegistrationRepository.findByParticipant_ParticipantId(eCommerceTransactionRequest.getParticipantId());
 
                 if (eCommerceRegistration == null) {
@@ -1612,7 +1612,7 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                         break;
 
                     case "TReDSTransaction":
-                        List<TReDSTransaction>  tReDSTransactions = tredsTransactionRepository.findByTredsRegistration_Agency_AgencyId(agency.getAgencyId());
+                        List<TReDSTransaction> tReDSTransactions = tredsTransactionRepository.findByTredsRegistration_Agency_AgencyId(agency.getAgencyId());
 
                         Map<Boolean, Long> tReDSTransactionsCount = tReDSTransactions.stream()
                                 .collect(Collectors.groupingBy(
@@ -1637,7 +1637,7 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                         List<PMMY> pmmies = pmmyRepository.findByAgencyAgencyId(agency.getAgencyId());
                         Map<Boolean, Long> pmmiesCount = pmmies.stream().filter(b -> b.getIsInfluenced() != null).collect(Collectors.groupingBy(PMMY::getIsInfluenced, Collectors.counting()));
                         influencerAchievement = pmmiesCount.getOrDefault(true, 0L);
-                        participantAchievement = pmmiesCount.getOrDefault(false, 0L) ;
+                        participantAchievement = pmmiesCount.getOrDefault(false, 0L);
                         break;
 
                     case "PMS":
@@ -1677,7 +1677,8 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
 
                     case "Barcode":
                         List<Barcode> barcodes = barcodeRepository.findByAgencyAgencyId(agency.getAgencyId());
-                        Map<Boolean, Long> barcodeCount = barcodes.stream().filter(b -> b.getIsInfluenced() != null).filter(b -> b.getIsInfluenced() != null).collect(Collectors.groupingBy(Barcode::getIsInfluenced, Collectors.counting()));                        influencerAchievement = barcodeCount.getOrDefault(true, 0L);
+                        Map<Boolean, Long> barcodeCount = barcodes.stream().filter(b -> b.getIsInfluenced() != null).filter(b -> b.getIsInfluenced() != null).collect(Collectors.groupingBy(Barcode::getIsInfluenced, Collectors.counting()));
+                        influencerAchievement = barcodeCount.getOrDefault(true, 0L);
                         participantAchievement = barcodeCount.getOrDefault(false, 0L);
                         break;
 
@@ -1763,6 +1764,13 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                         influencerAchievement = copyCount.getOrDefault(true, 0L);
                         participantAchievement = copyCount.getOrDefault(false, 0L);
                         break;
+
+                    case "Loan":
+                        List<Loan> loans = loanRepository.findByAgencyAgencyId(agency.getAgencyId());
+                        Map<Boolean, Long> loanCount = loans.stream().filter(b -> b.getIsInfluenced() != null).collect(Collectors.groupingBy(Loan::getIsInfluenced, Collectors.counting()));
+                        influencerAchievement = loanCount.getOrDefault(true, 0L);
+                        participantAchievement = loanCount.getOrDefault(false, 0L);
+                        break;
                     case "ZEDCertification":
                         switch (outcome.getOutcomeTableDisplayName()) {
                             case "ZED Certification Bronze" -> {
@@ -1799,6 +1807,101 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                         }
 
                         break;
+                    case "eCommerceRegistration": {
+                        List<ECommerceRegistration> eCommRegs = eCommerceRegistrationRepository.findByAgencyAgencyId(agency.getAgencyId());
+                        Map<Boolean, Long> eCommCount = eCommRegs.stream()
+                                .filter(r -> r.getIsInfluenced() != null)
+                                .collect(Collectors.groupingBy(ECommerceRegistration::getIsInfluenced, Collectors.counting()));
+                        influencerAchievement = eCommCount.getOrDefault(true, 0L);
+                        participantAchievement = eCommCount.getOrDefault(false, 0L);
+                        break;
+                    }
+
+                    case "ECommerceTransaction": {
+                        List<ECommerceTransaction> eCommTransactions = eCommerceTransactionRepository.findByEcommerceRegistration_Agency_AgencyId(agency.getAgencyId());
+                        Map<Boolean, Long> eCommTransactionsCount = eCommTransactions.stream()
+                                .collect(Collectors.groupingBy(
+                                        t -> {
+                                            ECommerceRegistration reg = t.getEcommerceRegistration();
+                                            return reg != null && Boolean.TRUE.equals(reg.getIsInfluenced());
+                                        },
+                                        Collectors.counting()
+                                ));
+                        influencerAchievement = eCommTransactionsCount.getOrDefault(true, 0L);
+                        participantAchievement = eCommTransactionsCount.getOrDefault(false, 0L);
+                        break;
+                    }
+
+                    case "ExportPromotion": {
+                        List<ExportPromotion> exportPromotions = exportPromotionRepository.findByAgencyAgencyId(agency.getAgencyId());
+                        Map<Boolean, Long> exportPromotionCount = exportPromotions.stream()
+                                .filter(r -> r.getIsInfluenced() != null)
+                                .collect(Collectors.groupingBy(ExportPromotion::getIsInfluenced, Collectors.counting()));
+                        influencerAchievement = exportPromotionCount.getOrDefault(true, 0L);
+                        participantAchievement = exportPromotionCount.getOrDefault(false, 0L);
+                        break;
+                    }
+
+                    case "SkillUpgradation": {
+                        List<SkillUpgradation> skillUpgradations = skillUpgradationRepository.findByAgencyAgencyId(agency.getAgencyId());
+                        Map<Boolean, Long> skillCount = skillUpgradations.stream()
+                                .filter(r -> r.getIsInfluenced() != null)
+                                .collect(Collectors.groupingBy(SkillUpgradation::getIsInfluenced, Collectors.counting()));
+                        influencerAchievement = skillCount.getOrDefault(true, 0L);
+                        participantAchievement = skillCount.getOrDefault(false, 0L);
+                        break;
+                    }
+
+                    case "ImportSubsititution": {
+                        List<ImportSubsititution> importSubs = importSubsititutionRepository.findByAgencyAgencyId(agency.getAgencyId());
+                        Map<Boolean, Long> importSubsCount = importSubs.stream()
+                                .filter(r -> r.getIsInfluenced() != null)
+                                .collect(Collectors.groupingBy(ImportSubsititution::getIsInfluenced, Collectors.counting()));
+                        influencerAchievement = importSubsCount.getOrDefault(true, 0L);
+                        participantAchievement = importSubsCount.getOrDefault(false, 0L);
+                        break;
+                    }
+                    case "VendorDevelopment": {
+                        List<VendorDevelopment> vendorDevelopments = vendorDevelopmentRepository.findByAgencyAgencyId(agency.getAgencyId());
+                        Map<Boolean, Long> vendorCount = vendorDevelopments.stream()
+                                .filter(v -> v.getIsInfluenced() != null)
+                                .collect(Collectors.groupingBy(VendorDevelopment::getIsInfluenced, Collectors.counting()));
+                        influencerAchievement = vendorCount.getOrDefault(true, 0L);
+                        participantAchievement = vendorCount.getOrDefault(false, 0L);
+                        break;
+                    }
+
+                    case "ScStHub": {
+                        List<ScStHub> scstHubs = scStHubRepository.findByAgencyAgencyId(agency.getAgencyId());
+                        Map<Boolean, Long> scstCount = scstHubs.stream()
+                                .filter(s -> s.getIsInfluenced() != null)
+                                .collect(Collectors.groupingBy(ScStHub::getIsInfluenced, Collectors.counting()));
+                        influencerAchievement = scstCount.getOrDefault(true, 0L);
+                        participantAchievement = scstCount.getOrDefault(false, 0L);
+                        break;
+                    }
+
+                    case "SIDBIAspire": {
+                        List<SIDBIAspire> sidbiAspires = sidbiAspireRepository.findByAgencyAgencyId(agency.getAgencyId());
+                        Map<Boolean, Long> sidbiCount = sidbiAspires.stream()
+                                .filter(s -> s.getIsInfluenced() != null)
+                                .collect(Collectors.groupingBy(SIDBIAspire::getIsInfluenced, Collectors.counting()));
+                        influencerAchievement = sidbiCount.getOrDefault(true, 0L);
+                        participantAchievement = sidbiCount.getOrDefault(false, 0L);
+                        break;
+                    }
+
+                    case "GreeningOfMSME": {
+                        List<GreeningOfMSME> greeningList = greeningOfMSMERepository.findByAgencyAgencyId(agency.getAgencyId());
+                        Map<Boolean, Long> greenCount = greeningList.stream()
+                                .filter(g -> g.getIsInfluenced() != null)
+                                .collect(Collectors.groupingBy(GreeningOfMSME::getIsInfluenced, Collectors.counting()));
+                        influencerAchievement = greenCount.getOrDefault(true, 0L);
+                        participantAchievement = greenCount.getOrDefault(false, 0L);
+                        break;
+                    }
+
+
 
                     default:
                         influencerAchievement = 0L;
