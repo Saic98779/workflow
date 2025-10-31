@@ -27,11 +27,11 @@ public class CentralRampDataService {
                 entity.setPhysicalAchieved(dashDto.getPhysicalAchieved());
                 entity.setFinancialTarget(dashDto.getFinancialTarget());
                 entity.setFinancialAchieved(dashDto.getFinancialAchieved());
-                entity.setMsmesBenefittedTotal(dashDto.getMSMEsBenefittedTotal());
-                entity.setMsmesBenefittedWoman(dashDto.getMSMEsBenefittedWoman());
-                entity.setMsmesBenefittedSC(dashDto.getMSMEsBenefittedSC());
-                entity.setMsmesBenefittedST(dashDto.getMSMEsBenefittedST());
-                entity.setMsmesBenefittedOBC(dashDto.getMSMEsBenefittedOBC());
+                entity.setMsmesBenefittedTotal(dashDto.getMsmesBenefittedTotal());
+                entity.setMsmesBenefittedWoman(dashDto.getMsmesBenefittedWoman());
+                entity.setMsmesBenefittedSC(dashDto.getMsmesBenefittedSC());
+                entity.setMsmesBenefittedST(dashDto.getMsmesBenefittedST());
+                entity.setMsmesBenefittedOBC(dashDto.getMsmesBenefittedOBC());
             }
         }
         return centralRampDataRepository.save(entity);

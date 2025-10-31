@@ -17,12 +17,13 @@ public class SIDBIAspireRequest {
     public Double supportAmount;
     public String machinerySetupDate;
     public String productionStartedDate;
-    public Integer monthlyProductionUnits;
+    public String production;
+    public String productionUnits;
     public Boolean isMarketLinkageEnabled;
     public String marketLinkageDate;
     public String marketLinkageVolume;
     public Double marketLinkageValue;
-    public Double monthlyTurnover;
+    public Double turnover;
     public Boolean isInfluenced;
 
     private Long agencyId;

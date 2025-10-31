@@ -1,18 +1,33 @@
 package com.metaverse.workflow.MoMSMEReport.service;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.metaverse.workflow.MoMSMEReport.repository.MoMSMEReportRepo;
 import com.metaverse.workflow.MoMSMEReport.repository.MoMSMEReportSubmittedRepository;
 import com.metaverse.workflow.common.response.WorkflowResponse;
+import com.metaverse.workflow.dto.CentralRampRequestDto;
+import com.metaverse.workflow.encryption.EncryptService;
 import com.metaverse.workflow.exceptions.DataException;
 import com.metaverse.workflow.model.MoMSMEReport;
 import com.metaverse.workflow.model.MoMSMEReportSubmitted;
 import com.metaverse.workflow.model.MoMSMEReportSubmittedMonthly;
 import com.metaverse.workflow.model.MoMSMEReportSubmittedQuarterly;
 import lombok.RequiredArgsConstructor;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import okhttp3.MediaType;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+import java.time.Duration;
 import java.util.*;
 
 @Service
@@ -22,6 +37,10 @@ public class MoMSMEReportSubmittedService {
     private final MoMSMEReportRepo moMSMEReportRepo;
     private final com.metaverse.workflow.MoMSMEReport.repository.MoMSMEReportSubmittedMonthlyRepository monthlyRepo;
     private final com.metaverse.workflow.MoMSMEReport.repository.MoMSMEReportSubmittedQuarterlyRepository quarterlyRepo;
+    private final EncryptService encryptService;
+    private final ObjectMapper objectMapper = new ObjectMapper();
+    private static final String MOMSME_URL = "https://ramp.msme.gov.in/ramp_staging/api/recieve.php";
+
 
     @Transactional
     public WorkflowResponse saveReport(MoMSMEReportSubmittedDto dto) throws DataException {
@@ -254,4 +273,90 @@ public class MoMSMEReportSubmittedService {
     }
 
 
+    /**
+     * Main method to handle full flow:
+     * 1 Convert request to JSON
+     * 2️ Encrypt JSON
+     * 3️ Push to MoMSME endpoint
+     * 4️ Return result
+     */
+    public ResponseEntity<?> pushToMoMSME(CentralRampRequestDto requestDto) {
+        try {
+            // Step 1 : Convert DTO to JSON string
+            String jsonData = convertToJson(requestDto);
+
+            // Step 2: Encrypt JSON (returns {"payload":"..."} )
+            String encryptedPayload = encryptPayload(jsonData);
+
+            // Step 3️ : Send encrypted payload using OkHttp
+            ResponseEntity<String> responseEntity = sendToMoMSME(encryptedPayload);
+
+            // Step 4️ : Build and return full response
+            return ResponseEntity.ok(
+                    buildResponse(encryptedPayload, responseEntity)
+            );
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(createErrorResponse(e.getMessage()));
+        }
+    }
+
+    // 🔹 Step 1: Convert DTO to JSON
+    private String convertToJson(CentralRampRequestDto requestDto) throws Exception {
+        return objectMapper.writeValueAsString(requestDto);
+    }
+
+    // 🔹 Step 2: Encrypt JSON using EncryptService
+    private String encryptPayload(String jsonData) throws Exception {
+        return encryptService.encryptAndSign(jsonData);
+    }
+
+    // 🔹 Step 3: Send encrypted payload using OkHttp (Trust-All SSL)
+    private ResponseEntity<String> sendToMoMSME(String finalPayload) throws Exception {
+        OkHttpClient client = createTrustAllOkHttpClient();
+
+        RequestBody body = RequestBody.create(finalPayload, MediaType.parse("application/json"));
+        Request request = new Request.Builder()
+                .url(MOMSME_URL)
+                .post(body)
+                .build();
+
+        try (Response response = client.newCall(request).execute()) {
+            String responseBody = response.body() != null ? response.body().string() : "";
+            return new ResponseEntity<>(responseBody, HttpStatus.valueOf(response.code()));
+        }
+    }
+
+    // OkHttp Trust-All SSL configuration (for staging)
+    private OkHttpClient createTrustAllOkHttpClient() throws Exception {
+        TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager() {
+            public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) {}
+            public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) {}
+            public java.security.cert.X509Certificate[] getAcceptedIssuers() { return new java.security.cert.X509Certificate[0]; }
+        }};
+
+        SSLContext sslContext = SSLContext.getInstance("SSL");
+        sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
+
+        return new OkHttpClient.Builder()
+                .sslSocketFactory(sslContext.getSocketFactory(), (X509TrustManager) trustAllCerts[0])
+                .hostnameVerifier((hostname, session) -> true)
+                .connectTimeout(Duration.ofSeconds(15))
+                .readTimeout(Duration.ofSeconds(30))
+                .build();
+    }
+
+    // 🔹 Step 4: Build final response
+    private Map<String, Object> buildResponse(String encryptedPayload, ResponseEntity<String> responseEntity) {
+        return Map.of(
+                "statusCode", responseEntity.getStatusCodeValue(),
+                "responseFromMoMSME", responseEntity.getBody()
+        );
+    }
+
+    // 🔹 Error Response
+    private Map<String, Object> createErrorResponse(String message) {
+        return Map.of("error", message);
+    }
 }

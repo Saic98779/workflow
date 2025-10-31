@@ -1,22 +1,20 @@
-package com.metaverse.workflow.encryption;
-
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.reactive.function.client.WebClient;
-
-@RestController
-public class AppAController {
-
-    private final SecureServiceA secureService;
-    private final WebClient webClient;
-
-    public AppAController(SecureServiceA secureService) {
-        this.secureService = secureService;
-        this.webClient = WebClient.builder()
-                .baseUrl("http://localhost:8081") // App B
-                .build();
-    }
+//package com.metaverse.workflow.encryption;
+//
+//import org.springframework.web.bind.annotation.RestController;
+//import org.springframework.web.reactive.function.client.WebClient;
+//
+//@RestController
+//public class AppAController {
+//
+//    private final encryptService secureService;
+//    private final WebClient webClient;
+//
+//    public AppAController(encryptService secureService) {
+//        this.secureService = secureService;
+//        this.webClient = WebClient.builder()
+//                .baseUrl("http://localhost:8081") // App B
+//                .build();
+//    }
 
 //    @GetMapping("/send-to-b")
 //    public String sendToB(@RequestBody CentralRampData centralRampData) throws Exception {
@@ -30,6 +28,6 @@ public class AppAController {
 //
 //        return "App B Response: " +securePayload;
 //    }
-}
+//}
 
 

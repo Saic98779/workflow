@@ -16,7 +16,7 @@ public class VendorDevelopmentRequest {
     private List<String> nameOfBuyersInterested;
     public String vendorRegisteredWith;
     public Boolean iseProcurementRegistered;
-    public String portalName;
+    private String portalName;
     public Boolean isDigitalCatalogCreated;
     public String dateOfSupply;
     public Double volumeOfSupply;

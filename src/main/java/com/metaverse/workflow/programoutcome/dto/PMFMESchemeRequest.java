@@ -16,7 +16,7 @@ public class PMFMESchemeRequest {
     public Boolean isCommonFacilityCentreUsed;
     public Boolean isBrandingMarketingSupportAvailed;
     public String supportDetails; // if branding/marketing support was availed
-    public Double productionCapacity; // in MTs/month
+    public Double productionCapacityPerHour; // in MTs/month
     public Boolean isCertificationSupportAvailed;
     public String dateOfMarketLinkage;
     public Double volumeOfMarketLinkage;

@@ -8,8 +8,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class BarcodeRequest {
-    public String industry;
-    public String location;
+
     public String barCodeType;
     public String gs1RegistrationNumber;
     public String barCodeCoverage;//dropdown
@@ -17,9 +16,10 @@ public class BarcodeRequest {
     public String onlineMarketRegistered;
     public String dateOfRegistration;
     public Double valueOfTransaction;
-    public String dateOfExport;
-    public Double valueOfExport;
-    public String countryExported;
+    public String dateOfMarket;
+    public Double valueOfMarket;
+    public String countryMarket;
+    private String typeOfMarket;
     public Boolean isInfluenced;
     private Long participantId;
     private Long organizationId;

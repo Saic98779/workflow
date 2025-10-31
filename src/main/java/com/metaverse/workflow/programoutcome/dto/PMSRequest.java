@@ -15,6 +15,8 @@ public class PMSRequest {
     public String dateOfLoanReleased;
     public Integer employmentCreatedDirect;
     public Integer employmentCreatedInDirect;
+    public String dateOfGrounding;
+    public Double revenue;
     public Double repaymentAmount;
     public String dateOfRepayment;
     public Boolean isUpiOrQrAvailable;

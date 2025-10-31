@@ -17,7 +17,9 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @EnableScheduling
-@SpringBootApplication(scanBasePackages = "com.metaverse")
+@SpringBootApplication(scanBasePackages = "com.metaverse", exclude = {
+		org.springframework.boot.autoconfigure.http.client.HttpClientAutoConfiguration.class
+})
 @EnableAsync
 @EnableConfigurationProperties(StorageProperties.class)
 @EnableJpaAuditing

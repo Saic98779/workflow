@@ -17,6 +17,7 @@ public class PMMYRequest {
     public String units;
     public Double marketValue; 
     public String productMarketedName;
+    private String category;
     public Boolean isInfluenced;
     private Long agencyId;
     private Long participantId;
