@@ -15,7 +15,6 @@ public class ECommerceTransactionRequest {
     public String month;
     public Integer numberOfTransactions;
     public Double totalBusinessAmount;
-    public Boolean isInfluenced;
     private Long agencyId;
     private Long participantId;
     private Long organizationId;
