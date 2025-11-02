@@ -262,7 +262,17 @@ public interface ProgramRepository extends JpaRepository<Program, Long> {
                                         @Param("endDate") Date endDate,
                                         Pageable pageable);
 
+    @Query("""
+        SELECT DISTINCT p 
+        FROM Program p 
+        JOIN p.participants part 
+        WHERE p.agency.agencyId = :agencyId 
+          AND SIZE(p.participants) > 0
+        """)
+    List<Program> findProgramsWithParticipantsByAgency(@Param("agencyId") Long agencyId);
 
+    @Query("SELECT DISTINCT p FROM Program p JOIN p.participants part WHERE SIZE(p.participants) > 0")
+    List<Program> findProgramsWithParticipants();
 
     List<Program> findByAgency_AgencyIdAndActivityId(Long agencyId, Long activityId);
 }

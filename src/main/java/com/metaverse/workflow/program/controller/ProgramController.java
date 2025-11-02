@@ -337,4 +337,10 @@ public class ProgramController {
 //            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
 //        }
 //    }
+
+    @GetMapping("/programs/with-participants/{agencyId}")
+    public ResponseEntity<WorkflowResponse> getProgramsWithParticipantsByAgency(@PathVariable Long agencyId)
+    {
+        return ResponseEntity.ok(programService.getProgramsWithParticipants(agencyId));
+    }
 }

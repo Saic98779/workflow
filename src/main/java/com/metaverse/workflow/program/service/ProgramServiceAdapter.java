@@ -715,6 +715,22 @@ public class ProgramServiceAdapter implements ProgramService {
         return programs.stream().map(Program::getProgramTitle).toList();
 
     }
+
+    public  WorkflowResponse getProgramsWithParticipants(Long agencyId)
+    {
+        List<Program> programs;
+        if(agencyId == -1) {
+            programs = programRepository.findProgramsWithParticipants();
+        }
+        else {
+            programs = programRepository.findProgramsWithParticipantsByAgency(agencyId);
+        }
+        return WorkflowResponse.builder()
+                .data(programs.stream().map(ProgramResponseMapper::map))
+                .status(200)
+                .message("success")
+                .build();
+    }
 }
 
 
