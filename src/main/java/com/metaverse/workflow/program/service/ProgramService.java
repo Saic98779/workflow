@@ -38,4 +38,5 @@ public interface  ProgramService {
     WorkflowResponse getProgramStatusSummery(Long agencyId, Date fromDate,Date toDate);
     WorkflowResponse getProgramSessionsByProgramId(Long programId)throws DataException;
     List<String> getProgramByAgencyAndActivity(Long agencyId,Long activityId) throws DataException;
+    WorkflowResponse getProgramsWithParticipants(Long agencyId);
 }
