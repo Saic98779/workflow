@@ -48,11 +48,12 @@ public class MoMSMEReportSubmittedMapper {
 
         public static MoMSMEReportDto toDTOReport(MoMSMEReport entity, String month, String financialYear) {
             if (entity == null) return null;
+            String quarter = getQuarter(month); // compute quarter early
 
             List<MoMSMEReportSubmittedMonthly> quarterMonthsRecords = entity.getMoMSMEReportSubmitted().stream()
-                    .filter(s -> s.getFinancialYear().equals(financialYear))       // filter by FY
-                    .flatMap(s -> s.getMonthlyReports().stream())                   // get all monthly records
-                    .filter(m -> getQuarterMonths(month).contains(m.getMonth().toLowerCase()))
+                    .filter(s -> s.getFinancialYear().equals(financialYear))
+                    .flatMap(s -> s.getMonthlyReports().stream())
+                    .filter(m -> getQuarterMonths(quarter).contains(m.getMonth().toLowerCase())) // ✅ use quarter here
                     .toList();
 
             MoMSMEReportSubmittedMonthly monthRecord = entity.getMoMSMEReportSubmitted().stream()
@@ -69,9 +70,6 @@ public class MoMSMEReportSubmittedMapper {
                     .findFirst()
                     .orElse(null);
 
-
-
-            String quarter = getQuarter(month);
 
             MoMSMEQuarterlyReportTargets currentQuarterTargets = entity.getMoMSMEQuarterlyReportTargets().stream()
                     .filter(t -> t.getQuarter().equals(quarter) && t.getFinancialYear().equals(financialYear))

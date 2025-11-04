@@ -15,9 +15,8 @@ public class CentralRampDataService {
 
     public CentralRampData saveCentralRampData(CentralRampRequestDto dto) {
         CentralRampData entity = new CentralRampData();
-        if (dto.getData().getStateRAMPDashbrdData() != null && !dto.getData().getStateRAMPDashbrdData().isEmpty()) {
-            for (StateRAMPDashbrdDataDto dashDto : dto.getData().getStateRAMPDashbrdData()) {
-                entity.setStatelgdCode(dto.getData().getState());
+        if (dto.getStateRAMPDashbrdData() != null && !dto.getStateRAMPDashbrdData().isEmpty()) {
+            for (StateRAMPDashbrdDataDto dashDto : dto.getStateRAMPDashbrdData()) {
                 entity.setIntervention(dashDto.getIntervention());
                 entity.setComponent(dashDto.getComponent());
                 entity.setActivity(dashDto.getActivity());

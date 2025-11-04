@@ -40,7 +40,9 @@ public class MoMSMEReportSubmittedService {
     private final EncryptService encryptService;
     private final ObjectMapper objectMapper = new ObjectMapper();
     private static final String MOMSME_URL = "https://ramp.msme.gov.in/ramp_staging/api/recieve.php";
-
+    private static final String USERNAME = "Telangana";
+    private static final String API_KEY = "Telanganakey";
+    private static final int STATE_CODE = 36;
 
     @Transactional
     public WorkflowResponse saveReport(MoMSMEReportSubmittedDto dto) throws DataException {
@@ -64,6 +66,8 @@ public class MoMSMEReportSubmittedService {
                 .findByMoMSMEReportSubmitted_SubmittedIdAndMonth(savedParent.getSubmittedId(), dto.getMonth())
                 .orElse(MoMSMEReportSubmittedMonthly.builder()
                         .moMSMEReportSubmitted(savedParent)
+                        .month(dto.getMonth())
+                        .moMSMEReport(moMSMEReport)
                         .moMSMEReport(moMSMEReport)
                         .month(dto.getMonth())
                         .build());
@@ -118,6 +122,7 @@ public class MoMSMEReportSubmittedService {
                 .findByMoMSMEReportSubmitted_SubmittedIdAndQuarter(savedParent.getSubmittedId(), quarter)
                 .orElse(MoMSMEReportSubmittedQuarterly.builder()
                         .moMSMEReportSubmitted(savedParent)
+                        .moMSMEReport(moMSMEReport)
                         .moMSMEReport(moMSMEReport)
                         .quarter(quarter)
                         .build());
@@ -282,19 +287,28 @@ public class MoMSMEReportSubmittedService {
      */
     public ResponseEntity<?> pushToMoMSME(CentralRampRequestDto requestDto) {
         try {
-            // Step 1 : Convert DTO to JSON string
-            String jsonData = convertToJson(requestDto);
+            // Step 1: Inject static username, apikey, and state
+            Map<String, Object> requestMap = new HashMap<>();
+            requestMap.put("username", USERNAME);
+            requestMap.put("apikey", API_KEY);
 
-            // Step 2: Encrypt JSON (returns {"payload":"..."} )
+            Map<String, Object> data = new HashMap<>();
+            data.put("State", STATE_CODE);
+            data.put("StateRAMPDashbrdData", requestDto.getStateRAMPDashbrdData());
+
+            requestMap.put("data", data);
+
+            // Step 2: Convert to JSON
+            String jsonData = new ObjectMapper().writeValueAsString(requestMap);
+
+            // Step 3: Encrypt JSON
             String encryptedPayload = encryptPayload(jsonData);
 
-            // Step 3️ : Send encrypted payload using OkHttp
+            // Step 4: Send to MoMSME
             ResponseEntity<String> responseEntity = sendToMoMSME(encryptedPayload);
 
-            // Step 4️ : Build and return full response
-            return ResponseEntity.ok(
-                    buildResponse(encryptedPayload, responseEntity)
-            );
+            // Step 5: Return combined response
+            return ResponseEntity.ok(buildResponse(encryptedPayload, responseEntity));
 
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
