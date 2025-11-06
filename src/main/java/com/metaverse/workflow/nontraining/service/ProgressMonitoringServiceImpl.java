@@ -227,7 +227,8 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
 
         Map<Long,Double> budgetAllocated = new HashMap<>();
         for (TrainingTargets targets : allById) {
-            budgetAllocated.put(targets.getSubActivity().getSubActivityId(),(targets.getQ1Budget() + targets.getQ2Budget() + targets.getQ3Budget() + targets.getQ4Budget()));
+            Double ifTargetPresent = budgetAllocated.getOrDefault(targets.getSubActivity().getSubActivityId(), 0.0);
+            budgetAllocated.put(targets.getSubActivity().getSubActivityId(),(targets.getQ1Budget() + targets.getQ2Budget() + targets.getQ3Budget() + targets.getQ4Budget()) + ifTargetPresent);
         }
 
         Iterable<ProgramExpenditure> bySubActivitySubActivityId = programExpenditureRepository.findBySubActivity_SubActivityIdInAndAgency_AgencyId(subActivityNames.keySet(),agencyId);
