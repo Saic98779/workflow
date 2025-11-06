@@ -11,8 +11,8 @@ import lombok.Setter;
 @Setter
 public class ECommerceTransactionRequest {
 
-    public Integer year;
-    public String month;
+    public String fromDate;
+    public String toDate;
     public Integer numberOfTransactions;
     public Double totalBusinessAmount;
     private Long agencyId;

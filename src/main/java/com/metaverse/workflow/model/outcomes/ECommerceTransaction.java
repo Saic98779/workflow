@@ -26,8 +26,8 @@ public class ECommerceTransaction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Integer year;
-    private String month;
+    private Date fromDate;
+    private Date toDate;
     private Integer numberOfTransactions;
     private Double totalBusinessAmount;
 
