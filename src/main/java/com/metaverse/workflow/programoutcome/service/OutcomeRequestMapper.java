@@ -612,8 +612,8 @@ public class OutcomeRequestMapper {
 
     public static ECommerceTransaction mapECommerceTransaction(ECommerceTransactionRequest request, ECommerceRegistration eCommerceRegistration) {
         return ECommerceTransaction.builder()
-                .year(request.getYear())
-                .month(request.getMonth())
+                .fromDate(DateUtil.covertStringToDate(request.getFromDate()))
+                .toDate(DateUtil.covertStringToDate(request.getToDate()))
                 .numberOfTransactions(request.getNumberOfTransactions())
                 .totalBusinessAmount(request.getTotalBusinessAmount())
                 .ecommerceRegistration(eCommerceRegistration)
