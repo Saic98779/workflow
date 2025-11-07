@@ -19,6 +19,8 @@ public interface AgencyService {
 
 	Agency getAgencyById(Long id);
 
+	WorkflowResponse getAllLocationByAgencyId(Long agencyId, int page, int size);
+
 	WorkflowResponse getProgramByAgencyIdDropDown(Long agencyId);
 
 	WorkflowResponse getProgramsDistrictsAndAgency(Long id, String district);
