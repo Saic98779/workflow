@@ -10,7 +10,9 @@ import com.metaverse.workflow.ProgramMonitoring.service.ProgramMonitoringRespons
 import com.metaverse.workflow.ProgramMonitoring.service.ProgramMonitoringService;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.common.util.CommonUtil;
+import com.metaverse.workflow.lookupHelper.EntityLookupHelper;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.awt.*;
@@ -18,13 +20,13 @@ import java.io.InputStream;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class ProgramMonitoringPDF {
 
     private final ProgramMonitoringService programMonitoringService;
 
-    public ProgramMonitoringPDF(ProgramMonitoringService programMonitoringService) {
-        this.programMonitoringService = programMonitoringService;
-    }
+    private final EntityLookupHelper entityLookupHelper;
+
 
     public void generateProgramsMonitoringPdf(HttpServletResponse response, Long monitoringId) {
         WorkflowResponse res = programMonitoringService.getFeedBackById(monitoringId);
@@ -74,7 +76,7 @@ public class ProgramMonitoringPDF {
             table.addCell(createCell(safe(CommonUtil.agencyMap.get(monitoring.getAgencyId())), rowFont, Color.WHITE));
 
             table.addCell(createCell("Program Name", headerFont, new Color(63, 81, 181)));
-            table.addCell(createCell(safe(CommonUtil.programMap.get(monitoring.getProgramId())), rowFont, Color.WHITE));
+            table.addCell(createCell(safe(entityLookupHelper.getProgramById(monitoring.getProgramId()).getProgramTitle()), rowFont, Color.WHITE));
 
             table.addCell(createCell("Program Rating", headerFont, new Color(63, 81, 181)));
             table.addCell(createCell(getStarRating(monitoring.getTotalScore()), rowFont, Color.WHITE));
