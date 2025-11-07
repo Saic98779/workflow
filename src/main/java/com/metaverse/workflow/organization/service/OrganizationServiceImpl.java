@@ -36,17 +36,16 @@ public class OrganizationServiceImpl implements OrganizationService {
 		return WorkflowResponse.builder().message("Oraganization saved successfully").status(200).data(response).build();
 	}
 	@Override
-	@Cacheable("organizations")
 	public Optional<Organization> getOrganizationById(Long organizationId) {
 		return repository.findById(organizationId);
 	}
 
 	@Override
-	public WorkflowResponse getOrganizations() {
+    @Cacheable("organizations")
+    public WorkflowResponse getOrganizations() {
 		List<Organization> organizationList = repository.findAllByOrderByOrganizationNameAsc();
 		return WorkflowResponse.builder().message("Success").status(200).data(OrganizationResponseMapper.mapOrganization(organizationList)).build();
 	}
-
 
 	@Override
 	public Boolean isMobileNumberExists(Long mobileNo) {
@@ -55,4 +54,9 @@ public class OrganizationServiceImpl implements OrganizationService {
 		return true;
 	}
 
+    @Autowired
+    @Cacheable("organizations")
+    public WorkflowResponse getAllOrganizations(){
+        return WorkflowResponse.builder().message("Success").status(200).data(repository.getAllOrganizations()).build();
+    }
 }

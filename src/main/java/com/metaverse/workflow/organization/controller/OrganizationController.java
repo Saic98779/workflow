@@ -3,6 +3,7 @@ package com.metaverse.workflow.organization.controller;
 import com.metaverse.workflow.activitylog.ActivityLogService;
 import com.metaverse.workflow.agency.service.AgencyResponseMapper;
 import com.metaverse.workflow.model.Agency;
+import com.metaverse.workflow.organization.service.OrganizationDto;
 import com.metaverse.workflow.resouce.service.ResourceResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -37,6 +38,11 @@ public class OrganizationController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/organization-names")
+    public ResponseEntity<WorkflowResponse> getAllOrganizations() {
+        WorkflowResponse allOrganizations  = organizationService.getAllOrganizations();
+        return ResponseEntity.ok(allOrganizations);
+    }
 
     @GetMapping("/organization/mobileno/exist/{mobileNo}")
     public ResponseEntity<Boolean> isParticipantsMobileNoExist(@PathVariable Long mobileNo) {
