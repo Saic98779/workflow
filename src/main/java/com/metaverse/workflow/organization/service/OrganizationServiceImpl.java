@@ -9,11 +9,13 @@ import com.metaverse.workflow.model.Sector;
 import com.metaverse.workflow.resouce.service.ResourceResponse;
 import com.metaverse.workflow.sector.repository.SectorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.metaverse.workflow.model.Organization;
 import com.metaverse.workflow.organization.repository.OrganizationRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class OrganizationServiceImpl implements OrganizationService {
@@ -34,6 +36,7 @@ public class OrganizationServiceImpl implements OrganizationService {
 		return WorkflowResponse.builder().message("Oraganization saved successfully").status(200).data(response).build();
 	}
 	@Override
+	@Cacheable("organizations")
 	public Optional<Organization> getOrganizationById(Long organizationId) {
 		return repository.findById(organizationId);
 	}
@@ -41,9 +44,9 @@ public class OrganizationServiceImpl implements OrganizationService {
 	@Override
 	public WorkflowResponse getOrganizations() {
 		List<Organization> organizationList = repository.findAllByOrderByOrganizationNameAsc();
-		List<OrganizationResponse> response = OrganizationResponseMapper.mapOrganization(organizationList);
-		return WorkflowResponse.builder().message("Success").status(200).data(response).build();
+		return WorkflowResponse.builder().message("Success").status(200).data(OrganizationResponseMapper.mapOrganization(organizationList)).build();
 	}
+
 
 	@Override
 	public Boolean isMobileNumberExists(Long mobileNo) {

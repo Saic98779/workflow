@@ -9,7 +9,6 @@ import lombok.*;
 @Getter
 @Setter
 @Builder
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class OrganizationResponse {
 
     private Long organizationId;
@@ -43,6 +42,7 @@ public class OrganizationResponse {
     private String nameOfTheVO;
     private String gramaPanchayat;
 	private List<Sector> sectorList;
+
 
 	@Getter
 	@Setter

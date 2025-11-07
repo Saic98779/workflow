@@ -37,6 +37,7 @@ public class OrganizationController {
         return ResponseEntity.ok(response);
     }
 
+
     @GetMapping("/organization/mobileno/exist/{mobileNo}")
     public ResponseEntity<Boolean> isParticipantsMobileNoExist(@PathVariable Long mobileNo) {
         Boolean mobileNumberExists = organizationService.isMobileNumberExists(mobileNo);
