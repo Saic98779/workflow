@@ -276,7 +276,7 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
             long activityId = activity.getActivityId();
 
             switch ((int) activityId) {
-                case 13, 16, 17, 18, 22, 23, 24, 25, 27, 30,31,6,8,9,11,12,20,21,106,1,2,3,4,5 ,32,33,34,35,36,37 -> {
+                case 13, 16, 17, 18, 22, 23, 24, 25, 27, 30,31,6,8,9,11,12,20,21,106,1,2,3,4,5 ,32,33,34,35,36,37,28,29 -> {
                     List<NonTrainingSubActivity> subActivities = activity.getSubActivities();
 
                     for (NonTrainingSubActivity subActivity : subActivities) {
