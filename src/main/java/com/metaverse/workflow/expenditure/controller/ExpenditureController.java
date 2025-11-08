@@ -189,8 +189,8 @@ public class ExpenditureController {
     }
 
     @GetMapping("/bulk/transactions/items")
-    public ResponseEntity<List<String>> getItemsByExpense(@RequestParam Integer expenseId) throws DataException {
-        List<String> items = expenditureService.getItemsByHeadOfExpense(expenseId);
+    public ResponseEntity<List<String>> getItemsByExpense(@RequestParam Integer expenseId,@RequestParam Long agencyId) throws DataException {
+        List<String> items = expenditureService.getItemsByHeadOfExpense(expenseId,agencyId);
         return ResponseEntity.ok(items);
     }
 

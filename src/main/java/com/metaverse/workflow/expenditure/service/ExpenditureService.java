@@ -20,7 +20,7 @@ public interface ExpenditureService {
     WorkflowResponse getAllProgramExpenditureByProgram(ExpenditureType expenditureType,Long programId);
     WorkflowResponse getAllBulkExpenditureTransactionByProgram(Long programId);
     BulkExpenditureLookupResponse getBulkExpendituresByExpenseAndItem(BulkExpenditureLookupRequest request) throws DataException;
-    List<String> getItemsByHeadOfExpense(Integer expenseId) throws DataException;
+    List<String> getItemsByHeadOfExpense(Integer expenseId,Long agencyId) throws DataException;
     List<HeadOfExpense> getAllHeadOfExpenses();
     WorkflowResponse updateProgramExpenditure(Long expenditureId, ProgramExpenditureRequest expenditureRequest, List<MultipartFile> files) throws DataException;
     WorkflowResponse deleteProgramExpenditure(Long expenditureId) throws DataException;

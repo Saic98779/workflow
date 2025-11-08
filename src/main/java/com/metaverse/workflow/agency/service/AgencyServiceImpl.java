@@ -1,10 +1,11 @@
 package com.metaverse.workflow.agency.service;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
+import com.metaverse.workflow.agency.repository.AgencyRepository;
 import com.metaverse.workflow.common.response.WorkflowResponse;
+import com.metaverse.workflow.location.repository.LocationRepository;
+import com.metaverse.workflow.location.service.LocationResponse;
+import com.metaverse.workflow.model.Agency;
+import com.metaverse.workflow.model.Location;
 import com.metaverse.workflow.model.Program;
 import com.metaverse.workflow.program.repository.ProgramRepository;
 import com.metaverse.workflow.program.service.ProgramResponse;
@@ -15,8 +16,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.metaverse.workflow.agency.repository.AgencyRepository;
-import com.metaverse.workflow.model.Agency;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.metaverse.workflow.common.constants.ProgramStatusConstants.PROGRAM_SCHEDULED;
 
@@ -29,6 +31,9 @@ public class AgencyServiceImpl implements AgencyService {
     @Autowired
     private ProgramRepository programRepository;
 
+    @Autowired
+    private LocationRepository locationRepository;
+
     @Override
     public String saveAgency(Agency agency) {
         Agency registeredAgency = agencyRepository.save(agency);
@@ -38,12 +43,24 @@ public class AgencyServiceImpl implements AgencyService {
     @Override
     public Agency getAgencyById(Long agencyId) {
         Optional<Agency> findById = agencyRepository.findById(agencyId);
-        if (findById.isPresent()) {
-            return findById.get();
-        }
+        return findById.orElse(null);
 
-        return null;
     }
+
+    @Override
+    public WorkflowResponse getAllLocationByAgencyId(Long agencyId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Location> locations = locationRepository.findByAgencyAgencyId(agencyId, pageable);
+        List<LocationResponse> locationResponses = AgencyResponseMapper.mapLocationDetails(locations.getContent());
+        return WorkflowResponse.builder()
+                .message("Success")
+                .status(200)
+                .data(locationResponses)
+                .totalPages(locations.getTotalPages())
+                .totalElements(locations.getTotalElements())
+                .build();
+    }
+
 
     public Page<Program> getProgramsByAgencyIdPaginated(Long agencyId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
@@ -79,7 +96,7 @@ public class AgencyServiceImpl implements AgencyService {
             programList = programRepository.findByAgency_AgencyIdAndStatus(id, PROGRAM_SCHEDULED);
         }
         List<ProgramResponse> responses = programList != null ? programList.stream().map(ProgramResponseMapper::map).collect(Collectors.toList()) : null;
-        if(responses == null)
+        if (responses == null)
             return WorkflowResponse.builder().message("Programs Not found for this Agency").status(200).build();
         return WorkflowResponse.builder().message("Success").status(200).data(responses).build();
     }

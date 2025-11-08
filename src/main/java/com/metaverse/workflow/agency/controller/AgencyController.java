@@ -6,10 +6,7 @@ import com.metaverse.workflow.agency.service.AgencyService;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.common.util.DateUtil;
 import com.metaverse.workflow.location.service.LocationResponse;
-import com.metaverse.workflow.model.Agency;
-import com.metaverse.workflow.model.Program;
-import com.metaverse.workflow.model.ProgramSession;
-import com.metaverse.workflow.model.ProgramSessionFile;
+import com.metaverse.workflow.model.*;
 import com.metaverse.workflow.participant.service.ParticipantResponse;
 import com.metaverse.workflow.program.repository.ProgramRepository;
 import com.metaverse.workflow.program.service.ProgramResponse;
@@ -55,11 +52,30 @@ public class AgencyController {
     }
 
     @GetMapping("/agency/resources/{id}")
-    public ResponseEntity<WorkflowResponse> getResourcesByAgencyId(@PathVariable("id") Long id) {
+    public ResponseEntity<WorkflowResponse> getResourcesByAgencyId(
+            @PathVariable("id") Long id,
+            @RequestParam(defaultValue = "0", required = false) int page,
+            @RequestParam(defaultValue = "10", required = false) int size) {
+
         Agency agency = service.getAgencyById(id);
-        List<ResourceResponse> response = AgencyResponseMapper.mapResources(agency.getResources());
-        return ResponseEntity.ok(WorkflowResponse.builder().message("Success").status(200).data(response).build());
+        List<Resource> resources = agency.getResources();
+        int start = Math.min(page * size, resources.size());
+        int end = Math.min(start + size, resources.size());
+        List<Resource> pagedResources = resources.subList(start, end);
+
+        List<ResourceResponse> response = AgencyResponseMapper.mapResources(pagedResources);
+
+        WorkflowResponse workflowResponse = WorkflowResponse.builder()
+                .message("Success")
+                .status(200)
+                .data(response)
+                .totalPages((int) Math.ceil((double) resources.size() / size))
+                .totalElements(resources.size())
+                .build();
+
+        return ResponseEntity.ok(workflowResponse);
     }
+
 
     @GetMapping("/agencies")
     public ResponseEntity<WorkflowResponse> getAgencies() {
@@ -90,19 +106,19 @@ public class AgencyController {
                                                                   @RequestParam(defaultValue = "programId,desc", required = false) String sort,
                                                                   @RequestParam(required = false) String startDate,
                                                                   @RequestParam(required = false) String endDate
-                                                                  ) {
+    ) {
 
         Pageable pageable = PageRequest.of(page, size, getSortOrder(sort));
         Page<Program> programPage;
         if (id == -1) {
             if (startDate != null && endDate != null) {
-                programPage = programRepository.findAllByStartDateBetween(DateUtil.stringToDate(startDate,"dd-MM-yyyy"), DateUtil.stringToDate(endDate,"dd-MM-yyyy"), pageable);
+                programPage = programRepository.findAllByStartDateBetween(DateUtil.stringToDate(startDate, "dd-MM-yyyy"), DateUtil.stringToDate(endDate, "dd-MM-yyyy"), pageable);
             } else {
                 programPage = programRepository.findAll(pageable);
             }
         } else {
             if (startDate != null && endDate != null) {
-                programPage = programRepository.findByAgencyAgencyIdAndStartDateBetween(id, DateUtil.stringToDate(startDate,"dd-MM-yyyy"), DateUtil.stringToDate(endDate,"dd-MM-yyyy"), pageable);
+                programPage = programRepository.findByAgencyAgencyIdAndStartDateBetween(id, DateUtil.stringToDate(startDate, "dd-MM-yyyy"), DateUtil.stringToDate(endDate, "dd-MM-yyyy"), pageable);
             } else {
                 programPage = programRepository.findByAgencyAgencyId(id, pageable);
             }
@@ -144,10 +160,10 @@ public class AgencyController {
     }
 
     @GetMapping("/agency/locationdetails/{id}")
-    public ResponseEntity<WorkflowResponse> getLocationDetailsByAgencyId(@PathVariable("id") Long id) {
-        Agency agency = service.getAgencyById(id);
-        List<LocationResponse> response = AgencyResponseMapper.mapLocationDetails(agency.getLocations());
-        return ResponseEntity.ok(WorkflowResponse.builder().message("Success").status(200).data(response).build());
+    public ResponseEntity<WorkflowResponse> getLocationDetailsByAgencyId(@PathVariable("id") Long id,
+                                                                         @RequestParam(defaultValue = "0", required = false) int page,
+                                                                         @RequestParam(defaultValue = "10", required = false) int size) {
+        return ResponseEntity.ok(service.getAllLocationByAgencyId(id, page, size));
     }
 
     @GetMapping("/agency/programs/dropdown/{id}")
@@ -158,8 +174,9 @@ public class AgencyController {
     @GetMapping("/agency/programs/dropdown")
     public ResponseEntity<WorkflowResponse> getProgramsDistrictsAndAgency(@RequestParam Long id,
                                                                           @RequestParam(required = false) String district) {
-        return ResponseEntity.ok(service.getProgramsDistrictsAndAgency(id,district));
+        return ResponseEntity.ok(service.getProgramsDistrictsAndAgency(id, district));
     }
+
     @GetMapping("/agency/programs/by/status/{id}")
     public ResponseEntity<WorkflowResponse> getProgramsByStatusAgencyId(
             @PathVariable("id") Long id,

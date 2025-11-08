@@ -13,4 +13,6 @@ public interface NonTrainingAchievementRepository extends JpaRepository<NonTrain
     NonTrainingAchievement findByNonTrainingSubActivity_SubActivityId(Long activityId);
 
     List<NonTrainingAchievement> findByNonTrainingActivity_Agency_AgencyId(Long agencyId);
+
+    NonTrainingAchievement findByNonTrainingSubActivity_subActivityId(Long subActivityId);
 }

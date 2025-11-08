@@ -8,6 +8,7 @@ import lombok.Data;
 public class PhysicalFinancialDto {
 
     private Long nonTrainingSubActivityId;
+    private Long nonTrainingAchievementId;
     private Long physicalTarget;
     private String physicalTargetAchievement;
     private Double financialTarget;
