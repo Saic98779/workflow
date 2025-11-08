@@ -1,21 +1,14 @@
 package com.metaverse.workflow.organization.controller;
 
 import com.metaverse.workflow.activitylog.ActivityLogService;
-import com.metaverse.workflow.agency.service.AgencyResponseMapper;
-import com.metaverse.workflow.model.Agency;
-import com.metaverse.workflow.organization.service.OrganizationDto;
-import com.metaverse.workflow.resouce.service.ResourceResponse;
+import com.metaverse.workflow.common.response.WorkflowResponse;
+import com.metaverse.workflow.organization.service.OrganizationRequest;
+import com.metaverse.workflow.organization.service.OrganizationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.metaverse.workflow.common.response.WorkflowResponse;
-import com.metaverse.workflow.organization.service.OrganizationRequest;
-import com.metaverse.workflow.organization.service.OrganizationResponse;
-import com.metaverse.workflow.organization.service.OrganizationService;
-
 import java.security.Principal;
-import java.util.List;
 
 @RestController
 public class OrganizationController {
@@ -33,9 +26,10 @@ public class OrganizationController {
     }
 
     @GetMapping("/organization/list")
-    public ResponseEntity<WorkflowResponse> getResourcesByAgencyId() {
-        WorkflowResponse response = organizationService.getOrganizations();
-        return ResponseEntity.ok(response);
+    public ResponseEntity<WorkflowResponse> getResourcesByAgencyId(
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int size) {
+            return ResponseEntity.ok(organizationService.getOrganizations(page, size));
     }
 
     @GetMapping("/organization-names")

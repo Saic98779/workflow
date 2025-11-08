@@ -1,21 +1,18 @@
 package com.metaverse.workflow.organization.service;
 
-import java.util.List;
-import java.util.Optional;
-
-import com.metaverse.workflow.agency.service.AgencyResponseMapper;
 import com.metaverse.workflow.common.response.WorkflowResponse;
+import com.metaverse.workflow.model.Organization;
 import com.metaverse.workflow.model.Sector;
-import com.metaverse.workflow.resouce.service.ResourceResponse;
+import com.metaverse.workflow.organization.repository.OrganizationRepository;
 import com.metaverse.workflow.sector.repository.SectorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.http.ResponseEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import com.metaverse.workflow.model.Organization;
-import com.metaverse.workflow.organization.repository.OrganizationRepository;
-import org.springframework.transaction.annotation.Transactional;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class OrganizationServiceImpl implements OrganizationService {
@@ -46,6 +43,24 @@ public class OrganizationServiceImpl implements OrganizationService {
 		List<Organization> organizationList = repository.findAllByOrderByOrganizationNameAsc();
 		return WorkflowResponse.builder().message("Success").status(200).data(OrganizationResponseMapper.mapOrganization(organizationList)).build();
 	}
+
+	@Override
+	@Cacheable("organizations")
+	public WorkflowResponse getOrganizations(int page, int size) {
+		PageRequest pageRequest = PageRequest.of(page, size);
+		Page<Organization> organizations = repository.findAll(pageRequest);
+		List<OrganizationResponse> organizationResponses =
+				OrganizationResponseMapper.mapOrganization(organizations.getContent());
+
+		return WorkflowResponse.builder()
+				.message("Success")
+				.status(200)
+				.data(organizationResponses)
+				.totalPages(organizations.getTotalPages())
+				.totalElements(organizations.getTotalElements())
+				.build();
+	}
+
 
 	@Override
 	public Boolean isMobileNumberExists(Long mobileNo) {
