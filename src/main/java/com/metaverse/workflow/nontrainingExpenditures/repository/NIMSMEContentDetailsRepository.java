@@ -11,4 +11,6 @@ public interface NIMSMEContentDetailsRepository extends JpaRepository<NIMSMECont
     List<NIMSMEContentDetails> findByContentType(String contentType);
     List<NIMSMEContentDetails> findByNonTrainingSubActivity_SubActivityId(Long subActivityId);
     void deleteByNonTrainingSubActivity_SubActivityId(Long subActivityId);
+
+    List<NIMSMEContentDetails> findByNonTrainingSubActivity_subActivityId(Long subActivityId);
 }
