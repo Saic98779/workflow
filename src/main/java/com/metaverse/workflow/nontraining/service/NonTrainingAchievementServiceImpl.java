@@ -25,8 +25,9 @@ public class NonTrainingAchievementServiceImpl implements NonTrainingAchievement
     public PhysicalFinancialDto getPhysicalFinancial(Long subActivityId) {
 
         List<NonTrainingTargets>  physicalFinancialTargets= nonTrainingTargetRepository.findByNonTrainingSubActivity_subActivityId(subActivityId);
+        NonTrainingAchievement achievement = nonTrainingAchievementRepository.findByNonTrainingSubActivity_subActivityId(subActivityId);
         if (physicalFinancialTargets != null)
-            return NonTrainingAchievementMapper.PhysicalFinancialDtoMapper(subActivityId, physicalFinancialTargets);
+            return NonTrainingAchievementMapper.PhysicalFinancialDtoMapper(subActivityId, physicalFinancialTargets, achievement);
         return null;
     }
 
