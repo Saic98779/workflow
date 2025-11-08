@@ -10,10 +10,7 @@ import com.metaverse.workflow.nontraining.dto.TrainingProgramDto;
 import com.metaverse.workflow.nontraining.repository.NonTrainingAchievementRepository;
 import com.metaverse.workflow.nontraining.repository.NonTrainingActivityRepository;
 import com.metaverse.workflow.nontrainingExpenditures.Dto.CorpusDebitFinancing;
-import com.metaverse.workflow.nontrainingExpenditures.repository.ListingOnNSERepository;
-import com.metaverse.workflow.nontrainingExpenditures.repository.NonTrainingExpenditureRepository;
-import com.metaverse.workflow.nontrainingExpenditures.repository.NonTrainingResourceRepository;
-import com.metaverse.workflow.nontrainingExpenditures.repository.TravelAndTransportRepository;
+import com.metaverse.workflow.nontrainingExpenditures.repository.*;
 import com.metaverse.workflow.nontrainingExpenditures.service.WeHubService;
 import com.metaverse.workflow.trainingandnontrainingtarget.repository.NonTrainingTargetRepository;
 import com.metaverse.workflow.trainingandnontrainingtarget.repository.TrainingTargetRepository;
@@ -40,6 +37,8 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
     private final NonTrainingActivityRepository nonTrainingActivityRepository;
     private final NonTrainingAchievementRepository nonTrainingAchievementRepository;
     private final ListingOnNSERepository listingOnNSERepository;
+    private final NIMSMEVendorDetailsRepository nimsmeVendorDetailsRepository;
+    private final NIMSMEContentDetailsRepository nimsmeContentDetailsRepository;
 
     /*
         --- Non-Training Programs ---
@@ -277,7 +276,7 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
             long activityId = activity.getActivityId();
 
             switch ((int) activityId) {
-                case 13, 16, 17, 18, 22, 23, 24, 25 -> {
+                case 13, 16, 17, 18, 22, 23, 24, 25, 27, 30,31,6,8,9,11,12,20,21,106,1,2,3,4,5 ,32,33,34,35,36,37,28,29 -> {
                     List<NonTrainingSubActivity> subActivities = activity.getSubActivities();
 
                     for (NonTrainingSubActivity subActivity : subActivities) {
@@ -342,11 +341,16 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
             }
             /*
             Resource table
-             COI  ->  26 : Staff
-             CODE ->  14 : Staff - CEO, 15 : Staff - Designers, 16 : Staff - Designers, 17 : Staff - Project Manager,
-                      74 : Interns for certifications, 75 : R&D,
+             COI     ->  26  : Staff
+             CODE    ->  14  : Staff - CEO, 15 : Staff - Designers, 16 : Staff - Designers, 17 : Staff - Project Manager,
+                         74  : Interns for certifications, 75 : R&D,
+             RICH_6B ->  125 : Conducting study & dashboards
+             CITD    ->  6   : RAMP Team Salaries
+             NIMSME  ->  82  : Staff (EDC Managers), 84 : Training on Thematic Areas - EDC Asst Managers
+             ALEAP   ->  72  : Human Resource
+
              */
-            case 26,14,15,16,17,74 -> { //
+            case 26,14,15,16,17,74, 125,6,62,82,84,72 -> { //
                 List<NonTrainingResource> nonTrainingSubActivity = nonTrainingResourcesRepository.findByNonTrainingSubActivity_subActivityId(subActivityId);
                 if (nonTrainingSubActivity != null || !nonTrainingSubActivity.isEmpty()) {
                     Double financialAchieved = nonTrainingSubActivity.stream().map(
@@ -360,13 +364,58 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
                     return objects;
                 }
             }
+            /*
+            WEHUB  -> 63  : Single Window Platform
+            NIMSME -> 79  : LMS, 80 : CMS, 81 : Website Development / Virtual EDC / Smart Search
+            ALEAP  -> 69  : Dashboard/ Central Management System
+            */
+            case 63,79,80,81,69 -> { //
+                List<NIMSMEVendorDetails> nonTrainingSubActivity = nimsmeVendorDetailsRepository.findByNonTrainingSubActivity_subActivityId(subActivityId);
+                if (nonTrainingSubActivity != null || !nonTrainingSubActivity.isEmpty()) {
+                    Optional<List<NonTrainingExpenditure>> byNonTrainingSubActivity = nonTrainingExpenditureRepository.findByNonTrainingSubActivity_SubActivityId(subActivityId);
+                    double financialAchieved =0.0;
+                    if(byNonTrainingSubActivity.isPresent()){
+                        financialAchieved = byNonTrainingSubActivity.get().stream().mapToDouble(amount -> amount.getExpenditureAmount()).sum();
+                    }
+                    Object[] objects = {String.valueOf(nonTrainingSubActivity.size()), financialAchieved};
+                    return objects;
+                } else {
+                    Object[] objects = {String.valueOf(0), 0.0};
+                    return objects;
+                }
+            }
+            /*
+             NIMSME -> 77 : Video, 78 : Documents
+            */
+            case 77,78 -> { //
+                List<NIMSMEContentDetails> nonTrainingSubActivity = nimsmeContentDetailsRepository.findByNonTrainingSubActivity_subActivityId(subActivityId);
+                if (nonTrainingSubActivity != null || !nonTrainingSubActivity.isEmpty()) {
+                    Optional<List<NonTrainingExpenditure>> byNonTrainingSubActivity = nonTrainingExpenditureRepository.findByNonTrainingSubActivity_SubActivityId(subActivityId);
+                    double financialAchieved =0.0;
+                    if(byNonTrainingSubActivity.isPresent()){
+                        financialAchieved = byNonTrainingSubActivity.get().stream().mapToDouble(amount -> amount.getExpenditureAmount()).sum();
+                    }
+                    Object[] objects = {String.valueOf(nonTrainingSubActivity.size()), financialAchieved};
+                    return objects;
+                } else {
+                    Object[] objects = {String.valueOf(0), 0.0};
+                    return objects;
+                }
+            }
 
             /*
             Expenditure Table
-                COI  ->  27 : Technology firm, 28 : Staff - Call center Agency
-                CODE ->  73 : IT Infrastructure Setup
-             */
-            case 27,28,73 -> { //
+                COI     ->  27  : Technology firm, 28 : Staff - Call center Agency
+                CODE    ->  73  : IT Infrastructure Setup
+                CITD    ->  4   : Administration Exp,  90 : Operating Expenses
+                CIPET   ->  12  : Other Administrative / Operating Expenses
+                WEHUB   ->  38  : Training Kit for ToT,	39 : Training Manuals, 	40 : Curriculum and Course Material, 64	: RFPs - Tendering Processes & Miscellaneous Expn
+                            37  : Admin Cost
+                ALEAP   ->  128 : Miscellaneous
+                TGTPC-4 ->  110 : Admin Cost , Logistic
+                TGTPC-10->  124 : Admn Cost including logistics etc.
+            */
+            case 27,28,73,90,12,38,39,40,64,37,110,124 -> { //
                 Optional<List<NonTrainingExpenditure>> nonTrainingSubActivity = nonTrainingExpenditureRepository.findByNonTrainingSubActivity_SubActivityId(subActivityId);
                 if (nonTrainingSubActivity.isPresent()) {
                     Double financialAchieved = nonTrainingSubActivity.get().stream().mapToDouble(exp -> exp.getExpenditureAmount()).sum();
@@ -386,10 +435,23 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
                     Object[] targetAndFinancialAchieved = {String.valueOf(nonTrainingSubActivity.size()), financialAchieved};
                     return targetAndFinancialAchieved;
             }
+            default -> {
+                return new Object[]{String.valueOf(0), 0.0};
+            }
         }
-        return new Object[]{String.valueOf(0), 0.0};
     }
 }
 /*
 18		Consumable : not done from code
+Not Done SubActivities
+CITD : Final Report Submission,Visit to MSMEs of respective Clusters,
+       Benchmark Study of latest Technology
+CIPET :
+    10		Visit to MSMEs of respective Clusters
+    11		RAMPExclusive Team Hiring Expenses
+    13		Benchmark Study of latest Technology
+    92		Final Report Submission
+    93		TA / DA Charges for Manpower visiting for Units
+WEHUB
+	61		Online MooCs sessions- Online MooCs sessions
  */

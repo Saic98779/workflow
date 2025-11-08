@@ -10,5 +10,6 @@ import java.util.List;
 public interface NIMSMEVendorDetailsRepository extends JpaRepository<NIMSMEVendorDetails, Long> {
     List<NIMSMEVendorDetails> findByNonTrainingSubActivity_SubActivityId(Long subActivityId);
     void deleteByNonTrainingSubActivity_SubActivityId(Long subActivityId);
-}
 
+    List<NIMSMEVendorDetails> findByNonTrainingSubActivity_subActivityId(Long subActivityId);
+}
