@@ -283,8 +283,8 @@ public class ExpenditureServiceAdepter implements ExpenditureService {
     }
 
     @Override
-    public List<String> getItemsByHeadOfExpense(Integer expenseId) {
-        return bulkExpenditureRepository.findDistinctItemNamesByHeadOfExpense(expenseId);
+    public List<String> getItemsByHeadOfExpense(Integer expenseId,Long agencyId) {
+        return bulkExpenditureRepository.findDistinctItemNamesByHeadOfExpenseAndAgencyId(expenseId,agencyId);
     }
 
     @Override
