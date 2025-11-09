@@ -29,6 +29,11 @@ public class OutcomeDetails {
         private String fieldType;
         private String fieldValue;
         private List<String> fieldOptions;
+
+        public OutcomeDataSet(String fieldName, String fieldDisplayName) {
+            this.fieldName = fieldName;
+            this.fieldDisplayName = fieldDisplayName;
+        }
     }
 }
 

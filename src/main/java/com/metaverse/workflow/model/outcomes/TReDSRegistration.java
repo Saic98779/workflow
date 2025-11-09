@@ -26,7 +26,7 @@ public class TReDSRegistration {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "treds_registration_id")
-    private Integer tredsRegistrationId;
+    private Long tredsRegistrationId;
     @Column(name = "treds_registration_No")
     private String tredsRegistrationNo;
     @Column(name = "treds_registration_Date")

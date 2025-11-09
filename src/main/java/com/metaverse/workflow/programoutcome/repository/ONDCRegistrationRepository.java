@@ -1,6 +1,8 @@
 package com.metaverse.workflow.programoutcome.repository;
 
 import com.metaverse.workflow.model.outcomes.ONDCRegistration;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -41,4 +43,6 @@ public interface ONDCRegistrationRepository extends JpaRepository<ONDCRegistrati
     boolean existsByInfluencedParticipant_InfluencedId(Long influencedId);
 
     List<ONDCRegistration> findByInfluencedParticipant_InfluencedId(Long participantId);
+
+    Page<ONDCRegistration> findByAgency_AgencyId(Long agencyId, Pageable pageable);
 }

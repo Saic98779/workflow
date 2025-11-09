@@ -33,7 +33,7 @@ public class NonTrainingAchievementMapper {
                  .financialTarget(QBudget)
                  .physicalTarget(QTarget)
                  .nonTrainingAchievementId(achievement != null ? achievement.getNonTrainingAchievementId() : null)
-                  .build();
+                 .build();
       }else {
           return null;
       }

@@ -1,6 +1,8 @@
 package com.metaverse.workflow.programoutcome.repository;
 
 import com.metaverse.workflow.model.outcomes.PMEGP;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Date;
@@ -22,4 +24,6 @@ public interface PMEGPRepository extends JpaRepository<PMEGP,Long> {
     long countByGroundingDateBetween(Date start, Date start1);
 
     List<PMEGP> findByAgencyAgencyId(Long agencyId);
+
+    Page<PMEGP> findByAgency_AgencyId(Long agencyId, Pageable pageable);
 }

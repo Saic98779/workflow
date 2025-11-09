@@ -1,6 +1,8 @@
 package com.metaverse.workflow.programoutcome.repository;
 
 import com.metaverse.workflow.model.outcomes.ScStHub;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Date;
@@ -21,4 +23,6 @@ public interface ScStHubRepository extends JpaRepository<ScStHub,Long> {
     }
 
     List<ScStHub> findByAgencyAgencyId(Long agencyId);
+
+    Page<ScStHub> findByAgency_AgencyId(Long agencyId, Pageable pageable);
 }

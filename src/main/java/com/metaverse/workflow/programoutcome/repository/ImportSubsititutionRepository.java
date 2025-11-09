@@ -1,6 +1,8 @@
 package com.metaverse.workflow.programoutcome.repository;
 
 import com.metaverse.workflow.model.outcomes.ImportSubsititution;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Date;
@@ -12,13 +14,8 @@ public interface ImportSubsititutionRepository extends JpaRepository<ImportSubsi
     long countByBusinessPlanSubmissionDateBetween(Date start, Date end);
 
     default long countImportSubsititution(Long agencyId, Date start, Date end) {
-        if (agencyId == -1) {
-            return countByBusinessPlanSubmissionDateBetween(start, end);
-        } else if (start == null || end == null) {
-            return count();
-        } else {
-            return countByAgencyAgencyIdAndBusinessPlanSubmissionDateBetween(agencyId, start, end);
-        }
+        return 0;
     }
 
+    Page<ImportSubsititution> findByAgency_AgencyId(Long agencyId, Pageable pageable);
 }

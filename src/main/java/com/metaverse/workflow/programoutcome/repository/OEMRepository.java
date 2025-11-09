@@ -1,6 +1,8 @@
 package com.metaverse.workflow.programoutcome.repository;
 
 import com.metaverse.workflow.model.outcomes.OEM;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Date;
@@ -20,4 +22,6 @@ public interface OEMRepository extends JpaRepository<OEM,Long> {
     }
 
     List<OEM> findByAgencyAgencyId(Long agencyId);
+
+    Page<OEM> findByAgency_AgencyId(Long agencyId, Pageable pageable);
 }

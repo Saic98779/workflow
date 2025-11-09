@@ -1,6 +1,8 @@
 package com.metaverse.workflow.programoutcome.repository;
 
 import com.metaverse.workflow.model.outcomes.SkillUpgradation;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Date;
@@ -20,4 +22,6 @@ public interface SkillUpgradationRepository extends JpaRepository<SkillUpgradati
             return countByAgencyAgencyIdAndBusinessPlanSubmissionDateBetween(agencyId, start, end);
         }
     }
+
+    Page<SkillUpgradation> findByAgency_AgencyId(Long agencyId, Pageable pageable);
 }

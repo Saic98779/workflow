@@ -1,6 +1,8 @@
 package com.metaverse.workflow.programoutcome.repository;
 
 import com.metaverse.workflow.model.outcomes.GIProduct;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Date;
@@ -22,4 +24,6 @@ public interface GIProductRepository extends JpaRepository<GIProduct,Long> {
     }
 
     List<GIProduct> findByAgencyAgencyId(Long agencyId);
+
+    Page<GIProduct> findByAgency_AgencyId(Long agencyId, Pageable pageable);
 }

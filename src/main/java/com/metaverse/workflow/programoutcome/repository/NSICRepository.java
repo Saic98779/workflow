@@ -1,6 +1,8 @@
 package com.metaverse.workflow.programoutcome.repository;
 
 import com.metaverse.workflow.model.outcomes.NSIC;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Date;
@@ -20,4 +22,6 @@ public interface NSICRepository extends JpaRepository<NSIC,Long> {
     }
 
     List<NSIC> findByAgencyAgencyId(Long agencyId);
+
+    Page<NSIC> findByAgency_AgencyId(Long agencyId, Pageable pageable);
 }

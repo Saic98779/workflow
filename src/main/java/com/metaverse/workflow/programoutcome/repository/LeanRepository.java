@@ -1,6 +1,8 @@
 package com.metaverse.workflow.programoutcome.repository;
 
 import com.metaverse.workflow.model.outcomes.Lean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Date;
@@ -24,4 +26,6 @@ public interface LeanRepository extends JpaRepository<Lean,Long> {
     long countByDateOfCertificationBetween(Date start, Date end);
 
     List<Lean> findByAgencyAgencyId(Long agencyId);
+
+    Page<Lean> findByAgency_AgencyId(Long agencyId, Pageable pageable);
 }

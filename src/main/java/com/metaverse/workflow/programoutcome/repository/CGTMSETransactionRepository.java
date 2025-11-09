@@ -1,6 +1,8 @@
 package com.metaverse.workflow.programoutcome.repository;
 
 import com.metaverse.workflow.model.outcomes.CGTMSETransaction;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -24,4 +26,6 @@ public interface CGTMSETransactionRepository extends JpaRepository<CGTMSETransac
            return countByAgencyAgencyIdAndAmountReleaseDateBetween(agencyId, dQ1Start, dQ1End);
        }
    }
+
+    Page<CGTMSETransaction> findByAgency_AgencyId(Long agencyId, Pageable pageable);
 }

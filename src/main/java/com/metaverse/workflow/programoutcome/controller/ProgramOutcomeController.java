@@ -9,6 +9,12 @@ import com.metaverse.workflow.programoutcome.dto.ProgramOutcomeTableResponse;
 import com.metaverse.workflow.programoutcome.service.OutcomeDetails;
 import com.metaverse.workflow.programoutcome.service.ProgramOutcomeService;
 import com.metaverse.workflow.programoutcome.service.UdyamService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.websocket.server.PathParam;
 import lombok.AllArgsConstructor;
@@ -105,4 +111,44 @@ public class ProgramOutcomeController {
           return   ResponseEntity.status(400).body(WorkflowResponse.builder().status(400).message(e.getMessage()).build());
         }
     }
+
+    @Operation(
+            summary = "Fetch outcome data dynamically",
+            description = """
+        Retrieves paginated outcome data (like ONDC Registration or Transaction) 
+        based on the given outcome name and agency ID.
+        
+        Supports pagination via 'page' and 'size' parameters.
+        Returns dynamic headers and corresponding data fields.
+        """
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Outcome data fetched successfully",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = WorkflowResponse.class))
+            ),
+            @ApiResponse(responseCode = "400", description = "Invalid request parameters"),
+            @ApiResponse(responseCode = "404", description = "Outcome not found"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    @GetMapping("/fetch/outcome-data")
+    public ResponseEntity<WorkflowResponse> getDynamicOutcome(
+            @Parameter(description = "Name of the outcome type (e.g. ONDCTransaction, ONDCRegistration)", required = true)
+            @RequestParam String outcomeName,
+
+            @Parameter(description = "Agency ID for which data needs to be fetched", required = true)
+            @RequestParam Long agencyId,
+
+            @Parameter(description = "Page number (starts from 0)", example = "0")
+            @RequestParam(defaultValue = "0") int page,
+
+            @Parameter(description = "Page size (number of records per page)", example = "10")
+            @RequestParam(defaultValue = "10") int size) {
+
+        WorkflowResponse response = programOutcomeService.getOutcomeData(outcomeName, agencyId, page, size);
+        return ResponseEntity.ok(response);
+    }
+
 }

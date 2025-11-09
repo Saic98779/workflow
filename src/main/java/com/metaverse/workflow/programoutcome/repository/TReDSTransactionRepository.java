@@ -1,6 +1,8 @@
 package com.metaverse.workflow.programoutcome.repository;
 
 import com.metaverse.workflow.model.outcomes.TReDSTransaction;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -30,4 +32,7 @@ public interface TReDSTransactionRepository extends JpaRepository<TReDSTransacti
     }
 
     List<TReDSTransaction> findByTredsRegistration_Agency_AgencyId(Long agencyId);
+
+    Page<TReDSTransaction> findByTredsRegistration_Agency_AgencyId(Long agencyId, Pageable pageable);
+
 }

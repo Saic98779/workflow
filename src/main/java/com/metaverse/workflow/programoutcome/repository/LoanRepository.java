@@ -1,6 +1,8 @@
 package com.metaverse.workflow.programoutcome.repository;
 
 import com.metaverse.workflow.model.outcomes.Loan;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Date;
@@ -21,4 +23,5 @@ public interface LoanRepository extends JpaRepository<Loan,Long> {
         }
     }
 
+    Page<Loan> findByAgency_AgencyId(Long agencyId, Pageable pageable);
 }

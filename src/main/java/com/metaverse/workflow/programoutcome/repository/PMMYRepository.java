@@ -1,6 +1,8 @@
 package com.metaverse.workflow.programoutcome.repository;
 
 import com.metaverse.workflow.model.outcomes.PMMY;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Date;
@@ -21,4 +23,6 @@ public interface PMMYRepository extends JpaRepository<PMMY, Long> {
     long countByGroundingDateBetween(Date start, Date start1);
 
     List<PMMY> findByAgencyAgencyId(Long agencyId);
+
+    Page<PMMY> findByAgency_AgencyId(Long agencyId, Pageable pageable);
 }

@@ -2,6 +2,8 @@ package com.metaverse.workflow.programoutcome.repository;
 
 import com.metaverse.workflow.model.outcomes.ONDCRegistration;
 import com.metaverse.workflow.model.outcomes.ONDCTransaction;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -31,6 +33,9 @@ public interface ONDCTransactionRepository extends JpaRepository<ONDCTransaction
     }
 
     List<ONDCTransaction> findByOndcRegistration_Agency_AgencyId(Long agencyId);
+
+    Page<ONDCTransaction> findByOndcRegistration_Agency_AgencyId(Long agencyId, Pageable pageable);
+
 
 //    List<ONDCTransaction> findByAgencyAgencyId(Long agencyId);
 }

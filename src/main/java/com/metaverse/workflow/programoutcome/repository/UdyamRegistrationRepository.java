@@ -1,6 +1,8 @@
 package com.metaverse.workflow.programoutcome.repository;
 
 import com.metaverse.workflow.model.outcomes.UdyamRegistration;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -37,4 +39,6 @@ public interface UdyamRegistrationRepository extends JpaRepository<UdyamRegistra
     List<UdyamRegistration> findByAgencyAgencyId(Long agencyId);
 
     boolean existsByInfluencedParticipant_InfluencedId(Long influencedId);
+
+    Page<UdyamRegistration> findByAgency_AgencyId(Long agencyId, Pageable pageable);
 }

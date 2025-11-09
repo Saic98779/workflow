@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/vendors")
 public class NIMSMEVendorController {
@@ -57,7 +59,8 @@ public class NIMSMEVendorController {
     }
 
     @PutMapping("/{vendorId}")
-    public ResponseEntity<WorkflowResponse> updateVendor(@PathVariable Long vendorId, @RequestBody NIMSMEVendorDetailsDto vendorDetails) {
+    public ResponseEntity<WorkflowResponse> updateVendor(@PathVariable Long vendorId, @RequestPart NIMSMEVendorDetailsDto vendorDetails,
+                                                         @RequestPart(value = "files", required = false) MultipartFile file) {
         try {
             NIMSMEVendorDetailsDto nimsmeVendorDetailsDto = service.updateVendor(vendorId, vendorDetails);
             return ResponseEntity.ok(

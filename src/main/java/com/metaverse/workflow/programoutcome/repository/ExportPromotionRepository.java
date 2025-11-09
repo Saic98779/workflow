@@ -1,6 +1,8 @@
 package com.metaverse.workflow.programoutcome.repository;
 
 import com.metaverse.workflow.model.outcomes.ExportPromotion;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Date;
@@ -12,12 +14,8 @@ public interface ExportPromotionRepository extends JpaRepository<ExportPromotion
     long countByExportDateBetween(Date start, Date end);
 
     default long countExportPromotion(Long agencyId, Date start, Date end) {
-        if (agencyId == -1) {
-            return countByExportDateBetween(start, end);
-        } else if (start == null || end == null) {
-            return count();
-        } else {
-            return countByAgencyAgencyIdAndExportDateBetween(agencyId, start, end);
-        }
+        return 0;
     }
+
+    Page<ExportPromotion> findByAgency_AgencyId(Long agencyId, Pageable pageable);
 }

@@ -1,6 +1,8 @@
 package com.metaverse.workflow.programoutcome.repository;
 
 import com.metaverse.workflow.model.outcomes.GeMRegistration;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Date;
@@ -31,4 +33,6 @@ public interface GeMRegistrationRepository extends JpaRepository<GeMRegistration
     boolean existsByInfluencedParticipant_InfluencedId(Long influencedId);
 
     GeMRegistration findByInfluencedParticipant_InfluencedId(Long participantId);
+
+    Page<GeMRegistration> findByAgency_AgencyId(Long agencyId, Pageable pageable);
 }

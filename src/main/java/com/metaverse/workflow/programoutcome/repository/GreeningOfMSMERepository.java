@@ -1,6 +1,8 @@
 package com.metaverse.workflow.programoutcome.repository;
 
 import com.metaverse.workflow.model.outcomes.GreeningOfMSME;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Date;
@@ -21,4 +23,5 @@ public interface GreeningOfMSMERepository extends JpaRepository<GreeningOfMSME,L
         }
     }
 
+    Page<GreeningOfMSME> findByAgency_AgencyId(Long agencyId, Pageable pageable);
 }

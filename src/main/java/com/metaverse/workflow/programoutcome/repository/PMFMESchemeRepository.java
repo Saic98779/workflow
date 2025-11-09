@@ -1,6 +1,8 @@
 package com.metaverse.workflow.programoutcome.repository;
 
 import com.metaverse.workflow.model.outcomes.PMFMEScheme;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Date;
@@ -22,4 +24,6 @@ public interface PMFMESchemeRepository extends JpaRepository<PMFMEScheme,Long> {
     long countByDateOfApplicationSubmissionBetween(Date start, Date start1);
 
     List<PMFMEScheme> findByAgencyAgencyId(Long agencyId);
+
+    Page<PMFMEScheme> findByAgency_AgencyId(Long agencyId, Pageable pageable);
 }
