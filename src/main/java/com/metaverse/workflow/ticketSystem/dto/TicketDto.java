@@ -1,13 +1,12 @@
 package com.metaverse.workflow.ticketSystem.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.metaverse.workflow.model.Ticket;
-import com.metaverse.workflow.model.TicketComment;
+import com.metaverse.workflow.enums.TicketStatus;
+import com.metaverse.workflow.model.*;
 import lombok.*;
 
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Data
 @NoArgsConstructor
@@ -18,13 +17,12 @@ public class TicketDto {
     private Long id;
     private String title;
     private String description;
-    private String status;     // OPEN, IN_PROGRESS, RESOLVED, CLOSED
-    private String priority;   // LOW, MEDIUM, HIGH
-    private String type;       // Report issue, Data updation, Feature request
+    private TicketStatus status;
+    private String priority;
+    private String type;
 
     private String assigneeId;
     private String assigneeName;
-
     private String reporterId;
     private String reporterName;
 
@@ -36,7 +34,12 @@ public class TicketDto {
     private Date updatedAt;
 
     private List<TicketAttachmentDto> attachments;
-    private TicketCommentDto comments;
+
+    // 💬 List of all comments
+    private List<TicketCommentDto> comments;
+
+    // 🔄 List of all history entries
+    private List<TicketHistoryDto> history;
 
     public TicketDto(Ticket ticket) {
         this.id = ticket.getId();
@@ -60,6 +63,7 @@ public class TicketDto {
         this.createdAt = ticket.getCreatedAt();
         this.updatedAt = ticket.getUpdatedAt();
 
+        // 🗂️ Attachments
         this.attachments = ticket.getAttachments() != null
                 ? ticket.getAttachments().stream()
                 .map(a -> new TicketAttachmentDto(
@@ -67,14 +71,21 @@ public class TicketDto {
                         a.getFileName(),
                         a.getFilePath(),
                         a.getContentType()))
-                .toList()
+                .collect(Collectors.toList())
                 : List.of();
 
-        if (ticket.getComments() != null && !ticket.getComments().isEmpty()) {
-            TicketComment latestComment = ticket.getComments().stream()
-                    .max(Comparator.comparing(TicketComment::getCreatedAt))
-                    .orElse(null);
-            this.comments = new TicketCommentDto(latestComment);
-        }
+        // 💬 Comments
+        this.comments = ticket.getComments() != null
+                ? ticket.getComments().stream()
+                .map(TicketCommentDto::new)
+                .collect(Collectors.toList())
+                : List.of();
+
+        // 🔄 History
+        this.history = ticket.getHistory() != null
+                ? ticket.getHistory().stream()
+                .map(TicketHistoryDto::new)
+                .collect(Collectors.toList())
+                : List.of();
     }
 }
