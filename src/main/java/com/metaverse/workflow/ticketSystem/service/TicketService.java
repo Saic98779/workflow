@@ -139,7 +139,6 @@ public class TicketService {
             // Status change
             if (dto.getStatus() != null) {
                 TicketStatus newStatus = dto.getStatus();
-                validateStatusTransition(oldStatus, newStatus);
                 ticket.setStatus(newStatus);
                 if (newStatus == TicketStatus.CLOSED) ticket.setClosedDate(new Date());
 
@@ -196,23 +195,6 @@ public class TicketService {
         history.setAction("UPDATE");
         history.setRemarks(remarks);
         historyRepo.save(history);
-    }
-
-    private void validateStatusTransition(TicketStatus current, TicketStatus next) {
-        Map<TicketStatus, List<TicketStatus>> transitions = Map.ofEntries(
-                Map.entry(TicketStatus.CREATED, List.of(TicketStatus.UNDER_REVIEW)),
-                Map.entry(TicketStatus.UNDER_REVIEW, List.of(TicketStatus.ADDITIONAL_INFO_NEEDED, TicketStatus.APPROVED)),
-                Map.entry(TicketStatus.ADDITIONAL_INFO_NEEDED, List.of(TicketStatus.UPDATED_WITH_INFO)),
-                Map.entry(TicketStatus.UPDATED_WITH_INFO, List.of(TicketStatus.APPROVED)),
-                Map.entry(TicketStatus.APPROVED, List.of(TicketStatus.IN_PROGRESS)),
-                Map.entry(TicketStatus.IN_PROGRESS, List.of(TicketStatus.RESOLVED)),
-                Map.entry(TicketStatus.RESOLVED, List.of(TicketStatus.CLOSED))
-        );
-
-        List<TicketStatus> allowed = transitions.getOrDefault(current, Collections.emptyList());
-        if (!allowed.contains(next)) {
-            throw new RuntimeException("Invalid status transition: " + current + " → " + next + ". Allowed: " + allowed);
-        }
     }
 
     // ----------------------------------------------------------------------
