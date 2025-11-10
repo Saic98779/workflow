@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 public class TicketDto {
 
     private Long id;
+    private String ticketId;
     private String title;
     private String description;
     private TicketStatus status;
@@ -45,6 +46,7 @@ public class TicketDto {
         this.id = ticket.getId();
         this.title = ticket.getTitle();
         this.description = ticket.getDescription();
+        this.ticketId = ticket.getTicketId();
         this.status = ticket.getStatus();
         this.priority = ticket.getPriority();
         this.type = ticket.getType();
