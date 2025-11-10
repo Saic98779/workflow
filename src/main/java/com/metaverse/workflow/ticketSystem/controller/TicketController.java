@@ -1,5 +1,6 @@
 package com.metaverse.workflow.ticketSystem.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.ticketSystem.dto.TicketDto;
 import com.metaverse.workflow.ticketSystem.service.TicketService;
@@ -23,6 +24,7 @@ import java.util.List;
 public class TicketController {
 
     private final TicketService ticketService;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     // ----------------------------------------------------------------------
     // CREATE TICKET
@@ -30,7 +32,7 @@ public class TicketController {
     @Operation(
             summary = "Create a new ticket",
             description = "Creates a new support ticket with optional attachments. "
-                    + "Send the ticket as JSON and files as multipart data."
+                    + "Send the ticket as JSON string (field name: 'ticket') and files as multipart data."
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Ticket created successfully",
@@ -41,17 +43,25 @@ public class TicketController {
     })
     @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<WorkflowResponse> createTicket(
-            @Parameter(description = "Ticket details in JSON format", required = true)
-            @RequestPart("ticket") TicketDto ticketDto,
+            @Parameter(description = "Ticket details as JSON string", required = true)
+            @RequestPart("ticket") String ticketDto,
             @Parameter(description = "Optional file attachments for the ticket")
             @RequestPart(value = "files", required = false) List<MultipartFile> files) {
 
-        WorkflowResponse response = ticketService.createTicket(ticketDto, files);
-        return ResponseEntity.ok(response);
+        try {
+            TicketDto ticketDtos = objectMapper.readValue(ticketDto, TicketDto.class);
+
+            WorkflowResponse response = ticketService.createTicket(ticketDtos, files);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(
+                    WorkflowResponse.error("Invalid ticket JSON: " + e.getMessage())
+            );
+        }
     }
 
     // ----------------------------------------------------------------------
-    // GET ALL TICKETS (with optional pagination)
+    // GET ALL TICKETS (with pagination)
     // ----------------------------------------------------------------------
     @Operation(
             summary = "Get all tickets",

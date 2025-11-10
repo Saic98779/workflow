@@ -1,6 +1,7 @@
 package com.metaverse.workflow.model;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.metaverse.workflow.enums.TicketStatus;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -21,7 +22,8 @@ public class Ticket {
 
     private String description;
 
-    private String status;   // OPEN, IN_PROGRESS, RESOLVED, CLOSED
+    @Enumerated(EnumType.STRING)
+    private TicketStatus status;   // OPEN, IN_PROGRESS, RESOLVED, CLOSED
 
     private String priority; // LOW, MEDIUM, HIGH
 
@@ -50,6 +52,9 @@ public class Ticket {
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedAt;
+
+    @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TicketHistory> history = new ArrayList<>();
 
     @PrePersist
     protected void onCreate() {
