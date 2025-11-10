@@ -37,6 +37,8 @@ public class TicketService {
         try {
             Ticket ticket = new Ticket();
             ticket.setTitle(dto.getTitle());
+            //  Generate random token ID
+            ticket.setTicketId(UUID.randomUUID().toString().substring(0, 5).toUpperCase());
             ticket.setDescription(dto.getDescription());
             ticket.setPriority(dto.getPriority());
             ticket.setType(dto.getType());
