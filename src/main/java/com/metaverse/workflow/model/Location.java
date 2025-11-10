@@ -42,11 +42,11 @@ public class Location {
     private Integer capacity;
     @Column(name="file_path")
     private String filePath;
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name="agency")
     @JsonIgnore
     private Agency agency;
-    @OneToMany(mappedBy = "location", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "location")
     private List<Program> programList;
     @Column(name="created_on",insertable = true,updatable = false)
     @CreationTimestamp

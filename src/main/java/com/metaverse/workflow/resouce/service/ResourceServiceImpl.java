@@ -93,7 +93,7 @@ public class ResourceServiceImpl implements ResourceService {
 		if (sessionRepo.existsByResource_ResourceId(resourceId)) {
 			return WorkflowResponse.builder()
 					.message("Cannot delete: A session already exists for the resource with ID: " + resourceId)
-					.status(200)
+					.status(400)
 					.build();
 		}
 		repository.deleteById(resourceId);

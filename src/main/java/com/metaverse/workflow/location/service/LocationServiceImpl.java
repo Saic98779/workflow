@@ -95,7 +95,7 @@ public class LocationServiceImpl implements LocationService {
 
         if (programRepository.existsByLocation_LocationId(locationId)) {
             return WorkflowResponse.builder().status(400)
-                    .message("Cannot delete : Program already exist for location with ID" + locationId).build();
+                    .message("Cannot delete : Program already exist for location with ID " + locationId).build();
         }
         locationRepository.deleteById(locationId);
         return WorkflowResponse.builder().message("Location deleted successfully").status(200).build();
