@@ -231,4 +231,15 @@ public class TicketService {
             return WorkflowResponse.error("Failed to fetch ticket: " + e.getMessage());
         }
     }
+
+    public WorkflowResponse getReportById(String ticketId) {
+        try {
+            List<Ticket> ticket = ticketRepo.findByReporter_UserId(ticketId);
+            return WorkflowResponse.success("Reporter details fetched successfully", ticket);
+
+        } catch (Exception e) {
+            return WorkflowResponse.error("Failed to fetch Report: " + e.getMessage());
+        }
+    }
+
 }

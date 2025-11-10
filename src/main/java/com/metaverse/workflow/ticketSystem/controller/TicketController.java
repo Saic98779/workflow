@@ -129,4 +129,22 @@ public class TicketController {
         WorkflowResponse response = ticketService.getTicketById(ticketId);
         return ResponseEntity.ok(response);
     }
+
+    @Operation(
+            summary = "Get report by ID",
+            description = "Fetches a single ticket by its unique identifier."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Report fetched successfully",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = WorkflowResponse.class))),
+            @ApiResponse(responseCode = "404", description = "Ticket not found", content = @Content)
+    })
+    @GetMapping("report/{reportId}")
+    public ResponseEntity<WorkflowResponse> getReportById(
+            @Parameter(description = "ID of the report to fetch", required = true)
+            @PathVariable("reportId") String reportId) {
+        WorkflowResponse response = ticketService.getReportById(reportId);
+        return ResponseEntity.ok(response);
+    }
 }
