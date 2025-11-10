@@ -21,5 +21,7 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
 
     // Find by title (case-insensitive)
     List<Ticket> findByTitleContainingIgnoreCase(String keyword);
+
+    List<Ticket> findByReporter_UserId(String reporterId);
 }
 
