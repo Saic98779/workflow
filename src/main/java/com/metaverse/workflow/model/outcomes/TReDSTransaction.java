@@ -1,11 +1,15 @@
 package com.metaverse.workflow.model.outcomes;
 
+import com.metaverse.workflow.model.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -61,4 +65,12 @@ public class TReDSTransaction {
 
     @Column(name = "repayment_date")
     private Date repaymentDate;
+
+    @CreatedDate
+    @Column(name = "created_timestamp", updatable = false)
+    protected LocalDateTime createdTimestamp;
+
+    @LastModifiedDate
+    @Column(name = "last_modified")
+    protected LocalDateTime lastModified;
 }

@@ -58,16 +58,31 @@ public class LocationController {
 			return RestControllerBase.error(e);
 		}
 	}
-	@DeleteMapping("locations/delete/{locationId}")
-	public ResponseEntity<?> deleteLocation(@PathVariable Long locationId,Principal principal,HttpServletRequest servletRequest) {
+	@DeleteMapping(value = "/locations/delete/{locationId}")
+	public ResponseEntity<WorkflowResponse> deleteLocation(
+			@PathVariable Long locationId,
+			Principal principal,
+			HttpServletRequest servletRequest) {
+
 		try {
-			WorkflowResponse  response = locationSercice.deleteLocation(locationId);
-			logService.logs(principal.getName(), "DELETE","location deleted successfully with id"+locationId,"location", servletRequest.getRequestURI());
-			return ResponseEntity.ok(response);
+			WorkflowResponse response = locationSercice.deleteLocation(locationId);
+			logService.logs(principal.getName(),
+					"DELETE",
+					"Location deleted successfully with ID " + locationId,
+					"location",
+					servletRequest.getRequestURI());
+			return ResponseEntity.status(response.getStatus()).body(response);
+
 		} catch (DataException e) {
-			return RestControllerBase.error(e);
+			return ResponseEntity.status(400)
+					.body(WorkflowResponse.error("Failed to delete location: " + e.getMessage()));
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.internalServerError()
+					.body(WorkflowResponse.error("Unexpected error: " + e.getMessage()));
 		}
 	}
+
 
 
 }

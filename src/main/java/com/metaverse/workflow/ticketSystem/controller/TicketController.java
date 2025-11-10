@@ -100,7 +100,7 @@ public class TicketController {
     @PutMapping("/{ticketId}")
     public ResponseEntity<WorkflowResponse> updateTicket(
             @Parameter(description = "ID of the ticket to update", required = true)
-            @PathVariable("ticketId") Long ticketId,
+            @PathVariable("ticketId") String ticketId,
             @Parameter(description = "Updated ticket details in JSON format", required = true)
             @RequestBody TicketDto ticketDto) {
 

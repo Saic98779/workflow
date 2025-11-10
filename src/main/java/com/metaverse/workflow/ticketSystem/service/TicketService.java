@@ -117,9 +117,9 @@ public class TicketService {
     // 📌 UPDATE TICKET (Supports multiple comments + attachments)
     // ----------------------------------------------------------------------
     @Transactional
-    public WorkflowResponse updateTicket(Long ticketId, TicketDto dto) {
+    public WorkflowResponse updateTicket(String ticketId, TicketDto dto) {
         try {
-            Ticket ticket = ticketRepo.findById(ticketId)
+            Ticket ticket = ticketRepo.findByTicketId(ticketId)
                     .orElseThrow(() -> new RuntimeException("Ticket not found"));
 
             TicketStatus oldStatus = ticket.getStatus();
