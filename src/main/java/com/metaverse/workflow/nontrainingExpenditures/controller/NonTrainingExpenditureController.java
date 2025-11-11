@@ -12,11 +12,13 @@ import com.metaverse.workflow.nontraining.service.NonTrainingActivityService;
 import com.metaverse.workflow.nontrainingExpenditures.service.*;
 import jakarta.websocket.server.PathParam;
 import lombok.RequiredArgsConstructor;
+import lombok.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
 
@@ -74,10 +76,12 @@ public class NonTrainingExpenditureController extends RestControllerBase {
         }
     }
 
-    @PutMapping("/update/{id}")
-    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody NonTrainingExpenditureDTO dto,Principal principal) {
-        try {
-            NonTrainingExpenditureDTO updated = service.update(id, dto);
+    @PutMapping(path = "/update/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> update(@PathVariable Long id, @RequestPart String dto,Principal principal, @RequestPart(value = "files", required = false)MultipartFile file) {
+        try { //NonTrainingExpenditureDTO
+            ObjectMapper objectMapper = new ObjectMapper();
+            NonTrainingExpenditureDTO nonTrainingExpenditureDTO =    objectMapper.readValue(dto,NonTrainingExpenditureDTO.class);
+            NonTrainingExpenditureDTO updated = service.update(id, nonTrainingExpenditureDTO,file);
             logService.logs(principal.getName(), "UPDATE", "Non-Training Expenditure updated successfully | ID: " + id, "NonTrainingExpenditure", "/non-training/update/" + id);
 
             return ResponseEntity.ok(
@@ -89,6 +93,10 @@ public class NonTrainingExpenditureController extends RestControllerBase {
             );
         } catch (DataException e) {
             return error(e);
+        } catch (JsonMappingException e) {
+            throw new RuntimeException(e);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -159,18 +167,37 @@ public class NonTrainingExpenditureController extends RestControllerBase {
         }
     }
 
-    @PutMapping("/resource-expenditure/update/{expenditureId}")
-    public ResponseEntity<?> updateResourceExpenditure(@PathVariable Long expenditureId,Principal principal,
-                                                       @RequestBody NonTrainingResourceExpenditureDTO expenditureDto) {
-        try {
-            WorkflowResponse response = service.updateResourceExpenditure(expenditureId, expenditureDto);
+    @PutMapping(path = "/resource-expenditure/update/{expenditureId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> updateResourceExpenditure(@PathVariable Long expenditureId, Principal principal,
+                                                       @RequestPart String expenditureDto, @RequestPart(value ="file", required = false)MultipartFile file) {
+        try { //NonTrainingResourceExpenditureDTO
+            ObjectMapper objectMapper = new ObjectMapper();
+            NonTrainingResourceExpenditureDTO dto =  objectMapper.readValue(expenditureDto,NonTrainingResourceExpenditureDTO.class);
+            WorkflowResponse response = service.updateResourceExpenditure(expenditureId, dto,file);
             logService.logs(principal.getName(), "UPDATE",
                     "Non-Training Resource Expenditure updated successfully | ID: " + expenditureId,
                     "NonTrainingResourceExpenditure",
                     "/non-training/expenditure/resource/update/" + expenditureId);
             return ResponseEntity.ok(response);
-        } catch (DataException e) {
-            return RestControllerBase.error(e);
+        } catch (JsonProcessingException e) {
+            return ResponseEntity.badRequest().body(
+                    WorkflowResponse.builder()
+                            .message("FAILURE: Invalid JSON format — " + e.getOriginalMessage()).status(400).build());
+
+        } catch (IOException e) {
+            return ResponseEntity.internalServerError().body(
+                    WorkflowResponse.builder()
+                            .message("FAILURE: File operation failed — " + e.getMessage()).status(500).build());
+
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(
+                    WorkflowResponse.builder()
+                            .message("FAILURE: " + e.getMessage()).status(400).build());
+
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(
+                    WorkflowResponse.builder()
+                            .message("FAILURE: Unexpected server error — " + e.getMessage()).status(500).build());
         }
     }
 

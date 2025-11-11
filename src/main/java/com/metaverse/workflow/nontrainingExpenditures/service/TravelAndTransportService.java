@@ -2,6 +2,7 @@ package com.metaverse.workflow.nontrainingExpenditures.service;
 
 
 import com.metaverse.workflow.common.enums.PaymentType;
+import com.metaverse.workflow.common.fileservice.FileUpdateUtil;
 import com.metaverse.workflow.common.fileservice.StorageService;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.common.util.DateUtil;
@@ -15,10 +16,17 @@ import com.metaverse.workflow.program.repository.ProgramSessionFileRepository;
 import com.metaverse.workflow.program.service.ProgramSessionFileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.FileSystemException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -66,9 +74,14 @@ public class TravelAndTransportService {
     }
 
 
-    public WorkflowResponse deleteById(Long travelTransportId) {
+    public WorkflowResponse deleteById(Long travelTransportId) throws IOException {
         if (!travelRepo.existsById(travelTransportId)) {
             throw new RuntimeException("TravelAndTransport not found with id " + travelTransportId);
+        }
+        Optional<TravelAndTransport> byId = travelRepo.findById(travelTransportId);
+        if (byId.isPresent()) {
+            boolean b = Files.deleteIfExists(Path.of(byId.get().getBillInvoicePath()));
+            System.err.println(b);
         }
         travelRepo.deleteById(travelTransportId);
         return WorkflowResponse.builder()
@@ -77,7 +90,9 @@ public class TravelAndTransportService {
                 .build();
     }
 
-    public TravelAndTransportDto updateTravel(Long id, TravelAndTransportDto dto) {
+    @Transactional
+    public TravelAndTransportDto updateTravel(Long id, TravelAndTransportDto dto, MultipartFile file) throws IOException {
+
         TravelAndTransport existing = travelRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("TravelAndTransport not found with id " + id));
 
@@ -95,8 +110,6 @@ public class TravelAndTransportService {
         existing.setBank(dto.getBank());
         existing.setIfscCode(dto.getIfscCode());
         existing.setPurpose(dto.getPurpose());
-        existing.setBillInvoicePath(dto.getBillInvoicePath());
-
 
 
         if (dto.getNonTrainingSubActivityId() != null) {
@@ -105,6 +118,21 @@ public class TravelAndTransportService {
             existing.setNonTrainingSubActivity(subActivity);
         }
 
+        String newPath = FileUpdateUtil.replaceFile(
+                file,
+                existing.getBillInvoicePath(),
+                (uploadedFile) -> this.storageTravelAndTransportFiles(uploadedFile, existing.getTravelTransportId(), "TravelAndTransport"),
+                () -> {
+                    // Runs *after* saving file successfully → DB update logic
+                    existing.setBillInvoicePath(existing.getBillInvoicePath());
+                    travelRepo.save(existing);
+                }
+        );
+        programSessionFileRepository.updateFilePathByTravelTransportId(
+                newPath,
+                existing.getTravelTransportId()
+        );
+        existing.setBillInvoicePath(newPath);
         TravelAndTransport updated = travelRepo.save(existing);
         return convertToDto(updated);
     }
@@ -160,7 +188,7 @@ public class TravelAndTransportService {
     }
 
     public String storageTravelAndTransportFiles(MultipartFile file, Long TravelAndTransportId, String folderName) {
-            String filePath = storageService.travelAndTransportStore(file, TravelAndTransportId, folderName);
-        return  filePath;
+        String filePath = storageService.travelAndTransportStore(file, TravelAndTransportId, folderName);
+        return filePath;
     }
 }

@@ -1,5 +1,6 @@
 package com.metaverse.workflow.nontrainingExpenditures.service;
 
+import com.metaverse.workflow.common.fileservice.FileUpdateUtil;
 import com.metaverse.workflow.common.fileservice.StorageService;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.common.util.DateUtil;
@@ -85,7 +86,7 @@ public class NIMSMEVendorDetailsService {
         return dto;
     }
 
-    public NIMSMEVendorDetailsDto updateVendor(Long vendorId, NIMSMEVendorDetailsDto updatedVendorDto) {
+    public NIMSMEVendorDetailsDto updateVendor(Long vendorId, NIMSMEVendorDetailsDto updatedVendorDto, MultipartFile file) {
         return repository.findById(vendorId)
                 .map(existing -> {
                     existing.setVendorCompanyName(updatedVendorDto.getVendorCompanyName());
@@ -97,6 +98,22 @@ public class NIMSMEVendorDetailsService {
                                 .orElseThrow(() -> new RuntimeException("SubActivity not found with id " + updatedVendorDto.getSubActivityId()));
                         existing.setNonTrainingSubActivity(subActivity);
                     }
+
+                    String newPath = FileUpdateUtil.replaceFile(
+                            file,
+                            existing.getOrderUpload(),
+                            (uploadedFile) -> this.storageFiles(file, existing.getId(), "NIMSMEVendorDetails"),
+                            () -> {
+                                // Runs *after* saving file successfully → DB update logic
+                                existing.setOrderUpload(existing.getOrderUpload());
+                                repository.save(existing);
+                            }
+                    );
+                    programSessionFileRepository.updateFilePathByNonTrainingExpenditureId(
+                            newPath,
+                            existing.getId()
+                    );
+                    existing.setOrderUpload(newPath);
                     NIMSMEVendorDetails save = repository.save(existing);
 
                     return entityToDto(save);

@@ -1,6 +1,7 @@
 package com.metaverse.workflow.nontrainingExpenditures.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.metaverse.workflow.activitylog.ActivityLogService;
 import com.metaverse.workflow.common.response.WorkflowResponse;
@@ -13,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
 
@@ -46,22 +48,44 @@ public class TravelAndTransportController {
     }
 
     @DeleteMapping("/{id}")
-    public WorkflowResponse deleteTravel(@PathVariable("id") Long id,Principal principal) {
+    public WorkflowResponse deleteTravel(@PathVariable("id") Long id,Principal principal) throws IOException {
         WorkflowResponse response = travelService.deleteById(id);
         logService.logs(principal.getName(), "DELETE", "Travel and Transport deleted successfully | ID: " + id, "TravelAndTransport", "/travel/" + id);
         return response;
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<?> updateTravel(@PathVariable("id") Long id, @RequestBody TravelAndTransportDto dto, Principal principal) {
+    @PutMapping(path = "/{travelAndTransportId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> updateTravel(@PathVariable("id") Long id, @RequestPart("travelAndTransportDto") String travelAndTransportDto, Principal principal,
+                                          @RequestPart(value = "file", required = false) MultipartFile file) throws Exception {
 
         try {
-            TravelAndTransportDto updated = travelService.updateTravel(id, dto);
+            ObjectMapper objectMapper = new ObjectMapper();
+            TravelAndTransportDto dto = objectMapper.readValue(travelAndTransportDto, TravelAndTransportDto.class);
+
+            TravelAndTransportDto updated = travelService.updateTravel(id, dto, file);
+
+
             logService.logs(principal.getName(), "UPDATE", "Travel and Transport updated successfully | ID: " + id, "TravelAndTransport", "/travel/" + id);
             return ResponseEntity.ok(updated);
-        } catch (RuntimeException e) {
-            return ResponseEntity.ofNullable(WorkflowResponse.builder().message("FAILURE").status(400).build());
-        }
+        } catch (JsonProcessingException e) {
+            return ResponseEntity.badRequest().body(
+                    WorkflowResponse.builder()
+                            .message("FAILURE: Invalid JSON format — " + e.getOriginalMessage()).status(400).build());
 
+        } catch (IOException e) {
+            return ResponseEntity.internalServerError().body(
+                    WorkflowResponse.builder()
+                            .message("FAILURE: File operation failed — " + e.getMessage()).status(500).build());
+
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(
+                    WorkflowResponse.builder()
+                            .message("FAILURE: " + e.getMessage()).status(400).build());
+
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(
+                    WorkflowResponse.builder()
+                            .message("FAILURE: Unexpected server error — " + e.getMessage()).status(500).build());
+        }
     }
 }
