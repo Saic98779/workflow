@@ -32,6 +32,8 @@ public class NonTrainingAchievementMapper {
                  .nonTrainingSubActivityId(SubActivityId)
                  .financialTarget(QBudget)
                  .physicalTarget(QTarget)
+                 .physicalTargetAchievement(achievement.getPhysicalTargetAchievement())
+                 .financialTargetAchievement(achievement.getFinancialTargetAchievement())
                  .nonTrainingAchievementId(achievement != null ? achievement.getNonTrainingAchievementId() : null)
                  .build();
       }else {
