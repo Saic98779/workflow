@@ -1,6 +1,7 @@
 package com.metaverse.workflow.nontrainingExpenditures.service;
 
 import com.metaverse.workflow.agency.repository.AgencyRepository;
+import com.metaverse.workflow.common.fileservice.FileUpdateUtil;
 import com.metaverse.workflow.common.fileservice.StorageService;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.common.util.DateUtil;
@@ -76,7 +77,7 @@ public class NonTrainingExpenditureService {
     }
 
 
-    public NonTrainingExpenditureDTO update(Long id, NonTrainingExpenditureDTO dto) throws DataException {
+    public NonTrainingExpenditureDTO update(Long id, NonTrainingExpenditureDTO dto, MultipartFile file) throws DataException {
         NonTrainingExpenditure existing = repository.findById(id)
                 .orElseThrow(() -> new DataException("Expenditure not found", "EXPENDITURE_NOT_FOUND", 400));
 
@@ -91,6 +92,18 @@ public class NonTrainingExpenditureService {
 
         NonTrainingExpenditure updated = NonTrainingExpenditureMapper.toEntity(dto, agency, activity, subActivity);
         updated.setId(existing.getId());
+
+        String newPath = FileUpdateUtil.replaceFile(
+                file,
+                updated.getUploadBillUrl(),
+                (uploadedFile) -> this.storageFiles(file, updated.getId(), "NonTrainingExpenditure"),
+                () -> repository.save(updated)
+        );
+        updated.setUploadBillUrl(newPath);
+        programSessionFileRepository.updateFilePathByNonTrainingExpenditureId(
+                newPath,
+                updated.getId()
+        );
         return NonTrainingExpenditureMapper.toDTO(repository.save(updated));
     }
 
@@ -187,7 +200,7 @@ public class NonTrainingExpenditureService {
     }
 
 
-    public WorkflowResponse updateResourceExpenditure(Long expenditureId, NonTrainingResourceExpenditureDTO resourceExpenditureDTO) throws DataException {
+    public WorkflowResponse updateResourceExpenditure(Long expenditureId, NonTrainingResourceExpenditureDTO resourceExpenditureDTO, MultipartFile file) throws DataException {
         NonTrainingResourceExpenditure existingExpenditure = resourceExpenditureRepo.findById(expenditureId)
                 .orElseThrow(() -> new DataException("Expenditure not found with id " + expenditureId, "EXPENDITURE_NOT_FOUND", 400));
 
@@ -206,6 +219,19 @@ public class NonTrainingExpenditureService {
                         ? DateUtil.stringToDate(resourceExpenditureDTO.getDateOfPayment(), "dd-MM-yyyy")
                         : existingExpenditure.getDateOfPayment()
         );
+
+        String newPath = FileUpdateUtil.replaceFile(
+                file,
+                existingExpenditure.getUploadBillUrl(),
+                (uploadedFile) -> this.storageFiles(uploadedFile, existingExpenditure.getNonTrainingResourceExpenditureId(), "TravelAndTransport"),
+                () -> {
+                    resourceExpenditureRepo.save(existingExpenditure);
+                });
+        programSessionFileRepository.updateFilePathByNonTrainingResourceExpenditureId(
+                newPath,
+                existingExpenditure.getNonTrainingResourceExpenditureId()
+        );
+        existingExpenditure.setUploadBillUrl(newPath);
         NonTrainingResourceExpenditure updatedExpenditure = resourceExpenditureRepo.save(existingExpenditure);
 
         return WorkflowResponse.builder()
@@ -281,7 +307,5 @@ public class NonTrainingExpenditureService {
         String filePath = storageService.store(file, TravelAndTransportId, folderName);
         return filePath;
     }
-
-
 }
 

@@ -1,5 +1,6 @@
 package com.metaverse.workflow.nontrainingExpenditures.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.nontrainingExpenditures.Dto.NIMSMEVendorDetailsDto;
@@ -10,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -58,19 +60,34 @@ public class NIMSMEVendorController {
         }
     }
 
-    @PutMapping("/{vendorId}")
-    public ResponseEntity<WorkflowResponse> updateVendor(@PathVariable Long vendorId, @RequestPart NIMSMEVendorDetailsDto vendorDetails,
+    @PutMapping(path = "/{vendorId}",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<WorkflowResponse> updateVendor(@PathVariable Long vendorId, @RequestPart String vendorDetails,
                                                          @RequestPart(value = "files", required = false) MultipartFile file) {
         try {
-            NIMSMEVendorDetailsDto nimsmeVendorDetailsDto = service.updateVendor(vendorId, vendorDetails);
+            ObjectMapper om = new ObjectMapper();
+           NIMSMEVendorDetailsDto dto = om.readValue(vendorDetails,NIMSMEVendorDetailsDto.class);
+            NIMSMEVendorDetailsDto nimsmeVendorDetailsDto = service.updateVendor(vendorId, dto,file);
             return ResponseEntity.ok(
                     WorkflowResponse.builder().data(nimsmeVendorDetailsDto).status(200).message("Updated successfully")
                             .build());
+        } catch (JsonProcessingException e) {
+            return ResponseEntity.badRequest().body(
+                    WorkflowResponse.builder()
+                            .message("FAILURE: Invalid JSON format — " + e.getOriginalMessage()).status(400).build());
+
+        } catch (IOException e) {
+            return ResponseEntity.internalServerError().body(
+                    WorkflowResponse.builder()
+                            .message("FAILURE: File operation failed — " + e.getMessage()).status(500).build());
+
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(
+                    WorkflowResponse.builder()
+                            .message("FAILURE: " + e.getMessage()).status(400).build());
+
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(
-                    WorkflowResponse.builder().status(500).message("An unexpected error occurred: " + e.getMessage())
-                            .build()
-            );
+                    WorkflowResponse.builder().message("FAILURE: Unexpected server error — " + e.getMessage()).status(500).build());
         }
     }
 

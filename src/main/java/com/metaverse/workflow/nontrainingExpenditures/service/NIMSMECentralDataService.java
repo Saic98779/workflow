@@ -1,5 +1,6 @@
 package com.metaverse.workflow.nontrainingExpenditures.service;
 
+import com.metaverse.workflow.common.fileservice.FileUpdateUtil;
 import com.metaverse.workflow.common.fileservice.StorageService;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.exceptions.DataException;
@@ -52,13 +53,24 @@ public class NIMSMECentralDataService {
 
 
     @Transactional
-    public WorkflowResponse updateCentralData(Long centralDataId, CentralDataRequest request) throws DataException {
+    public WorkflowResponse updateCentralData(Long centralDataId, CentralDataRequest request, MultipartFile file) throws DataException {
         NIMSMECentralData entity = centralDataRepository.findById(centralDataId)
                 .orElseThrow(() -> new DataException("Central Data not found", "CENTRAL_DATA_NOT_FOUND", 400));
 
 
         NIMSMECentralData updatedEntity = NIMSMECentralDataMapper.mapToCentralDataReq(request, entity.getNonTrainingSubActivity());
         updatedEntity.setCentralDataId(centralDataId);
+
+        String newPath = FileUpdateUtil.replaceFile(
+                file,
+                updatedEntity.getUploadBillUrl(),
+                (uploadedFile) -> this.storageFiles(file, updatedEntity.getCentralDataId(), "NonTrainingExpenditure"),
+                () -> centralDataRepository.save(updatedEntity)
+        );
+        updatedEntity.setUploadBillUrl(newPath);
+        programSessionFileRepository.updateFilePathByCentralDataId(
+                newPath,
+                updatedEntity.getCentralDataId());
         NIMSMECentralData saved = centralDataRepository.save(updatedEntity);
 
         return WorkflowResponse.builder()

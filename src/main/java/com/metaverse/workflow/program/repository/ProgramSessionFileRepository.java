@@ -43,4 +43,28 @@ public interface ProgramSessionFileRepository extends JpaRepository<ProgramSessi
 
     void deleteByNimsmeVendorDetails_Id(Long vendorId);
 
+    @Transactional
+    @Modifying(clearAutomatically = true)
+    @Query("UPDATE ProgramSessionFile p SET p.filePath = :filePath WHERE p.travelAndTransport.travelTransportId = :travelTransportId")
+    int updateFilePathByTravelTransportId(@Param("filePath") String filePath, @Param("travelTransportId") Long travelTransportId);
+
+    @Transactional
+    @Modifying(clearAutomatically = true)
+    @Query("UPDATE ProgramSessionFile p SET p.filePath = :filePath WHERE p.nimsmeVendorDetails.id = :vendorDetailsId")
+    int updateFilePathByVendorDetailsId(@Param("filePath") String filePath, @Param("vendorDetailsId") Long vendorDetailsId);
+
+    @Transactional
+    @Modifying(clearAutomatically = true)
+    @Query("UPDATE ProgramSessionFile p SET p.filePath = :filePath WHERE p.nonTrainingExpenditure.id = :nonTrainingExpenditureId")
+    int updateFilePathByNonTrainingExpenditureId(@Param("filePath") String filePath, @Param("nonTrainingExpenditureId") Long nonTrainingExpenditureId);
+
+    @Transactional
+    @Modifying(clearAutomatically = true)
+    @Query("UPDATE ProgramSessionFile p SET p.filePath = :filePath WHERE p.nonTrainingResourceExpenditure.nonTrainingResourceExpenditureId = :nonTrainingResourceExpenditureId")
+    int updateFilePathByNonTrainingResourceExpenditureId(@Param("filePath") String filePath, @Param("nonTrainingResourceExpenditureId") Long nonTrainingResourceExpenditureId);
+
+    @Transactional
+    @Modifying(clearAutomatically = true)
+    @Query("UPDATE ProgramSessionFile p SET p.filePath = :filePath WHERE p.nimsmeCentralData.centralDataId = :centralDataId")
+    int updateFilePathByCentralDataId(@Param("filePath") String filePath, @Param("centralDataId") Long centralDataId);
 }

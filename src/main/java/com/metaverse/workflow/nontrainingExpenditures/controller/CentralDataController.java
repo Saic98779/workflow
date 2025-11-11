@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.security.Principal;
 
 @RestController
@@ -44,15 +45,34 @@ public class CentralDataController {
         }
     }
 
-    @PutMapping("/update/{centralDataId}")
+    @PutMapping(path = "/update/{centralDataId}",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> update(@PathVariable Long centralDataId,
-                                    @RequestBody CentralDataRequest request,Principal principal) {
-        try {
-            WorkflowResponse response = service.updateCentralData(centralDataId, request);
+                                    @RequestPart String request,Principal principal,MultipartFile file) {
+        try { //CentralDataRequest
+            ObjectMapper objectMapper = new ObjectMapper();
+            CentralDataRequest dto = objectMapper.readValue(request,CentralDataRequest.class);
+            WorkflowResponse response = service.updateCentralData(centralDataId, dto,file);
             logService.logs(principal.getName(), "UPDATE", "Central data updated successfully | ID: " + centralDataId, "CentralData", "/central-data/update/"+centralDataId);
             return ResponseEntity.ok(response);
-        } catch (DataException e) {
-            return RestControllerBase.error(e);
+        } catch (JsonProcessingException e) {
+            return ResponseEntity.badRequest().body(
+                    WorkflowResponse.builder()
+                            .message("FAILURE: Invalid JSON format — " + e.getOriginalMessage()).status(400).build());
+
+        } catch (IOException e) {
+            return ResponseEntity.internalServerError().body(
+                    WorkflowResponse.builder()
+                            .message("FAILURE: File operation failed — " + e.getMessage()).status(500).build());
+
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(
+                    WorkflowResponse.builder()
+                            .message("FAILURE: " + e.getMessage()).status(400).build());
+
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(
+                    WorkflowResponse.builder()
+                            .message("FAILURE: Unexpected server error — " + e.getMessage()).status(500).build());
         }
     }
 
