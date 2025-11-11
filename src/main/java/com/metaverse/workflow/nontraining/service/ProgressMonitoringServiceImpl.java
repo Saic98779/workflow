@@ -252,7 +252,7 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
                     .trainingAchievement(countOfParticipants1)
                     .trainingPercentage((target1 != 0 ? Math.round((countOfParticipants1 / target1) * 100 * 1000.0) / 1000.0 : 0.0))
                     .budgetAllocated(bud)
-                    .expenditure(programExpO)
+                    .expenditure(Math.floor(programExpO))
                     .expenditurePercentage((bud != 0.0) ? Math.round((programExpO / bud) * 100 * 1000.0) / 1000.0 : 0.0)
                     .build());
         }

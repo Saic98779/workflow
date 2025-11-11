@@ -2,6 +2,8 @@ package com.metaverse.workflow.ticketSystem.repository;
 
 
 import com.metaverse.workflow.model.Ticket;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -23,6 +25,10 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
     // Find by title (case-insensitive)
     List<Ticket> findByTitleContainingIgnoreCase(String keyword);
 
-    List<Ticket> findByReporter_UserId(String reporterId);
+    Page<Ticket> findByReporter_UserId(String reporterId, Pageable pageable);
+
+    Ticket findByTicketId(String ticketId);
+
+    Page<Ticket> findByReporter_UserIdOrAssignee_UserId(String reporterId, String reporterId1, Pageable pageable);
 }
 

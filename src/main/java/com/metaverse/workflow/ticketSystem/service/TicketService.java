@@ -43,6 +43,9 @@ public class TicketService {
             ticket.setPriority(dto.getPriority());
             ticket.setType(dto.getType());
             ticket.setStatus(TicketStatus.CREATED);
+            if (dto.getAssigneeId() != null) {
+                ticket.setAssignee(getUser(dto.getAssigneeId()));
+            }
 
             // Reporter
             if (dto.getReporterId() != null) {
@@ -119,8 +122,7 @@ public class TicketService {
     @Transactional
     public WorkflowResponse updateTicket(String ticketId, TicketDto dto) {
         try {
-            Ticket ticket = ticketRepo.findByTicketId(ticketId)
-                    .orElseThrow(() -> new RuntimeException("Ticket not found"));
+            Ticket ticket = ticketRepo.findByTicketId(ticketId);
 
             TicketStatus oldStatus = ticket.getStatus();
             User actor = null;
@@ -232,11 +234,16 @@ public class TicketService {
         }
     }
 
-    public WorkflowResponse getReportById(String ticketId) {
+    public WorkflowResponse getReportById(int page, int size, String reporterId) {
         try {
-            List<Ticket> ticket = ticketRepo.findByReporter_UserId(ticketId);
-            return WorkflowResponse.success("Reporter details fetched successfully", ticket);
-
+            Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+            Page<Ticket> ticket = ticketRepo.findByReporter_UserIdOrAssignee_UserId(reporterId, reporterId, pageable);
+            List<TicketDto> ticketDtos = ticket.getContent()
+                    .stream()
+                    .map(TicketDto::new)
+                    .collect(Collectors.toList());
+            return WorkflowResponse.success("Tickets fetched successfully",
+                    ticketDtos, ticket.getTotalPages(), ticket.getTotalElements());
         } catch (Exception e) {
             return WorkflowResponse.error("Failed to fetch Report: " + e.getMessage());
         }

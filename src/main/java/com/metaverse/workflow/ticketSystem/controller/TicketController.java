@@ -142,9 +142,11 @@ public class TicketController {
     })
     @GetMapping("report/{reportId}")
     public ResponseEntity<WorkflowResponse> getReportById(
+            @Parameter(description = "Page number (default: 0)") @RequestParam(value = "page", required = false) Integer page,
+            @Parameter(description = "Page size (default: 10)") @RequestParam(value = "size", required = false) Integer size,
             @Parameter(description = "ID of the report to fetch", required = true)
             @PathVariable("reportId") String reportId) {
-        WorkflowResponse response = ticketService.getReportById(reportId);
+        WorkflowResponse response = ticketService.getReportById(page != null ? page : 0, size != null ? size : 10, reportId);
         return ResponseEntity.ok(response);
     }
 }
