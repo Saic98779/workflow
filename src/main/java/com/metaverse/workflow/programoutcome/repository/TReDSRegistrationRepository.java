@@ -11,7 +11,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.Date;
 import java.util.List;
 
-public interface TReDSRegistrationRepository extends JpaRepository<TReDSRegistration,Integer> {
+public interface TReDSRegistrationRepository extends JpaRepository<TReDSRegistration,Long> {
     @Query("SELECT DISTINCT treds FROM TReDSRegistration treds JOIN treds.participant p WHERE p.participantId = :participantId")
     List<TReDSRegistration> findByParticipantId(Long participantId);
 

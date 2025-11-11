@@ -9,5 +9,8 @@ public class ProgramStatusConstants {
     public static final String PROGRAM_EXECUTION_UPDATED = "Program Execution Updated";
     public static final String PROGRAM_EXECUTION = "Program Execution";
     public static final String PROGRAM_EXPENDITURE_UPDATED = "Program Expenditure Updated";
+    public static final String PROGRAM_EXPENDITURE_APPROVED = "Program Expenditure Approved";
+    public static final String COLLAGE_ADDED = "Collage Added";
+
 
 }

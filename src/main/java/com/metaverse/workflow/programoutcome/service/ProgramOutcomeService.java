@@ -20,4 +20,6 @@ public interface ProgramOutcomeService {
     WorkflowResponse getApiForOutcomes(Long agencyId, Long outcomeId);
 
     WorkflowResponse getOutcomeData(String outcomeName, Long agencyId, int page, int size);
+
+    WorkflowResponse getOutcomeDataById(String outcomeName, Long outcomeId) throws DataException;
 }
