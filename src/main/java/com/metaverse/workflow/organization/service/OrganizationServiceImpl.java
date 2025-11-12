@@ -70,7 +70,6 @@ public class OrganizationServiceImpl implements OrganizationService {
 	}
 
     @Autowired
-    @Cacheable("organizations")
     public WorkflowResponse getAllOrganizations(){
         return WorkflowResponse.builder().message("Success").status(200).data(repository.getAllOrganizations()).build();
     }
