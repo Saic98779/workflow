@@ -3753,4 +3753,1798 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                 .build();
     }
 
+    @Override
+    public WorkflowResponse getOutcomeDataById(String outcomeName, Long outcomeId) throws DataException {
+        OutcomeResponseDTO responseDTO;
+
+        switch (outcomeName) {
+            case "ExportPromotion": {
+                ExportPromotion e = exportPromotionRepository.findById(outcomeId)
+                        .orElseThrow(() -> new DataException("Export Promotion not found with id: " + outcomeId,"NOT_FOUND",400));
+
+                ExportPromotionDTO body = ExportPromotionDTO.builder()
+                        .id(e.getId())
+                        .sectorName(e.getSectorName())
+                        .productName(e.getProductName())
+                        .exportImportLicenceNo(e.getExportImportLicenceNo())
+                        .mappingWithInternationalBuyer(e.getMappingWithInternationalBuyer())
+                        .monthlyTurnoverInLakhs(e.getMonthlyTurnoverInLakhs())
+                        .isExport(e.getIsExport())
+                        .exportDate(e.getExportDate())
+                        .exportValueInLakhs(e.getExportValueInLakhs())
+                        .exportVolumeInMts(e.getExportVolumeInMts())
+                        .isInfluenced(e.getIsInfluenced())
+                        .agencyName(e.getAgency() != null ? e.getAgency().getAgencyName() : null)
+                        .participantName(e.getParticipant() != null ? e.getParticipant().getParticipantName() : null)
+                        .organizationName(e.getOrganization() != null ? e.getOrganization().getOrganizationName() : null)
+                        .influencedParticipantName(e.getInfluencedParticipant() != null
+                                ? e.getInfluencedParticipant().getParticipantName()
+                                : null)
+                        .createdOn(e.getCreatedOn())
+                        .updatedOn(e.getUpdatedOn())
+                        .build();
+
+                List<OutcomeDetails.OutcomeDataSet> headers = List.of(
+                        new OutcomeDetails.OutcomeDataSet("sectorName", "Sector Name"),
+                        new OutcomeDetails.OutcomeDataSet("productName", "Product Name"),
+                        new OutcomeDetails.OutcomeDataSet("exportImportLicenceNo", "Export/Import Licence No"),
+                        new OutcomeDetails.OutcomeDataSet("mappingWithInternationalBuyer", "Mapped with International Buyer"),
+                        new OutcomeDetails.OutcomeDataSet("monthlyTurnoverInLakhs", "Monthly Turnover (₹ Lakhs)"),
+                        new OutcomeDetails.OutcomeDataSet("isExport", "Is Export"),
+                        new OutcomeDetails.OutcomeDataSet("exportDate", "Export Date"),
+                        new OutcomeDetails.OutcomeDataSet("exportValueInLakhs", "Export Value (₹ Lakhs)"),
+                        new OutcomeDetails.OutcomeDataSet("exportVolumeInMts", "Export Volume (MTs)"),
+                        new OutcomeDetails.OutcomeDataSet("isInfluenced", "Influenced"),
+                        new OutcomeDetails.OutcomeDataSet("agencyName", "Agency Name"),
+                        new OutcomeDetails.OutcomeDataSet("participantName", "Participant Name"),
+                        new OutcomeDetails.OutcomeDataSet("organizationName", "Organization Name"),
+                        new OutcomeDetails.OutcomeDataSet("influencedParticipantName", "Influenced Participant Name"),
+                        new OutcomeDetails.OutcomeDataSet("createdOn", "Created On"),
+                        new OutcomeDetails.OutcomeDataSet("updatedOn", "Updated On")
+                );
+
+                responseDTO = OutcomeResponseDTO.builder()
+                        .headers(headers)
+                        .body(List.of(body))
+                        .build();
+                break;
+            }
+
+            case "SkillUpgradation": {
+                SkillUpgradation su = skillUpgradationRepository.findById(outcomeId)
+                        .orElseThrow(() -> new DataException("Skill Upgradation not found with id: " + outcomeId,"NOT_FOUND",400));
+
+                SkillUpgradationDTO body = SkillUpgradationDTO.builder()
+                        .id(su.getId())
+                        .typeOfTrainingReceived(su.getTypeOfTrainingReceived())
+                        .trainingCompletionDate(su.getTrainingCompletionDate())
+                        .businessPlanSubmissionDate(su.getBusinessPlanSubmissionDate())
+                        .amountSanctionedDate(su.getAmountSanctionedDate())
+                        .amountReleasedDate(su.getAmountReleasedDate())
+                        .amountReleasedInLakhs(su.getAmountReleasedInLakhs())
+                        .bankProvidedLoan(su.getBankProvidedLoan())
+                        .loanType(su.getLoanType())
+                        .loanPurpose(su.getLoanPurpose())
+                        .groundingDate(su.getGroundingDate())
+                        .sectorType(su.getSectorType())
+                        .monthlyTurnoverInLakhs(su.getMonthlyTurnoverInLakhs())
+                        .isInfluenced(su.getIsInfluenced())
+                        .agencyName(su.getAgency() != null ? su.getAgency().getAgencyName() : null)
+                        .participantName(su.getParticipant() != null ? su.getParticipant().getParticipantName() : null)
+                        .organizationName(su.getOrganization() != null ? su.getOrganization().getOrganizationName() : null)
+                        .influencedParticipantName(su.getInfluencedParticipant() != null
+                                ? su.getInfluencedParticipant().getParticipantName()
+                                : null)
+                        .createdOn(su.getCreatedOn())
+                        .updatedOn(su.getUpdatedOn())
+                        .build();
+
+                List<OutcomeDetails.OutcomeDataSet> headers = List.of(
+                        new OutcomeDetails.OutcomeDataSet("typeOfTrainingReceived", "Type of Training Received"),
+                        new OutcomeDetails.OutcomeDataSet("trainingCompletionDate", "Training Completion Date"),
+                        new OutcomeDetails.OutcomeDataSet("businessPlanSubmissionDate", "Business Plan Submission Date"),
+                        new OutcomeDetails.OutcomeDataSet("amountSanctionedDate", "Amount Sanctioned Date"),
+                        new OutcomeDetails.OutcomeDataSet("amountReleasedDate", "Amount Released Date"),
+                        new OutcomeDetails.OutcomeDataSet("amountReleasedInLakhs", "Amount Released (₹ Lakhs)"),
+                        new OutcomeDetails.OutcomeDataSet("bankProvidedLoan", "Bank Provided Loan"),
+                        new OutcomeDetails.OutcomeDataSet("loanType", "Loan Type"),
+                        new OutcomeDetails.OutcomeDataSet("loanPurpose", "Loan Purpose"),
+                        new OutcomeDetails.OutcomeDataSet("groundingDate", "Grounding Date"),
+                        new OutcomeDetails.OutcomeDataSet("sectorType", "Sector Type"),
+                        new OutcomeDetails.OutcomeDataSet("monthlyTurnoverInLakhs", "Monthly Turnover (₹ Lakhs)"),
+                        new OutcomeDetails.OutcomeDataSet("isInfluenced", "Influenced"),
+                        new OutcomeDetails.OutcomeDataSet("agencyName", "Agency Name"),
+                        new OutcomeDetails.OutcomeDataSet("participantName", "Participant Name"),
+                        new OutcomeDetails.OutcomeDataSet("organizationName", "Organization Name"),
+                        new OutcomeDetails.OutcomeDataSet("influencedParticipantName", "Influenced Participant Name"),
+                        new OutcomeDetails.OutcomeDataSet("createdOn", "Created On"),
+                        new OutcomeDetails.OutcomeDataSet("updatedOn", "Updated On")
+                );
+
+                responseDTO = OutcomeResponseDTO.builder()
+                        .headers(headers)
+                        .body(List.of(body))
+                        .build();
+                break;
+            }
+
+            case "ImportSubsititution": {
+                ImportSubsititution i = importSubsititutionRepository.findById(outcomeId)
+                        .orElseThrow(() -> new DataException("Import Substitution not found with id: " + outcomeId,"NOT_FOUND",400));
+
+                ImportSubstitutionDTO body = ImportSubstitutionDTO.builder()
+                        .id(i.getId())
+                        .sectorName(i.getSectorName())
+                        .productName(i.getProductName())
+                        .prototypeSelected(i.getPrototypeSelected())
+                        .businessPlanSubmissionDate(i.getBusinessPlanSubmissionDate())
+                        .amountSanctionedDate(i.getAmountSanctionedDate())
+                        .amountReleasedDate(i.getAmountReleasedDate())
+                        .amountReleasedInLakhs(i.getAmountReleasedInLakhs())
+                        .bankProvidedLoan(i.getBankProvidedLoan())
+                        .groundingDate(i.getGroundingDate())
+                        .monthlyTurnoverInLakhs(i.getMonthlyTurnoverInLakhs())
+                        .marketOfProduct(i.getMarketOfProduct())
+                        .marketDate(i.getMarketDate())
+                        .marketValueInLakhs(i.getMarketValueInLakhs())
+                        .marketVolumeInMts(i.getMarketVolumeInMts())
+                        .isInfluenced(i.getIsInfluenced())
+                        .agencyName(i.getAgency() != null ? i.getAgency().getAgencyName() : null)
+                        .participantName(i.getParticipant() != null ? i.getParticipant().getParticipantName() : null)
+                        .organizationName(i.getOrganization() != null ? i.getOrganization().getOrganizationName() : null)
+                        .influencedParticipantName(i.getInfluencedParticipant() != null
+                                ? i.getInfluencedParticipant().getParticipantName()
+                                : null)
+                        .createdOn(i.getCreatedOn())
+                        .updatedOn(i.getUpdatedOn())
+                        .build();
+
+                List<OutcomeDetails.OutcomeDataSet> headers = List.of(
+                        new OutcomeDetails.OutcomeDataSet("sectorName", "Sector Name"),
+                        new OutcomeDetails.OutcomeDataSet("productName", "Product Name"),
+                        new OutcomeDetails.OutcomeDataSet("prototypeSelected", "Prototype Selected"),
+                        new OutcomeDetails.OutcomeDataSet("businessPlanSubmissionDate", "Business Plan Submission Date"),
+                        new OutcomeDetails.OutcomeDataSet("amountSanctionedDate", "Amount Sanctioned Date"),
+                        new OutcomeDetails.OutcomeDataSet("amountReleasedDate", "Amount Released Date"),
+                        new OutcomeDetails.OutcomeDataSet("amountReleasedInLakhs", "Amount Released (₹ Lakhs)"),
+                        new OutcomeDetails.OutcomeDataSet("bankProvidedLoan", "Bank Provided Loan"),
+                        new OutcomeDetails.OutcomeDataSet("groundingDate", "Grounding Date"),
+                        new OutcomeDetails.OutcomeDataSet("monthlyTurnoverInLakhs", "Monthly Turnover (₹ Lakhs)"),
+                        new OutcomeDetails.OutcomeDataSet("marketOfProduct", "Market of Product"),
+                        new OutcomeDetails.OutcomeDataSet("marketDate", "Market Date"),
+                        new OutcomeDetails.OutcomeDataSet("marketValueInLakhs", "Market Value (₹ Lakhs)"),
+                        new OutcomeDetails.OutcomeDataSet("marketVolumeInMts", "Market Volume (MTs)"),
+                        new OutcomeDetails.OutcomeDataSet("isInfluenced", "Influenced"),
+                        new OutcomeDetails.OutcomeDataSet("agencyName", "Agency Name"),
+                        new OutcomeDetails.OutcomeDataSet("participantName", "Participant Name"),
+                        new OutcomeDetails.OutcomeDataSet("organizationName", "Organization Name"),
+                        new OutcomeDetails.OutcomeDataSet("influencedParticipantName", "Influenced Participant Name"),
+                        new OutcomeDetails.OutcomeDataSet("createdOn", "Created On"),
+                        new OutcomeDetails.OutcomeDataSet("updatedOn", "Updated On")
+                );
+
+                responseDTO = OutcomeResponseDTO.builder()
+                        .headers(headers)
+                        .body(List.of(body))
+                        .build();
+                break;
+            }
+
+            case "ZEDCertification": {
+                ZEDCertification z = zedCertificationRepository.findById(outcomeId)
+                        .orElseThrow(() -> new DataException("ZED Certification not found with id: " + outcomeId,"NOT_FOUND",400));
+
+                ZEDCertificationDTO body = ZEDCertificationDTO.builder()
+                        .id(z.getZedCertificateRegistrationId())
+                        .ownerName(z.getOwnerName())
+                        .nicCode(z.getNicCode())
+                        .unitAddress(z.getUnitAddress())
+                        .certificationDate(z.getCertificationDate())
+                        .zedCertificationId(z.getZedCertificationId())
+                        .zedCertificationType(z.getZedCertificationType())
+                        .turnover(z.getTurnover())
+                        .energyConsumptionKwhHr(z.getEnergyConsumptionKwhHr())
+                        .isInfluenced(z.getIsInfluenced())
+                        .agencyName(z.getAgency() != null ? z.getAgency().getAgencyName() : null)
+                        .participantName(z.getParticipant() != null ? z.getParticipant().getParticipantName() : null)
+                        .organizationName(z.getOrganization() != null ? z.getOrganization().getOrganizationName() : null)
+                        .influencedParticipantName(z.getInfluencedParticipant() != null
+                                ? z.getInfluencedParticipant().getParticipantName()
+                                : null)
+                        .createdOn(z.getCreatedOn())
+                        .updatedOn(z.getUpdatedOn())
+                        .build();
+
+                List<OutcomeDetails.OutcomeDataSet> headers = List.of(
+                        new OutcomeDetails.OutcomeDataSet("ownerName", "Owner Name"),
+                        new OutcomeDetails.OutcomeDataSet("nicCode", "NIC Code"),
+                        new OutcomeDetails.OutcomeDataSet("unitAddress", "Unit Address"),
+                        new OutcomeDetails.OutcomeDataSet("certificationDate", "Certification Date"),
+                        new OutcomeDetails.OutcomeDataSet("zedCertificationId", "ZED Certification ID"),
+                        new OutcomeDetails.OutcomeDataSet("zedCertificationType", "ZED Certification Type"),
+                        new OutcomeDetails.OutcomeDataSet("turnover", "Turnover (₹ Lakhs)"),
+                        new OutcomeDetails.OutcomeDataSet("energyConsumptionKwhHr", "Energy Consumption (KWh/hr)"),
+                        new OutcomeDetails.OutcomeDataSet("isInfluenced", "Influenced"),
+                        new OutcomeDetails.OutcomeDataSet("agencyName", "Agency Name"),
+                        new OutcomeDetails.OutcomeDataSet("participantName", "Participant Name"),
+                        new OutcomeDetails.OutcomeDataSet("organizationName", "Organization Name"),
+                        new OutcomeDetails.OutcomeDataSet("influencedParticipantName", "Influenced Participant Name"),
+                        new OutcomeDetails.OutcomeDataSet("createdOn", "Created On"),
+                        new OutcomeDetails.OutcomeDataSet("updatedOn", "Updated On")
+                );
+
+                responseDTO = OutcomeResponseDTO.builder()
+                        .headers(headers)
+                        .body(List.of(body))
+                        .build();
+                break;
+            }
+            case "GreeningOfMSME": {
+                GreeningOfMSME g = greeningOfMSMERepository.findById(outcomeId)
+                        .orElseThrow(() -> new DataException("Greening Of MSME not found with id: " + outcomeId,"NOT_FOUND",400));
+
+                GreeningOfMSMEDTO body = GreeningOfMSMEDTO.builder()
+                        .id(g.getGreeningOfMSME())
+                        .typeOfIntervention(g.getTypeOfIntervention())
+                        .typeOfPrototypeProposed(g.getTypeOfPrototypeProposed())
+                        .typeOfTrainingsReceived(g.getTypeOfTrainingsReceived())
+                        .trainingCompletionDate(g.getTrainingCompletionDate())
+                        .businessPlanSubmissionDate(g.getBusinessPlanSubmissionDate())
+                        .amountSanctionedDate(g.getAmountSanctionedDate())
+                        .amountReleasedDate(g.getAmountReleasedDate())
+                        .amountReleased(g.getAmountReleased())
+                        .nameOfBankProvidedLoan(g.getNameOfBankProvidedLoan())
+                        .dateOfGrounding(g.getDateOfGrounding())
+                        .purposeOfLoanUtilised(g.getPurposeOfLoanUtilised())
+                        .parameter1(g.getParameter1())
+                        .parameter2(g.getParameter2())
+                        .parameter1Value(g.getParameter1Value())
+                        .parameter1Units(g.getParameter1Units())
+                        .parameter2Value(g.getParameter2Value())
+                        .parameter2Units(g.getParameter2Units())
+                        .productionPerHour(g.getProductionPerHour())
+                        .isInfluenced(g.getIsInfluenced())
+                        .agencyName(g.getAgency() != null ? g.getAgency().getAgencyName() : null)
+                        .participantName(g.getParticipant() != null ? g.getParticipant().getParticipantName() : null)
+                        .organizationName(g.getOrganization() != null ? g.getOrganization().getOrganizationName() : null)
+                        .influencedParticipantName(g.getInfluencedParticipant() != null
+                                ? g.getInfluencedParticipant().getParticipantName()
+                                : null)
+                        .createdOn(g.getCreatedOn())
+                        .updatedOn(g.getUpdatedOn())
+                        .build();
+
+                List<OutcomeDetails.OutcomeDataSet> headers = List.of(
+                        new OutcomeDetails.OutcomeDataSet("typeOfIntervention", "Type of Intervention"),
+                        new OutcomeDetails.OutcomeDataSet("typeOfPrototypeProposed", "Type of Prototype Proposed"),
+                        new OutcomeDetails.OutcomeDataSet("typeOfTrainingsReceived", "Type of Trainings Received"),
+                        new OutcomeDetails.OutcomeDataSet("trainingCompletionDate", "Training Completion Date"),
+                        new OutcomeDetails.OutcomeDataSet("businessPlanSubmissionDate", "Business Plan Submission Date"),
+                        new OutcomeDetails.OutcomeDataSet("amountSanctionedDate", "Amount Sanctioned Date"),
+                        new OutcomeDetails.OutcomeDataSet("amountReleasedDate", "Amount Released Date"),
+                        new OutcomeDetails.OutcomeDataSet("amountReleased", "Amount Released (₹ Lakhs)"),
+                        new OutcomeDetails.OutcomeDataSet("nameOfBankProvidedLoan", "Bank Provided Loan"),
+                        new OutcomeDetails.OutcomeDataSet("dateOfGrounding", "Date of Grounding"),
+                        new OutcomeDetails.OutcomeDataSet("purposeOfLoanUtilised", "Purpose of Loan Utilised"),
+                        new OutcomeDetails.OutcomeDataSet("parameter1", "Parameter 1"),
+                        new OutcomeDetails.OutcomeDataSet("parameter1Value", "Parameter 1 Value"),
+                        new OutcomeDetails.OutcomeDataSet("parameter1Units", "Parameter 1 Units"),
+                        new OutcomeDetails.OutcomeDataSet("parameter2", "Parameter 2"),
+                        new OutcomeDetails.OutcomeDataSet("parameter2Value", "Parameter 2 Value"),
+                        new OutcomeDetails.OutcomeDataSet("parameter2Units", "Parameter 2 Units"),
+                        new OutcomeDetails.OutcomeDataSet("productionPerHour", "Production per Hour"),
+                        new OutcomeDetails.OutcomeDataSet("isInfluenced", "Influenced"),
+                        new OutcomeDetails.OutcomeDataSet("agencyName", "Agency Name"),
+                        new OutcomeDetails.OutcomeDataSet("participantName", "Participant Name"),
+                        new OutcomeDetails.OutcomeDataSet("organizationName", "Organization Name"),
+                        new OutcomeDetails.OutcomeDataSet("influencedParticipantName", "Influenced Participant Name"),
+                        new OutcomeDetails.OutcomeDataSet("createdOn", "Created On"),
+                        new OutcomeDetails.OutcomeDataSet("updatedOn", "Updated On")
+                );
+
+                responseDTO = OutcomeResponseDTO.builder()
+                        .headers(headers)
+                        .body(List.of(body))
+                        .build();
+                break;
+            }
+
+            case "ECommerceRegistration": {
+                ECommerceRegistration e = eCommerceRegistrationRepository.findById(outcomeId)
+                        .orElseThrow(() -> new DataException("E-Commerce Registration not found with id: " + outcomeId,"NOT_FOUND",400));
+
+                ECommerceRegistrationDTO body = ECommerceRegistrationDTO.builder()
+                        .id(e.getId())
+                        .platformName(e.getPlatformName())
+                        .dateOfOnboarding(e.getDateOfOnboarding())
+                        .registrationDetails(e.getRegistrationDetails())
+                        .isInfluenced(e.getIsInfluenced())
+                        .agencyName(e.getAgency() != null ? e.getAgency().getAgencyName() : null)
+                        .participantName(e.getParticipant() != null ? e.getParticipant().getParticipantName() : null)
+                        .organizationName(e.getOrganization() != null ? e.getOrganization().getOrganizationName() : null)
+                        .influencedParticipantName(e.getInfluencedParticipant() != null
+                                ? e.getInfluencedParticipant().getParticipantName()
+                                : null)
+                        .createdOn(e.getCreatedOn())
+                        .updatedOn(e.getUpdatedOn())
+                        .build();
+
+                List<OutcomeDetails.OutcomeDataSet> headers = List.of(
+                        new OutcomeDetails.OutcomeDataSet("platformName", "E-Commerce Platform Name"),
+                        new OutcomeDetails.OutcomeDataSet("dateOfOnboarding", "Date of Onboarding"),
+                        new OutcomeDetails.OutcomeDataSet("registrationDetails", "Registration Details"),
+                        new OutcomeDetails.OutcomeDataSet("isInfluenced", "Influenced"),
+                        new OutcomeDetails.OutcomeDataSet("agencyName", "Agency Name"),
+                        new OutcomeDetails.OutcomeDataSet("participantName", "Participant Name"),
+                        new OutcomeDetails.OutcomeDataSet("organizationName", "Organization Name"),
+                        new OutcomeDetails.OutcomeDataSet("influencedParticipantName", "Influenced Participant Name"),
+                        new OutcomeDetails.OutcomeDataSet("createdOn", "Created On"),
+                        new OutcomeDetails.OutcomeDataSet("updatedOn", "Updated On")
+                );
+
+                responseDTO = OutcomeResponseDTO.builder()
+                        .headers(headers)
+                        .body(List.of(body))
+                        .build();
+                break;
+            }
+
+            case "ECommerceTransaction": {
+                ECommerceTransaction tx = eCommerceTransactionRepository.findById(outcomeId)
+                        .orElseThrow(() -> new DataException("E-Commerce Transaction not found with id: " + outcomeId,"NOT_FOUND",400));
+
+                ECommerceTransactionDTO body = ECommerceTransactionDTO.builder()
+                        .id(tx.getId())
+                        .fromDate(tx.getFromDate())
+                        .toDate(tx.getToDate())
+                        .numberOfTransactions(tx.getNumberOfTransactions())
+                        .totalBusinessAmount(tx.getTotalBusinessAmount())
+                        .isInfluenced(tx.getIsInfluenced())
+                        .registrationDetails(tx.getEcommerceRegistration() != null ? tx.getEcommerceRegistration().getRegistrationDetails() : null)
+                        .agencyName(tx.getAgency() != null ? tx.getAgency().getAgencyName() : null)
+                        .participantName(tx.getParticipant() != null ? tx.getParticipant().getParticipantName() : null)
+                        .organizationName(tx.getOrganization() != null ? tx.getOrganization().getOrganizationName() : null)
+                        .influencedParticipantName(tx.getInfluencedParticipant() != null
+                                ? tx.getInfluencedParticipant().getParticipantName()
+                                : null)
+                        .createdOn(tx.getCreatedOn())
+                        .updatedOn(tx.getUpdatedOn())
+                        .build();
+
+                List<OutcomeDetails.OutcomeDataSet> headers = List.of(
+                        new OutcomeDetails.OutcomeDataSet("registrationDetails", "Registration Details"),
+                        new OutcomeDetails.OutcomeDataSet("fromDate", "From Date"),
+                        new OutcomeDetails.OutcomeDataSet("toDate", "To Date"),
+                        new OutcomeDetails.OutcomeDataSet("numberOfTransactions", "Number of Transactions"),
+                        new OutcomeDetails.OutcomeDataSet("totalBusinessAmount", "Total Business Amount (₹)"),
+                        new OutcomeDetails.OutcomeDataSet("isInfluenced", "Influenced"),
+                        new OutcomeDetails.OutcomeDataSet("agencyName", "Agency Name"),
+                        new OutcomeDetails.OutcomeDataSet("participantName", "Participant Name"),
+                        new OutcomeDetails.OutcomeDataSet("organizationName", "Organization Name"),
+                        new OutcomeDetails.OutcomeDataSet("influencedParticipantName", "Influenced Participant Name"),
+                        new OutcomeDetails.OutcomeDataSet("createdOn", "Created On"),
+                        new OutcomeDetails.OutcomeDataSet("updatedOn", "Updated On")
+                );
+
+                responseDTO = OutcomeResponseDTO.builder()
+                        .headers(headers)
+                        .body(List.of(body))
+                        .build();
+                break;
+            }
+
+            case "Loan": {
+                Loan l = loanRepository.findById(outcomeId)
+                        .orElseThrow(() -> new DataException("Loan not found with id: " + outcomeId,"NOT_FOUND",400));
+
+                LoanDTO body = LoanDTO.builder()
+                        .id(l.getId())
+                        .bankName(l.getBankName())
+                        .loanAmount(l.getLoanAmount())
+                        .dateOfFirstDisbursement(l.getDateOfFirstDisbursement())
+                        .disbursementAmount(l.getDisbursementAmount())
+                        .isInfluenced(l.getIsInfluenced())
+                        .agencyName(l.getAgency() != null ? l.getAgency().getAgencyName() : null)
+                        .participantName(l.getParticipant() != null ? l.getParticipant().getParticipantName() : null)
+                        .organizationName(l.getOrganization() != null ? l.getOrganization().getOrganizationName() : null)
+                        .influencedParticipantName(l.getInfluencedParticipant() != null
+                                ? l.getInfluencedParticipant().getParticipantName()
+                                : null)
+                        .createdOn(l.getCreatedOn())
+                        .updatedOn(l.getUpdatedOn())
+                        .build();
+
+                List<OutcomeDetails.OutcomeDataSet> headers = List.of(
+                        new OutcomeDetails.OutcomeDataSet("bankName", "Bank Name"),
+                        new OutcomeDetails.OutcomeDataSet("loanAmount", "Loan Amount (₹ Lakhs)"),
+                        new OutcomeDetails.OutcomeDataSet("dateOfFirstDisbursement", "Date of First Disbursement"),
+                        new OutcomeDetails.OutcomeDataSet("disbursementAmount", "Disbursement Amount (₹ Lakhs)"),
+                        new OutcomeDetails.OutcomeDataSet("isInfluenced", "Influenced"),
+                        new OutcomeDetails.OutcomeDataSet("agencyName", "Agency Name"),
+                        new OutcomeDetails.OutcomeDataSet("participantName", "Participant Name"),
+                        new OutcomeDetails.OutcomeDataSet("organizationName", "Organization Name"),
+                        new OutcomeDetails.OutcomeDataSet("influencedParticipantName", "Influenced Participant Name"),
+                        new OutcomeDetails.OutcomeDataSet("createdOn", "Created On"),
+                        new OutcomeDetails.OutcomeDataSet("updatedOn", "Updated On")
+                );
+
+                responseDTO = OutcomeResponseDTO.builder()
+                        .headers(headers)
+                        .body(List.of(body))
+                        .build();
+                break;
+            }
+            case "DesignRights": {
+                DesignRights d = designRightsRepository.findById(outcomeId)
+                        .orElseThrow(() -> new DataException("Design Rights not found with id: " + outcomeId,"NOT_FOUND",400));
+
+                DesignRightsDTO body = DesignRightsDTO.builder()
+                        .id(d.getDesignRightsId())
+                        .dateOfApplication(d.getDateOfApplication())
+                        .dateOfDesignRightsGranted(d.getDateOfDesignRightsGranted())
+                        .certificationNumber(d.getCertificationNumber())
+                        .typeOfDesignRegistered(d.getTypeOfDesignRegistered())
+                        .revenueFromDesignProducts(d.getRevenueFromDesignProducts())
+                        .isAwardedForDesignProtection(d.getIsAwardedForDesignProtection())
+                        .dateOfAwarded(d.getDateOfAwarded())
+                        .nameOfAward(d.getNameOfAward())
+                        .dateOfExport(d.getDateOfExport())
+                        .valueOfExport(d.getValueOfExport())
+                        .volumeOfExport(d.getVolumeOfExport())
+                        .units(d.getUnits())
+                        .isInfluenced(d.getIsInfluenced())
+                        .agencyName(d.getAgency() != null ? d.getAgency().getAgencyName() : null)
+                        .participantName(d.getParticipant() != null ? d.getParticipant().getParticipantName() : null)
+                        .organizationName(d.getOrganization() != null ? d.getOrganization().getOrganizationName() : null)
+                        .influencedParticipantName(d.getInfluencedParticipant() != null
+                                ? d.getInfluencedParticipant().getParticipantName()
+                                : null)
+                        .createdOn(d.getCreatedOn())
+                        .updatedOn(d.getUpdatedOn())
+                        .build();
+
+                List<OutcomeDetails.OutcomeDataSet> headers = List.of(
+                        new OutcomeDetails.OutcomeDataSet("dateOfApplication", "Date of Application"),
+                        new OutcomeDetails.OutcomeDataSet("dateOfDesignRightsGranted", "Date of Design Rights Granted"),
+                        new OutcomeDetails.OutcomeDataSet("certificationNumber", "Certification Number"),
+                        new OutcomeDetails.OutcomeDataSet("typeOfDesignRegistered", "Type of Design Registered"),
+                        new OutcomeDetails.OutcomeDataSet("revenueFromDesignProducts", "Revenue from Design Products (₹)"),
+                        new OutcomeDetails.OutcomeDataSet("isAwardedForDesignProtection", "Awarded for Design Protection"),
+                        new OutcomeDetails.OutcomeDataSet("dateOfAwarded", "Date of Award"),
+                        new OutcomeDetails.OutcomeDataSet("nameOfAward", "Name of Award"),
+                        new OutcomeDetails.OutcomeDataSet("dateOfExport", "Date of Export"),
+                        new OutcomeDetails.OutcomeDataSet("valueOfExport", "Value of Export (₹)"),
+                        new OutcomeDetails.OutcomeDataSet("volumeOfExport", "Volume of Export"),
+                        new OutcomeDetails.OutcomeDataSet("units", "Units"),
+                        new OutcomeDetails.OutcomeDataSet("isInfluenced", "Influenced"),
+                        new OutcomeDetails.OutcomeDataSet("agencyName", "Agency Name"),
+                        new OutcomeDetails.OutcomeDataSet("participantName", "Participant Name"),
+                        new OutcomeDetails.OutcomeDataSet("organizationName", "Organization Name"),
+                        new OutcomeDetails.OutcomeDataSet("influencedParticipantName", "Influenced Participant Name"),
+                        new OutcomeDetails.OutcomeDataSet("createdOn", "Created On"),
+                        new OutcomeDetails.OutcomeDataSet("updatedOn", "Updated On")
+                );
+
+                responseDTO = OutcomeResponseDTO.builder()
+                        .headers(headers)
+                        .body(List.of(body))
+                        .build();
+                break;
+            }
+
+            case "CopyRights": {
+                CopyRights c = copyRightsRepository.findById(outcomeId)
+                        .orElseThrow(() -> new DataException("Copy Rights not found with id: " + outcomeId,"NOT_FOUND",400));
+
+                CopyRightsDTO body = CopyRightsDTO.builder()
+                        .id(c.getCopyRightsId())
+                        .dateOfApplicationFiled(c.getDateOfApplicationFiled())
+                        .typeOfIntellectualWorkRegistered(c.getTypeOfIntellectualWorkRegistered())
+                        .registrationCertificateReceivedDate(c.getRegistrationCertificateReceivedDate())
+                        .registrationCertificateNumber(c.getRegistrationCertificateNumber())
+                        .numberOfProductsProtected(c.getNumberOfProductsProtected())
+                        .nameOfProductProtected(c.getNameOfProductProtected())
+                        .revenueFromCopyrightedMaterial(c.getRevenueFromCopyrightedMaterial())
+                        .marketValueAfterCopyright(c.getMarketValueAfterCopyright())
+                        .isInfluenced(c.getIsInfluenced())
+                        .agencyName(c.getAgency() != null ? c.getAgency().getAgencyName() : null)
+                        .participantName(c.getParticipant() != null ? c.getParticipant().getParticipantName() : null)
+                        .organizationName(c.getOrganization() != null ? c.getOrganization().getOrganizationName() : null)
+                        .influencedParticipantName(c.getInfluencedParticipant() != null
+                                ? c.getInfluencedParticipant().getParticipantName()
+                                : null)
+                        .createdOn(c.getCreatedOn())
+                        .updatedOn(c.getUpdatedOn())
+                        .build();
+
+                List<OutcomeDetails.OutcomeDataSet> headers = List.of(
+                        new OutcomeDetails.OutcomeDataSet("dateOfApplicationFiled", "Date of Application Filed"),
+                        new OutcomeDetails.OutcomeDataSet("typeOfIntellectualWorkRegistered", "Type of Intellectual Work Registered"),
+                        new OutcomeDetails.OutcomeDataSet("registrationCertificateReceivedDate", "Certificate Received Date"),
+                        new OutcomeDetails.OutcomeDataSet("registrationCertificateNumber", "Certificate Number"),
+                        new OutcomeDetails.OutcomeDataSet("numberOfProductsProtected", "No. of Products Protected"),
+                        new OutcomeDetails.OutcomeDataSet("nameOfProductProtected", "Name of Product Protected"),
+                        new OutcomeDetails.OutcomeDataSet("revenueFromCopyrightedMaterial", "Revenue from Copyrighted Material (₹)"),
+                        new OutcomeDetails.OutcomeDataSet("marketValueAfterCopyright", "Market Value After Copyright (₹)"),
+                        new OutcomeDetails.OutcomeDataSet("isInfluenced", "Influenced"),
+                        new OutcomeDetails.OutcomeDataSet("agencyName", "Agency Name"),
+                        new OutcomeDetails.OutcomeDataSet("participantName", "Participant Name"),
+                        new OutcomeDetails.OutcomeDataSet("organizationName", "Organization Name"),
+                        new OutcomeDetails.OutcomeDataSet("influencedParticipantName", "Influenced Participant Name"),
+                        new OutcomeDetails.OutcomeDataSet("createdOn", "Created On"),
+                        new OutcomeDetails.OutcomeDataSet("updatedOn", "Updated On")
+                );
+
+                responseDTO = OutcomeResponseDTO.builder()
+                        .headers(headers)
+                        .body(List.of(body))
+                        .build();
+                break;
+            }
+            case "PMFMEScheme": {
+                PMFMEScheme p = pmfmeSchemeRepository.findById(outcomeId)
+                        .orElseThrow(() -> new DataException("PMFME Scheme not found with id: " + outcomeId,"NOT_FOUND",400));
+
+                PMFMESchemeDTO body = PMFMESchemeDTO.builder()
+                        .id(p.getPmfmeId())
+                        .dateOfApplicationSubmission(p.getDateOfApplicationSubmission())
+                        .loanSanctioned(p.getLoanSanctioned())
+                        .grantReceived(p.getGrantReceived())
+                        .workingCapitalAvailed(p.getWorkingCapitalAvailed())
+                        .dateOfApprovalUnderPMFME(p.getDateOfApprovalUnderPMFME())
+                        .isCommonFacilityCentreUsed(p.getIsCommonFacilityCentreUsed())
+                        .isBrandingMarketingSupportAvailed(p.getIsBrandingMarketingSupportAvailed())
+                        .supportDetails(p.getSupportDetails())
+                        .productionCapacity(p.getProductionCapacity())
+                        .isCertificationSupportAvailed(p.getIsCertificationSupportAvailed())
+                        .dateOfMarketLinkage(p.getDateOfMarketLinkage())
+                        .volumeOfMarketLinkage(p.getVolumeOfMarketLinkage())
+                        .units(p.getUnits())
+                        .valueOfMarketLinkage(p.getValueOfMarketLinkage())
+                        .monthlyTurnover(p.getMonthlyTurnover())
+                        .turnoverChange(p.getTurnoverChange())
+                        .productionCapacityChange(p.getProductionCapacityChange())
+                        .brandingOrMarketingSupportChange(p.getBrandingOrMarketingSupportChange())
+                        .isInfluenced(p.getIsInfluenced())
+                        .agencyName(p.getAgency() != null ? p.getAgency().getAgencyName() : null)
+                        .participantName(p.getParticipant() != null ? p.getParticipant().getParticipantName() : null)
+                        .organizationName(p.getOrganization() != null ? p.getOrganization().getOrganizationName() : null)
+                        .influencedParticipantName(p.getInfluencedParticipant() != null
+                                ? p.getInfluencedParticipant().getParticipantName()
+                                : null)
+                        .createdOn(p.getCreatedOn())
+                        .updatedOn(p.getUpdatedOn())
+                        .build();
+
+                List<OutcomeDetails.OutcomeDataSet> headers = List.of(
+                        new OutcomeDetails.OutcomeDataSet("dateOfApplicationSubmission", "Application Submission Date"),
+                        new OutcomeDetails.OutcomeDataSet("loanSanctioned", "Loan Sanctioned (₹)"),
+                        new OutcomeDetails.OutcomeDataSet("grantReceived", "Grant Received (₹)"),
+                        new OutcomeDetails.OutcomeDataSet("workingCapitalAvailed", "Working Capital Availed (₹)"),
+                        new OutcomeDetails.OutcomeDataSet("dateOfApprovalUnderPMFME", "Approval Date Under PMFME"),
+                        new OutcomeDetails.OutcomeDataSet("isCommonFacilityCentreUsed", "Used Common Facility Centre"),
+                        new OutcomeDetails.OutcomeDataSet("isBrandingMarketingSupportAvailed", "Branding/Marketing Support Availed"),
+                        new OutcomeDetails.OutcomeDataSet("supportDetails", "Support Details"),
+                        new OutcomeDetails.OutcomeDataSet("productionCapacity", "Production Capacity (MTs)"),
+                        new OutcomeDetails.OutcomeDataSet("isCertificationSupportAvailed", "Certification Support Availed"),
+                        new OutcomeDetails.OutcomeDataSet("dateOfMarketLinkage", "Market Linkage Date"),
+                        new OutcomeDetails.OutcomeDataSet("volumeOfMarketLinkage", "Market Linkage Volume"),
+                        new OutcomeDetails.OutcomeDataSet("units", "Units"),
+                        new OutcomeDetails.OutcomeDataSet("valueOfMarketLinkage", "Market Linkage Value (₹)"),
+                        new OutcomeDetails.OutcomeDataSet("monthlyTurnover", "Monthly Turnover (₹)"),
+                        new OutcomeDetails.OutcomeDataSet("turnoverChange", "Turnover Change"),
+                        new OutcomeDetails.OutcomeDataSet("productionCapacityChange", "Production Capacity Change"),
+                        new OutcomeDetails.OutcomeDataSet("brandingOrMarketingSupportChange", "Branding/Marketing Support Change"),
+                        new OutcomeDetails.OutcomeDataSet("isInfluenced", "Influenced"),
+                        new OutcomeDetails.OutcomeDataSet("agencyName", "Agency Name"),
+                        new OutcomeDetails.OutcomeDataSet("participantName", "Participant Name"),
+                        new OutcomeDetails.OutcomeDataSet("organizationName", "Organization Name"),
+                        new OutcomeDetails.OutcomeDataSet("influencedParticipantName", "Influenced Participant Name"),
+                        new OutcomeDetails.OutcomeDataSet("createdOn", "Created On"),
+                        new OutcomeDetails.OutcomeDataSet("updatedOn", "Updated On")
+                );
+
+                responseDTO = OutcomeResponseDTO.builder()
+                        .headers(headers)
+                        .body(List.of(body))
+                        .build();
+                break;
+            }
+
+            case "ConsortiaTender": {
+                ConsortiaTender c = consortiaTenderRepository.findById(outcomeId)
+                        .orElseThrow(() -> new DataException("Consortia Tender not found with id: " + outcomeId,"NOT_FOUND",400));
+
+                ConsortiaTenderDTO body = ConsortiaTenderDTO.builder()
+                        .id(c.getConsortiaTenderId())
+                        .productOrServiceOffered(c.getProductOrServiceOffered())
+                        .consortiaMemberType(c.getConsortiaMemberType())
+                        .consortiaName(c.getConsortiaName())
+                        .dateOfJoiningConsortia(c.getDateOfJoiningConsortia())
+                        .tenderParticipatedName(c.getTenderParticipatedName())
+                        .departmentTenderIssued(c.getDepartmentTenderIssued())
+                        .tenderId(c.getTenderId())
+                        .tenderValue(c.getTenderValue())
+                        .tenderOutcome(c.getTenderOutcome())
+                        .workOrderIssueDate(c.getWorkOrderIssueDate())
+                        .isOrderExecuted(c.getIsOrderExecuted())
+                        .challengesFaced(c.getChallengesFaced())
+                        .isInfluenced(c.getIsInfluenced())
+                        .agencyName(c.getAgency() != null ? c.getAgency().getAgencyName() : null)
+                        .participantName(c.getParticipant() != null ? c.getParticipant().getParticipantName() : null)
+                        .organizationName(c.getOrganization() != null ? c.getOrganization().getOrganizationName() : null)
+                        .influencedParticipantName(c.getInfluencedParticipant() != null
+                                ? c.getInfluencedParticipant().getParticipantName()
+                                : null)
+                        .createdOn(c.getCreatedOn())
+                        .updatedOn(c.getUpdatedOn())
+                        .build();
+
+                List<OutcomeDetails.OutcomeDataSet> headers = List.of(
+                        new OutcomeDetails.OutcomeDataSet("productOrServiceOffered", "Product / Service Offered"),
+                        new OutcomeDetails.OutcomeDataSet("consortiaMemberType", "Consortia Member Type"),
+                        new OutcomeDetails.OutcomeDataSet("consortiaName", "Consortia Name"),
+                        new OutcomeDetails.OutcomeDataSet("dateOfJoiningConsortia", "Date of Joining Consortia"),
+                        new OutcomeDetails.OutcomeDataSet("tenderParticipatedName", "Tender Participated Name"),
+                        new OutcomeDetails.OutcomeDataSet("departmentTenderIssued", "Department Tender Issued"),
+                        new OutcomeDetails.OutcomeDataSet("tenderId", "Tender ID"),
+                        new OutcomeDetails.OutcomeDataSet("tenderValue", "Tender Value (₹)"),
+                        new OutcomeDetails.OutcomeDataSet("tenderOutcome", "Tender Outcome"),
+                        new OutcomeDetails.OutcomeDataSet("workOrderIssueDate", "Work Order Issue Date"),
+                        new OutcomeDetails.OutcomeDataSet("isOrderExecuted", "Order Executed"),
+                        new OutcomeDetails.OutcomeDataSet("challengesFaced", "Challenges Faced"),
+                        new OutcomeDetails.OutcomeDataSet("isInfluenced", "Influenced"),
+                        new OutcomeDetails.OutcomeDataSet("agencyName", "Agency Name"),
+                        new OutcomeDetails.OutcomeDataSet("participantName", "Participant Name"),
+                        new OutcomeDetails.OutcomeDataSet("organizationName", "Organization Name"),
+                        new OutcomeDetails.OutcomeDataSet("influencedParticipantName", "Influenced Participant Name"),
+                        new OutcomeDetails.OutcomeDataSet("createdOn", "Created On"),
+                        new OutcomeDetails.OutcomeDataSet("updatedOn", "Updated On")
+                );
+
+                responseDTO = OutcomeResponseDTO.builder()
+                        .headers(headers)
+                        .body(List.of(body))
+                        .build();
+                break;
+            }
+            case "GeMRegistration": {
+                GeMRegistration g = geMRegistrationRepository.findById(outcomeId)
+                        .orElseThrow(() -> new DataException("GeM Registration not found with id: " + outcomeId,"NOT_FOUND",400));
+
+                GeMRegistrationDTO body = GeMRegistrationDTO.builder()
+                        .id(g.getGemId())
+                        .gemRegistrationId(g.getGemRegistrationId())
+                        .gemRegistrationDate(g.getGemRegistrationDate())
+                        .isInfluenced(g.getIsInfluenced())
+                        .agencyName(g.getAgency() != null ? g.getAgency().getAgencyName() : null)
+                        .participantName(g.getParticipant() != null ? g.getParticipant().getParticipantName() : null)
+                        .organizationName(g.getOrganization() != null ? g.getOrganization().getOrganizationName() : null)
+                        .influencedParticipantName(g.getInfluencedParticipant() != null
+                                ? g.getInfluencedParticipant().getParticipantName()
+                                : null)
+                        .createdOn(g.getCreatedOn())
+                        .updatedOn(g.getUpdatedOn())
+                        .build();
+
+                List<OutcomeDetails.OutcomeDataSet> headers = List.of(
+                        new OutcomeDetails.OutcomeDataSet("gemRegistrationId", "GeM Registration ID"),
+                        new OutcomeDetails.OutcomeDataSet("gemRegistrationDate", "Registration Date"),
+                        new OutcomeDetails.OutcomeDataSet("isInfluenced", "Influenced"),
+                        new OutcomeDetails.OutcomeDataSet("agencyName", "Agency Name"),
+                        new OutcomeDetails.OutcomeDataSet("participantName", "Participant Name"),
+                        new OutcomeDetails.OutcomeDataSet("organizationName", "Organization Name"),
+                        new OutcomeDetails.OutcomeDataSet("influencedParticipantName", "Influenced Participant Name"),
+                        new OutcomeDetails.OutcomeDataSet("createdOn", "Created On"),
+                        new OutcomeDetails.OutcomeDataSet("updatedOn", "Updated On")
+                );
+
+                responseDTO = OutcomeResponseDTO.builder()
+                        .headers(headers)
+                        .body(List.of(body))
+                        .build();
+                break;
+            }
+
+            case "OEM": {
+                OEM o = oemRepository.findById(outcomeId)
+                        .orElseThrow(() -> new DataException("OEM not found with id: " + outcomeId,"NOT_FOUND",400));
+
+                OEMDTO body = OEMDTO.builder()
+                        .id(o.getOemId())
+                        .oemRegistrationDate(o.getOemRegistrationDate())
+                        .oemRegistrationNumber(o.getOemRegistrationNumber())
+                        .oemTargeted(o.getOemTargeted())
+                        .oemVendorCode(o.getOemVendorCode())
+                        .productsSupplied(o.getProductsSupplied())
+                        .vendorRegistrationDate(o.getVendorRegistrationDate())
+                        .firstPurchaseOrderDate(o.getFirstPurchaseOrderDate())
+                        .firstPOValue(o.getFirstPOValue())
+                        .currentMonthlySupplyValue(o.getCurrentMonthlySupplyValue())
+                        .isCertificationStatus(o.getIsCertificationStatus())
+                        .machineryUpGradation(o.getMachineryUpGradation())
+                        .oemAuditScore(o.getOemAuditScore())
+                        .isInfluenced(o.getIsInfluenced())
+                        .agencyName(o.getAgency() != null ? o.getAgency().getAgencyName() : null)
+                        .participantName(o.getParticipant() != null ? o.getParticipant().getParticipantName() : null)
+                        .organizationName(o.getOrganization() != null ? o.getOrganization().getOrganizationName() : null)
+                        .influencedParticipantName(o.getInfluencedParticipant() != null
+                                ? o.getInfluencedParticipant().getParticipantName()
+                                : null)
+                        .createdOn(o.getCreatedOn())
+                        .updatedOn(o.getUpdatedOn())
+                        .build();
+
+                List<OutcomeDetails.OutcomeDataSet> headers = List.of(
+                        new OutcomeDetails.OutcomeDataSet("oemRegistrationDate", "OEM Registration Date"),
+                        new OutcomeDetails.OutcomeDataSet("oemRegistrationNumber", "OEM Registration Number"),
+                        new OutcomeDetails.OutcomeDataSet("oemTargeted", "OEM Targeted"),
+                        new OutcomeDetails.OutcomeDataSet("oemVendorCode", "OEM Vendor Code"),
+                        new OutcomeDetails.OutcomeDataSet("productsSupplied", "Products Supplied"),
+                        new OutcomeDetails.OutcomeDataSet("vendorRegistrationDate", "Vendor Registration Date"),
+                        new OutcomeDetails.OutcomeDataSet("firstPurchaseOrderDate", "First Purchase Order Date"),
+                        new OutcomeDetails.OutcomeDataSet("firstPOValue", "First Purchase Order Value (₹)"),
+                        new OutcomeDetails.OutcomeDataSet("currentMonthlySupplyValue", "Current Monthly Supply Value (₹)"),
+                        new OutcomeDetails.OutcomeDataSet("isCertificationStatus", "Certification Status"),
+                        new OutcomeDetails.OutcomeDataSet("machineryUpGradation", "Machinery Upgradation"),
+                        new OutcomeDetails.OutcomeDataSet("oemAuditScore", "OEM Audit Score"),
+                        new OutcomeDetails.OutcomeDataSet("isInfluenced", "Influenced"),
+                        new OutcomeDetails.OutcomeDataSet("agencyName", "Agency Name"),
+                        new OutcomeDetails.OutcomeDataSet("participantName", "Participant Name"),
+                        new OutcomeDetails.OutcomeDataSet("organizationName", "Organization Name"),
+                        new OutcomeDetails.OutcomeDataSet("influencedParticipantName", "Influenced Participant Name"),
+                        new OutcomeDetails.OutcomeDataSet("createdOn", "Created On"),
+                        new OutcomeDetails.OutcomeDataSet("updatedOn", "Updated On")
+                );
+
+                responseDTO = OutcomeResponseDTO.builder()
+                        .headers(headers)
+                        .body(List.of(body))
+                        .build();
+                break;
+            }
+            case "ScStHub": {
+                ScStHub s = scStHubRepository.findById(outcomeId)
+                        .orElseThrow(() -> new DataException("ScSt Hub not found with id: " + outcomeId,"NOT_FOUND",400));
+
+                ScStHubDTO body = ScStHubDTO.builder()
+                        .id(s.getScStHubId())
+                        .supportAvailedUnderNSSH(s.getSupportAvailedUnderNSSH())
+                        .trainingName(s.getTrainingName())
+                        .trainingCompletedDate(s.getTrainingCompletedDate())
+                        .certificationName(s.getCertificationName())
+                        .certificationReceivedDate(s.getCertificationReceivedDate())
+                        .marketLinkageCompanyName(s.getMarketLinkageCompanyName())
+                        .marketLinkageDate(s.getMarketLinkageDate())
+                        .marketLinkageValue(s.getMarketLinkageValue())
+                        .marketLinkageVolume(s.getMarketLinkageVolume())
+                        .vendorRegistrationWithPSUOrOEM(s.getVendorRegistrationWithPSUOrOEM())
+                        .tenderParticipatedName(s.getTenderParticipatedName())
+                        .handholdingAgency(s.getHandholdingAgency())
+                        .creditLinkageDate(s.getCreditLinkageDate())
+                        .creditLinkageAmount(s.getCreditLinkageAmount())
+                        .monthlyRevenue(s.getMonthlyRevenue())
+                        .keyChallengesFaced(s.getKeyChallengesFaced())
+                        .isInfluenced(s.getIsInfluenced())
+                        .agencyName(s.getAgency() != null ? s.getAgency().getAgencyName() : null)
+                        .participantName(s.getParticipant() != null ? s.getParticipant().getParticipantName() : null)
+                        .organizationName(s.getOrganization() != null ? s.getOrganization().getOrganizationName() : null)
+                        .influencedParticipantName(s.getInfluencedParticipant() != null
+                                ? s.getInfluencedParticipant().getParticipantName()
+                                : null)
+                        .createdOn(s.getCreatedOn())
+                        .updatedOn(s.getUpdatedOn())
+                        .build();
+
+                List<OutcomeDetails.OutcomeDataSet> headers = List.of(
+                        new OutcomeDetails.OutcomeDataSet("supportAvailedUnderNSSH", "Support Availed Under NSSH"),
+                        new OutcomeDetails.OutcomeDataSet("trainingName", "Training Name"),
+                        new OutcomeDetails.OutcomeDataSet("trainingCompletedDate", "Training Completed Date"),
+                        new OutcomeDetails.OutcomeDataSet("certificationName", "Certification Name"),
+                        new OutcomeDetails.OutcomeDataSet("certificationReceivedDate", "Certification Received Date"),
+                        new OutcomeDetails.OutcomeDataSet("marketLinkageCompanyName", "Market Linkage Company Name"),
+                        new OutcomeDetails.OutcomeDataSet("marketLinkageDate", "Market Linkage Date"),
+                        new OutcomeDetails.OutcomeDataSet("marketLinkageValue", "Market Linkage Value (₹)"),
+                        new OutcomeDetails.OutcomeDataSet("marketLinkageVolume", "Market Linkage Volume"),
+                        new OutcomeDetails.OutcomeDataSet("vendorRegistrationWithPSUOrOEM", "Vendor Registration With PSU/OEM"),
+                        new OutcomeDetails.OutcomeDataSet("tenderParticipatedName", "Tender Participated Name"),
+                        new OutcomeDetails.OutcomeDataSet("handholdingAgency", "Handholding Agency"),
+                        new OutcomeDetails.OutcomeDataSet("creditLinkageDate", "Credit Linkage Date"),
+                        new OutcomeDetails.OutcomeDataSet("creditLinkageAmount", "Credit Linkage Amount (₹)"),
+                        new OutcomeDetails.OutcomeDataSet("monthlyRevenue", "Monthly Revenue (₹)"),
+                        new OutcomeDetails.OutcomeDataSet("keyChallengesFaced", "Key Challenges Faced"),
+                        new OutcomeDetails.OutcomeDataSet("isInfluenced", "Influenced"),
+                        new OutcomeDetails.OutcomeDataSet("agencyName", "Agency Name"),
+                        new OutcomeDetails.OutcomeDataSet("participantName", "Participant Name"),
+                        new OutcomeDetails.OutcomeDataSet("organizationName", "Organization Name"),
+                        new OutcomeDetails.OutcomeDataSet("influencedParticipantName", "Influenced Participant Name"),
+                        new OutcomeDetails.OutcomeDataSet("createdOn", "Created On"),
+                        new OutcomeDetails.OutcomeDataSet("updatedOn", "Updated On")
+                );
+
+                responseDTO = OutcomeResponseDTO.builder()
+                        .headers(headers)
+                        .body(List.of(body))
+                        .build();
+                break;
+            }
+
+            case "SIDBIAspire": {
+                SIDBIAspire a = sidbiAspireRepository.findById(outcomeId)
+                        .orElseThrow(() -> new DataException("SIDBI Aspire not found with id: " + outcomeId,"NOT_FOUND",400));
+
+                SIDBIAspireDTO body = SIDBIAspireDTO.builder()
+                        .id(a.getSidbiAspireId())
+                        .applicationSubmissionDate(a.getApplicationSubmissionDate())
+                        .dateSanctionUnderAspire(a.getDateSanctionUnderAspire())
+                        .fundingSupportReceived(a.getFundingSupportReceived())
+                        .incubationPartnerName(a.getIncubationPartnerName())
+                        .fundingType(a.getFundingType())
+                        .supportAmount(a.getSupportAmount())
+                        .machinerySetupDate(a.getMachinerySetupDate())
+                        .productionStartedDate(a.getProductionStartedDate())
+                        .production(a.getProduction())
+                        .productionUnits(a.getProductionUnits())
+                        .marketLinkageEnabled(a.getMarketLinkageEnabled())
+                        .marketLinkageDate(a.getMarketLinkageDate())
+                        .marketLinkageVolume(a.getMarketLinkageVolume())
+                        .marketLinkageValue(a.getMarketLinkageValue())
+                        .turnover(a.getTurnover())
+                        .isInfluenced(a.getIsInfluenced())
+                        .agencyName(a.getAgency() != null ? a.getAgency().getAgencyName() : null)
+                        .participantName(a.getParticipant() != null ? a.getParticipant().getParticipantName() : null)
+                        .organizationName(a.getOrganization() != null ? a.getOrganization().getOrganizationName() : null)
+                        .influencedParticipantName(a.getInfluencedParticipant() != null
+                                ? a.getInfluencedParticipant().getParticipantName()
+                                : null)
+                        .createdOn(a.getCreatedOn())
+                        .updatedOn(a.getUpdatedOn())
+                        .build();
+
+                List<OutcomeDetails.OutcomeDataSet> headers = List.of(
+                        new OutcomeDetails.OutcomeDataSet("applicationSubmissionDate", "Application Submission Date"),
+                        new OutcomeDetails.OutcomeDataSet("dateSanctionUnderAspire", "Sanction Date Under Aspire"),
+                        new OutcomeDetails.OutcomeDataSet("fundingSupportReceived", "Funding Support Received"),
+                        new OutcomeDetails.OutcomeDataSet("incubationPartnerName", "Incubation Partner Name"),
+                        new OutcomeDetails.OutcomeDataSet("fundingType", "Funding Type"),
+                        new OutcomeDetails.OutcomeDataSet("supportAmount", "Support Amount (₹)"),
+                        new OutcomeDetails.OutcomeDataSet("machinerySetupDate", "Machinery Setup Date"),
+                        new OutcomeDetails.OutcomeDataSet("productionStartedDate", "Production Started Date"),
+                        new OutcomeDetails.OutcomeDataSet("production", "Production"),
+                        new OutcomeDetails.OutcomeDataSet("productionUnits", "Production Units"),
+                        new OutcomeDetails.OutcomeDataSet("marketLinkageEnabled", "Market Linkage Enabled"),
+                        new OutcomeDetails.OutcomeDataSet("marketLinkageDate", "Market Linkage Date"),
+                        new OutcomeDetails.OutcomeDataSet("marketLinkageVolume", "Market Linkage Volume"),
+                        new OutcomeDetails.OutcomeDataSet("marketLinkageValue", "Market Linkage Value (₹)"),
+                        new OutcomeDetails.OutcomeDataSet("turnover", "Turnover (₹)"),
+                        new OutcomeDetails.OutcomeDataSet("isInfluenced", "Influenced"),
+                        new OutcomeDetails.OutcomeDataSet("agencyName", "Agency Name"),
+                        new OutcomeDetails.OutcomeDataSet("participantName", "Participant Name"),
+                        new OutcomeDetails.OutcomeDataSet("organizationName", "Organization Name"),
+                        new OutcomeDetails.OutcomeDataSet("influencedParticipantName", "Influenced Participant Name"),
+                        new OutcomeDetails.OutcomeDataSet("createdOn", "Created On"),
+                        new OutcomeDetails.OutcomeDataSet("updatedOn", "Updated On")
+                );
+
+                responseDTO = OutcomeResponseDTO.builder()
+                        .headers(headers)
+                        .body(List.of(body))
+                        .build();
+                break;
+            }
+            case "PMViswakarma": {
+                PMViswakarma p = pmViswakarmaReposiroty.findById(outcomeId)
+                        .orElseThrow(() -> new DataException("PM Viswakarma not found with id: " + outcomeId,"NOT_FOUND",400));
+
+                PMViswakarmaDTO body = PMViswakarmaDTO.builder()
+                        .id(p.getPmViswakarmaId())
+                        .artisanCategory(p.getArtisanCategory())
+                        .dateOfTraining(p.getDateOfTraining())
+                        .certificateIssueDate(p.getCertificateIssueDate())
+                        .dateOfCreditAvailed(p.getDateOfCreditAvailed())
+                        .amountOfCreditAvailed(p.getAmountOfCreditAvailed())
+                        .purposeOfUtilisation(p.getPurposeOfUtilisation())
+                        .monthlyIncomeAfterCredit(p.getMonthlyIncomeAfterCredit())
+                        .isInfluenced(p.getIsInfluenced())
+                        .agencyName(p.getAgency() != null ? p.getAgency().getAgencyName() : null)
+                        .participantName(p.getParticipant() != null ? p.getParticipant().getParticipantName() : null)
+                        .organizationName(p.getOrganization() != null ? p.getOrganization().getOrganizationName() : null)
+                        .influencedParticipantName(p.getInfluencedParticipant() != null
+                                ? p.getInfluencedParticipant().getParticipantName()
+                                : null)
+                        .createdOn(p.getCreatedOn())
+                        .updatedOn(p.getUpdatedOn())
+                        .build();
+
+                List<OutcomeDetails.OutcomeDataSet> headers = List.of(
+                        new OutcomeDetails.OutcomeDataSet("artisanCategory", "Artisan Category"),
+                        new OutcomeDetails.OutcomeDataSet("dateOfTraining", "Date of Training"),
+                        new OutcomeDetails.OutcomeDataSet("certificateIssueDate", "Certificate Issue Date"),
+                        new OutcomeDetails.OutcomeDataSet("dateOfCreditAvailed", "Date of Credit Availed"),
+                        new OutcomeDetails.OutcomeDataSet("amountOfCreditAvailed", "Amount of Credit Availed (₹)"),
+                        new OutcomeDetails.OutcomeDataSet("purposeOfUtilisation", "Purpose of Utilisation"),
+                        new OutcomeDetails.OutcomeDataSet("monthlyIncomeAfterCredit", "Monthly Income After Credit (₹)"),
+                        new OutcomeDetails.OutcomeDataSet("isInfluenced", "Influenced"),
+                        new OutcomeDetails.OutcomeDataSet("agencyName", "Agency Name"),
+                        new OutcomeDetails.OutcomeDataSet("participantName", "Participant Name"),
+                        new OutcomeDetails.OutcomeDataSet("organizationName", "Organization Name"),
+                        new OutcomeDetails.OutcomeDataSet("influencedParticipantName", "Influenced Participant Name"),
+                        new OutcomeDetails.OutcomeDataSet("createdOn", "Created On"),
+                        new OutcomeDetails.OutcomeDataSet("updatedOn", "Updated On")
+                );
+
+                responseDTO = OutcomeResponseDTO.builder()
+                        .headers(headers)
+                        .body(List.of(body))
+                        .build();
+                break;
+            }
+
+            case "VendorDevelopment": {
+                VendorDevelopment v = vendorDevelopmentRepository.findById(outcomeId)
+                        .orElseThrow(() -> new DataException("Vendor Development not found with id: " + outcomeId,"NOT_FOUND",400));
+
+                VendorDevelopmentDTO body = VendorDevelopmentDTO.builder()
+                        .dateOfParticipation(v.getDateOfParticipation())
+                        .vdpProgramName(v.getVdpProgramName())
+                        .productShowcased(v.getProductShowcased())
+                        .nameOfBuyersInterested(v.getNameOfBuyersInterested())
+                        .vendorRegisteredWith(v.getVendorRegisteredWith())
+                        .iseProcurementRegistered(v.getIseProcurementRegistered())
+                        .portalName(v.getPortalName())
+                        .isDigitalCatalogCreated(v.getIsDigitalCatalogCreated())
+                        .dateOfSupply(v.getDateOfSupply())
+                        .volumeOfSupply(v.getVolumeOfSupply())
+                        .units(v.getUnits())
+                        .valueOfSupply(v.getValueOfSupply())
+                        .monthlyTurnover(v.getMonthlyTurnover())
+                        .isInfluenced(v.getIsInfluenced())
+                        .agencyName(v.getAgency() != null ? v.getAgency().getAgencyName() : null)
+                        .participantName(v.getParticipant() != null ? v.getParticipant().getParticipantName() : null)
+                        .organizationName(v.getOrganization() != null ? v.getOrganization().getOrganizationName() : null)
+                        .influencedParticipantName(v.getInfluencedParticipant() != null
+                                ? v.getInfluencedParticipant().getParticipantName()
+                                : null)
+                        .createdOn(v.getCreatedOn())
+                        .updatedOn(v.getUpdatedOn())
+                        .build();
+
+                List<OutcomeDetails.OutcomeDataSet> headers = List.of(
+                        new OutcomeDetails.OutcomeDataSet("dateOfParticipation", "Date of Participation"),
+                        new OutcomeDetails.OutcomeDataSet("vdpProgramName", "VDP Program Name"),
+                        new OutcomeDetails.OutcomeDataSet("productShowcased", "Product Showcased"),
+                        new OutcomeDetails.OutcomeDataSet("nameOfBuyersInterested", "Buyers Interested"),
+                        new OutcomeDetails.OutcomeDataSet("vendorRegisteredWith", "Vendor Registered With"),
+                        new OutcomeDetails.OutcomeDataSet("iseProcurementRegistered", "e-Procurement Registered"),
+                        new OutcomeDetails.OutcomeDataSet("portalName", "Portal Name"),
+                        new OutcomeDetails.OutcomeDataSet("isDigitalCatalogCreated", "Digital Catalog Created"),
+                        new OutcomeDetails.OutcomeDataSet("dateOfSupply", "Date of Supply"),
+                        new OutcomeDetails.OutcomeDataSet("volumeOfSupply", "Volume of Supply"),
+                        new OutcomeDetails.OutcomeDataSet("units", "Units"),
+                        new OutcomeDetails.OutcomeDataSet("valueOfSupply", "Value of Supply (₹)"),
+                        new OutcomeDetails.OutcomeDataSet("monthlyTurnover", "Monthly Turnover (₹)"),
+                        new OutcomeDetails.OutcomeDataSet("isInfluenced", "Influenced"),
+                        new OutcomeDetails.OutcomeDataSet("agencyName", "Agency Name"),
+                        new OutcomeDetails.OutcomeDataSet("participantName", "Participant Name"),
+                        new OutcomeDetails.OutcomeDataSet("organizationName", "Organization Name"),
+                        new OutcomeDetails.OutcomeDataSet("influencedParticipantName", "Influenced Participant Name"),
+                        new OutcomeDetails.OutcomeDataSet("createdOn", "Created On"),
+                        new OutcomeDetails.OutcomeDataSet("updatedOn", "Updated On")
+                );
+
+                responseDTO = OutcomeResponseDTO.builder()
+                        .headers(headers)
+                        .body(List.of(body))
+                        .build();
+                break;
+            }
+
+            case "Lean": {
+                Lean l = leanRepository.findById(outcomeId)
+                        .orElseThrow(() -> new DataException("Lean not found with id: " + outcomeId,"NOT_FOUND",400));
+
+                LeanDTO body = LeanDTO.builder()
+                        .id(l.getLeanId())
+                        .certificationType(l.getCertificationType())
+                        .dateOfCertification(l.getDateOfCertification())
+                        .isLeanConsultantAppointed(l.getIsLeanConsultantAppointed())
+                        .dateOfAppointed(l.getDateOfAppointed())
+                        .rawMaterialWastage(l.getRawMaterialWastage())
+                        .rawMaterialWastageUnits(l.getRawMaterialWastageUnits())
+                        .productionOutput(l.getProductionOutput())
+                        .productionOutputUnits(l.getProductionOutputUnits())
+                        .powerUsage(l.getPowerUsage())
+                        .powerUsageUnits(l.getPowerUsageUnits())
+                        .isInfluenced(l.getIsInfluenced())
+                        .agencyName(l.getAgency() != null ? l.getAgency().getAgencyName() : null)
+                        .participantName(l.getParticipant() != null ? l.getParticipant().getParticipantName() : null)
+                        .organizationName(l.getOrganization() != null ? l.getOrganization().getOrganizationName() : null)
+                        .influencedParticipantName(l.getInfluencedParticipant() != null
+                                ? l.getInfluencedParticipant().getParticipantName()
+                                : null)
+                        .createdOn(l.getCreatedOn())
+                        .updatedOn(l.getUpdatedOn())
+                        .build();
+
+                List<OutcomeDetails.OutcomeDataSet> headers = List.of(
+                        new OutcomeDetails.OutcomeDataSet("certificationType", "Certification Type"),
+                        new OutcomeDetails.OutcomeDataSet("dateOfCertification", "Date of Certification"),
+                        new OutcomeDetails.OutcomeDataSet("isLeanConsultantAppointed", "Lean Consultant Appointed"),
+                        new OutcomeDetails.OutcomeDataSet("dateOfAppointed", "Date of Consultant Appointment"),
+                        new OutcomeDetails.OutcomeDataSet("rawMaterialWastage", "Raw Material Wastage"),
+                        new OutcomeDetails.OutcomeDataSet("rawMaterialWastageUnits", "Wastage Units"),
+                        new OutcomeDetails.OutcomeDataSet("productionOutput", "Production Output"),
+                        new OutcomeDetails.OutcomeDataSet("productionOutputUnits", "Output Units"),
+                        new OutcomeDetails.OutcomeDataSet("powerUsage", "Power Usage"),
+                        new OutcomeDetails.OutcomeDataSet("powerUsageUnits", "Power Usage Units"),
+                        new OutcomeDetails.OutcomeDataSet("isInfluenced", "Influenced"),
+                        new OutcomeDetails.OutcomeDataSet("agencyName", "Agency Name"),
+                        new OutcomeDetails.OutcomeDataSet("participantName", "Participant Name"),
+                        new OutcomeDetails.OutcomeDataSet("organizationName", "Organization Name"),
+                        new OutcomeDetails.OutcomeDataSet("influencedParticipantName", "Influenced Participant Name"),
+                        new OutcomeDetails.OutcomeDataSet("createdOn", "Created On"),
+                        new OutcomeDetails.OutcomeDataSet("updatedOn", "Updated On")
+                );
+
+                responseDTO = OutcomeResponseDTO.builder()
+                        .headers(headers)
+                        .body(List.of(body))
+                        .build();
+                break;
+            }
+            case "TreadMark": {
+                TreadMark t = treadMarkRepository.findById(outcomeId)
+                        .orElseThrow(() -> new DataException("TreadMark not found with id: " + outcomeId,"NOT_FOUND",400));
+
+                TreadMarkDTO body = TreadMarkDTO.builder()
+                        .id(t.getTreadMarkId())
+                        .nameOfTradMark(t.getNameOfTradMark())
+                        .trademarkClass(t.getTrademarkClass())
+                        .tradeMarkRegistrationNo(t.getTradeMarkRegistrationNo())
+                        .dateOfRegistration(t.getDateOfRegistration())
+                        .jurisdictionCovered(t.getJurisdictionCovered())
+                        .annualRevenueAfterRegistration(t.getAnnualRevenueAfterRegistration())
+                        .dateOfExport(t.getDateOfExport())
+                        .valueOfExport(t.getValueOfExport())
+                        .countryOfExport(t.getCountryOfExport())
+                        .retailPartnership(t.getRetailPartnership())
+                        .valueOfSupply(t.getValueOfSupply())
+                        .dateOfSupply(t.getDateOfSupply())
+                        .totalJobsCreated(t.getTotalJobsCreated())
+                        .noOfFranchiseOutletsOpened(t.getNoOfFranchiseOutletsOpened())
+                        .annualRoyaltyEarningsFromFranchise(t.getAnnualRoyaltyEarningsFromFranchise())
+                        .isInfluenced(t.getIsInfluenced())
+                        .agencyName(t.getAgency() != null ? t.getAgency().getAgencyName() : null)
+                        .participantName(t.getParticipant() != null ? t.getParticipant().getParticipantName() : null)
+                        .organizationName(t.getOrganization() != null ? t.getOrganization().getOrganizationName() : null)
+                        .influencedParticipantName(t.getInfluencedParticipant() != null
+                                ? t.getInfluencedParticipant().getParticipantName()
+                                : null)
+                        .createdOn(t.getCreatedOn())
+                        .updatedOn(t.getUpdatedOn())
+                        .build();
+
+                List<OutcomeDetails.OutcomeDataSet> headers = List.of(
+                        new OutcomeDetails.OutcomeDataSet("nameOfTradMark", "Name of Trademark"),
+                        new OutcomeDetails.OutcomeDataSet("trademarkClass", "Trademark Class"),
+                        new OutcomeDetails.OutcomeDataSet("tradeMarkRegistrationNo", "Trademark Registration No"),
+                        new OutcomeDetails.OutcomeDataSet("dateOfRegistration", "Date of Registration"),
+                        new OutcomeDetails.OutcomeDataSet("jurisdictionCovered", "Jurisdiction Covered"),
+                        new OutcomeDetails.OutcomeDataSet("annualRevenueAfterRegistration", "Annual Revenue After Registration (₹)"),
+                        new OutcomeDetails.OutcomeDataSet("dateOfExport", "Date of Export"),
+                        new OutcomeDetails.OutcomeDataSet("valueOfExport", "Value of Export (₹)"),
+                        new OutcomeDetails.OutcomeDataSet("countryOfExport", "Country of Export"),
+                        new OutcomeDetails.OutcomeDataSet("retailPartnership", "Retail Partnership"),
+                        new OutcomeDetails.OutcomeDataSet("valueOfSupply", "Value of Supply (₹)"),
+                        new OutcomeDetails.OutcomeDataSet("dateOfSupply", "Date of Supply"),
+                        new OutcomeDetails.OutcomeDataSet("totalJobsCreated", "Jobs Created"),
+                        new OutcomeDetails.OutcomeDataSet("noOfFranchiseOutletsOpened", "Franchise Outlets Opened"),
+                        new OutcomeDetails.OutcomeDataSet("annualRoyaltyEarningsFromFranchise", "Annual Royalty Earnings (₹)"),
+                        new OutcomeDetails.OutcomeDataSet("isInfluenced", "Influenced"),
+                        new OutcomeDetails.OutcomeDataSet("agencyName", "Agency Name"),
+                        new OutcomeDetails.OutcomeDataSet("participantName", "Participant Name"),
+                        new OutcomeDetails.OutcomeDataSet("organizationName", "Organization Name"),
+                        new OutcomeDetails.OutcomeDataSet("influencedParticipantName", "Influenced Participant Name"),
+                        new OutcomeDetails.OutcomeDataSet("createdOn", "Created On"),
+                        new OutcomeDetails.OutcomeDataSet("updatedOn", "Updated On")
+                );
+
+                responseDTO = OutcomeResponseDTO.builder()
+                        .headers(headers)
+                        .body(List.of(body))
+                        .build();
+                break;
+            }
+            case "Patents": {
+                Patents p = patentsRepository.findById(outcomeId)
+                        .orElseThrow(() -> new DataException("Patents not found with id: " + outcomeId,"NOT_FOUND",400));
+
+                PatentsDTO body = PatentsDTO.builder()
+                        .id(p.getPatentId())
+                        .nameOfPatent(p.getNameOfPatent())
+                        .typeOfPatent(p.getTypeOfPatent())
+                        .patentNumber(p.getPatentNumber())
+                        .patentIssueDate(p.getPatentIssueDate())
+                        .patentCoverage(p.getPatentCoverage())
+                        .annualRevenue(p.getAnnualRevenue())
+                        .dateOfExport(p.getDateOfExport())
+                        .valueOfExport(p.getValueOfExport())
+                        .countryOfExport(p.getCountryOfExport())
+                        .totalJobsCreated(p.getTotalJobsCreated())
+                        .nameOfAward(p.getNameOfAward())
+                        .dateOfAward(p.getDateOfAward())
+                        .isInfluenced(p.getIsInfluenced())
+                        .agencyName(p.getAgency() != null ? p.getAgency().getAgencyName() : null)
+                        .participantName(p.getParticipant() != null ? p.getParticipant().getParticipantName() : null)
+                        .organizationName(p.getOrganization() != null ? p.getOrganization().getOrganizationName() : null)
+                        .influencedParticipantName(p.getInfluencedParticipant() != null
+                                ? p.getInfluencedParticipant().getParticipantName()
+                                : null)
+                        .createdOn(p.getCreatedOn())
+                        .updatedOn(p.getUpdatedOn())
+                        .build();
+
+                List<OutcomeDetails.OutcomeDataSet> headers = List.of(
+                        new OutcomeDetails.OutcomeDataSet("nameOfPatent", "Name of Patent"),
+                        new OutcomeDetails.OutcomeDataSet("typeOfPatent", "Type of Patent"),
+                        new OutcomeDetails.OutcomeDataSet("patentNumber", "Patent Number"),
+                        new OutcomeDetails.OutcomeDataSet("patentIssueDate", "Patent Issue Date"),
+                        new OutcomeDetails.OutcomeDataSet("patentCoverage", "Patent Coverage"),
+                        new OutcomeDetails.OutcomeDataSet("annualRevenue", "Annual Revenue (₹)"),
+                        new OutcomeDetails.OutcomeDataSet("dateOfExport", "Date of Export"),
+                        new OutcomeDetails.OutcomeDataSet("valueOfExport", "Value of Export (₹)"),
+                        new OutcomeDetails.OutcomeDataSet("countryOfExport", "Country of Export"),
+                        new OutcomeDetails.OutcomeDataSet("totalJobsCreated", "Jobs Created"),
+                        new OutcomeDetails.OutcomeDataSet("nameOfAward", "Award Name"),
+                        new OutcomeDetails.OutcomeDataSet("dateOfAward", "Date of Award"),
+                        new OutcomeDetails.OutcomeDataSet("isInfluenced", "Influenced"),
+                        new OutcomeDetails.OutcomeDataSet("agencyName", "Agency Name"),
+                        new OutcomeDetails.OutcomeDataSet("participantName", "Participant Name"),
+                        new OutcomeDetails.OutcomeDataSet("organizationName", "Organization Name"),
+                        new OutcomeDetails.OutcomeDataSet("influencedParticipantName", "Influenced Participant Name"),
+                        new OutcomeDetails.OutcomeDataSet("createdOn", "Created On"),
+                        new OutcomeDetails.OutcomeDataSet("updatedOn", "Updated On")
+                );
+
+                responseDTO = OutcomeResponseDTO.builder()
+                        .headers(headers)
+                        .body(List.of(body))
+                        .build();
+                break;
+            }
+            case "NSIC": {
+                NSIC n = nsicRepository.findById(outcomeId)
+                        .orElseThrow(() -> new DataException("NSIC not found with id: " + outcomeId,"NOT_FOUND",400));
+
+                NSICDTO body = NSICDTO.builder()
+                        .id(n.getNsicId())
+                        .govtAgencyProcured(n.getGovtAgencyProcured())
+                        .dateOfProcurement(n.getDateOfProcurement())
+                        .typeOfProcurement(n.getTypeOfProcurement())
+                        .typeOfProductSupplied(n.getTypeOfProductSupplied())
+                        .valueOfProcurement(n.getValueOfProcurement())
+                        .costSavingsTender(n.getCostSavingsTender())
+                        .isInfluenced(n.getIsInfluenced())
+                        .agencyName(n.getAgency() != null ? n.getAgency().getAgencyName() : null)
+                        .participantName(n.getParticipant() != null ? n.getParticipant().getParticipantName() : null)
+                        .organizationName(n.getOrganization() != null ? n.getOrganization().getOrganizationName() : null)
+                        .influencedParticipantName(n.getInfluencedParticipant() != null
+                                ? n.getInfluencedParticipant().getParticipantName()
+                                : null)
+                        .createdOn(n.getCreatedOn())
+                        .updatedOn(n.getUpdatedOn())
+                        .build();
+
+                List<OutcomeDetails.OutcomeDataSet> headers = List.of(
+                        new OutcomeDetails.OutcomeDataSet("govtAgencyProcured", "Government Agency Procured"),
+                        new OutcomeDetails.OutcomeDataSet("dateOfProcurement", "Date of Procurement"),
+                        new OutcomeDetails.OutcomeDataSet("typeOfProcurement", "Type of Procurement"),
+                        new OutcomeDetails.OutcomeDataSet("typeOfProductSupplied", "Type of Product Supplied"),
+                        new OutcomeDetails.OutcomeDataSet("valueOfProcurement", "Value of Procurement (₹)"),
+                        new OutcomeDetails.OutcomeDataSet("costSavingsTender", "Cost Savings in Tender (₹)"),
+                        new OutcomeDetails.OutcomeDataSet("isInfluenced", "Influenced"),
+                        new OutcomeDetails.OutcomeDataSet("agencyName", "Agency Name"),
+                        new OutcomeDetails.OutcomeDataSet("participantName", "Participant Name"),
+                        new OutcomeDetails.OutcomeDataSet("organizationName", "Organization Name"),
+                        new OutcomeDetails.OutcomeDataSet("influencedParticipantName", "Influenced Participant Name"),
+                        new OutcomeDetails.OutcomeDataSet("createdOn", "Created On"),
+                        new OutcomeDetails.OutcomeDataSet("updatedOn", "Updated On")
+                );
+
+                responseDTO = OutcomeResponseDTO.builder()
+                        .headers(headers)
+                        .body(List.of(body))
+                        .build();
+                break;
+            }
+            case "ICScheme": {
+                ICScheme i = icSchemeRepository.findById(outcomeId)
+                        .orElseThrow(() -> new DataException("IC Scheme not found with id: " + outcomeId,"NOT_FOUND",400));
+
+                ICSchemeDTO body = ICSchemeDTO.builder()
+                        .id(i.getIcSchemeId())
+                        .industryName(i.getIndustryName())
+                        .location(i.getLocation())
+                        .typeOfMsme(i.getTypeOfMsme())
+                        .annualTurnover(i.getAnnualTurnover())
+                        .domesticSales(i.getDomesticSales())
+                        .investment(i.getInvestment())
+                        .isInfluenced(i.getIsInfluenced())
+                        .agencyName(i.getAgency() != null ? i.getAgency().getAgencyName() : null)
+                        .participantName(i.getParticipant() != null ? i.getParticipant().getParticipantName() : null)
+                        .organizationName(i.getOrganization() != null ? i.getOrganization().getOrganizationName() : null)
+                        .influencedParticipantName(i.getInfluencedParticipant() != null
+                                ? i.getInfluencedParticipant().getParticipantName()
+                                : null)
+                        .createdOn(i.getCreatedOn())
+                        .updatedOn(i.getUpdatedOn())
+                        .build();
+
+                List<OutcomeDetails.OutcomeDataSet> headers = List.of(
+                        new OutcomeDetails.OutcomeDataSet("industryName", "Industry Name"),
+                        new OutcomeDetails.OutcomeDataSet("location", "Location"),
+                        new OutcomeDetails.OutcomeDataSet("typeOfMsme", "Type of MSME"),
+                        new OutcomeDetails.OutcomeDataSet("annualTurnover", "Annual Turnover (₹)"),
+                        new OutcomeDetails.OutcomeDataSet("domesticSales", "Domestic Sales (₹)"),
+                        new OutcomeDetails.OutcomeDataSet("investment", "Investment (₹)"),
+                        new OutcomeDetails.OutcomeDataSet("isInfluenced", "Influenced"),
+                        new OutcomeDetails.OutcomeDataSet("agencyName", "Agency Name"),
+                        new OutcomeDetails.OutcomeDataSet("participantName", "Participant Name"),
+                        new OutcomeDetails.OutcomeDataSet("organizationName", "Organization Name"),
+                        new OutcomeDetails.OutcomeDataSet("influencedParticipantName", "Influenced Participant Name"),
+                        new OutcomeDetails.OutcomeDataSet("createdOn", "Created On"),
+                        new OutcomeDetails.OutcomeDataSet("updatedOn", "Updated On")
+                );
+
+                responseDTO = OutcomeResponseDTO.builder()
+                        .headers(headers)
+                        .body(List.of(body))
+                        .build();
+                break;
+            }
+            case "PMS": {
+                PMS p = pmsRepository.findById(outcomeId)
+                        .orElseThrow(() -> new DataException("PMS not found with id: " + outcomeId,"NOT_FOUND",400));
+
+                PMSDTO body = PMSDTO.builder()
+                        .id(p.getPmsId())
+                        .businessTurnover(p.getBusinessTurnover())
+                        .loanNumber(p.getLoanNumber())
+                        .purposeOfLoan(p.getPurposeOfLoan())
+                        .amountOfLoanReleased(p.getAmountOfLoanReleased())
+                        .dateOfLoanReleased(p.getDateOfLoanReleased())
+                        .employmentCreatedDirect(p.getEmploymentCreatedDirect())
+                        .employmentCreatedInDirect(p.getEmploymentCreatedInDirect())
+                        .repaymentAmount(p.getRepaymentAmount())
+                        .dateOfRepayment(p.getDateOfRepayment())
+                        .isUpiOrQrAvailable(p.getIsUpiOrQrAvailable())
+                        .onlinePlatformUsed(p.getOnlinePlatformUsed())
+                        .dateOfGrounding(p.getDateOfGrounding())
+                        .revenue(p.getRevenue())
+                        .isInfluenced(p.getIsInfluenced())
+                        .agencyName(p.getAgency() != null ? p.getAgency().getAgencyName() : null)
+                        .participantName(p.getParticipant() != null ? p.getParticipant().getParticipantName() : null)
+                        .organizationName(p.getOrganization() != null ? p.getOrganization().getOrganizationName() : null)
+                        .influencedParticipantName(p.getInfluencedParticipant() != null
+                                ? p.getInfluencedParticipant().getParticipantName()
+                                : null)
+                        .createdOn(p.getCreatedOn())
+                        .updatedOn(p.getUpdatedOn())
+                        .build();
+
+                List<OutcomeDetails.OutcomeDataSet> headers = List.of(
+                        new OutcomeDetails.OutcomeDataSet("businessTurnover", "Business Turnover"),
+                        new OutcomeDetails.OutcomeDataSet("loanNumber", "Loan Number"),
+                        new OutcomeDetails.OutcomeDataSet("purposeOfLoan", "Purpose of Loan"),
+                        new OutcomeDetails.OutcomeDataSet("amountOfLoanReleased", "Loan Amount Released"),
+                        new OutcomeDetails.OutcomeDataSet("dateOfLoanReleased", "Loan Release Date"),
+                        new OutcomeDetails.OutcomeDataSet("employmentCreatedDirect", "Employment Created (Direct)"),
+                        new OutcomeDetails.OutcomeDataSet("employmentCreatedInDirect", "Employment Created (Indirect)"),
+                        new OutcomeDetails.OutcomeDataSet("repaymentAmount", "Repayment Amount"),
+                        new OutcomeDetails.OutcomeDataSet("dateOfRepayment", "Repayment Date"),
+                        new OutcomeDetails.OutcomeDataSet("isUpiOrQrAvailable", "UPI/QR Available"),
+                        new OutcomeDetails.OutcomeDataSet("onlinePlatformUsed", "Online Platform Used"),
+                        new OutcomeDetails.OutcomeDataSet("dateOfGrounding", "Date of Grounding"),
+                        new OutcomeDetails.OutcomeDataSet("revenue", "Revenue"),
+                        new OutcomeDetails.OutcomeDataSet("isInfluenced", "Influenced"),
+                        new OutcomeDetails.OutcomeDataSet("agencyName", "Agency Name"),
+                        new OutcomeDetails.OutcomeDataSet("participantName", "Participant Name"),
+                        new OutcomeDetails.OutcomeDataSet("organizationName", "Organization Name"),
+                        new OutcomeDetails.OutcomeDataSet("influencedParticipantName", "Influenced Participant Name"),
+                        new OutcomeDetails.OutcomeDataSet("createdOn", "Created On"),
+                        new OutcomeDetails.OutcomeDataSet("updatedOn", "Updated On")
+                );
+
+                responseDTO = OutcomeResponseDTO.builder()
+                        .headers(headers)
+                        .body(List.of(body))
+                        .build();
+                break;
+            }
+
+            case "PMMY": {
+                PMMY p = pmmyRepository.findById(outcomeId)
+                        .orElseThrow(() -> new DataException("PMMY not found with id: " + outcomeId,"NOT_FOUND",400));
+
+                PMMYDTO body = PMMYDTO.builder()
+                        .id(p.getPmmyId())
+                        .category(p.getCategory())
+                        .loanAmountReleased(p.getLoanAmountReleased())
+                        .loanSanctionedDate(p.getLoanSanctionedDate())
+                        .groundingDate(p.getGroundingDate())
+                        .businessTurnover(p.getBusinessTurnover())
+                        .marketLinkageDate(p.getMarketLinkageDate())
+                        .marketVolume(p.getMarketVolume())
+                        .units(p.getUnits())
+                        .marketValue(p.getMarketValue())
+                        .productMarketedName(p.getProductMarketedName())
+                        .isInfluenced(p.getIsInfluenced())
+                        .agencyName(p.getAgency() != null ? p.getAgency().getAgencyName() : null)
+                        .participantName(p.getParticipant() != null ? p.getParticipant().getParticipantName() : null)
+                        .organizationName(p.getOrganization() != null ? p.getOrganization().getOrganizationName() : null)
+                        .influencedParticipantName(p.getInfluencedParticipant() != null
+                                ? p.getInfluencedParticipant().getParticipantName()
+                                : null)
+                        .createdOn(p.getCreatedOn())
+                        .updatedOn(p.getUpdatedOn())
+                        .build();
+
+                List<OutcomeDetails.OutcomeDataSet> headers = List.of(
+                        new OutcomeDetails.OutcomeDataSet("category", "Category"),
+                        new OutcomeDetails.OutcomeDataSet("loanAmountReleased", "Loan Amount Released (₹)"),
+                        new OutcomeDetails.OutcomeDataSet("loanSanctionedDate", "Loan Sanctioned Date"),
+                        new OutcomeDetails.OutcomeDataSet("groundingDate", "Grounding Date"),
+                        new OutcomeDetails.OutcomeDataSet("businessTurnover", "Business Turnover"),
+                        new OutcomeDetails.OutcomeDataSet("marketLinkageDate", "Market Linkage Date"),
+                        new OutcomeDetails.OutcomeDataSet("marketVolume", "Market Volume (MT)"),
+                        new OutcomeDetails.OutcomeDataSet("units", "Units"),
+                        new OutcomeDetails.OutcomeDataSet("marketValue", "Market Value (₹)"),
+                        new OutcomeDetails.OutcomeDataSet("productMarketedName", "Product Marketed Name"),
+                        new OutcomeDetails.OutcomeDataSet("isInfluenced", "Influenced"),
+                        new OutcomeDetails.OutcomeDataSet("agencyName", "Agency Name"),
+                        new OutcomeDetails.OutcomeDataSet("participantName", "Participant Name"),
+                        new OutcomeDetails.OutcomeDataSet("organizationName", "Organization Name"),
+                        new OutcomeDetails.OutcomeDataSet("influencedParticipantName", "Influenced Participant Name"),
+                        new OutcomeDetails.OutcomeDataSet("createdOn", "Created On"),
+                        new OutcomeDetails.OutcomeDataSet("updatedOn", "Updated On")
+                );
+
+                responseDTO = OutcomeResponseDTO.builder()
+                        .headers(headers)
+                        .body(List.of(body))
+                        .build();
+                break;
+            }
+            case "TReDSRegistration": {
+                TReDSRegistration r = tredsRegistrationRepository.findById(outcomeId)
+                        .orElseThrow(() -> new DataException("TReDS Registration not found with id: " + outcomeId,"NOT_FOUND",400));
+
+                TReDSRegistrationDTO body = TReDSRegistrationDTO.builder()
+                        .id(r.getTredsRegistrationId())
+                        .tredsRegistrationNo(r.getTredsRegistrationNo())
+                        .tredsRegistrationDate(r.getTredsRegistrationDate())
+                        .isInfluenced(r.getIsInfluenced())
+                        .agencyName(r.getAgency() != null ? r.getAgency().getAgencyName() : null)
+                        .participantName(r.getParticipant() != null ? r.getParticipant().getParticipantName() : null)
+                        .organizationName(r.getOrganization() != null ? r.getOrganization().getOrganizationName() : null)
+                        .influencedParticipantName(r.getInfluencedParticipant() != null
+                                ? r.getInfluencedParticipant().getParticipantName()
+                                : null)
+                        .createdOn(r.getCreatedOn())
+                        .updatedOn(r.getUpdatedOn())
+                        .build();
+
+                List<OutcomeDetails.OutcomeDataSet> headers = List.of(
+                        new OutcomeDetails.OutcomeDataSet("tredsRegistrationNo", "TReDS Registration No"),
+                        new OutcomeDetails.OutcomeDataSet("tredsRegistrationDate", "TReDS Registration Date"),
+                        new OutcomeDetails.OutcomeDataSet("isInfluenced", "Influenced"),
+                        new OutcomeDetails.OutcomeDataSet("agencyName", "Agency Name"),
+                        new OutcomeDetails.OutcomeDataSet("participantName", "Participant Name"),
+                        new OutcomeDetails.OutcomeDataSet("organizationName", "Organization Name"),
+                        new OutcomeDetails.OutcomeDataSet("influencedParticipantName", "Influenced Participant Name"),
+                        new OutcomeDetails.OutcomeDataSet("createdOn", "Created On"),
+                        new OutcomeDetails.OutcomeDataSet("updatedOn", "Updated On")
+                );
+
+                responseDTO = OutcomeResponseDTO.builder()
+                        .headers(headers)
+                        .body(List.of(body))
+                        .build();
+                break;
+            }
+            case "TReDSTransaction": {
+                TReDSTransaction t = tredsTransactionRepository.findById(outcomeId)
+                        .orElseThrow(() -> new DataException("TReDS Transaction not found with id: " + outcomeId,"NOT_FOUND",400));
+
+                TReDSTransactionDTO body = TReDSTransactionDTO.builder()
+                        .id(t.getTredsTransactionId())
+                        .tredsRegistrationNo(t.getTredsRegistration() != null ? t.getTredsRegistration().getTredsRegistrationNo() : null)
+                        .tredsTransactionDate(t.getTredsTransactionDate())
+                        .invoiceNumber(t.getInvoiceNumber())
+                        .buyerName(t.getBuyerName())
+                        .tredsPlatformUsed(t.getTredsPlatformUsed())
+                        .invoiceAmount(t.getInvoiceAmount())
+                        .bidOpeningDate(t.getBidOpeningDate())
+                        .winnerFinancier(t.getWinnerFinancier())
+                        .discountRateOffered(t.getDiscountRateOffered())
+                        .discountingFeeFor60Days(t.getDiscountingFeeFor60Days())
+                        .finalPayoutToMsme(t.getFinalPayoutToMsme())
+                        .paymentSettlementDate(t.getPaymentSettlementDate())
+                        .buyerDueDateToPay(t.getBuyerDueDateToPay())
+                        .repaymentDate(t.getRepaymentDate())
+                        .agencyName(t.getTredsRegistration() != null && t.getTredsRegistration().getAgency() != null
+                                ? t.getTredsRegistration().getAgency().getAgencyName() : null)
+                        .participantName(t.getTredsRegistration() != null && t.getTredsRegistration().getParticipant() != null
+                                ? t.getTredsRegistration().getParticipant().getParticipantName() : null)
+                        .organizationName(t.getTredsRegistration() != null && t.getTredsRegistration().getOrganization() != null
+                                ? t.getTredsRegistration().getOrganization().getOrganizationName() : null)
+                        .build();
+
+                List<OutcomeDetails.OutcomeDataSet> headers = List.of(
+                        new OutcomeDetails.OutcomeDataSet("tredsRegistrationNo", "TReDS Registration No"),
+                        new OutcomeDetails.OutcomeDataSet("tredsTransactionDate", "TReDS Transaction Date"),
+                        new OutcomeDetails.OutcomeDataSet("invoiceNumber", "Invoice Number"),
+                        new OutcomeDetails.OutcomeDataSet("buyerName", "Buyer Name"),
+                        new OutcomeDetails.OutcomeDataSet("tredsPlatformUsed", "TReDS Platform Used"),
+                        new OutcomeDetails.OutcomeDataSet("invoiceAmount", "Invoice Amount"),
+                        new OutcomeDetails.OutcomeDataSet("bidOpeningDate", "Bid Opening Date"),
+                        new OutcomeDetails.OutcomeDataSet("winnerFinancier", "Winner Financier"),
+                        new OutcomeDetails.OutcomeDataSet("discountRateOffered", "Discount Rate Offered"),
+                        new OutcomeDetails.OutcomeDataSet("discountingFeeFor60Days", "Discounting Fee (60 Days)"),
+                        new OutcomeDetails.OutcomeDataSet("finalPayoutToMsme", "Final Payout to MSME"),
+                        new OutcomeDetails.OutcomeDataSet("paymentSettlementDate", "Payment Settlement Date"),
+                        new OutcomeDetails.OutcomeDataSet("buyerDueDateToPay", "Buyer Due Date to Pay"),
+                        new OutcomeDetails.OutcomeDataSet("repaymentDate", "Repayment Date"),
+                        new OutcomeDetails.OutcomeDataSet("agencyName", "Agency Name"),
+                        new OutcomeDetails.OutcomeDataSet("participantName", "Participant Name"),
+                        new OutcomeDetails.OutcomeDataSet("organizationName", "Organization Name")
+                );
+
+                responseDTO = OutcomeResponseDTO.builder()
+                        .headers(headers)
+                        .body(List.of(body))
+                        .build();
+                break;
+            }
+            case "GeMTransaction": {
+                GeMTransaction tx = geMTransactionRepository.findById(outcomeId)
+                        .orElseThrow(() -> new DataException("GeM Transaction not found with id: " + outcomeId,"NOT_FOUND",400));
+
+                GeMTransactionDTO body = GeMTransactionDTO.builder()
+                        .id(tx.getGemTransactionId())
+                        .gemRegistrationId(tx.getGemRegistration() != null ? tx.getGemRegistration().getGemRegistrationId() : null)
+                        .procurementDate(tx.getProcurementDate())
+                        .productName(tx.getProductName())
+                        .unitOfMeasurement(tx.getUnitOfMeasurement())
+                        .registeredAs(tx.getRegisteredAs())
+                        .quantity(tx.getQuantity())
+                        .productValue(tx.getProductValue())
+                        .agencyName(tx.getGemRegistration() != null && tx.getGemRegistration().getAgency() != null
+                                ? tx.getGemRegistration().getAgency().getAgencyName() : null)
+                        .participantName(tx.getGemRegistration() != null && tx.getGemRegistration().getParticipant() != null
+                                ? tx.getGemRegistration().getParticipant().getParticipantName() : null)
+                        .organizationName(tx.getGemRegistration() != null && tx.getGemRegistration().getOrganization() != null
+                                ? tx.getGemRegistration().getOrganization().getOrganizationName() : null)
+                        .createdOn(tx.getCreatedOn())
+                        .updatedOn(tx.getUpdatedOn())
+                        .build();
+
+                List<OutcomeDetails.OutcomeDataSet> headers = List.of(
+                        new OutcomeDetails.OutcomeDataSet("gemRegistrationId", "GeM Registration ID"),
+                        new OutcomeDetails.OutcomeDataSet("procurementDate", "Procurement Date"),
+                        new OutcomeDetails.OutcomeDataSet("productName", "Product Name"),
+                        new OutcomeDetails.OutcomeDataSet("unitOfMeasurement", "Unit of Measurement"),
+                        new OutcomeDetails.OutcomeDataSet("registeredAs", "Registered As"),
+                        new OutcomeDetails.OutcomeDataSet("quantity", "Quantity"),
+                        new OutcomeDetails.OutcomeDataSet("productValue", "Product Value"),
+                        new OutcomeDetails.OutcomeDataSet("agencyName", "Agency Name"),
+                        new OutcomeDetails.OutcomeDataSet("participantName", "Participant Name"),
+                        new OutcomeDetails.OutcomeDataSet("organizationName", "Organization Name"),
+                        new OutcomeDetails.OutcomeDataSet("createdOn", "Created On"),
+                        new OutcomeDetails.OutcomeDataSet("updatedOn", "Updated On")
+                );
+
+                responseDTO = OutcomeResponseDTO.builder()
+                        .headers(headers)
+                        .body(List.of(body))
+                        .build();
+                break;
+            }
+            case "ONDCRegistration": {
+                ONDCRegistration reg = ondcRegistrationRepository.findById(outcomeId)
+                        .orElseThrow(() -> new DataException("ONDC Registration not found with id: " + outcomeId,"NOT_FOUND",400));
+
+                ONDCRegistrationDTO body = ONDCRegistrationDTO.builder()
+                        .id(reg.getOndcRegistrationId())
+                        .ondcRegistrationNo(reg.getOndcRegistrationNo())
+                        .ondcRegistrationDate(reg.getOndcRegistrationDate())
+                        .isInfluenced(reg.getIsInfluenced())
+                        .agencyName(reg.getAgency() != null ? reg.getAgency().getAgencyName() : null)
+                        .participantName(reg.getParticipant() != null ? reg.getParticipant().getParticipantName() : null)
+                        .organizationName(reg.getOrganization() != null ? reg.getOrganization().getOrganizationName() : null)
+                        .influencedParticipantName(reg.getInfluencedParticipant() != null
+                                ? reg.getInfluencedParticipant().getParticipantName() : null)
+                        .mobileNo(reg.getParticipant() != null ? reg.getParticipant().getMobileNo() : null)
+                        .createdOn(reg.getCreatedOn())
+                        .updatedOn(reg.getUpdatedOn())
+                        .build();
+
+                List<OutcomeDetails.OutcomeDataSet> headers = List.of(
+                        new OutcomeDetails.OutcomeDataSet("ondcRegistrationNo", "ONDC Registration No"),
+                        new OutcomeDetails.OutcomeDataSet("ondcRegistrationDate", "ONDC Registration Date"),
+                        new OutcomeDetails.OutcomeDataSet("isInfluenced", "Influenced"),
+                        new OutcomeDetails.OutcomeDataSet("agencyName", "Agency Name"),
+                        new OutcomeDetails.OutcomeDataSet("participantName", "Participant Name"),
+                        new OutcomeDetails.OutcomeDataSet("mobileNo", "Mobile Number"),
+                        new OutcomeDetails.OutcomeDataSet("organizationName", "Organization Name"),
+                        new OutcomeDetails.OutcomeDataSet("influencedParticipantName", "Influenced Participant Name"),
+                        new OutcomeDetails.OutcomeDataSet("createdOn", "Created On"),
+                        new OutcomeDetails.OutcomeDataSet("updatedOn", "Updated On")
+                );
+
+                responseDTO = OutcomeResponseDTO.builder().headers(headers).body(List.of(body)).build();
+                break;
+            }
+
+            case "ONDCTransaction": {
+                ONDCTransaction tx = ondcTransactionRepository.findById(outcomeId)
+                        .orElseThrow(() -> new DataException("ONDC Transaction not found with id: " + outcomeId,"NOT_FOUND",400));
+
+                ONDCTransactionDTO body = ONDCTransactionDTO.builder()
+                        .id(tx.getOndcTransactionId())
+                        .ondcRegistrationNo(tx.getOndcRegistration() != null ? tx.getOndcRegistration().getOndcRegistrationNo() : null)
+                        .productName(tx.getProductName())
+                        .transactionDate(tx.getTransactionDate())
+                        .productQuantity(tx.getProductQuantity())
+                        .productUnits(tx.getProductUnits())
+                        .transactionType(tx.getTransactionType())
+                        .transactionValue(tx.getTransactionValue())
+                        .createdOn(tx.getCreatedOn())
+                        .updatedOn(tx.getUpdatedOn())
+                        .build();
+
+                List<OutcomeDetails.OutcomeDataSet> headers = List.of(
+                        new OutcomeDetails.OutcomeDataSet("ondcRegistrationNo", "ONDC Registration No"),
+                        new OutcomeDetails.OutcomeDataSet("productName", "Product Name"),
+                        new OutcomeDetails.OutcomeDataSet("transactionDate", "Transaction Date"),
+                        new OutcomeDetails.OutcomeDataSet("productQuantity", "Quantity"),
+                        new OutcomeDetails.OutcomeDataSet("productUnits", "Units"),
+                        new OutcomeDetails.OutcomeDataSet("transactionType", "Transaction Type"),
+                        new OutcomeDetails.OutcomeDataSet("transactionValue", "Value (₹)"),
+                        new OutcomeDetails.OutcomeDataSet("createdOn", "Created On"),
+                        new OutcomeDetails.OutcomeDataSet("updatedOn", "Updated On")
+                );
+
+                responseDTO = OutcomeResponseDTO.builder().headers(headers).body(List.of(body)).build();
+                break;
+            }
+
+            case "UdyamRegistration": {
+                UdyamRegistration reg = udyamRegistrationRepository.findById(outcomeId)
+                        .orElseThrow(() -> new DataException("Udyam Registration not found with id: " + outcomeId,"NOT_FOUND",400));
+
+                UdyamRegistrationDTO body = UdyamRegistrationDTO.builder()
+                        .id(reg.getUdyamRegistrationId())
+                        .udyamRegistrationNo(reg.getUdyamRegistrationNo())
+                        .udyamRegistrationDate(reg.getUdyamRegistationDate())
+                        .isInfluenced(reg.getIsInfluenced())
+                        .agencyName(reg.getAgency() != null ? reg.getAgency().getAgencyName() : null)
+                        .participantName(reg.getParticipant() != null ? reg.getParticipant().getParticipantName() : null)
+                        .organizationName(reg.getOrganization() != null ? reg.getOrganization().getOrganizationName() : null)
+                        .createdOn(reg.getCreatedOn())
+                        .updatedOn(reg.getUpdatedOn())
+                        .build();
+
+                List<OutcomeDetails.OutcomeDataSet> headers = List.of(
+                        new OutcomeDetails.OutcomeDataSet("udyamRegistrationNo", "Udyam Registration No"),
+                        new OutcomeDetails.OutcomeDataSet("udyamRegistrationDate", "Registration Date"),
+                        new OutcomeDetails.OutcomeDataSet("isInfluenced", "Influenced"),
+                        new OutcomeDetails.OutcomeDataSet("agencyName", "Agency Name"),
+                        new OutcomeDetails.OutcomeDataSet("participantName", "Participant Name"),
+                        new OutcomeDetails.OutcomeDataSet("organizationName", "Organization Name"),
+                        new OutcomeDetails.OutcomeDataSet("createdOn", "Created On"),
+                        new OutcomeDetails.OutcomeDataSet("updatedOn", "Updated On")
+                );
+
+                responseDTO = OutcomeResponseDTO.builder().headers(headers).body(List.of(body)).build();
+                break;
+            }
+
+            case "CGTMSETransaction": {
+                CGTMSETransaction t = cgtmseTransactionRepository.findById(outcomeId)
+                        .orElseThrow(() -> new DataException("CGTMSE Transaction not found with id: " + outcomeId,"NOT_FOUND",400));
+
+                CGTMSETransactionDTO body = CGTMSETransactionDTO.builder()
+                        .id(t.getCgtmseTransactionId())
+                        .productName(t.getProductName())
+                        .purpose(t.getPurpose())
+                        .valueReleased(t.getValueReleased())
+                        .approvalDate(t.getApprovalDate())
+                        .employmentMale(t.getEmploymentMale())
+                        .employmentFemale(t.getEmploymentFemale())
+                        .agencyName(t.getAgency() != null ? t.getAgency().getAgencyName() : null)
+                        .participantName(t.getParticipant() != null ? t.getParticipant().getParticipantName() : null)
+                        .organizationName(t.getOrganization() != null ? t.getOrganization().getOrganizationName() : null)
+                        .createdOn(t.getCreatedOn())
+                        .updatedOn(t.getUpdatedOn())
+                        .build();
+
+                List<OutcomeDetails.OutcomeDataSet> headers = List.of(
+                        new OutcomeDetails.OutcomeDataSet("productName", "Product Name"),
+                        new OutcomeDetails.OutcomeDataSet("purpose", "Purpose"),
+                        new OutcomeDetails.OutcomeDataSet("valueReleased", "Value Released (Lakhs)"),
+                        new OutcomeDetails.OutcomeDataSet("approvalDate", "Approval Date"),
+                        new OutcomeDetails.OutcomeDataSet("employmentMale", "Employment (Male)"),
+                        new OutcomeDetails.OutcomeDataSet("employmentFemale", "Employment (Female)"),
+                        new OutcomeDetails.OutcomeDataSet("agencyName", "Agency Name"),
+                        new OutcomeDetails.OutcomeDataSet("participantName", "Participant Name"),
+                        new OutcomeDetails.OutcomeDataSet("organizationName", "Organization Name"),
+                        new OutcomeDetails.OutcomeDataSet("createdOn", "Created On"),
+                        new OutcomeDetails.OutcomeDataSet("updatedOn", "Updated On")
+                );
+
+                responseDTO = OutcomeResponseDTO.builder().headers(headers).body(List.of(body)).build();
+                break;
+            }
+
+            case "PMEGP": {
+                PMEGP p = pmegpRepository.findById(outcomeId)
+                        .orElseThrow(() -> new DataException("PMEGP not found with id: " + outcomeId,"NOT_FOUND",400));
+
+                PMEGPDTO body = PMEGPDTO.builder()
+                        .id(p.getPmegpId())
+                        .loanAmountReleased(p.getLoanAmountReleased())
+                        .govtSubsidy(p.getGovtSubsidy())
+                        .beneficiaryContribution(p.getBeneficiaryContribution())
+                        .totalAmountReleased(p.getTotalAmountReleased())
+                        .businessTurnover(p.getBusinessTurnover())
+                        .numberOfPersonsEmployed(p.getNumberOfPersonsEmployed())
+                        .agencyName(p.getAgency() != null ? p.getAgency().getAgencyName() : null)
+                        .participantName(p.getParticipant() != null ? p.getParticipant().getParticipantName() : null)
+                        .organizationName(p.getOrganization() != null ? p.getOrganization().getOrganizationName() : null)
+                        .createdOn(p.getCreatedOn())
+                        .updatedOn(p.getUpdatedOn())
+                        .build();
+
+                List<OutcomeDetails.OutcomeDataSet> headers = List.of(
+                        new OutcomeDetails.OutcomeDataSet("loanAmountReleased", "Loan Amount Released (Lakhs)"),
+                        new OutcomeDetails.OutcomeDataSet("govtSubsidy", "Govt Subsidy (Lakhs)"),
+                        new OutcomeDetails.OutcomeDataSet("beneficiaryContribution", "Beneficiary Contribution (Lakhs)"),
+                        new OutcomeDetails.OutcomeDataSet("totalAmountReleased", "Total Amount (Lakhs)"),
+                        new OutcomeDetails.OutcomeDataSet("businessTurnover", "Business Turnover"),
+                        new OutcomeDetails.OutcomeDataSet("numberOfPersonsEmployed", "Persons Employed"),
+                        new OutcomeDetails.OutcomeDataSet("agencyName", "Agency Name"),
+                        new OutcomeDetails.OutcomeDataSet("participantName", "Participant Name"),
+                        new OutcomeDetails.OutcomeDataSet("organizationName", "Organization Name"),
+                        new OutcomeDetails.OutcomeDataSet("createdOn", "Created On"),
+                        new OutcomeDetails.OutcomeDataSet("updatedOn", "Updated On")
+                );
+
+                responseDTO = OutcomeResponseDTO.builder().headers(headers).body(List.of(body)).build();
+                break;
+            }
+
+            case "Barcode": {
+                Barcode b = barcodeRepository.findById(outcomeId)
+                        .orElseThrow(() -> new DataException("Barcode not found with id: " + outcomeId,"NOT_FOUND",400));
+
+                BarcodeDTO body = BarcodeDTO.builder()
+                        .id(b.getBarcodeId())
+                        .typeOfMarket(b.getTypeOfMarket())
+                        .barCodeType(b.getBarCodeType())
+                        .gs1RegistrationNumber(b.getGs1RegistrationNumber())
+                        .barCodeCoverage(b.getBarCodeCoverage())
+                        .revenueFromBarCodeIntegration(b.getRevenueFromBarCodeIntegration())
+                        .onlineMarketRegistered(b.getOnlineMarketRegistered())
+                        .dateOfRegistration(b.getDateOfRegistration())
+                        .valueOfTransaction(b.getValueOfTransaction())
+                        .dateOfExport(b.getDateOfExport())
+                        .valueOfExport(b.getValueOfExport())
+                        .countryExported(b.getCountryExported())
+                        .isInfluenced(b.getIsInfluenced())
+                        .agencyName(b.getAgency() != null ? b.getAgency().getAgencyName() : null)
+                        .participantName(b.getParticipant() != null ? b.getParticipant().getParticipantName() : null)
+                        .organizationName(b.getOrganization() != null ? b.getOrganization().getOrganizationName() : null)
+                        .createdOn(b.getCreatedOn())
+                        .updatedOn(b.getUpdatedOn())
+                        .build();
+
+                List<OutcomeDetails.OutcomeDataSet> headers = List.of(
+                        new OutcomeDetails.OutcomeDataSet("typeOfMarket", "Type of Market"),
+                        new OutcomeDetails.OutcomeDataSet("barCodeType", "Bar Code Type"),
+                        new OutcomeDetails.OutcomeDataSet("gs1RegistrationNumber", "GS1 Registration Number"),
+                        new OutcomeDetails.OutcomeDataSet("barCodeCoverage", "Bar Code Coverage"),
+                        new OutcomeDetails.OutcomeDataSet("revenueFromBarCodeIntegration", "Revenue from Bar Code Integration"),
+                        new OutcomeDetails.OutcomeDataSet("onlineMarketRegistered", "Online Market Registered"),
+                        new OutcomeDetails.OutcomeDataSet("dateOfRegistration", "Date of Registration"),
+                        new OutcomeDetails.OutcomeDataSet("valueOfTransaction", "Value of Transaction"),
+                        new OutcomeDetails.OutcomeDataSet("dateOfExport", "Date of Export"),
+                        new OutcomeDetails.OutcomeDataSet("valueOfExport", "Value of Export"),
+                        new OutcomeDetails.OutcomeDataSet("countryExported", "Country Exported"),
+                        new OutcomeDetails.OutcomeDataSet("isInfluenced", "Influenced"),
+                        new OutcomeDetails.OutcomeDataSet("agencyName", "Agency Name"),
+                        new OutcomeDetails.OutcomeDataSet("participantName", "Participant Name"),
+                        new OutcomeDetails.OutcomeDataSet("organizationName", "Organization Name"),
+                        new OutcomeDetails.OutcomeDataSet("createdOn", "Created On"),
+                        new OutcomeDetails.OutcomeDataSet("updatedOn", "Updated On")
+                );
+
+                responseDTO = OutcomeResponseDTO.builder().headers(headers).body(List.of(body)).build();
+                break;
+            }
+
+            case "GIProduct": {
+                GIProduct g = giProductRepository.findById(outcomeId)
+                        .orElseThrow(() -> new DataException("GI Product not found with id: " + outcomeId,"NOT_FOUND",400));
+
+                GIProductDTO body = GIProductDTO.builder()
+                        .id(g.getGiProductId())
+                        .companyName(g.getCompanyName())
+                        .location(g.getLocation())
+                        .industry(g.getIndustry())
+                        .giProductName(g.getGiProductName())
+                        .giRegistrationNumber(g.getGiRegistrationNumber())
+                        .dateOfGIRegistration(g.getDateOfGIRegistration())
+                        .jurisdictionCovered(g.getJurisdictionCovered())
+                        .revenueAfterGICertification(g.getRevenueAfterGICertification())
+                        .dateOfExport(g.getDateOfExport())
+                        .valueOfExport(g.getValueOfExport())
+                        .countryExported(g.getCountryExported())
+                        .retailPartnership(g.getRetailPartnership())
+                        .valueOfSupply(g.getValueOfSupply())
+                        .dateOfSupply(g.getDateOfSupply())
+                        .totalJobsCreated(g.getTotalJobsCreated())
+                        .franchiseOutletsOpened(g.getFranchiseOutletsOpened())
+                        .annualRoyaltyEarnings(g.getAnnualRoyaltyEarnings())
+                        .isInfluenced(g.getIsInfluenced())
+                        .agencyName(g.getAgency() != null ? g.getAgency().getAgencyName() : null)
+                        .participantName(g.getParticipant() != null ? g.getParticipant().getParticipantName() : null)
+                        .organizationName(g.getOrganization() != null ? g.getOrganization().getOrganizationName() : null)
+                        .createdOn(g.getCreatedOn())
+                        .updatedOn(g.getUpdatedOn())
+                        .build();
+
+                List<OutcomeDetails.OutcomeDataSet> headers = List.of(
+                        new OutcomeDetails.OutcomeDataSet("companyName", "Company Name"),
+                        new OutcomeDetails.OutcomeDataSet("location", "Location"),
+                        new OutcomeDetails.OutcomeDataSet("industry", "Industry"),
+                        new OutcomeDetails.OutcomeDataSet("giProductName", "GI Product Name"),
+                        new OutcomeDetails.OutcomeDataSet("giRegistrationNumber", "GI Registration Number"),
+                        new OutcomeDetails.OutcomeDataSet("dateOfGIRegistration", "Date of GI Registration"),
+                        new OutcomeDetails.OutcomeDataSet("jurisdictionCovered", "Jurisdiction Covered"),
+                        new OutcomeDetails.OutcomeDataSet("revenueAfterGICertification", "Revenue After GI Certification"),
+                        new OutcomeDetails.OutcomeDataSet("dateOfExport", "Date of Export"),
+                        new OutcomeDetails.OutcomeDataSet("valueOfExport", "Value of Export"),
+                        new OutcomeDetails.OutcomeDataSet("countryExported", "Country Exported"),
+                        new OutcomeDetails.OutcomeDataSet("retailPartnership", "Retail Partnership"),
+                        new OutcomeDetails.OutcomeDataSet("valueOfSupply", "Value of Supply"),
+                        new OutcomeDetails.OutcomeDataSet("dateOfSupply", "Date of Supply"),
+                        new OutcomeDetails.OutcomeDataSet("totalJobsCreated", "Jobs Created"),
+                        new OutcomeDetails.OutcomeDataSet("franchiseOutletsOpened", "Franchise Outlets Opened"),
+                        new OutcomeDetails.OutcomeDataSet("annualRoyaltyEarnings", "Annual Royalty Earnings"),
+                        new OutcomeDetails.OutcomeDataSet("isInfluenced", "Influenced"),
+                        new OutcomeDetails.OutcomeDataSet("agencyName", "Agency Name"),
+                        new OutcomeDetails.OutcomeDataSet("participantName", "Participant Name"),
+                        new OutcomeDetails.OutcomeDataSet("organizationName", "Organization Name"),
+                        new OutcomeDetails.OutcomeDataSet("createdOn", "Created On"),
+                        new OutcomeDetails.OutcomeDataSet("updatedOn", "Updated On")
+                );
+
+                responseDTO = OutcomeResponseDTO.builder().headers(headers).body(List.of(body)).build();
+                break;
+            }
+
+            default:
+                throw new IllegalArgumentException("Invalid outcome name: " + outcomeName);
+        }
+
+        return WorkflowResponse.builder()
+                .status(200)
+                .message("Success")
+                .data(Map.of("outcome", responseDTO))
+                .totalElements(1L)
+                .totalPages(1)
+                .build();
+    }
+
 }

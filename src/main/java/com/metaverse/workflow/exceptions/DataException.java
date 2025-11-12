@@ -7,7 +7,6 @@ public class DataException extends ApplicationAbstractException {
     public DataException(String message, String errorCode) {
         super(message, errorCode);
     }
-
     public DataException(String message, String errorCode, int statusCode) {
         super(message, errorCode, statusCode);
     }

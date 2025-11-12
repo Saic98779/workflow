@@ -150,5 +150,21 @@ public class ProgramOutcomeController {
         WorkflowResponse response = programOutcomeService.getOutcomeData(outcomeName, agencyId, page, size);
         return ResponseEntity.ok(response);
     }
+    @GetMapping("/fetch/outcome/by-id")
+    public ResponseEntity<?> getDynamicOutcomeById(
+            @Parameter(description = "Name of the outcome type (e.g. ONDCTransaction, ONDCRegistration)", required = true)
+            @RequestParam String outcomeName,
+
+            @Parameter(description = "Outcome ID for which data needs to be fetched", required = true)
+            @RequestParam Long outcomeId){
+
+        WorkflowResponse response = null;
+        try {
+            response = programOutcomeService.getOutcomeDataById(outcomeName,outcomeId);
+        } catch (DataException e) {
+            return RestControllerBase.error(e);
+        }
+        return ResponseEntity.ok(response);
+    }
 
 }

@@ -24,7 +24,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -74,6 +76,30 @@ public class AgencyController {
                 .build();
 
         return ResponseEntity.ok(workflowResponse);
+    }
+    @GetMapping("/agency/resources/dropdown/{id}")
+    public ResponseEntity<WorkflowResponse> getResourcesDropdownByAgencyId(@PathVariable("id") Long id) {
+        Agency agency = service.getAgencyById(id);
+        List<Resource> resources = agency.getResources();
+
+        // Map only resourceId and resourceName
+        List<Map<String, Object>> dropdownList = resources.stream()
+                .map(resource -> {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("resourceId", resource.getResourceId());
+                    map.put("name", resource.getName());
+                    return map;
+                })
+                .collect(Collectors.toList());
+
+        WorkflowResponse response = WorkflowResponse.builder()
+                .message("Success")
+                .status(200)
+                .data(dropdownList)
+                .totalElements(dropdownList.size())
+                .build();
+
+        return ResponseEntity.ok(response);
     }
 
 
