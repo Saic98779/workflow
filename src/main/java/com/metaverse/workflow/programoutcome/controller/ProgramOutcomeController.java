@@ -21,6 +21,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +29,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -166,5 +168,38 @@ public class ProgramOutcomeController {
         }
         return ResponseEntity.ok(response);
     }
+    @PutMapping(value = "/program/outcome/update/{outcome}/{id}",
+            consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_OCTET_STREAM_VALUE},
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> updateOutcome(
+            Principal principal,
+            @PathVariable("outcome") String outcomeName,
+            @PathVariable("id") Long id,
+            @RequestPart("data") String data,
+            HttpServletRequest servletRequest) throws ParseException {
+
+        log.info("Updating Program Outcome: {} with data: {}", outcomeName, data);
+        WorkflowResponse response;
+
+        try {
+            response = programOutcomeService.updateOutCome(outcomeName, data, id);
+        } catch (DataException exception) {
+            return RestControllerBase.error(exception);
+        } catch (Exception exception) {
+            log.error("Error updating outcome {}: {}", outcomeName, exception.getMessage(), exception);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+                    new WorkflowResponse("ERROR", "Unexpected error: " + exception.getMessage(), 500)
+            );
+        }
+
+        logService.logs(principal.getName(), "UPDATE",
+                "Program outcome updated successfully | Outcome: " + outcomeName + " | ID: " + id,
+                "ProgramOutcome",
+                servletRequest.getRequestURI());
+
+        return ResponseEntity.ok(response);
+    }
+
+
 
 }

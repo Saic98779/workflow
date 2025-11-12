@@ -18,6 +18,9 @@ public class WorkflowResponse {
     private int totalPages;
     private long totalElements;
 
+    public WorkflowResponse(String error, String message, int i) {
+    }
+
     public static WorkflowResponse success(String message, Object data) {
         return WorkflowResponse.builder()
                 .status(200)

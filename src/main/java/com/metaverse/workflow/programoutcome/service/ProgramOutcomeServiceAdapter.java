@@ -1902,7 +1902,6 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                     }
 
 
-
                     default:
                         influencerAchievement = 0L;
                         participantAchievement = 0L;
@@ -2176,7 +2175,6 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                         new OutcomeDetails.OutcomeDataSet("createdOn", "Created On"),
                         new OutcomeDetails.OutcomeDataSet("updatedOn", "Updated On")
                 );
-
 
 
                 responseDTO = OutcomeResponseDTO.builder().headers(headers).body(body).build();
@@ -3760,7 +3758,7 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
         switch (outcomeName) {
             case "ExportPromotion": {
                 ExportPromotion e = exportPromotionRepository.findById(outcomeId)
-                        .orElseThrow(() -> new DataException("Export Promotion not found with id: " + outcomeId,"NOT_FOUND",400));
+                        .orElseThrow(() -> new DataException("Export Promotion not found with id: " + outcomeId, "NOT_FOUND", 400));
 
                 ExportPromotionDTO body = ExportPromotionDTO.builder()
                         .id(e.getId())
@@ -3812,7 +3810,7 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
 
             case "SkillUpgradation": {
                 SkillUpgradation su = skillUpgradationRepository.findById(outcomeId)
-                        .orElseThrow(() -> new DataException("Skill Upgradation not found with id: " + outcomeId,"NOT_FOUND",400));
+                        .orElseThrow(() -> new DataException("Skill Upgradation not found with id: " + outcomeId, "NOT_FOUND", 400));
 
                 SkillUpgradationDTO body = SkillUpgradationDTO.builder()
                         .id(su.getId())
@@ -3870,7 +3868,7 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
 
             case "ImportSubsititution": {
                 ImportSubsititution i = importSubsititutionRepository.findById(outcomeId)
-                        .orElseThrow(() -> new DataException("Import Substitution not found with id: " + outcomeId,"NOT_FOUND",400));
+                        .orElseThrow(() -> new DataException("Import Substitution not found with id: " + outcomeId, "NOT_FOUND", 400));
 
                 ImportSubstitutionDTO body = ImportSubstitutionDTO.builder()
                         .id(i.getId())
@@ -3932,7 +3930,7 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
 
             case "ZEDCertification": {
                 ZEDCertification z = zedCertificationRepository.findById(outcomeId)
-                        .orElseThrow(() -> new DataException("ZED Certification not found with id: " + outcomeId,"NOT_FOUND",400));
+                        .orElseThrow(() -> new DataException("ZED Certification not found with id: " + outcomeId, "NOT_FOUND", 400));
 
                 ZEDCertificationDTO body = ZEDCertificationDTO.builder()
                         .id(z.getZedCertificateRegistrationId())
@@ -3981,7 +3979,7 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
             }
             case "GreeningOfMSME": {
                 GreeningOfMSME g = greeningOfMSMERepository.findById(outcomeId)
-                        .orElseThrow(() -> new DataException("Greening Of MSME not found with id: " + outcomeId,"NOT_FOUND",400));
+                        .orElseThrow(() -> new DataException("Greening Of MSME not found with id: " + outcomeId, "NOT_FOUND", 400));
 
                 GreeningOfMSMEDTO body = GreeningOfMSMEDTO.builder()
                         .id(g.getGreeningOfMSME())
@@ -4051,7 +4049,7 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
 
             case "ECommerceRegistration": {
                 ECommerceRegistration e = eCommerceRegistrationRepository.findById(outcomeId)
-                        .orElseThrow(() -> new DataException("E-Commerce Registration not found with id: " + outcomeId,"NOT_FOUND",400));
+                        .orElseThrow(() -> new DataException("E-Commerce Registration not found with id: " + outcomeId, "NOT_FOUND", 400));
 
                 ECommerceRegistrationDTO body = ECommerceRegistrationDTO.builder()
                         .id(e.getId())
@@ -4091,7 +4089,7 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
 
             case "ECommerceTransaction": {
                 ECommerceTransaction tx = eCommerceTransactionRepository.findById(outcomeId)
-                        .orElseThrow(() -> new DataException("E-Commerce Transaction not found with id: " + outcomeId,"NOT_FOUND",400));
+                        .orElseThrow(() -> new DataException("E-Commerce Transaction not found with id: " + outcomeId, "NOT_FOUND", 400));
 
                 ECommerceTransactionDTO body = ECommerceTransactionDTO.builder()
                         .id(tx.getId())
@@ -4135,7 +4133,7 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
 
             case "Loan": {
                 Loan l = loanRepository.findById(outcomeId)
-                        .orElseThrow(() -> new DataException("Loan not found with id: " + outcomeId,"NOT_FOUND",400));
+                        .orElseThrow(() -> new DataException("Loan not found with id: " + outcomeId, "NOT_FOUND", 400));
 
                 LoanDTO body = LoanDTO.builder()
                         .id(l.getId())
@@ -4176,7 +4174,7 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
             }
             case "DesignRights": {
                 DesignRights d = designRightsRepository.findById(outcomeId)
-                        .orElseThrow(() -> new DataException("Design Rights not found with id: " + outcomeId,"NOT_FOUND",400));
+                        .orElseThrow(() -> new DataException("Design Rights not found with id: " + outcomeId, "NOT_FOUND", 400));
 
                 DesignRightsDTO body = DesignRightsDTO.builder()
                         .id(d.getDesignRightsId())
@@ -4234,7 +4232,7 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
 
             case "CopyRights": {
                 CopyRights c = copyRightsRepository.findById(outcomeId)
-                        .orElseThrow(() -> new DataException("Copy Rights not found with id: " + outcomeId,"NOT_FOUND",400));
+                        .orElseThrow(() -> new DataException("Copy Rights not found with id: " + outcomeId, "NOT_FOUND", 400));
 
                 CopyRightsDTO body = CopyRightsDTO.builder()
                         .id(c.getCopyRightsId())
@@ -4283,7 +4281,7 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
             }
             case "PMFMEScheme": {
                 PMFMEScheme p = pmfmeSchemeRepository.findById(outcomeId)
-                        .orElseThrow(() -> new DataException("PMFME Scheme not found with id: " + outcomeId,"NOT_FOUND",400));
+                        .orElseThrow(() -> new DataException("PMFME Scheme not found with id: " + outcomeId, "NOT_FOUND", 400));
 
                 PMFMESchemeDTO body = PMFMESchemeDTO.builder()
                         .id(p.getPmfmeId())
@@ -4353,7 +4351,7 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
 
             case "ConsortiaTender": {
                 ConsortiaTender c = consortiaTenderRepository.findById(outcomeId)
-                        .orElseThrow(() -> new DataException("Consortia Tender not found with id: " + outcomeId,"NOT_FOUND",400));
+                        .orElseThrow(() -> new DataException("Consortia Tender not found with id: " + outcomeId, "NOT_FOUND", 400));
 
                 ConsortiaTenderDTO body = ConsortiaTenderDTO.builder()
                         .id(c.getConsortiaTenderId())
@@ -4410,7 +4408,7 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
             }
             case "GeMRegistration": {
                 GeMRegistration g = geMRegistrationRepository.findById(outcomeId)
-                        .orElseThrow(() -> new DataException("GeM Registration not found with id: " + outcomeId,"NOT_FOUND",400));
+                        .orElseThrow(() -> new DataException("GeM Registration not found with id: " + outcomeId, "NOT_FOUND", 400));
 
                 GeMRegistrationDTO body = GeMRegistrationDTO.builder()
                         .id(g.getGemId())
@@ -4448,7 +4446,7 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
 
             case "OEM": {
                 OEM o = oemRepository.findById(outcomeId)
-                        .orElseThrow(() -> new DataException("OEM not found with id: " + outcomeId,"NOT_FOUND",400));
+                        .orElseThrow(() -> new DataException("OEM not found with id: " + outcomeId, "NOT_FOUND", 400));
 
                 OEMDTO body = OEMDTO.builder()
                         .id(o.getOemId())
@@ -4505,7 +4503,7 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
             }
             case "ScStHub": {
                 ScStHub s = scStHubRepository.findById(outcomeId)
-                        .orElseThrow(() -> new DataException("ScSt Hub not found with id: " + outcomeId,"NOT_FOUND",400));
+                        .orElseThrow(() -> new DataException("ScSt Hub not found with id: " + outcomeId, "NOT_FOUND", 400));
 
                 ScStHubDTO body = ScStHubDTO.builder()
                         .id(s.getScStHubId())
@@ -4571,7 +4569,7 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
 
             case "SIDBIAspire": {
                 SIDBIAspire a = sidbiAspireRepository.findById(outcomeId)
-                        .orElseThrow(() -> new DataException("SIDBI Aspire not found with id: " + outcomeId,"NOT_FOUND",400));
+                        .orElseThrow(() -> new DataException("SIDBI Aspire not found with id: " + outcomeId, "NOT_FOUND", 400));
 
                 SIDBIAspireDTO body = SIDBIAspireDTO.builder()
                         .id(a.getSidbiAspireId())
@@ -4634,7 +4632,7 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
             }
             case "PMViswakarma": {
                 PMViswakarma p = pmViswakarmaReposiroty.findById(outcomeId)
-                        .orElseThrow(() -> new DataException("PM Viswakarma not found with id: " + outcomeId,"NOT_FOUND",400));
+                        .orElseThrow(() -> new DataException("PM Viswakarma not found with id: " + outcomeId, "NOT_FOUND", 400));
 
                 PMViswakarmaDTO body = PMViswakarmaDTO.builder()
                         .id(p.getPmViswakarmaId())
@@ -4682,7 +4680,7 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
 
             case "VendorDevelopment": {
                 VendorDevelopment v = vendorDevelopmentRepository.findById(outcomeId)
-                        .orElseThrow(() -> new DataException("Vendor Development not found with id: " + outcomeId,"NOT_FOUND",400));
+                        .orElseThrow(() -> new DataException("Vendor Development not found with id: " + outcomeId, "NOT_FOUND", 400));
 
                 VendorDevelopmentDTO body = VendorDevelopmentDTO.builder()
                         .dateOfParticipation(v.getDateOfParticipation())
@@ -4741,7 +4739,7 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
 
             case "Lean": {
                 Lean l = leanRepository.findById(outcomeId)
-                        .orElseThrow(() -> new DataException("Lean not found with id: " + outcomeId,"NOT_FOUND",400));
+                        .orElseThrow(() -> new DataException("Lean not found with id: " + outcomeId, "NOT_FOUND", 400));
 
                 LeanDTO body = LeanDTO.builder()
                         .id(l.getLeanId())
@@ -4794,7 +4792,7 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
             }
             case "TreadMark": {
                 TreadMark t = treadMarkRepository.findById(outcomeId)
-                        .orElseThrow(() -> new DataException("TreadMark not found with id: " + outcomeId,"NOT_FOUND",400));
+                        .orElseThrow(() -> new DataException("TreadMark not found with id: " + outcomeId, "NOT_FOUND", 400));
 
                 TreadMarkDTO body = TreadMarkDTO.builder()
                         .id(t.getTreadMarkId())
@@ -4857,7 +4855,7 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
             }
             case "Patents": {
                 Patents p = patentsRepository.findById(outcomeId)
-                        .orElseThrow(() -> new DataException("Patents not found with id: " + outcomeId,"NOT_FOUND",400));
+                        .orElseThrow(() -> new DataException("Patents not found with id: " + outcomeId, "NOT_FOUND", 400));
 
                 PatentsDTO body = PatentsDTO.builder()
                         .id(p.getPatentId())
@@ -4914,7 +4912,7 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
             }
             case "NSIC": {
                 NSIC n = nsicRepository.findById(outcomeId)
-                        .orElseThrow(() -> new DataException("NSIC not found with id: " + outcomeId,"NOT_FOUND",400));
+                        .orElseThrow(() -> new DataException("NSIC not found with id: " + outcomeId, "NOT_FOUND", 400));
 
                 NSICDTO body = NSICDTO.builder()
                         .id(n.getNsicId())
@@ -4959,7 +4957,7 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
             }
             case "ICScheme": {
                 ICScheme i = icSchemeRepository.findById(outcomeId)
-                        .orElseThrow(() -> new DataException("IC Scheme not found with id: " + outcomeId,"NOT_FOUND",400));
+                        .orElseThrow(() -> new DataException("IC Scheme not found with id: " + outcomeId, "NOT_FOUND", 400));
 
                 ICSchemeDTO body = ICSchemeDTO.builder()
                         .id(i.getIcSchemeId())
@@ -5004,7 +5002,7 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
             }
             case "PMS": {
                 PMS p = pmsRepository.findById(outcomeId)
-                        .orElseThrow(() -> new DataException("PMS not found with id: " + outcomeId,"NOT_FOUND",400));
+                        .orElseThrow(() -> new DataException("PMS not found with id: " + outcomeId, "NOT_FOUND", 400));
 
                 PMSDTO body = PMSDTO.builder()
                         .id(p.getPmsId())
@@ -5064,7 +5062,7 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
 
             case "PMMY": {
                 PMMY p = pmmyRepository.findById(outcomeId)
-                        .orElseThrow(() -> new DataException("PMMY not found with id: " + outcomeId,"NOT_FOUND",400));
+                        .orElseThrow(() -> new DataException("PMMY not found with id: " + outcomeId, "NOT_FOUND", 400));
 
                 PMMYDTO body = PMMYDTO.builder()
                         .id(p.getPmmyId())
@@ -5117,7 +5115,7 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
             }
             case "TReDSRegistration": {
                 TReDSRegistration r = tredsRegistrationRepository.findById(outcomeId)
-                        .orElseThrow(() -> new DataException("TReDS Registration not found with id: " + outcomeId,"NOT_FOUND",400));
+                        .orElseThrow(() -> new DataException("TReDS Registration not found with id: " + outcomeId, "NOT_FOUND", 400));
 
                 TReDSRegistrationDTO body = TReDSRegistrationDTO.builder()
                         .id(r.getTredsRegistrationId())
@@ -5154,7 +5152,7 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
             }
             case "TReDSTransaction": {
                 TReDSTransaction t = tredsTransactionRepository.findById(outcomeId)
-                        .orElseThrow(() -> new DataException("TReDS Transaction not found with id: " + outcomeId,"NOT_FOUND",400));
+                        .orElseThrow(() -> new DataException("TReDS Transaction not found with id: " + outcomeId, "NOT_FOUND", 400));
 
                 TReDSTransactionDTO body = TReDSTransactionDTO.builder()
                         .id(t.getTredsTransactionId())
@@ -5208,7 +5206,7 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
             }
             case "GeMTransaction": {
                 GeMTransaction tx = geMTransactionRepository.findById(outcomeId)
-                        .orElseThrow(() -> new DataException("GeM Transaction not found with id: " + outcomeId,"NOT_FOUND",400));
+                        .orElseThrow(() -> new DataException("GeM Transaction not found with id: " + outcomeId, "NOT_FOUND", 400));
 
                 GeMTransactionDTO body = GeMTransactionDTO.builder()
                         .id(tx.getGemTransactionId())
@@ -5252,7 +5250,7 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
             }
             case "ONDCRegistration": {
                 ONDCRegistration reg = ondcRegistrationRepository.findById(outcomeId)
-                        .orElseThrow(() -> new DataException("ONDC Registration not found with id: " + outcomeId,"NOT_FOUND",400));
+                        .orElseThrow(() -> new DataException("ONDC Registration not found with id: " + outcomeId, "NOT_FOUND", 400));
 
                 ONDCRegistrationDTO body = ONDCRegistrationDTO.builder()
                         .id(reg.getOndcRegistrationId())
@@ -5288,7 +5286,7 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
 
             case "ONDCTransaction": {
                 ONDCTransaction tx = ondcTransactionRepository.findById(outcomeId)
-                        .orElseThrow(() -> new DataException("ONDC Transaction not found with id: " + outcomeId,"NOT_FOUND",400));
+                        .orElseThrow(() -> new DataException("ONDC Transaction not found with id: " + outcomeId, "NOT_FOUND", 400));
 
                 ONDCTransactionDTO body = ONDCTransactionDTO.builder()
                         .id(tx.getOndcTransactionId())
@@ -5321,7 +5319,7 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
 
             case "UdyamRegistration": {
                 UdyamRegistration reg = udyamRegistrationRepository.findById(outcomeId)
-                        .orElseThrow(() -> new DataException("Udyam Registration not found with id: " + outcomeId,"NOT_FOUND",400));
+                        .orElseThrow(() -> new DataException("Udyam Registration not found with id: " + outcomeId, "NOT_FOUND", 400));
 
                 UdyamRegistrationDTO body = UdyamRegistrationDTO.builder()
                         .id(reg.getUdyamRegistrationId())
@@ -5352,7 +5350,7 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
 
             case "CGTMSETransaction": {
                 CGTMSETransaction t = cgtmseTransactionRepository.findById(outcomeId)
-                        .orElseThrow(() -> new DataException("CGTMSE Transaction not found with id: " + outcomeId,"NOT_FOUND",400));
+                        .orElseThrow(() -> new DataException("CGTMSE Transaction not found with id: " + outcomeId, "NOT_FOUND", 400));
 
                 CGTMSETransactionDTO body = CGTMSETransactionDTO.builder()
                         .id(t.getCgtmseTransactionId())
@@ -5389,7 +5387,7 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
 
             case "PMEGP": {
                 PMEGP p = pmegpRepository.findById(outcomeId)
-                        .orElseThrow(() -> new DataException("PMEGP not found with id: " + outcomeId,"NOT_FOUND",400));
+                        .orElseThrow(() -> new DataException("PMEGP not found with id: " + outcomeId, "NOT_FOUND", 400));
 
                 PMEGPDTO body = PMEGPDTO.builder()
                         .id(p.getPmegpId())
@@ -5426,7 +5424,7 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
 
             case "Barcode": {
                 Barcode b = barcodeRepository.findById(outcomeId)
-                        .orElseThrow(() -> new DataException("Barcode not found with id: " + outcomeId,"NOT_FOUND",400));
+                        .orElseThrow(() -> new DataException("Barcode not found with id: " + outcomeId, "NOT_FOUND", 400));
 
                 BarcodeDTO body = BarcodeDTO.builder()
                         .id(b.getBarcodeId())
@@ -5475,7 +5473,7 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
 
             case "GIProduct": {
                 GIProduct g = giProductRepository.findById(outcomeId)
-                        .orElseThrow(() -> new DataException("GI Product not found with id: " + outcomeId,"NOT_FOUND",400));
+                        .orElseThrow(() -> new DataException("GI Product not found with id: " + outcomeId, "NOT_FOUND", 400));
 
                 GIProductDTO body = GIProductDTO.builder()
                         .id(g.getGiProductId())
@@ -5547,4 +5545,377 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                 .build();
     }
 
+    @Override
+    public WorkflowResponse updateOutCome(String outcomeName, String data, Long id) throws ParseException, DataException {
+        String status = "";
+        JSONParser parser = new JSONParser();
+
+        switch (outcomeName) {
+            case "ONDCRegistration": {
+                ONDCRegistrationRequest request = parser.parse(data, ONDCRegistrationRequest.class);
+                ONDCRegistration existingEntity = ondcRegistrationRepository.findById(id)
+                        .orElseThrow(() -> new DataException("ONDC Registration not found", "ONDC-REGISTRATION-NOT-FOUND", 404));
+
+                // Update only non-relationship fields
+                OutcomeUpdateMapper.updateOndcRegistrationFields(existingEntity, request);
+                ondcRegistrationRepository.save(existingEntity);
+                status = outcomeName + " Updated Successfully.";
+                break;
+            }
+            case "ONDCTransaction": {
+                ONDCTransactionRequest ondcTransactionRequest = parser.parse(data, ONDCTransactionRequest.class);
+                ONDCTransaction existingEntity = ondcTransactionRepository.findById(id)
+                        .orElseThrow(() -> new DataException("ONDC Transaction not found", "ONDC-TRANSACTION-NOT-FOUND", 404));
+
+                OutcomeUpdateMapper.updateOndcTransactionFields(existingEntity, ondcTransactionRequest);
+                ondcTransactionRepository.save(existingEntity);
+                status = outcomeName + " Updated Successfully.";
+                break;
+            }
+            case "UdyamRegistration": {
+                UdyamRegistrationRequest request = parser.parse(data, UdyamRegistrationRequest.class);
+                UdyamRegistration existingEntity = udyamRegistrationRepository.findById(id)
+                        .orElseThrow(() -> new DataException("Udyam Registration not found", "UDYAM-REGISTRATION-NOT-FOUND", 404));
+
+                OutcomeUpdateMapper.updateUdyamRegistrationFields(existingEntity, request);
+                udyamRegistrationRepository.save(existingEntity);
+                status = outcomeName + " Updated Successfully.";
+                break;
+            }
+            case "CGTMSETransaction": {
+                CGTMSETransactionRequest request = parser.parse(data, CGTMSETransactionRequest.class);
+                CGTMSETransaction existingEntity = cgtmseTransactionRepository.findById(id)
+                        .orElseThrow(() -> new DataException("CGTMSE Transaction not found", "CGTMSE-TRANSACTION-NOT-FOUND", 404));
+
+                OutcomeUpdateMapper.updateCgtmseTransactionFields(existingEntity, request);
+                cgtmseTransactionRepository.save(existingEntity);
+                status = outcomeName + " Updated Successfully.";
+                break;
+            }
+            case "GeMRegistration": {
+                GeMRegistrationRequest request = parser.parse(data, GeMRegistrationRequest.class);
+                GeMRegistration existingEntity = geMRegistrationRepository.findById(id)
+                        .orElseThrow(() -> new DataException("GeM Registration not found", "GEM-REGISTRATION-NOT-FOUND", 404));
+
+                OutcomeUpdateMapper.updateGeMRegistrationFields(existingEntity, request);
+                geMRegistrationRepository.save(existingEntity);
+                status = outcomeName + " Updated Successfully.";
+                break;
+            }
+            case "GeMTransaction": {
+                GeMTransactionRequest request = parser.parse(data, GeMTransactionRequest.class);
+                GeMTransaction existingEntity = geMTransactionRepository.findById(id)
+                        .orElseThrow(() -> new DataException("GeM Transaction not found", "GEM-TRANSACTION-NOT-FOUND", 404));
+
+                OutcomeUpdateMapper.updateGeMTransactionFields(existingEntity, request);
+                geMTransactionRepository.save(existingEntity);
+                status = outcomeName + " Updated Successfully.";
+                break;
+            }
+            case "TReDSRegistration": {
+                TReDSRegistrationRequest request = parser.parse(data, TReDSRegistrationRequest.class);
+                TReDSRegistration existingEntity = tredsRegistrationRepository.findById(id)
+                        .orElseThrow(() -> new DataException("TReDS Registration not found", "TREDS-REGISTRATION-NOT-FOUND", 404));
+
+                OutcomeUpdateMapper.updateTReDSRegistrationFields(existingEntity, request);
+                tredsRegistrationRepository.save(existingEntity);
+                status = outcomeName + " Updated Successfully.";
+                break;
+            }
+            case "TReDSTransaction": {
+                TReDSTransactionRequest request = parser.parse(data, TReDSTransactionRequest.class);
+                TReDSTransaction existingEntity = tredsTransactionRepository.findById(id)
+                        .orElseThrow(() -> new DataException("TReDS Transaction not found", "TREDS-TRANSACTION-NOT-FOUND", 404));
+
+                OutcomeUpdateMapper.updateTReDSTransactionFields(existingEntity, request);
+                tredsTransactionRepository.save(existingEntity);
+                status = outcomeName + " Updated Successfully.";
+                break;
+            }
+            case "PMEGP": {
+                PMEGPRequest request = parser.parse(data, PMEGPRequest.class);
+                PMEGP existingEntity = pmegpRepository.findById(id)
+                        .orElseThrow(() -> new DataException("PMEGP not found", "PMEGP-NOT-FOUND", 404));
+
+                OutcomeUpdateMapper.updatePmegpFields(existingEntity, request);
+                pmegpRepository.save(existingEntity);
+                status = outcomeName + " Updated Successfully.";
+                break;
+            }
+            case "PMMY": {
+                PMMYRequest request = parser.parse(data, PMMYRequest.class);
+                PMMY existingEntity = pmmyRepository.findById(id)
+                        .orElseThrow(() -> new DataException("PMMY not found", "PMMY-NOT-FOUND", 404));
+
+                OutcomeUpdateMapper.updatePmmyFields(existingEntity, request);
+                pmmyRepository.save(existingEntity);
+                status = outcomeName + " Updated Successfully.";
+                break;
+            }
+            case "PMS": {
+                PMSRequest request = parser.parse(data, PMSRequest.class);
+                PMS existingEntity = pmsRepository.findById(id)
+                        .orElseThrow(() -> new DataException("PMS not found", "PMS-NOT-FOUND", 404));
+
+                OutcomeUpdateMapper.updatePmsFields(existingEntity, request);
+                pmsRepository.save(existingEntity);
+                status = outcomeName + " Updated Successfully.";
+                break;
+            }
+            case "ICScheme": {
+                ICSchemeRequest request = parser.parse(data, ICSchemeRequest.class);
+                ICScheme existingEntity = icSchemeRepository.findById(id)
+                        .orElseThrow(() -> new DataException("IC Scheme not found", "IC-SCHEME-NOT-FOUND", 404));
+
+                OutcomeUpdateMapper.updateIcSchemeFields(existingEntity, request);
+                icSchemeRepository.save(existingEntity);
+                status = outcomeName + " Updated Successfully.";
+                break;
+            }
+            case "NSIC": {
+                NSICRequest request = parser.parse(data, NSICRequest.class);
+                NSIC existingEntity = nsicRepository.findById(id)
+                        .orElseThrow(() -> new DataException("NSIC not found", "NSIC-NOT-FOUND", 404));
+
+                OutcomeUpdateMapper.updateNsicFields(existingEntity, request);
+                nsicRepository.save(existingEntity);
+                status = outcomeName + " Updated Successfully.";
+                break;
+            }
+            case "Patents": {
+                PatentsRequest request = parser.parse(data, PatentsRequest.class);
+                Patents existingEntity = patentsRepository.findById(id)
+                        .orElseThrow(() -> new DataException("Patents not found", "PATENTS-NOT-FOUND", 404));
+
+                OutcomeUpdateMapper.updatePatentsFields(existingEntity, request);
+                patentsRepository.save(existingEntity);
+                status = outcomeName + " Updated Successfully.";
+                break;
+            }
+            case "GIProduct": {
+                GIProductRequest request = parser.parse(data, GIProductRequest.class);
+                GIProduct existingEntity = giProductRepository.findById(id)
+                        .orElseThrow(() -> new DataException("GI Product not found", "GI-PRODUCT-NOT-FOUND", 404));
+
+                OutcomeUpdateMapper.updateGiProductFields(existingEntity, request);
+                giProductRepository.save(existingEntity);
+                status = outcomeName + " Updated Successfully.";
+                break;
+            }
+            case "Barcode": {
+                BarcodeRequest request = parser.parse(data, BarcodeRequest.class);
+                Barcode existingEntity = barcodeRepository.findById(id)
+                        .orElseThrow(() -> new DataException("Barcode not found", "BARCODE-NOT-FOUND", 404));
+
+                OutcomeUpdateMapper.updateBarcodeFields(existingEntity, request);
+                barcodeRepository.save(existingEntity);
+                status = outcomeName + " Updated Successfully.";
+                break;
+            }
+            case "TreadMark": {
+                TreadMarkRequest request = parser.parse(data, TreadMarkRequest.class);
+                TreadMark existingEntity = treadMarkRepository.findById(id)
+                        .orElseThrow(() -> new DataException("TreadMark not found", "TREADMARK-NOT-FOUND", 404));
+
+                OutcomeUpdateMapper.updateTreadMarkFields(existingEntity, request);
+                treadMarkRepository.save(existingEntity);
+                status = outcomeName + " Updated Successfully.";
+                break;
+            }
+            case "Lean": {
+                LeanRequest request = parser.parse(data, LeanRequest.class);
+                Lean existingEntity = leanRepository.findById(id)
+                        .orElseThrow(() -> new DataException("Lean not found", "LEAN-NOT-FOUND", 404));
+
+                OutcomeUpdateMapper.updateLeanFields(existingEntity, request);
+                leanRepository.save(existingEntity);
+                status = outcomeName + " Updated Successfully.";
+                break;
+            }
+            case "ZEDCertification": {
+                ZEDCertificationRequest request = parser.parse(data, ZEDCertificationRequest.class);
+                ZEDCertification existingEntity = zedCertificationRepository.findById(id)
+                        .orElseThrow(() -> new DataException("ZED Certification not found", "ZED-CERTIFICATION-NOT-FOUND", 404));
+
+                OutcomeUpdateMapper.updateZedCertificationFields(existingEntity, request);
+                zedCertificationRepository.save(existingEntity);
+                status = outcomeName + " Updated Successfully.";
+                break;
+            }
+            case "ConsortiaTender": {
+                ConsortiaTenderRequest request = parser.parse(data, ConsortiaTenderRequest.class);
+                ConsortiaTender existingEntity = consortiaTenderRepository.findById(id)
+                        .orElseThrow(() -> new DataException("Consortia Tender not found", "CONSORTIA-TENDER-NOT-FOUND", 404));
+
+                OutcomeUpdateMapper.updateConsortiaTenderFields(existingEntity, request);
+                consortiaTenderRepository.save(existingEntity);
+                status = outcomeName + " Updated Successfully.";
+                break;
+            }
+            case "OEM": {
+                OEMRequest request = parser.parse(data, OEMRequest.class);
+                OEM existingEntity = oemRepository.findById(id)
+                        .orElseThrow(() -> new DataException("OEM not found", "OEM-NOT-FOUND", 404));
+
+                OutcomeUpdateMapper.updateOemFields(existingEntity, request);
+                oemRepository.save(existingEntity);
+                status = outcomeName + " Updated Successfully.";
+                break;
+            }
+            case "PMFMEScheme": {
+                PMFMESchemeRequest request = parser.parse(data, PMFMESchemeRequest.class);
+                PMFMEScheme existingEntity = pmfmeSchemeRepository.findById(id)
+                        .orElseThrow(() -> new DataException("PMFME Scheme not found", "PMFME-SCHEME-NOT-FOUND", 404));
+
+                OutcomeUpdateMapper.updatePmfmeSchemeFields(existingEntity, request);
+                pmfmeSchemeRepository.save(existingEntity);
+                status = outcomeName + " Updated Successfully.";
+                break;
+            }
+            case "PMViswakarma": {
+                PMViswakarmaRequest request = parser.parse(data, PMViswakarmaRequest.class);
+                PMViswakarma existingEntity = pmViswakarmaReposiroty.findById(id)
+                        .orElseThrow(() -> new DataException("PM Viswakarma not found", "PM-VISWAKARMA-NOT-FOUND", 404));
+
+                OutcomeUpdateMapper.updatePmViswakarmaFields(existingEntity, request);
+                pmViswakarmaReposiroty.save(existingEntity);
+                status = outcomeName + " Updated Successfully.";
+                break;
+            }
+            case "ImportSubsititution": {
+                ImportSubsititutionRequest request = parser.parse(data, ImportSubsititutionRequest.class);
+                ImportSubsititution existingEntity = importSubsititutionRepository.findById(id)
+                        .orElseThrow(() -> new DataException("Import Subsititution not found", "IMPORT-SUBSITITUTION-NOT-FOUND", 404));
+
+                OutcomeUpdateMapper.updateImportSubsititutionFields(existingEntity, request);
+                importSubsititutionRepository.save(existingEntity);
+                status = outcomeName + " Updated Successfully.";
+                break;
+            }
+            case "SkillUpgradation": {
+                SkillUpgradationRequest request = parser.parse(data, SkillUpgradationRequest.class);
+                SkillUpgradation existingEntity = skillUpgradationRepository.findById(id)
+                        .orElseThrow(() -> new DataException("Skill Upgradation not found", "SKILL-UPGRADATION-NOT-FOUND", 404));
+
+                OutcomeUpdateMapper.updateSkillUpgradationFields(existingEntity, request);
+                skillUpgradationRepository.save(existingEntity);
+                status = outcomeName + " Updated Successfully.";
+                break;
+            }
+            case "ExportPromotion": {
+                ExportPromotionRequest request = parser.parse(data, ExportPromotionRequest.class);
+                ExportPromotion existingEntity = exportPromotionRepository.findById(id)
+                        .orElseThrow(() -> new DataException("Export Promotion not found", "EXPORT-PROMOTION-NOT-FOUND", 404));
+
+                OutcomeUpdateMapper.updateExportPromotionFields(existingEntity, request);
+                exportPromotionRepository.save(existingEntity);
+                status = outcomeName + " Updated Successfully.";
+                break;
+            }
+            case "VendorDevelopment": {
+                VendorDevelopmentRequest request = parser.parse(data, VendorDevelopmentRequest.class);
+                VendorDevelopment existingEntity = vendorDevelopmentRepository.findById(id)
+                        .orElseThrow(() -> new DataException("Vendor Development not found", "VENDOR-DEVELOPMENT-NOT-FOUND", 404));
+
+                OutcomeUpdateMapper.updateVendorDevelopmentFields(existingEntity, request);
+                vendorDevelopmentRepository.save(existingEntity);
+                status = outcomeName + " Updated Successfully.";
+                break;
+            }
+            case "ScStHub": {
+                ScStHubRequest request = parser.parse(data, ScStHubRequest.class);
+                ScStHub existingEntity = scStHubRepository.findById(id)
+                        .orElseThrow(() -> new DataException("ScSt Hub not found", "SCST-HUB-NOT-FOUND", 404));
+
+                OutcomeUpdateMapper.updateScStHubFields(existingEntity, request);
+                scStHubRepository.save(existingEntity);
+                status = outcomeName + " Updated Successfully.";
+                break;
+            }
+            case "SIDBIAspire": {
+                SIDBIAspireRequest request = parser.parse(data, SIDBIAspireRequest.class);
+                SIDBIAspire existingEntity = sidbiAspireRepository.findById(id)
+                        .orElseThrow(() -> new DataException("SIDBI Aspire not found", "SIDBI-ASPIRE-NOT-FOUND", 404));
+
+                OutcomeUpdateMapper.updateSidbiAspireFields(existingEntity, request);
+                sidbiAspireRepository.save(existingEntity);
+                status = outcomeName + " Updated Successfully.";
+                break;
+            }
+            case "DesignRights": {
+                DesignRightsRequest request = parser.parse(data, DesignRightsRequest.class);
+                DesignRights existingEntity = designRightsRepository.findById(id)
+                        .orElseThrow(() -> new DataException("Design Rights not found", "DESIGN-RIGHTS-NOT-FOUND", 404));
+
+                OutcomeUpdateMapper.updateDesignRightsFields(existingEntity, request);
+                designRightsRepository.save(existingEntity);
+                status = outcomeName + " Updated Successfully.";
+                break;
+            }
+            case "CopyRights": {
+                CopyRightsRequest request = parser.parse(data, CopyRightsRequest.class);
+                CopyRights existingEntity = copyRightsRepository.findById(id)
+                        .orElseThrow(() -> new DataException("Copy Rights not found", "COPY-RIGHTS-NOT-FOUND", 404));
+
+                OutcomeUpdateMapper.updateCopyRightsFields(existingEntity, request);
+                copyRightsRepository.save(existingEntity);
+                status = outcomeName + " Updated Successfully.";
+                break;
+            }
+            case "GreeningOfMSME": {
+                GreeningOfMSMERequest request = parser.parse(data, GreeningOfMSMERequest.class);
+                GreeningOfMSME existingEntity = greeningOfMSMERepository.findById(id)
+                        .orElseThrow(() -> new DataException("Greening Of MSME not found", "GREENING-OF-MSME-NOT-FOUND", 404));
+
+                OutcomeUpdateMapper.updateGreeningOfMSMEFields(existingEntity, request);
+                greeningOfMSMERepository.save(existingEntity);
+                status = outcomeName + " Updated Successfully.";
+                break;
+            }
+            case "ECommerceRegistration": {
+                ECommerceRegistrationRequest request = parser.parse(data, ECommerceRegistrationRequest.class);
+                ECommerceRegistration existingEntity = eCommerceRegistrationRepository.findById(id)
+                        .orElseThrow(() -> new DataException("E-Commerce Registration not found", "ECOMMERCE-REGISTRATION-NOT-FOUND", 404));
+
+                OutcomeUpdateMapper.updateECommerceRegistrationFields(existingEntity, request);
+                eCommerceRegistrationRepository.save(existingEntity);
+                status = outcomeName + " Updated Successfully.";
+                break;
+            }
+            case "ECommerceTransaction": {
+                ECommerceTransactionRequest request = parser.parse(data, ECommerceTransactionRequest.class);
+                ECommerceTransaction existingEntity = eCommerceTransactionRepository.findById(id)
+                        .orElseThrow(() -> new DataException("E-Commerce Transaction not found", "ECOMMERCE-TRANSACTION-NOT-FOUND", 404));
+
+                OutcomeUpdateMapper.updateECommerceTransactionFields(existingEntity, request);
+                eCommerceTransactionRepository.save(existingEntity);
+                status = outcomeName + " Updated Successfully.";
+                break;
+            }
+            case "Loan": {
+                LoanRequest request = parser.parse(data, LoanRequest.class);
+                Loan existingEntity = loanRepository.findById(id)
+                        .orElseThrow(() -> new DataException("Loan not found", "LOAN-NOT-FOUND", 404));
+
+                OutcomeUpdateMapper.updateLoanFields(existingEntity, request);
+                loanRepository.save(existingEntity);
+                status = outcomeName + " Updated Successfully.";
+                break;
+            }
+            default:
+                return WorkflowResponse.builder()
+                        .status(400)
+                        .message("Invalid outcome name: " + outcomeName)
+                        .build();
+        }
+
+        return WorkflowResponse.builder()
+                .status(200)
+                .message("Success")
+                .data(status)
+                .build();
+    }
+
+
 }
+

@@ -5,13 +5,17 @@ import com.metaverse.workflow.common.fileservice.FileUpdateUtil;
 import com.metaverse.workflow.common.fileservice.StorageService;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.common.util.DateUtil;
+import com.metaverse.workflow.enums.BillRemarksStatus;
 import com.metaverse.workflow.exceptions.DataException;
+import com.metaverse.workflow.login.repository.LoginRepository;
 import com.metaverse.workflow.model.*;
 import com.metaverse.workflow.nontraining.repository.NonTrainingActivityRepository;
 import com.metaverse.workflow.nontrainingExpenditures.repository.NonTrainingExpenditureRepository;
 import com.metaverse.workflow.nontrainingExpenditures.repository.NonTrainingResourceExpenditureRepo;
 import com.metaverse.workflow.nontrainingExpenditures.repository.NonTrainingSubActivityRepository;
 import com.metaverse.workflow.nontrainingExpenditures.repository.ResourceRepo;
+import com.metaverse.workflow.notifications.dto.NotificationRequestDto;
+import com.metaverse.workflow.notifications.service.NotificationServiceImpl;
 import com.metaverse.workflow.program.repository.ProgramSessionFileRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,6 +29,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class NonTrainingExpenditureService {
 
+    private final NonTrainingExpenditureRepository nonTrainingExpenditureRepository;
+    private final LoginRepository userRepo;
+    private final NotificationServiceImpl notificationService;
     private final NonTrainingExpenditureRepository repository;
     private final AgencyRepository agencyRepository;
     private final NonTrainingSubActivityRepository nonTrainingSubActivityRepository;
@@ -306,6 +313,64 @@ public class NonTrainingExpenditureService {
     public String storageFiles(MultipartFile file, Long TravelAndTransportId, String folderName) {
         String filePath = storageService.store(file, TravelAndTransportId, folderName);
         return filePath;
+    }
+
+    public WorkflowResponse addRemarkOrResponse(NonTrainingExpenditureRemarksDTO remarks, BillRemarksStatus status) throws DataException {
+        // 1. Retrieve user and expenditure
+        User user = userRepo.findById(remarks.getUserId())
+                .orElseThrow(() -> new DataException("User not found for ID: " + remarks.getUserId(), "USER_NOT_FOUND", 400));
+
+        NonTrainingExpenditure expenditure = nonTrainingExpenditureRepository.findById(remarks.getNonTrainingExpenditureId())
+                .orElseThrow(() -> new DataException("Non Training Expenditure not found", "EXPENDITURE_NOT_FOUND", 400));
+
+        // 2. Create and associate SpiuComment
+        NonTrainingSpiuComments spiuComment = NonTrainingExpenditureMapper.mapToEntitySpiuComments(remarks, user);
+        spiuComment.setNonTrainingExpenditure(expenditure);
+        expenditure.getSpiuComments().add(spiuComment);
+
+        // 3. Create and associate AgencyComment
+        NonTrainingAgencyComments agencyComment = NonTrainingExpenditureMapper.mapToEntityAgencyComments(remarks, user);
+        agencyComment.setNonTrainingExpenditure(expenditure); // Ensure bidirectional relationship
+        expenditure.getAgencyComments().add(agencyComment);
+
+
+        if (user.getUserRole().equals("ADMIN")) {
+            // admin to agency
+            System.err.println("admin to agency");
+            NotificationRequestDto notificationRequestDto = new NotificationRequestDto();
+            notificationRequestDto.setAgencyId(expenditure.getAgency().getAgencyId());
+            notificationRequestDto.setMessage(remarks.getSpiuComments());
+            notificationRequestDto.setProgramId(-1L);
+            notificationRequestDto.setParticipantId(-1L);
+            notificationRequestDto.setCallCenterUserId("-1");
+            notificationService.sendFromCallCenterToAgency(notificationRequestDto);
+
+        } else if (remarks.getAgencyComments() != null) {
+            // agency to admin
+            NotificationRequestDto notificationRequestDto = new NotificationRequestDto();
+            notificationRequestDto.setAgencyId(-1L);
+            System.err.println("agency to admin");
+            notificationRequestDto.setAgencyId(-1L);
+            notificationRequestDto.setMessage(remarks.getAgencyComments());
+            notificationRequestDto.setProgramId(-1L);
+            notificationRequestDto.setParticipantId(-1L);
+            notificationRequestDto.setCallCenterUserId("-1");
+            notificationService.sendFromAgencyToCallCenter(notificationRequestDto); // need to change
+        }
+
+        // 4. Set status if provided
+        if (status != null) {
+            expenditure.setStatus(status);
+        }
+
+        // 5. Save all changes (cascading will persist the comments if configured)
+        nonTrainingExpenditureRepository.save(expenditure);
+
+        // 6. Return response
+        return WorkflowResponse.builder()
+                .message("Remark or Response added successfully.")
+                .status(200)
+                .build();
     }
 }
 

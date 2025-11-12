@@ -2,10 +2,7 @@ package com.metaverse.workflow.model.outcomes;
 
 import com.metaverse.workflow.model.BaseEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
@@ -17,6 +14,7 @@ import java.util.Date;
 @AllArgsConstructor
 @Builder
 @Getter
+@Setter
 @Table(name = "outcome_treds_transaction")
 public class TReDSTransaction {
     @Id

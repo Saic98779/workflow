@@ -6,10 +6,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.metaverse.workflow.activitylog.ActivityLogService;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.common.util.RestControllerBase;
+import com.metaverse.workflow.enums.BillRemarksStatus;
 import com.metaverse.workflow.exceptions.DataException;
+import com.metaverse.workflow.expenditure.service.ExpenditureRemarksDTO;
 import com.metaverse.workflow.nontraining.dto.NonTrainingSubActivityDto;
 import com.metaverse.workflow.nontraining.service.NonTrainingActivityService;
 import com.metaverse.workflow.nontrainingExpenditures.service.*;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.websocket.server.PathParam;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
@@ -261,6 +264,19 @@ public class NonTrainingExpenditureController extends RestControllerBase {
             return ResponseEntity.ok(nonTrainingActivityService.getAllSubActivitiesList(activityId));
         }catch (Exception e){
           return ResponseEntity.status(400).body(WorkflowResponse.builder().status(400).message("Activity Id not found").build());
+        }
+    }
+
+
+    @PutMapping("/save/remarks")
+    public ResponseEntity<?> addingRemarks(Principal principal,@RequestBody NonTrainingExpenditureRemarksDTO remarksDTO,
+                                           @RequestParam(value = "status", required = false) BillRemarksStatus status,
+                                           HttpServletRequest servletRequest) {
+        try {
+            logService.logs(principal.getName(), "UPDATE", "Adding/updating remarks for non expenditure with status: " + status, "Program Expenditure", servletRequest.getRequestURI());
+            return  ResponseEntity.ok(service.addRemarkOrResponse(remarksDTO, status));
+        } catch (DataException e) {
+            return RestControllerBase.error(e);
         }
     }
 }
