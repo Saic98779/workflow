@@ -23,7 +23,7 @@ import java.io.IOException;
 @RestController
 @RequiredArgsConstructor
 public class FileGeneratorController {
-
+    private final TrainingProgramExcelGenerator excelGenerator;
     private final ExpenditureExcelGenerator expenditureExcelGenerator;
     private final ProgramPdfGenerator programPdfGenerator;
     private final ProgramExcelGenerator programExcelGenerator;
@@ -291,5 +291,9 @@ public class FileGeneratorController {
         response.setHeader("Content-Disposition", "attachment; filename=program_overview_report.pdf");
 
         programStatusPdfGenerator.generateProgramsPdf(response,agencyId);
+    }
+    @GetMapping("/export/training-programs/{agencyId}")
+    public void exportTrainingProgramsExcel(HttpServletResponse response, @PathVariable Long agencyId) throws IOException {
+        excelGenerator.generateTrainingProgramExcel(response, agencyId);
     }
 }

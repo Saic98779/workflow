@@ -46,7 +46,25 @@ public class ProgressMonitoringController {
         List<TrainingProgramDto> allTrainingProgressMonitoringProgress = progressMonitoringService.getAllTrainingProgressMonitoringProgress(agencyId);
         return ResponseEntity.ok(allTrainingProgressMonitoringProgress);
     }
+    /**
+     * Fetch Activity-wise training progress data for a given agency.
+     *
+     * Example: GET /api/training-progress/activity-wise?agencyId=5
+     */
+    @GetMapping("/activity-wise")
+    public ResponseEntity<WorkflowResponse> getActivityWiseTrainingProgress(
+            @RequestParam("agencyId") Long agencyId) {
 
+        List<TrainingProgramDto> progressList = progressMonitoringService.getAllTrainingProgress(agencyId);
+
+        WorkflowResponse response = WorkflowResponse.builder()
+                .message("Activity-wise training progress fetched successfully")
+                .data(progressList)
+                .status(200)
+                .build();
+
+        return ResponseEntity.ok(response);
+    }
 
     @GetMapping(path = "non-training/physical/financial/{subActivityId}")
     public ResponseEntity<?> getPhysicalFinancial(@PathVariable Long subActivityId){

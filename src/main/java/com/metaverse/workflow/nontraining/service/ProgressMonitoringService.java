@@ -13,5 +13,6 @@ public interface ProgressMonitoringService {
     ProgressMonitoringDto getAllNonTrainingsSummary(Long agencyId);
     List<TrainingProgramDto> getAllTrainingProgressMonitoringProgress(Long agencyId);
     List<NonTrainingProgramDto> nonTrainingProgressMonitoring(Long AgencyId);
+    List<TrainingProgramDto> getAllTrainingProgress(Long agencyId);
 
 }

@@ -3,11 +3,15 @@ package com.metaverse.workflow.nontrainingExpenditures.service;
 import com.metaverse.workflow.common.util.DateUtil;
 import com.metaverse.workflow.model.*;
 
+import java.util.List;
+import java.util.Optional;
+
 public class NonTrainingExpenditureMapper {
     public static NonTrainingExpenditureDTO toDTO(NonTrainingExpenditure entity) {
         NonTrainingExpenditureDTO dto = new NonTrainingExpenditureDTO();
+
         dto.setId(entity.getId());
-        dto.setPaymentDate(DateUtil.dateToString(entity.getPaymentDate(), "dd-MM-yyy"));
+        dto.setPaymentDate(DateUtil.dateToString(entity.getPaymentDate(), "dd-MM-yyyy"));
         dto.setNonTrainingSubActivityId(entity.getNonTrainingSubActivity().getSubActivityId());
         dto.setNonTrainingActivityId(entity.getNonTrainingSubActivity().getSubActivityId());
         dto.setAgencyId(entity.getAgency().getAgencyId());
@@ -15,7 +19,7 @@ public class NonTrainingExpenditureMapper {
         dto.setDateOfPurchase(entity.getDateOfPurchase());
         dto.setExpenditureAmount(entity.getExpenditureAmount());
         dto.setBillNo(entity.getBillNo());
-        dto.setBillDate(DateUtil.dateToString(entity.getBillDate(), "dd-MM-yyy"));
+        dto.setBillDate(DateUtil.dateToString(entity.getBillDate(), "dd-MM-yyyy"));
         dto.setPayeeName(entity.getPayeeName());
         dto.setAccountNumber(entity.getAccountNumber());
         dto.setBankName(entity.getBankName());
@@ -25,9 +29,26 @@ public class NonTrainingExpenditureMapper {
         dto.setPurpose(entity.getPurpose());
         dto.setUploadBillUrl(entity.getUploadBillUrl());
         dto.setCheckNo(entity.getCheckNo());
-        dto.setCheckDate(DateUtil.dateToString(entity.getCheckDate(),"dd-MM-YYYY"));
+        dto.setCheckDate(DateUtil.dateToString(entity.getCheckDate(), "dd-MM-yyyy"));
+        dto.setAgencyComments(
+                Optional.ofNullable(entity.getAgencyComments())
+                        .orElse(List.of())
+                        .stream()
+                        .map(NonTrainingAgencyComments::getFormattedRemark)
+                        .toList()
+        );
+        dto.setSpiuComments(
+                Optional.ofNullable(entity.getSpiuComments())
+                        .orElse(List.of())
+                        .stream()
+                        .map(NonTrainingSpiuComments::getFormattedRemark)
+                        .toList()
+        );
+
+        dto.setStatus(entity.getStatus());
         return dto;
     }
+
 
     public static NonTrainingExpenditure toEntity(NonTrainingExpenditureDTO dto, Agency agency, NonTrainingActivity activity, NonTrainingSubActivity subActivity) {
         NonTrainingExpenditure entity = new NonTrainingExpenditure();
