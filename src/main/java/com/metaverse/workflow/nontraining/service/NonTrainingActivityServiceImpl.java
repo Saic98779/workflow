@@ -1,22 +1,33 @@
 package com.metaverse.workflow.nontraining.service;
 
-import com.metaverse.workflow.model.NonTrainingActivity;
-import com.metaverse.workflow.model.NonTrainingSubActivity;
+import com.metaverse.workflow.common.response.WorkflowResponse;
+import com.metaverse.workflow.enums.BillRemarksStatus;
+import com.metaverse.workflow.exceptions.DataException;
+import com.metaverse.workflow.login.repository.LoginRepository;
+import com.metaverse.workflow.model.*;
 import com.metaverse.workflow.nontraining.dto.NonTrainingActivityDto;
 import com.metaverse.workflow.nontraining.dto.NonTrainingSubActivityDto;
 import com.metaverse.workflow.nontraining.repository.NonTrainingActivityRepository;
+import com.metaverse.workflow.nontrainingExpenditures.repository.NonTrainingExpenditureRepository;
+import com.metaverse.workflow.model.NonTrainingAgencyComments;
+import com.metaverse.workflow.nontrainingExpenditures.service.NonTrainingExpenditureMapper;
+import com.metaverse.workflow.nontrainingExpenditures.service.NonTrainingExpenditureRemarksDTO;
+import com.metaverse.workflow.model.NonTrainingSpiuComments;
+import com.metaverse.workflow.notifications.dto.NotificationRequestDto;
+import com.metaverse.workflow.notifications.service.NotificationServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class NonTrainingActivityServiceImpl implements NonTrainingActivityService{
+public class NonTrainingActivityServiceImpl implements NonTrainingActivityService {
 
-
+    private final NonTrainingExpenditureRepository nonTrainingExpenditureRepository;
     private final NonTrainingActivityRepository nonTrainingActivityRepository;
+    private final LoginRepository userRepo;
+    private final NotificationServiceImpl notificationService;
 
     @Override
     public List<NonTrainingActivityDto> getAllActivitiesByAgency(Long agencyId) {
@@ -24,7 +35,7 @@ public class NonTrainingActivityServiceImpl implements NonTrainingActivityServic
         if (byAgencyAgencyId.isEmpty()) {
             return null;
         }
-        return byAgencyAgencyId.stream().map((activityEntity)-> NonTrainingActivityDto.builder().activityId(activityEntity.getActivityId())
+        return byAgencyAgencyId.stream().map((activityEntity) -> NonTrainingActivityDto.builder().activityId(activityEntity.getActivityId())
                 .activityName(activityEntity.getActivityName())
                 .agency(activityEntity.getAgency().getAgencyName()).build()).toList();
     }
@@ -44,5 +55,6 @@ public class NonTrainingActivityServiceImpl implements NonTrainingActivityServic
                 })
                 .toList();
     }
+
 
 }

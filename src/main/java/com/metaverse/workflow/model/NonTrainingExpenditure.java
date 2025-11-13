@@ -1,5 +1,6 @@
 package com.metaverse.workflow.model;
 
+import com.metaverse.workflow.enums.BillRemarksStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,6 +10,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 @Entity
@@ -88,5 +90,14 @@ public class NonTrainingExpenditure {
 
     @Column(name = "check_date")
     private Date checkDate;
+
+    @Column(name = "status")
+    private BillRemarksStatus status;
+
+    @OneToMany(cascade = CascadeType.ALL,mappedBy = "nonTrainingExpenditure")
+    private List<NonTrainingSpiuComments> spiuComments;
+
+    @OneToMany(cascade = CascadeType.ALL,mappedBy = "nonTrainingExpenditure")
+    private List<NonTrainingAgencyComments> agencyComments;
 
 }

@@ -134,4 +134,18 @@ public class NonTrainingExpenditureMapper {
 
     }
 
+    public static NonTrainingSpiuComments mapToEntitySpiuComments(NonTrainingExpenditureRemarksDTO dto, User user) {
+        NonTrainingSpiuComments entity = new NonTrainingSpiuComments();
+        entity.setUserId(user);
+        entity.setRemarks(dto.getSpiuComments());
+        return entity;
+    }
+
+    public static NonTrainingAgencyComments mapToEntityAgencyComments(NonTrainingExpenditureRemarksDTO dto, User user) {
+        NonTrainingAgencyComments entity = new NonTrainingAgencyComments();
+        entity.setUserId(user);
+        entity.setRemarks(dto.getAgencyComments());
+        return entity;
+    }
+
 }

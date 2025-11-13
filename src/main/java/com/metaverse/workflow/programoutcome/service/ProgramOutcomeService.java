@@ -6,12 +6,13 @@ import com.metaverse.workflow.model.outcomes.ProgramOutcomeTable;
 import net.minidev.json.parser.ParseException;
 
 import java.util.List;
+import java.util.Map;
 
 public interface ProgramOutcomeService {
 
     List<ProgramOutcomeTable> getProgramOutcomeTables();
 
-    WorkflowResponse getOutcomeDetails(Long participantId, String outcome,String type,Boolean isInfluenced);
+    WorkflowResponse getOutcomeDetails(Long participantId, String outcome, String type, Boolean isInfluenced);
 
     WorkflowResponse saveOutCome(String outcomeName, String data) throws ParseException, DataException;
 
@@ -22,4 +23,7 @@ public interface ProgramOutcomeService {
     WorkflowResponse getOutcomeData(String outcomeName, Long agencyId, int page, int size);
 
     WorkflowResponse getOutcomeDataById(String outcomeName, Long outcomeId) throws DataException;
+
+    WorkflowResponse updateOutCome(String outcomeName, String data, Long id) throws ParseException, DataException;
+
 }
