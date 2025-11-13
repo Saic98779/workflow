@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 public interface ProgramExpenditureRepository extends JpaRepository<ProgramExpenditure,Long> {
     List<ProgramExpenditure> findByExpenditureType(ExpenditureType expenditureType);
@@ -33,4 +34,6 @@ public interface ProgramExpenditureRepository extends JpaRepository<ProgramExpen
 
 
     Iterable<ProgramExpenditure> findBySubActivity_SubActivityIdInAndAgency_AgencyId(Iterable<Long> subActivityListIDs,Long agencyId);
+
+    Iterable<ProgramExpenditure> findBySubActivity_SubActivityIdIn(Set<Long> subActivityIds);
 }

@@ -1,6 +1,9 @@
 package com.metaverse.workflow.nontrainingExpenditures.service;
 
+import com.metaverse.workflow.enums.BillRemarksStatus;
 import lombok.Data;
+
+import java.util.List;
 
 @Data
 public class NonTrainingExpenditureDTO {
@@ -24,6 +27,9 @@ public class NonTrainingExpenditureDTO {
     private String uploadBillUrl;
     private String checkNo;
     private String checkDate;
+    private List<String> spiuComments;
+    private List<String> agencyComments;
+    private BillRemarksStatus status;
 
 
 }

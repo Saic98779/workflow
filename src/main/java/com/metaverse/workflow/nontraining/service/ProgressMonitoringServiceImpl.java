@@ -91,7 +91,8 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
                     case "staff" -> {
                         // Handle staff differently per sub-activity if needed
                         switch (subActivityKey) {
-                            case "staff - ceo", "staff - designers", "staff - project manager", "interns for certifications", "r&d" -> {
+                            case "staff - ceo", "staff - designers", "staff - project manager",
+                                 "interns for certifications", "r&d" -> {
                                 System.out.println("Fetching Staff expenditure (" + subActivityName + ") from resources repository");
                                 Double resourceExp = nonTrainingResourcesRepository
                                         .sumExpenditureByActivityAndSubActivity(
@@ -197,7 +198,7 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
         Map<Long, String> subActivityNames = new HashMap<>();
         Map<Long, Long> target = new HashMap<>();
         Map<Long, Long> countOfParticipants = new HashMap<>();
-        Map<Long,Double> programExp = new HashMap<>();
+        Map<Long, Double> programExp = new HashMap<>();
 
         List<Activity> byAgencyAgencyId = activityRepository.findByAgencyAgencyId(agencyId);
         String agencyName = byAgencyAgencyId.get(0).getAgency().getAgencyName();
@@ -212,7 +213,7 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
 
         Set<Long> longs = subActivityNames.keySet();
 
-        List<TrainingTargets> allById = trainingTargetRepository.findBySubActivity_SubActivityIdInAndAgency_AgencyId(longs,agencyId);
+        List<TrainingTargets> allById = trainingTargetRepository.findBySubActivity_SubActivityIdInAndAgency_AgencyId(longs, agencyId);
         for (TrainingTargets targets : allById) {
             Long subActivityId = targets.getSubActivity().getSubActivityId();
             long total = targets.getQ1Target() + targets.getQ2Target() + targets.getQ3Target() + targets.getQ4Target();
@@ -224,21 +225,21 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
             countOfParticipants.put(dto.getSubActivityId(), Long.valueOf(dto.getParticipantCount()));
         }
 
-        Map<Long,Double> budgetAllocated = new HashMap<>();
+        Map<Long, Double> budgetAllocated = new HashMap<>();
         for (TrainingTargets targets : allById) {
             Double ifTargetPresent = budgetAllocated.getOrDefault(targets.getSubActivity().getSubActivityId(), 0.0);
-            budgetAllocated.put(targets.getSubActivity().getSubActivityId(),(targets.getQ1Budget() + targets.getQ2Budget() + targets.getQ3Budget() + targets.getQ4Budget()) + ifTargetPresent);
+            budgetAllocated.put(targets.getSubActivity().getSubActivityId(), (targets.getQ1Budget() + targets.getQ2Budget() + targets.getQ3Budget() + targets.getQ4Budget()) + ifTargetPresent);
         }
 
-        Iterable<ProgramExpenditure> bySubActivitySubActivityId = programExpenditureRepository.findBySubActivity_SubActivityIdInAndAgency_AgencyId(subActivityNames.keySet(),agencyId);
+        Iterable<ProgramExpenditure> bySubActivitySubActivityId = programExpenditureRepository.findBySubActivity_SubActivityIdInAndAgency_AgencyId(subActivityNames.keySet(), agencyId);
 
-        for (ProgramExpenditure   p : bySubActivitySubActivityId){
-            addOrUpdate(programExp,p.getSubActivity().getSubActivityId(),p.getCost());
+        for (ProgramExpenditure p : bySubActivitySubActivityId) {
+            addOrUpdate(programExp, p.getSubActivity().getSubActivityId(), p.getCost());
         }
 
         Set<Long> commonKeys = new HashSet<>(subActivityNames.keySet());
         for (Long key : commonKeys) {
-            Double target1 =  Double.valueOf(target.getOrDefault(key, 0L));
+            Double target1 = Double.valueOf(target.getOrDefault(key, 0L));
             Long countOfParticipants1 = countOfParticipants.getOrDefault(key, 0L);
 
             Double bud = budgetAllocated.getOrDefault(key, 0.0);
@@ -276,7 +277,8 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
             long activityId = activity.getActivityId();
 
             switch ((int) activityId) {
-                case 13, 16, 17, 18, 22, 23, 24, 25, 27, 30,31,6,8,9,11,12,20,21,106,1,2,3,4,5 ,32,33,34,35,36,37,28,29 -> {
+                case 13, 16, 17, 18, 22, 23, 24, 25, 27, 30, 31, 6, 8, 9, 11, 12, 20, 21, 106, 1, 2, 3, 4, 5, 32, 33,
+                     34, 35, 36, 37, 28, 29 -> {
                     List<NonTrainingSubActivity> subActivities = activity.getSubActivities();
 
                     for (NonTrainingSubActivity subActivity : subActivities) {
@@ -289,7 +291,7 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
                         List<NonTrainingTargets> nonTrainingSubActivity = nonTrainingTargetRepository.findByNonTrainingSubActivity_subActivityId(subActivityId);
                         long physicalTarget = nonTrainingSubActivity.stream().mapToLong(r -> r.getQ1Target() + r.getQ2Target() + r.getQ3Target() + r.getQ4Target()).sum();
                         double financialTarget = nonTrainingSubActivity.stream().mapToDouble(r -> r.getQ1Budget() + r.getQ2Budget() + r.getQ3Budget() + r.getQ4Budget()).sum();
-                        nonTrainingProgramDto.setPhysicalTarget((int)physicalTarget);
+                        nonTrainingProgramDto.setPhysicalTarget((int) physicalTarget);
                         nonTrainingProgramDto.setFinancialTarget(financialTarget);
 
                         Object[] objects = progressMonitoringSubActivityWiseAchievements(subActivityId);
@@ -350,7 +352,7 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
              ALEAP   ->  72  : Human Resource
 
              */
-            case 26,14,15,16,17,74, 125,6,62,82,84,72 -> { //
+            case 26, 14, 15, 16, 17, 74, 125, 6, 62, 82, 84, 72 -> { //
                 List<NonTrainingResource> nonTrainingSubActivity = nonTrainingResourcesRepository.findByNonTrainingSubActivity_subActivityId(subActivityId);
                 if (nonTrainingSubActivity != null || !nonTrainingSubActivity.isEmpty()) {
                     Double financialAchieved = nonTrainingSubActivity.stream().map(
@@ -369,12 +371,12 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
             NIMSME -> 79  : LMS, 80 : CMS, 81 : Website Development / Virtual EDC / Smart Search
             ALEAP  -> 69  : Dashboard/ Central Management System
             */
-            case 63,79,80,81,69 -> { //
+            case 63, 79, 80, 81, 69 -> { //
                 List<NIMSMEVendorDetails> nonTrainingSubActivity = nimsmeVendorDetailsRepository.findByNonTrainingSubActivity_subActivityId(subActivityId);
                 if (nonTrainingSubActivity != null || !nonTrainingSubActivity.isEmpty()) {
                     Optional<List<NonTrainingExpenditure>> byNonTrainingSubActivity = nonTrainingExpenditureRepository.findByNonTrainingSubActivity_SubActivityId(subActivityId);
-                    double financialAchieved =0.0;
-                    if(byNonTrainingSubActivity.isPresent()){
+                    double financialAchieved = 0.0;
+                    if (byNonTrainingSubActivity.isPresent()) {
                         financialAchieved = byNonTrainingSubActivity.get().stream().mapToDouble(amount -> amount.getExpenditureAmount()).sum();
                     }
                     Object[] objects = {String.valueOf(nonTrainingSubActivity.size()), financialAchieved};
@@ -387,12 +389,12 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
             /*
              NIMSME -> 77 : Video, 78 : Documents
             */
-            case 77,78 -> { //
+            case 77, 78 -> { //
                 List<NIMSMEContentDetails> nonTrainingSubActivity = nimsmeContentDetailsRepository.findByNonTrainingSubActivity_subActivityId(subActivityId);
                 if (nonTrainingSubActivity != null || !nonTrainingSubActivity.isEmpty()) {
                     Optional<List<NonTrainingExpenditure>> byNonTrainingSubActivity = nonTrainingExpenditureRepository.findByNonTrainingSubActivity_SubActivityId(subActivityId);
-                    double financialAchieved =0.0;
-                    if(byNonTrainingSubActivity.isPresent()){
+                    double financialAchieved = 0.0;
+                    if (byNonTrainingSubActivity.isPresent()) {
                         financialAchieved = byNonTrainingSubActivity.get().stream().mapToDouble(amount -> amount.getExpenditureAmount()).sum();
                     }
                     Object[] objects = {String.valueOf(nonTrainingSubActivity.size()), financialAchieved};
@@ -415,7 +417,7 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
                 TGTPC-4 ->  110 : Admin Cost , Logistic
                 TGTPC-10->  124 : Admn Cost including logistics etc.
             */
-            case 27,28,73,90,12,38,39,40,64,37,110,124 -> { //
+            case 27, 28, 73, 90, 12, 38, 39, 40, 64, 37, 110, 124 -> { //
                 Optional<List<NonTrainingExpenditure>> nonTrainingSubActivity = nonTrainingExpenditureRepository.findByNonTrainingSubActivity_SubActivityId(subActivityId);
                 if (nonTrainingSubActivity.isPresent()) {
                     Double financialAchieved = nonTrainingSubActivity.get().stream().mapToDouble(exp -> exp.getExpenditureAmount()).sum();
@@ -429,17 +431,171 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
             /*
               CODE -> 19 : Travel - IITH
              */
-            case 19 ->{
+            case 19 -> {
                 List<TravelAndTransport> nonTrainingSubActivity = travelAndTransportRepository.findByNonTrainingSubActivity_SubActivityId(subActivityId);
-                    Double financialAchieved = nonTrainingSubActivity.stream().mapToDouble(exp -> exp.getAmount()).sum();
-                    Object[] targetAndFinancialAchieved = {String.valueOf(nonTrainingSubActivity.size()), financialAchieved};
-                    return targetAndFinancialAchieved;
+                Double financialAchieved = nonTrainingSubActivity.stream().mapToDouble(exp -> exp.getAmount()).sum();
+                Object[] targetAndFinancialAchieved = {String.valueOf(nonTrainingSubActivity.size()), financialAchieved};
+                return targetAndFinancialAchieved;
             }
             default -> {
                 return new Object[]{String.valueOf(0), 0.0};
             }
         }
     }
+
+
+    @Override
+    public List<TrainingProgramDto> getAllTrainingProgress(Long agencyId) {
+
+        List<TrainingProgramDto> trainingProgressData = new ArrayList<>();
+
+        // Maps for names
+        Map<Long, String> activityNames = new HashMap<>();
+        Map<Long, String> subActivityNames = new HashMap<>();
+        Map<Long, Long> subActivityToAgency = new HashMap<>();
+        Map<Long, String> agencyNames = new HashMap<>();
+
+        // Maps for data (subActivity-wise)
+        Map<Long, Long> target = new HashMap<>();
+        Map<Long, Long> countOfParticipants = new HashMap<>();
+        Map<Long, Double> programExp = new HashMap<>();
+        Map<Long, Double> budgetAllocated = new HashMap<>();
+
+        // Fetch activities
+        List<Activity> activities;
+        if (agencyId == -1) {
+            activities = activityRepository.findAll();
+        } else {
+            activities = activityRepository.findByAgencyAgencyId(agencyId);
+        }
+
+        if (activities.isEmpty()) {
+            return trainingProgressData;
+        }
+
+        // Build base maps
+        for (Activity activity : activities) {
+            String agencyName = activity.getAgency().getAgencyName();
+            Long agencyIdVal = activity.getAgency().getAgencyId();
+
+            for (SubActivity sb : activity.getSubActivities()) {
+                subActivityNames.put(sb.getSubActivityId(), sb.getSubActivityName());
+                activityNames.put(sb.getSubActivityId(), activity.getActivityName());
+                subActivityToAgency.put(sb.getSubActivityId(), agencyIdVal);
+                agencyNames.put(agencyIdVal, agencyName);
+            }
+        }
+
+        Set<Long> subActivityIds = subActivityNames.keySet();
+        if (subActivityIds.isEmpty()) {
+            return trainingProgressData;
+        }
+
+        // Training targets
+        List<TrainingTargets> allTargets;
+        if (agencyId == -1) {
+            allTargets = trainingTargetRepository.findBySubActivity_SubActivityIdIn(subActivityIds);
+        } else {
+            allTargets = trainingTargetRepository.findBySubActivity_SubActivityIdInAndAgency_AgencyId(subActivityIds, agencyId);
+        }
+
+        for (TrainingTargets t : allTargets) {
+            Long subActivityId = t.getSubActivity().getSubActivityId();
+            long total = t.getQ1Target() + t.getQ2Target() + t.getQ3Target() + t.getQ4Target();
+            target.merge(subActivityId, total, Long::sum);
+
+            double totalBudget = t.getQ1Budget() + t.getQ2Budget() + t.getQ3Budget() + t.getQ4Budget();
+            budgetAllocated.merge(subActivityId, totalBudget, Double::sum);
+        }
+
+        // Participant counts
+        List<SubActivityParticipantCountDTO> participantCounts;
+        if (agencyId == -1) {
+            participantCounts = activityRepository.findProgramCountForAllAgencies();
+        } else {
+            participantCounts = activityRepository.findProgramCountByAgencyId(agencyId);
+        }
+
+        for (SubActivityParticipantCountDTO dto : participantCounts) {
+            countOfParticipants.put(dto.getSubActivityId(), (long) dto.getParticipantCount());
+        }
+
+        // Expenditure
+        Iterable<ProgramExpenditure> expenditures;
+        if (agencyId == -1) {
+            expenditures = programExpenditureRepository.findBySubActivity_SubActivityIdIn(subActivityIds);
+        } else {
+            expenditures = programExpenditureRepository.findBySubActivity_SubActivityIdInAndAgency_AgencyId(subActivityIds, agencyId);
+        }
+
+        for (ProgramExpenditure p : expenditures) {
+            programExp.merge(p.getSubActivity().getSubActivityId(), p.getCost(), Double::sum);
+        }
+
+        // 🔹 Aggregate all subActivity-level data into activity+agency-level
+        Map<String, AggregatedActivityData> activitySummary = new HashMap<>();
+
+        for (Long subActId : subActivityIds) {
+            String activityName = activityNames.get(subActId);
+            Long agId = subActivityToAgency.get(subActId);
+            String agencyName = agencyNames.get(agId);
+
+            if (activityName == null || agencyName == null) continue;
+
+            // Use "agencyName|activityName" as unique key
+            String key = agencyName + "|" + activityName;
+            AggregatedActivityData data = activitySummary.computeIfAbsent(key, k -> new AggregatedActivityData(agencyName, activityName));
+
+            data.totalTarget += target.getOrDefault(subActId, 0L);
+            data.totalAchievement += countOfParticipants.getOrDefault(subActId, 0L);
+            data.totalBudget += budgetAllocated.getOrDefault(subActId, 0.0);
+            data.totalExpenditure += programExp.getOrDefault(subActId, 0.0);
+        }
+
+        // Build final DTO list (activity + agency wise)
+        for (AggregatedActivityData data : activitySummary.values()) {
+            double targetVal = data.totalTarget;
+            double achievementVal = data.totalAchievement;
+
+            double trainingPercentage = (targetVal != 0)
+                    ? Math.round((achievementVal / targetVal) * 100 * 1000.0) / 1000.0
+                    : 0.0;
+
+            double expPercentage = (data.totalBudget != 0)
+                    ? Math.round((data.totalExpenditure / data.totalBudget) * 100 * 1000.0) / 1000.0
+                    : 0.0;
+
+            trainingProgressData.add(TrainingProgramDto.builder()
+                    .agency(data.agencyName)
+                    .activity(data.activityName)
+                    .trainingTarget(targetVal)
+                    .trainingAchievement((long) achievementVal)
+                    .trainingPercentage(trainingPercentage)
+                    .budgetAllocated(data.totalBudget)
+                    .expenditure(Math.floor(data.totalExpenditure))
+                    .expenditurePercentage(expPercentage)
+                    .build());
+        }
+
+        return trainingProgressData;
+    }
+
+    // Helper inner class for aggregation
+    static class AggregatedActivityData {
+        String agencyName;
+        String activityName;
+        long totalTarget = 0L;
+        long totalAchievement = 0L;
+        double totalBudget = 0.0;
+        double totalExpenditure = 0.0;
+
+        public AggregatedActivityData(String agencyName, String activityName) {
+            this.agencyName = agencyName;
+            this.activityName = activityName;
+        }
+    }
+
+
 }
 /*
 18		Consumable : not done from code
