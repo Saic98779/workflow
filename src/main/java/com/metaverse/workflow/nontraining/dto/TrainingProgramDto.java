@@ -15,5 +15,7 @@ public class TrainingProgramDto {
     private Long trainingAchievement;
     private Double trainingPercentage;
     private Double expenditure;
+    private Double approvedExpenditure;
+    private Double pendingExpenditure;
     private Double expenditurePercentage;
 }

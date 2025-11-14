@@ -2,6 +2,7 @@ package com.metaverse.workflow.nontraining.service;
 
 import com.metaverse.workflow.ProgramMonitoring.service.SubActivityParticipantCountDTO;
 import com.metaverse.workflow.activity.repository.ActivityRepository;
+import com.metaverse.workflow.enums.BillRemarksStatus;
 import com.metaverse.workflow.expenditure.repository.ProgramExpenditureRepository;
 import com.metaverse.workflow.model.*;
 import com.metaverse.workflow.nontraining.dto.NonTrainingProgramDto;
@@ -18,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -198,7 +200,8 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
         Map<Long, String> subActivityNames = new HashMap<>();
         Map<Long, Long> target = new HashMap<>();
         Map<Long, Long> countOfParticipants = new HashMap<>();
-        Map<Long, Double> programExp = new HashMap<>();
+        Map<Long, Double> programExpApproved = new HashMap<>();
+        Map<Long, Double> programExpPending = new HashMap<>();
 
         List<Activity> byAgencyAgencyId = activityRepository.findByAgencyAgencyId(agencyId);
         String agencyName = byAgencyAgencyId.get(0).getAgency().getAgencyName();
@@ -234,7 +237,14 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
         Iterable<ProgramExpenditure> bySubActivitySubActivityId = programExpenditureRepository.findBySubActivity_SubActivityIdInAndAgency_AgencyId(subActivityNames.keySet(), agencyId);
 
         for (ProgramExpenditure p : bySubActivitySubActivityId) {
-            addOrUpdate(programExp, p.getSubActivity().getSubActivityId(), p.getCost());
+            if(p.getStatus() != null){
+                if(BillRemarksStatus.APPROVED.equals(p.getStatus()))
+                    addOrUpdate(programExpApproved, p.getSubActivity().getSubActivityId(), p.getCost());
+                else
+                    addOrUpdate(programExpPending, p.getSubActivity().getSubActivityId(), p.getCost());
+            }else {
+                addOrUpdate(programExpPending, p.getSubActivity().getSubActivityId(), p.getCost());
+            }
         }
 
         Set<Long> commonKeys = new HashSet<>(subActivityNames.keySet());
@@ -243,7 +253,8 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
             Long countOfParticipants1 = countOfParticipants.getOrDefault(key, 0L);
 
             Double bud = budgetAllocated.getOrDefault(key, 0.0);
-            Double programExpO = programExp.getOrDefault(key, 0.0);
+            Double programExpApproved0 = programExpApproved.getOrDefault(key, 0.0);
+            Double programExpPending0 = programExpPending.getOrDefault(key, 0.0);
 
             trainingProgressData.add(TrainingProgramDto.builder().agency(agencyName)
                     .activity(activityNames.get(key))
@@ -253,8 +264,10 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
                     .trainingAchievement(countOfParticipants1)
                     .trainingPercentage((target1 != 0 ? Math.round((countOfParticipants1 / target1) * 100 * 1000.0) / 1000.0 : 0.0))
                     .budgetAllocated(bud)
-                    .expenditure(Math.floor(programExpO))
-                    .expenditurePercentage((bud != 0.0) ? Math.round((programExpO / bud) * 100 * 1000.0) / 1000.0 : 0.0)
+                    .approvedExpenditure(Math.floor(programExpApproved0))
+                    .pendingExpenditure(Math.floor(programExpPending0))
+                    .expenditure(Math.floor(programExpApproved0+programExpPending0))
+                    .expenditurePercentage((bud != 0.0) ? Math.round(((programExpApproved0+programExpPending0) / bud) * 100 * 1000.0) / 1000.0 : 0.0)
                     .build());
         }
         return trainingProgressData;
@@ -296,9 +309,12 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
 
                         Object[] objects = progressMonitoringSubActivityWiseAchievements(subActivityId);
                         nonTrainingProgramDto.setPhysicalAchievement((String) objects[0]);
-                        nonTrainingProgramDto.setFinancialExpenditure((Double) objects[1]);
-
-                        nonTrainingProgramDto.setPercentage((financialTarget != 0.0) ? Math.round(((Double) objects[1] / financialTarget) * 100 * 100.0) / 100.0 : 0.0);
+                        double approved = (double) objects[1];
+                        double pending = (double) objects[2];
+                        nonTrainingProgramDto.setFinancialExpenditure(approved+pending);
+                        nonTrainingProgramDto.setFinancialExpenditurePending(pending);
+                        nonTrainingProgramDto.setFinancialExpenditureApproved(approved);
+                        nonTrainingProgramDto.setPercentage((financialTarget != 0.0) ? Math.round((approved+pending / financialTarget) * 100 * 100.0) / 100.0 : 0.0);
                         try {
                             nonTrainingProgramDto.setPhysicalPercentage(String.valueOf(Math.round(((physicalTarget != 0.0) ? (Double.parseDouble((String) objects[0]) / physicalTarget) * 100 : 0.0) * 100.0) / 100.0));
                         } catch (Exception ee) {
@@ -326,7 +342,7 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
                 }
                 Double financialAchieved = list.stream().mapToDouble(r -> r.getTotalDisbursedAmount()).sum();
                 String.valueOf(list.size());
-                Object[] objects = {String.valueOf(list.size()), financialAchieved};
+                Object[] objects = {String.valueOf(list.size()), financialAchieved,0.0};
                 return objects;
             }
             case 76 -> { // 76 Corpus-Listing on NSE from corpusListingOnNSE
@@ -334,10 +350,10 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
                 if (corpusListingOnNSE.isPresent()) {
                     List<ListingOnNSE> listingOnNSES = corpusListingOnNSE.get();
                     Double financialAchieved = listingOnNSES.stream().mapToDouble(r -> r.getAmountOfLoanProvided()).sum();
-                    Object[] objects = {String.valueOf(listingOnNSES.size()), financialAchieved};
+                    Object[] objects = {String.valueOf(listingOnNSES.size()), financialAchieved,0.0};
                     return objects;
                 } else {
-                    Object[] objects = {String.valueOf(0), 0.0};
+                    Object[] objects = {String.valueOf(0), 0.0,0.0};
                     return objects;
                 }
             }
@@ -359,10 +375,10 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
                             r -> r.getNonTrainingResourceExpenditures()).mapToDouble(
                             exp -> exp.stream().mapToDouble(
                                     resExp -> resExp.getAmount()).sum()).sum();
-                    Object[] objects = {String.valueOf(nonTrainingSubActivity.size()), financialAchieved};
+                    Object[] objects = {String.valueOf(nonTrainingSubActivity.size()), financialAchieved,0.0};
                     return objects;
                 } else {
-                    Object[] objects = {String.valueOf(0), 0.0};
+                    Object[] objects = {String.valueOf(0), 0.0,0.0};
                     return objects;
                 }
             }
@@ -379,10 +395,10 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
                     if (byNonTrainingSubActivity.isPresent()) {
                         financialAchieved = byNonTrainingSubActivity.get().stream().mapToDouble(amount -> amount.getExpenditureAmount()).sum();
                     }
-                    Object[] objects = {String.valueOf(nonTrainingSubActivity.size()), financialAchieved};
+                    Object[] objects = {String.valueOf(nonTrainingSubActivity.size()), financialAchieved,0.0};
                     return objects;
                 } else {
-                    Object[] objects = {String.valueOf(0), 0.0};
+                    Object[] objects = {String.valueOf(0), 0.0,0.0};
                     return objects;
                 }
             }
@@ -397,10 +413,10 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
                     if (byNonTrainingSubActivity.isPresent()) {
                         financialAchieved = byNonTrainingSubActivity.get().stream().mapToDouble(amount -> amount.getExpenditureAmount()).sum();
                     }
-                    Object[] objects = {String.valueOf(nonTrainingSubActivity.size()), financialAchieved};
+                    Object[] objects = {String.valueOf(nonTrainingSubActivity.size()), financialAchieved,0.0};
                     return objects;
                 } else {
-                    Object[] objects = {String.valueOf(0), 0.0};
+                    Object[] objects = {String.valueOf(0), 0.0,0.0};
                     return objects;
                 }
             }
@@ -420,11 +436,19 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
             case 27, 28, 73, 90, 12, 38, 39, 40, 64, 37, 110, 124 -> { //
                 Optional<List<NonTrainingExpenditure>> nonTrainingSubActivity = nonTrainingExpenditureRepository.findByNonTrainingSubActivity_SubActivityId(subActivityId);
                 if (nonTrainingSubActivity.isPresent()) {
-                    Double financialAchieved = nonTrainingSubActivity.get().stream().mapToDouble(exp -> exp.getExpenditureAmount()).sum();
-                    Object[] objects = {String.valueOf(nonTrainingSubActivity.get().size()), financialAchieved};
+                    Map<String, Double> result =
+                            nonTrainingSubActivity.get().stream()
+                                    .collect(Collectors.groupingBy(
+                                            p -> p.getStatus() == BillRemarksStatus.APPROVED ? "APPROVED" : "OTHER",
+                                            Collectors.summingDouble(NonTrainingExpenditure::getExpenditureAmount)
+                                    ));
+                         Double approved = result.getOrDefault("APPROVED",0.0);
+                         Double pending = result.getOrDefault("OTHER",0.0);
+
+                    Object[] objects = {String.valueOf(nonTrainingSubActivity.get().size()), approved,pending};
                     return objects;
                 } else {
-                    Object[] objects = {String.valueOf(0), 0.0};
+                    Object[] objects = {String.valueOf(0), 0.0,0.0};
                     return objects;
                 }
             }
@@ -434,11 +458,11 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
             case 19 -> {
                 List<TravelAndTransport> nonTrainingSubActivity = travelAndTransportRepository.findByNonTrainingSubActivity_SubActivityId(subActivityId);
                 Double financialAchieved = nonTrainingSubActivity.stream().mapToDouble(exp -> exp.getAmount()).sum();
-                Object[] targetAndFinancialAchieved = {String.valueOf(nonTrainingSubActivity.size()), financialAchieved};
+                Object[] targetAndFinancialAchieved = {String.valueOf(nonTrainingSubActivity.size()), financialAchieved,0.0};
                 return targetAndFinancialAchieved;
             }
             default -> {
-                return new Object[]{String.valueOf(0), 0.0};
+                return new Object[]{String.valueOf(0), 0.0,0.0};
             }
         }
     }
