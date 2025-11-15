@@ -16,6 +16,8 @@ public class NonTrainingProgramDto {
     private String physicalAchievement;
     private Double financialTarget;
     private Double financialExpenditure;
+    private Double financialExpenditureApproved;
+    private Double financialExpenditurePending;
     private Double percentage;
     private String physicalPercentage;
 
