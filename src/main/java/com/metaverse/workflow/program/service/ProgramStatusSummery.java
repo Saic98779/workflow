@@ -13,4 +13,5 @@ public class ProgramStatusSummery {
     private Integer programsCompletedDataPending;
     private Integer programYetBegin;
     private Integer programOverDue;
+    private Integer programExpenditureApproved;
 }
