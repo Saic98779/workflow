@@ -27,5 +27,6 @@ public interface NonTrainingTargetRepository extends JpaRepository<NonTrainingTa
     List<NonTrainingTargets> findByNonTrainingSubActivity_NonTrainingActivity_Agency_AgencyIdAndFinancialYear(
             Long agencyId, String financialYear
     );
+    List<NonTrainingTargets> findByNonTrainingSubActivity_SubActivityId(Long subActivityId);
 }
 

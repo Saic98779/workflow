@@ -1,5 +1,6 @@
 package com.metaverse.workflow.model.outcomes;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.metaverse.workflow.model.Agency;
 import com.metaverse.workflow.model.Organization;
 import com.metaverse.workflow.model.Participant;
@@ -36,6 +37,10 @@ public class ONDCTransaction {
     private String transactionType;
     @Column(name = "transaction_value")
     private Double transactionValue;
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "agency_id")
+    private Agency agency;
     @Column(name = "created_on", insertable = true, updatable = false)
     @CreationTimestamp
     private Date createdOn;

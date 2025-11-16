@@ -23,6 +23,7 @@ import java.io.IOException;
 @RestController
 @RequiredArgsConstructor
 public class FileGeneratorController {
+    private final MoMSMEExcelGenerator moMSMEExcelGenerator;
     private final TrainingProgramExcelGenerator excelGenerator;
     private final ExpenditureExcelGenerator expenditureExcelGenerator;
     private final ProgramPdfGenerator programPdfGenerator;
@@ -295,5 +296,14 @@ public class FileGeneratorController {
     @GetMapping("/export/training-programs/{agencyId}")
     public void exportTrainingProgramsExcel(HttpServletResponse response, @PathVariable Long agencyId) throws IOException {
         excelGenerator.generateTrainingProgramExcel(response, agencyId);
+    }
+
+    @GetMapping("/export/momsme/{agencyId}")
+    public void exportMoMSMEReport(@PathVariable Long agencyId, HttpServletResponse response) throws IOException {
+        try {
+            moMSMEExcelGenerator.generateExcel(agencyId,response);
+        } catch (DataException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

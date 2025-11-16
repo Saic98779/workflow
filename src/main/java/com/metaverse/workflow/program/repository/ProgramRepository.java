@@ -276,6 +276,19 @@ public interface ProgramRepository extends JpaRepository<Program, Long> {
 
     List<Program> findByAgency_AgencyIdAndActivityId(Long agencyId, Long activityId);
 
+    List<Program> findBySubActivityId(Long subActivityId);
+
+    @Query("""
+        SELECT DISTINCT p 
+        FROM Program p 
+        JOIN p.participants part 
+        WHERE p.agency.agencyId = :agencyId
+          AND p.subActivityId = :subActivityId
+          AND SIZE(p.participants) > 0
+        """)
+    List<Program> findProgramsByAgencyAndSubActivityWithParticipants(
+            @Param("agencyId") Long agencyId,
+            @Param("subActivityId") Long subActivityId
     Page<Program> findAllByStartDateBetweenAndLocationDistrict(Date from, Date to, Pageable pageable, String districtName);
 
     Page<Program> findByAgencyAgencyIdAndStartDateBetweenAndLocationDistrict(Long id, Date from, Date to, Pageable pageable, String districtName);
