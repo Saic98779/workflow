@@ -22,6 +22,7 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -58,17 +59,11 @@ public class TiHclMoMSMEReportService {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        HttpEntity<AuthRequest> entity =
-                new HttpEntity<>(new AuthRequest(userName, password), headers);
+        HttpEntity<AuthRequest> entity = new HttpEntity<>(new AuthRequest(userName, password), headers);
 
         try {
             // Login and get token
-            ResponseEntity<Map> response = restTemplate.exchange(
-                    loginUrl,
-                    HttpMethod.POST,
-                    entity,
-                    Map.class
-            );
+            ResponseEntity<Map> response = restTemplate.exchange(loginUrl, HttpMethod.POST, entity, Map.class);
 
             String token = (String) response.getBody().get("token");
 
@@ -79,14 +74,8 @@ public class TiHclMoMSMEReportService {
             HttpEntity<Void> requestEntity = new HttpEntity<>(authHeaders);
 
             // Fetch MOMSME report
-            ResponseEntity<TiHclMoMSMEReportDTO> reportResponse =
-                    restTemplate.exchange(
-                            url,
-                            HttpMethod.GET,
-                            requestEntity,
-                            new ParameterizedTypeReference<TiHclMoMSMEReportDTO>() {
-                            }
-                    );
+            ResponseEntity<TiHclMoMSMEReportDTO> reportResponse = restTemplate.exchange(url, HttpMethod.GET, requestEntity, new ParameterizedTypeReference<TiHclMoMSMEReportDTO>() {
+            });
 
             return reportResponse.getBody();
 
@@ -99,6 +88,8 @@ public class TiHclMoMSMEReportService {
     public MoMSMERowDTO getMoMSMERowData(Long subActivityId, String activityType) throws DataException {
 
         MoMSMERowDTO dto = new MoMSMERowDTO();
+        LocalDate today = LocalDate.now();
+        LocalDate lastMonth25 = today.minusMonths(1).withDayOfMonth(25);
         LocalDate last25 = LocalDate.now().minusMonths(1).withDayOfMonth(25);
         Date startDate = java.sql.Date.valueOf(last25);
         Date endDate = new Date();
@@ -107,86 +98,55 @@ public class TiHclMoMSMEReportService {
 
             case "Training": {
 
-                SubActivity subActivity = subActivityRepository.findById(subActivityId)
-                        .orElseThrow(() -> new DataException("sub activity not found", "NOT-FOUND", 400));
+                SubActivity subActivity = subActivityRepository.findById(subActivityId).orElseThrow(() -> new DataException("sub activity not found", "NOT-FOUND", 400));
 
                 Long activityId = subActivity.getActivity().getActivityId();
                 Long agencyId = subActivity.getActivity().getAgency().getAgencyId();
 
-                List<Program> programs = programRepository.findBySubActivityId(subActivityId);
+                List<Program> programs = programRepository.findProgramsByAgencyAndSubActivityWithParticipants(agencyId, subActivityId);
 
-                List<ProgramExpenditure> expList =
-                        programExpenditureRepository.findBySubActivity_SubActivityIdAndAgency_AgencyId(subActivityId, agencyId);
+                List<ProgramExpenditure> expList = programExpenditureRepository.findBySubActivity_SubActivityIdAndAgency_AgencyId(subActivityId, agencyId);
 
-                List<BulkExpenditureTransaction> bulkList =
-                        transactionRepository.findByProgram_ProgramIdIn(
-                                programs.stream().map(Program::getProgramId).toList()
-                        );
+                List<BulkExpenditureTransaction> bulkList = transactionRepository.findByProgram_ProgramIdIn(programs.stream().map(Program::getProgramId).toList());
 
-                List<TrainingTargets> targetsList =
-                        trainingTargetRepository.findBySubActivity_SubActivityId(subActivityId);
+                List<TrainingTargets> targetsList = trainingTargetRepository.findBySubActivity_SubActivityId(subActivityId);
 
                 // EXPENDITURE
-                Double expUptoLast = expList.stream()
-                        .filter(e -> e.getCreatedOn() != null && e.getCreatedOn().before(startDate))
-                        .mapToDouble(ProgramExpenditure::getCost)
-                        .sum();
+                Double expUptoLast = expList.stream().filter(e -> e.getCreatedOn() != null && e.getCreatedOn().before(startDate)).mapToDouble(ProgramExpenditure::getCost).sum();
 
-                Double expDuringMonth = expList.stream()
-                        .filter(e -> e.getCreatedOn() != null &&
-                                !e.getCreatedOn().before(startDate) &&
-                                !e.getCreatedOn().after(endDate))
-                        .mapToDouble(ProgramExpenditure::getCost)
-                        .sum();
+                Double expDuringMonth = expList.stream().filter(e -> e.getCreatedOn() != null && !e.getCreatedOn().before(startDate) && !e.getCreatedOn().after(endDate)).mapToDouble(ProgramExpenditure::getCost).sum();
 
-                Double bulkUptoLast = bulkList.stream()
-                        .filter(b -> b.getCreatedOn() != null && b.getCreatedOn().before(startDate))
-                        .mapToDouble(BulkExpenditureTransaction::getAllocatedCost)
-                        .sum();
+                Double bulkUptoLast = bulkList.stream().filter(b -> b.getCreatedOn() != null && b.getCreatedOn().before(startDate)).mapToDouble(BulkExpenditureTransaction::getAllocatedCost).sum();
 
-                Double bulkDuringMonth = bulkList.stream()
-                        .filter(b -> b.getCreatedOn() != null &&
-                                !b.getCreatedOn().before(startDate) &&
-                                !b.getCreatedOn().after(endDate))
-                        .mapToDouble(BulkExpenditureTransaction::getAllocatedCost)
-                        .sum();
+                Double bulkDuringMonth = bulkList.stream().filter(b -> b.getCreatedOn() != null && !b.getCreatedOn().before(startDate) && !b.getCreatedOn().after(endDate)).mapToDouble(BulkExpenditureTransaction::getAllocatedCost).sum();
 
-                Double totalBulk = bulkList.stream()
-                        .mapToDouble(BulkExpenditureTransaction::getAllocatedCost)
-                        .sum();
+                Double totalBulk = bulkList.stream().mapToDouble(BulkExpenditureTransaction::getAllocatedCost).sum();
 
-                Double totalExp = expList.stream()
-                        .mapToDouble(ProgramExpenditure::getCost)
-                        .sum();
+                Double totalExp = expList.stream().mapToDouble(ProgramExpenditure::getCost).sum();
 
                 // ACHIEVEMENT COUNTS
-                int lastMonthAch = programRepository
-                        .findProgramsUptoLastMonth25th(agencyId, subActivityId).size();
 
-                int currMonthAch = programRepository
-                        .findProgramsFromLastMonth25ToCurrent(agencyId, subActivityId).size();
+                int lastMonthAch = (int) programs.stream().filter(p -> p.getEndDate() != null).filter(
+                        p -> p.getEndDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+                                .isBefore(lastMonth25.plusDays(1))) .count();
+
+                int currMonthAch = (int) programs.stream().filter(p -> p.getEndDate() != null).filter(p -> {
+                    LocalDate date = p.getEndDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                    return (!date.isBefore(lastMonth25)) && (!date.isAfter(today));
+                }).count();
 
                 // MSME BENEFITED
-                int msmeBenefited = (int) programs.stream()
-                        .flatMap(p -> p.getParticipants().stream())
-                        .filter(pa -> pa.getOrganization() != null)
-                        .count();
+                int msmeBenefited = (int) programs.stream().flatMap(p -> p.getParticipants().stream()).filter(pa -> pa.getOrganization() != null).count();
 
                 // TARGET & BUDGET
-                long totalTarget = targetsList.stream()
-                        .mapToLong(t -> t.getQ1Target() + t.getQ2Target() + t.getQ3Target() + t.getQ4Target())
-                        .sum();
+                long totalTarget = targetsList.stream().mapToLong(t -> t.getQ1Target() + t.getQ2Target() + t.getQ3Target() + t.getQ4Target()).sum();
 
-                Double approvedBudget = targetsList.stream()
-                        .mapToDouble(t -> t.getQ1Budget() + t.getQ2Budget() + t.getQ3Budget() + t.getQ4Budget())
-                        .sum();
+                Double approvedBudget = targetsList.stream().mapToDouble(t -> t.getQ1Budget() + t.getQ2Budget() + t.getQ3Budget() + t.getQ4Budget()).sum();
 
                 // PERCENTAGE FIXED (avoiding integer division)
-                String percentTarget = totalTarget == 0 ? "0%" :
-                        String.format("%.1f%%", (programs.size() * 100.0) / totalTarget);
+                String percentTarget = totalTarget == 0 ? "0%" : String.format("%.1f%%", (programs.size() * 100.0) / totalTarget);
 
-                String percentBudget = approvedBudget == 0 ? "0%" :
-                        String.format("%.1f%%", ((totalBulk + totalExp) * 100.0) / approvedBudget);
+                String percentBudget = approvedBudget == 0 ? "0%" : String.format("%.1f%%", ((totalBulk + totalExp) * 100.0) / approvedBudget);
 
                 dto.setActivityName(subActivity.getActivity().getActivityName());
                 dto.setSubActivityName(subActivity.getSubActivityName());
@@ -208,20 +168,13 @@ public class TiHclMoMSMEReportService {
 
                 TiHclMoMSMEReportDTO tiDto = fetchMoMsmeReport();
 
-                NonTrainingSubActivity subActivity = nonTrainingSubActivityRepository.findById(subActivityId)
-                        .orElseThrow(() ->
-                                new DataException("non training sub activity not found", "NOT-FOUND", 400));
+                NonTrainingSubActivity subActivity = nonTrainingSubActivityRepository.findById(subActivityId).orElseThrow(() -> new DataException("non training sub activity not found", "NOT-FOUND", 400));
 
-                List<NonTrainingTargets> targetsList =
-                        nonTrainingTargetRepository.findByNonTrainingSubActivity_SubActivityId(subActivityId);
+                List<NonTrainingTargets> targetsList = nonTrainingTargetRepository.findByNonTrainingSubActivity_SubActivityId(subActivityId);
 
-                long totalTarget = targetsList.stream()
-                        .mapToLong(t -> t.getQ1Target() + t.getQ2Target() + t.getQ3Target() + t.getQ4Target())
-                        .sum();
+                long totalTarget = targetsList.stream().mapToLong(t -> t.getQ1Target() + t.getQ2Target() + t.getQ3Target() + t.getQ4Target()).sum();
 
-                Double approvedBudget = targetsList.stream()
-                        .mapToDouble(t -> t.getQ1Budget() + t.getQ2Budget() + t.getQ3Budget() + t.getQ4Budget())
-                        .sum();
+                Double approvedBudget = targetsList.stream().mapToDouble(t -> t.getQ1Budget() + t.getQ2Budget() + t.getQ3Budget() + t.getQ4Budget()).sum();
 
                 switch (subActivityId.toString()) {
 
@@ -237,44 +190,26 @@ public class TiHclMoMSMEReportService {
                         dto.setAchievementLastMonth(val);
                         dto.setAchievementDuringMonth(0);
                         dto.setCumulativeAchievement(val);
-                        dto.setAchievementPercentage(
-                                totalTarget == 0 ? "0%" : String.format("%.1f%%", (val * 100.0) / totalTarget)
-                        );
+                        dto.setAchievementPercentage(totalTarget == 0 ? "0%" : String.format("%.1f%%", (val * 100.0) / totalTarget));
                         dto.setMsmesBenefited(val);
                         dto.setAmountApproved(approvedBudget);
                         dto.setExpenditureLastMonth(disbursed);
                         dto.setExpenditureDuringMonth(0.0);
                         dto.setCumulativeExpenditure(disbursed);
-                        dto.setExpenditurePercentage(
-                                approvedBudget == 0 ? "0%" : String.format("%.1f%%", (disbursed * 100.0) / approvedBudget)
-                        );
+                        dto.setExpenditurePercentage(approvedBudget == 0 ? "0%" : String.format("%.1f%%", (disbursed * 100.0) / approvedBudget));
                         return dto;
                     }
 
                     // CASE 76
                     case "76": {
 
-                        List<ListingOnNSE> listingOnNSEList =
-                                listingOnNSERepository.findByNonTrainingSubActivity_SubActivityId(subActivityId)
-                                        .orElseThrow(() ->
-                                                new DataException("ListingOnNSE not found for subActivityId: " + subActivityId,
-                                                        "LISTING_ON_NSE_NOT_FOUND", 404));
+                        List<ListingOnNSE> listingOnNSEList = listingOnNSERepository.findByNonTrainingSubActivity_SubActivityId(subActivityId).orElseThrow(() -> new DataException("ListingOnNSE not found for subActivityId: " + subActivityId, "LISTING_ON_NSE_NOT_FOUND", 404));
 
-                        Double expUptoLast = listingOnNSEList.stream()
-                                .filter(e -> e.getDateOfListing() != null && e.getDateOfListing().before(startDate))
-                                .mapToDouble(ListingOnNSE::getAmountOfLoanProvided)
-                                .sum();
+                        Double expUptoLast = listingOnNSEList.stream().filter(e -> e.getDateOfListing() != null && e.getDateOfListing().before(startDate)).mapToDouble(ListingOnNSE::getAmountOfLoanProvided).sum();
 
-                        Double expDuringMonth = listingOnNSEList.stream()
-                                .filter(e -> e.getCreatedOn() != null &&
-                                        !e.getCreatedOn().before(startDate) &&
-                                        !e.getCreatedOn().after(endDate))
-                                .mapToDouble(ListingOnNSE::getAmountOfLoanProvided)
-                                .sum();
+                        Double expDuringMonth = listingOnNSEList.stream().filter(e -> e.getCreatedOn() != null && !e.getCreatedOn().before(startDate) && !e.getCreatedOn().after(endDate)).mapToDouble(ListingOnNSE::getAmountOfLoanProvided).sum();
 
-                        Double totalAmount = listingOnNSEList.stream()
-                                .mapToDouble(ListingOnNSE::getAmountOfLoanProvided)
-                                .sum();
+                        Double totalAmount = listingOnNSEList.stream().mapToDouble(ListingOnNSE::getAmountOfLoanProvided).sum();
 
                         dto.setActivityName(subActivity.getNonTrainingActivity().getActivityName());
                         dto.setSubActivityName(subActivity.getSubActivityName());
@@ -282,19 +217,13 @@ public class TiHclMoMSMEReportService {
                         dto.setAchievementLastMonth(listingOnNSEList.size());
                         dto.setAchievementDuringMonth(0);
                         dto.setCumulativeAchievement(listingOnNSEList.size());
-                        dto.setAchievementPercentage(
-                                totalTarget == 0 ? "0%" :
-                                        String.format("%.1f%%", (listingOnNSEList.size() * 100.0) / totalTarget)
-                        );
+                        dto.setAchievementPercentage(totalTarget == 0 ? "0%" : String.format("%.1f%%", (listingOnNSEList.size() * 100.0) / totalTarget));
                         dto.setMsmesBenefited(listingOnNSEList.size());
                         dto.setAmountApproved(approvedBudget);
                         dto.setExpenditureLastMonth(expUptoLast);
                         dto.setExpenditureDuringMonth(expDuringMonth);
                         dto.setCumulativeExpenditure(totalAmount);
-                        dto.setExpenditurePercentage(
-                                approvedBudget == 0 ? "0%" :
-                                        String.format("%.1f%%", (totalAmount * 100.0) / approvedBudget)
-                        );
+                        dto.setExpenditurePercentage(approvedBudget == 0 ? "0%" : String.format("%.1f%%", (totalAmount * 100.0) / approvedBudget));
                         return dto;
                     }
 

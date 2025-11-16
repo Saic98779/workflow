@@ -10,6 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestClientException;
 
@@ -37,16 +38,17 @@ public class TiHclMoMSMEReportController {
 
 
 
-        @GetMapping("/rows/{subActivityId}")
-        public ResponseEntity<?> getMoMSMERows(@PathVariable Long subActivityId)  {
-            MoMSMERowDTO rows = null;
-            try {
-                rows = tiHclMoMSMEReportService.getMoMSMERowData(subActivityId,"NonTraining");
-            } catch (DataException e) {
-                return RestControllerBase.error(e);
-            }
-            return ResponseEntity.ok(rows);
+    @GetMapping("/mom-sme/data")
+    public ResponseEntity<?> getMoMSMERows(@RequestParam Long subActivityId, @RequestParam String expType) {
+        MoMSMERowDTO rows = null;
+        try {
+            rows = tiHclMoMSMEReportService.getMoMSMERowData(subActivityId, expType);
+        } catch (DataException e) {
+            return RestControllerBase.error(e);
         }
+        return ResponseEntity.ok(rows);
+    }
+
 
 
 }

@@ -277,37 +277,22 @@ public interface ProgramRepository extends JpaRepository<Program, Long> {
     List<Program> findByAgency_AgencyIdAndActivityId(Long agencyId, Long activityId);
 
 
-    @Query(value = """
-            SELECT *
-            FROM program p
-            WHERE p.agency_id = :agencyId
-            AND p.sub_activity_id = :subActivityId
-              AND p.start_date <= DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 1 MONTH), '%Y-%m-25')
-            """,
-            nativeQuery = true)
-    List<Program> findProgramsUptoLastMonth25th(@Param("agencyId") Long agencyId,
-                                                @Param("subActivityId") Long subActivityId);
 
-    @Query(value = """
-    SELECT *
-    FROM program p
-    WHERE p.agency_id = :agencyId
-    AND p.sub_activity_id = :subActivityId
-      AND p.start_date BETWEEN 
-            DATE(
-                CONCAT(
-                    YEAR(DATE_SUB(CURDATE(), INTERVAL 1 MONTH)), '-',
-                    LPAD(MONTH(DATE_SUB(CURDATE(), INTERVAL 1 MONTH)), 2, '0'), '-25'
-                )
-            )
-        AND CURDATE()
-    """,
-            nativeQuery = true)
-    List<Program> findProgramsFromLastMonth25ToCurrent(
+
+
+    List<Program> findBySubActivityId(Long subActivityId);
+
+    @Query("""
+        SELECT DISTINCT p 
+        FROM Program p 
+        JOIN p.participants part 
+        WHERE p.agency.agencyId = :agencyId
+          AND p.subActivityId = :subActivityId
+          AND SIZE(p.participants) > 0
+        """)
+    List<Program> findProgramsByAgencyAndSubActivityWithParticipants(
             @Param("agencyId") Long agencyId,
             @Param("subActivityId") Long subActivityId
     );
 
-
-    List<Program> findBySubActivityId(Long subActivityId);
 }
