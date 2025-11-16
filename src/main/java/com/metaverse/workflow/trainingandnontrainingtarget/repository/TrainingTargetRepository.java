@@ -18,5 +18,7 @@ public interface TrainingTargetRepository extends JpaRepository<TrainingTargets,
     List<TrainingTargets> findBySubActivity_SubActivityIdInAndAgency_AgencyId(Iterable<Long> subActivityId, Long agencyId);
 
     List<TrainingTargets> findBySubActivity_SubActivityIdIn(Set<Long> subActivityIds);
+
+    List<TrainingTargets> findBySubActivity_SubActivityId(Long subActivityId);
 }
 

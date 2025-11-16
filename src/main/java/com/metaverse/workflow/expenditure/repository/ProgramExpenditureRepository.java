@@ -36,4 +36,7 @@ public interface ProgramExpenditureRepository extends JpaRepository<ProgramExpen
     Iterable<ProgramExpenditure> findBySubActivity_SubActivityIdInAndAgency_AgencyId(Iterable<Long> subActivityListIDs,Long agencyId);
 
     Iterable<ProgramExpenditure> findBySubActivity_SubActivityIdIn(Set<Long> subActivityIds);
+
+    List<ProgramExpenditure> findBySubActivity_SubActivityIdAndAgency_AgencyId(Long subActivityListIDs,Long agencyId);
+
 }
