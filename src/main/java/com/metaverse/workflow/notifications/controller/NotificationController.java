@@ -147,13 +147,6 @@ public class NotificationController {
         List<Notifications> list = (statuses == null || statuses.isEmpty())
                 ? notificationService.getAllByAgency(agencyId)
                 : notificationService.getAllByAgencyAndStatuses(agencyId, statuses);
-
-        // Flatten all remarks and map NotificationRemark -> RemarkDto
-   /*     List<RemarkDto> allRemarks = list.stream()
-                .flatMap(n -> n.getRemarksByCallCenter().stream())
-                .map(r -> new RemarkDto(r.getRemarkText(), null, r.getNotification().getCallCenterAgent().getFirstName() + r.getNotification().getCallCenterAgent().getLastName()
-                        , r.getRemarkedAt()))
-                .toList();*/
         List<RemarkDto> allRemarks = list.stream()
                 .flatMap(n -> n.getRemarksByCallCenter().stream())
                 .map(r -> {

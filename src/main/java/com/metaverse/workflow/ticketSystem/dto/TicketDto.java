@@ -27,20 +27,23 @@ public class TicketDto {
     private String reporterId;
     private String reporterName;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")
     private Date closedDate;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")
     private Date createdAt;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")
     private Date updatedAt;
 
     private List<TicketAttachmentDto> attachments;
 
-    // 💬 List of all comments
     private List<TicketCommentDto> comments;
 
-    // 🔄 List of all history entries
     private List<TicketHistoryDto> history;
+
+    private String agencyName;
+
 
     public TicketDto(Ticket ticket) {
         this.id = ticket.getId();
@@ -50,6 +53,9 @@ public class TicketDto {
         this.status = ticket.getStatus();
         this.priority = ticket.getPriority();
         this.type = ticket.getType();
+        this.agencyName = ticket.getReporter() != null && ticket.getReporter().getAgency() != null
+                ? ticket.getReporter().getAgency().getAgencyName()
+                : null;
 
         if (ticket.getAssignee() != null) {
             this.assigneeId = ticket.getAssignee().getUserId();
@@ -65,7 +71,6 @@ public class TicketDto {
         this.createdAt = ticket.getCreatedAt();
         this.updatedAt = ticket.getUpdatedAt();
 
-        // 🗂️ Attachments
         this.attachments = ticket.getAttachments() != null
                 ? ticket.getAttachments().stream()
                 .map(a -> new TicketAttachmentDto(
@@ -76,16 +81,17 @@ public class TicketDto {
                 .collect(Collectors.toList())
                 : List.of();
 
-        // 💬 Comments
         this.comments = ticket.getComments() != null
                 ? ticket.getComments().stream()
+                .sorted(Comparator.comparing(TicketComment::getCreatedAt).reversed())
                 .map(TicketCommentDto::new)
                 .collect(Collectors.toList())
                 : List.of();
 
-        // 🔄 History
+
         this.history = ticket.getHistory() != null
                 ? ticket.getHistory().stream()
+                .sorted(Comparator.comparing(TicketHistory::getCreatedAt).reversed())
                 .map(TicketHistoryDto::new)
                 .collect(Collectors.toList())
                 : List.of();

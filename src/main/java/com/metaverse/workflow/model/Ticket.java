@@ -3,7 +3,7 @@ package com.metaverse.workflow.model;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.metaverse.workflow.enums.TicketStatus;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -11,6 +11,9 @@ import java.util.List;
 
 @Entity
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Table(name = "tickets")
 public class Ticket {
 
@@ -25,13 +28,14 @@ public class Ticket {
     private String description;
 
     @Enumerated(EnumType.STRING)
-    private TicketStatus status;   // OPEN, IN_PROGRESS, RESOLVED, CLOSED
+    private TicketStatus status;
 
-    private String priority; // LOW, MEDIUM, HIGH
+    private String priority;
 
-    private String type;     //Report issue,  Data updation,  feature request
+    private String type;
 
     @ManyToOne
+    @JoinColumn(name = "assignee_id")   // recommended explicit mapping
     private User assignee;
 
     @ManyToOne
@@ -41,7 +45,6 @@ public class Ticket {
     @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<TicketComment> comments = new ArrayList<>();
-
 
     @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
@@ -69,4 +72,3 @@ public class Ticket {
         this.updatedAt = new Date();
     }
 }
-

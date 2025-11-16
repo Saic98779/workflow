@@ -1,10 +1,14 @@
 package com.metaverse.workflow.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "ticket_attachments")
 public class TicketAttachment {
 

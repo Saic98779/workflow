@@ -2,6 +2,8 @@ package com.metaverse.workflow.ticketSystem.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.metaverse.workflow.common.response.WorkflowResponse;
+import com.metaverse.workflow.enums.TicketStatus;
+import com.metaverse.workflow.model.Ticket;
 import com.metaverse.workflow.ticketSystem.dto.TicketDto;
 import com.metaverse.workflow.ticketSystem.service.TicketService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -11,11 +13,15 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -61,11 +67,11 @@ public class TicketController {
     }
 
     // ----------------------------------------------------------------------
-    // GET ALL TICKETS (with pagination)
-    // ----------------------------------------------------------------------
+// GET ALL TICKETS (with pagination + status filter)
+// ----------------------------------------------------------------------
     @Operation(
             summary = "Get all tickets",
-            description = "Fetches all created tickets with pagination support."
+            description = "Fetches all tickets with optional status filter and pagination."
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Tickets fetched successfully",
@@ -75,12 +81,25 @@ public class TicketController {
     })
     @GetMapping
     public ResponseEntity<WorkflowResponse> getAllTickets(
-            @Parameter(description = "Page number (default: 0)") @RequestParam(value = "page", required = false) Integer page,
-            @Parameter(description = "Page size (default: 10)") @RequestParam(value = "size", required = false) Integer size) {
+            @Parameter(description = "Ticket statuses to filter (e.g., OPEN, CLOSED). If not provided, both are returned.")
+            @RequestParam(value = "statusFilter", required = false) List<TicketStatus> statusFilter,
 
-        WorkflowResponse response = ticketService.getAllTickets(page != null ? page : 0, size != null ? size : 10);
+            @Parameter(description = "Page number (default: 0)")
+            @RequestParam(value = "page", required = false) Integer page,
+
+            @Parameter(description = "Page size (default: 10)")
+            @RequestParam(value = "size", required = false) Integer size
+    ) {
+
+        WorkflowResponse response = ticketService.getAllTickets(
+                statusFilter != null ? statusFilter : List.of(TicketStatus.OPEN, TicketStatus.CLOSED),
+                page != null ? page : 0,
+                size != null ? size : 10
+        );
+
         return ResponseEntity.ok(response);
     }
+
 
     // ----------------------------------------------------------------------
     // UPDATE TICKET
@@ -149,4 +168,30 @@ public class TicketController {
         WorkflowResponse response = ticketService.getReportById(page != null ? page : 0, size != null ? size : 10, reportId);
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<WorkflowResponse> getTicketsForUser(
+            @PathVariable String userId,
+            @RequestParam List<TicketStatus> statusFilter,   // multiple statuses supported
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+
+        WorkflowResponse response = ticketService.getTicketsForUser(
+                userId,
+                statusFilter,
+                PageRequest.of(page, size, Sort.by("createdAt").descending())
+        );
+
+        return ResponseEntity.ok(response);
+    }
+
+
+    @GetMapping("/roles/{role}/statuses")
+    public ResponseEntity<List<TicketStatus>> getStatusesForRole(@PathVariable String role) {
+        List<TicketStatus> statuses = ticketService.getStatusesForRole(role);
+        return ResponseEntity.ok(statuses);
+    }
+
+
 }

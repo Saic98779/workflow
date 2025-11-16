@@ -1,6 +1,7 @@
 package com.metaverse.workflow.ticketSystem.repository;
 
 
+import com.metaverse.workflow.enums.TicketStatus;
 import com.metaverse.workflow.model.Ticket;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -30,5 +31,9 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
     Ticket findByTicketId(String ticketId);
 
     Page<Ticket> findByReporter_UserIdOrAssignee_UserId(String reporterId, String reporterId1, Pageable pageable);
+
+    Page<Ticket> findByAssignee_UserIdOrReporter_UserIdAndStatusIn(String userId, String userId1, List<TicketStatus> finalStatuses, Pageable pageable);
+
+    Page<Ticket> findByStatusIn(List<TicketStatus> finalStatuses, Pageable pageable);
 }
 

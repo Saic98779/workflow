@@ -9,8 +9,10 @@ import com.metaverse.workflow.notifications.dto.NotificationStatusUpdateDto;
 import com.metaverse.workflow.notifications.repository.NotificationRepository;
 import com.metaverse.workflow.participant.repository.ParticipantRepository;
 import com.metaverse.workflow.program.repository.ProgramRepository;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,7 +36,7 @@ public class NotificationServiceImpl {
     // 1. Call Center -> Agency
     public Notifications sendFromCallCenterToAgency(NotificationRequestDto dto) {
 
-        Optional<Object> callCenter = Optional.empty();
+        Optional<User> callCenter = Optional.empty();
         if(!dto.getCallCenterUserId().equals("-1")) {
              callCenter = userRepository.findByUserId(dto.getCallCenterUserId());
         }
@@ -82,6 +84,41 @@ public class NotificationServiceImpl {
 
         return notificationRepository.save(notification);
     }
+
+    @Async
+    public void sendToUser(NotificationRequestDto dto) {
+
+        User user = null;
+        if (dto.getCallCenterUserId() != null && !dto.getCallCenterUserId().equals("-1")) {
+            user = userRepository.findByUserId(dto.getCallCenterUserId())
+                    .orElseThrow(() -> new RuntimeException("User not found: " + dto.getCallCenterUserId()));
+        }
+
+        Notifications notification = Notifications.builder()
+                .dateOfNotification(LocalDateTime.now())
+                .dateOfFirstNotification(LocalDateTime.now())
+                .callCenterAgent(user)       // THIS IS THE ASSIGNEE
+                .status(NotificationStatus.OPEN)
+                .recipientType(NotificationRecipientType.CALL_CENTER)   // IMPORTANT FIX
+                .remarksByAgency(new ArrayList<>())
+                .remarksByCallCenter(new ArrayList<>())
+                .build();
+
+        if (dto.getMessage() != null && !dto.getMessage().isBlank()) {
+            NotificationRemark remark = NotificationRemark.builder()
+                    .notification(notification)
+                    .remarkBy(RemarkBy.CALL_CENTER)
+                    .remarkText(dto.getMessage())
+                    .remarkedAt(LocalDate.now().atStartOfDay())
+                    .build();
+
+            notification.getRemarksByCallCenter().add(remark);
+        }
+
+        notificationRepository.save(notification);
+    }
+
+
 
     // 2. Agency -> Call Center
     public Notifications sendFromAgencyToCallCenter(NotificationRequestDto dto) {

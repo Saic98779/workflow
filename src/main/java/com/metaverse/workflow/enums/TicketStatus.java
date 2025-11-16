@@ -2,7 +2,7 @@ package com.metaverse.workflow.enums;
 
 public enum TicketStatus {
     CREATED,
-    UNDER_REVIEW,
+    OPEN,
     ADDITIONAL_INFO_NEEDED,
     UPDATED_WITH_INFO,
     APPROVED,
