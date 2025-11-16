@@ -627,7 +627,7 @@ public class ProgramServiceAdapter implements ProgramService {
         }
 
 
-        int completed = 0, inProcess = 0, completedDataPending = 0, yetToBegin = 0, overDue = 0;
+        int completed = 0, inProcess = 0, completedDataPending = 0, yetToBegin = 0, overDue = 0,expApproved = 0;
         Date today = new Date();
 
         for (Program program : programs) {
@@ -653,6 +653,9 @@ public class ProgramServiceAdapter implements ProgramService {
             } else if (startDate.after(today)) {
                 yetToBegin++;
             }
+            if(program.getStatus() == "Program Expenditure Approved") {
+                expApproved++;
+            }
         }
 
         return WorkflowResponse.builder()
@@ -665,6 +668,7 @@ public class ProgramServiceAdapter implements ProgramService {
                         .programsCompletedDataPending(completedDataPending)
                         .programYetBegin(yetToBegin)
                         .programOverDue(overDue)
+                        .programExpenditureApproved(expApproved)
                         .build())
                 .build();
     }

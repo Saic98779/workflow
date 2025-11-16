@@ -288,7 +288,7 @@ public interface ProgramRepository extends JpaRepository<Program, Long> {
         """)
     List<Program> findProgramsByAgencyAndSubActivityWithParticipants(
             @Param("agencyId") Long agencyId,
-            @Param("subActivityId") Long subActivityId
+            @Param("subActivityId") Long subActivityId);
     Page<Program> findAllByStartDateBetweenAndLocationDistrict(Date from, Date to, Pageable pageable, String districtName);
 
     Page<Program> findByAgencyAgencyIdAndStartDateBetweenAndLocationDistrict(Long id, Date from, Date to, Pageable pageable, String districtName);
