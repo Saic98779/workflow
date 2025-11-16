@@ -775,4 +775,11 @@ public interface ProgramRepository extends JpaRepository<Program, Long> {
             @Param("district") String district
     );
 
+    List<Program> findByLocationDistrictAndStartDateBetween(String district, Date fromDate, Date toDate);
+
+    List<Program> findByLocationDistrict(String district);
+
+    List<Program> findByAgencyAgencyIdAndLocationDistrictAndStartDateBetween(Long agencyId, String district, Date fromDate, Date toDate);
+
+    List<Program> findByAgencyAgencyIdAndLocationDistrict(Long agencyId, String district);
 }
