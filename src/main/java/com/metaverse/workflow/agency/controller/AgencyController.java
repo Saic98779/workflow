@@ -131,20 +131,29 @@ public class AgencyController {
                                                                   @RequestParam(defaultValue = "10", required = false) int size,
                                                                   @RequestParam(defaultValue = "programId,desc", required = false) String sort,
                                                                   @RequestParam(required = false) String startDate,
-                                                                  @RequestParam(required = false) String endDate
+                                                                  @RequestParam(required = false) String endDate,
+                                                                  @RequestParam(required = false) String districtName
     ) {
 
         Pageable pageable = PageRequest.of(page, size, getSortOrder(sort));
         Page<Program> programPage;
         if (id == -1) {
             if (startDate != null && endDate != null) {
-                programPage = programRepository.findAllByStartDateBetween(DateUtil.stringToDate(startDate, "dd-MM-yyyy"), DateUtil.stringToDate(endDate, "dd-MM-yyyy"), pageable);
+                if(districtName == null)
+                    programPage = programRepository.findAllByStartDateBetween(DateUtil.stringToDate(startDate, "dd-MM-yyyy"), DateUtil.stringToDate(endDate, "dd-MM-yyyy"), pageable);
+                else
+                    programPage = programRepository.findAllByStartDateBetweenAndLocationDistrict(DateUtil.stringToDate(startDate, "dd-MM-yyyy"), DateUtil.stringToDate(endDate, "dd-MM-yyyy"), pageable,districtName);
+
             } else {
                 programPage = programRepository.findAll(pageable);
             }
         } else {
             if (startDate != null && endDate != null) {
-                programPage = programRepository.findByAgencyAgencyIdAndStartDateBetween(id, DateUtil.stringToDate(startDate, "dd-MM-yyyy"), DateUtil.stringToDate(endDate, "dd-MM-yyyy"), pageable);
+                if(districtName == null)
+                    programPage = programRepository.findByAgencyAgencyIdAndStartDateBetween(id, DateUtil.stringToDate(startDate, "dd-MM-yyyy"), DateUtil.stringToDate(endDate, "dd-MM-yyyy"), pageable);
+                else
+                    programPage = programRepository.findByAgencyAgencyIdAndStartDateBetweenAndLocationDistrict(id, DateUtil.stringToDate(startDate, "dd-MM-yyyy"), DateUtil.stringToDate(endDate, "dd-MM-yyyy"), pageable,districtName);
+
             } else {
                 programPage = programRepository.findByAgencyAgencyId(id, pageable);
             }
@@ -211,7 +220,8 @@ public class AgencyController {
             @RequestParam(defaultValue = "10", required = false) int size,
             @RequestParam(defaultValue = "programId,desc", required = false) String sort,
             @RequestParam(required = false) String fromDate,
-            @RequestParam(required = false) String toDate
+            @RequestParam(required = false) String toDate,
+            @RequestParam(required = false) String districtName
     ) {
 
         Pageable pageable = PageRequest.of(page, size, getSortOrder(sort));
@@ -225,9 +235,16 @@ public class AgencyController {
             // No status → return all programs with optional date filter
             if (from != null && to != null) {
                 if (id == -1) {
-                    programPage = programRepository.findAllByStartDateBetween(from, to, pageable);
+                    if(districtName == null)
+                        programPage = programRepository.findAllByStartDateBetween(from, to, pageable);
+                    else
+                        programPage = programRepository.findAllByStartDateBetweenAndLocationDistrict(from, to, pageable,districtName);
                 } else {
-                    programPage = programRepository.findByAgencyAgencyIdAndStartDateBetween(id, from, to, pageable);
+                    if(districtName == null)
+                        programPage = programRepository.findByAgencyAgencyIdAndStartDateBetween(id, from, to, pageable);
+                    else
+                        programPage = programRepository.findByAgencyAgencyIdAndStartDateBetweenAndLocationDistrict(id, from, to, pageable,districtName);
+
                 }
             } else {
                 if (id == -1) {
@@ -238,7 +255,10 @@ public class AgencyController {
             }
         } else {
             // Status is present → use your existing logic
-            programPage = programRepository.findByAgencyAgencyStatusId(id, pageable, status, from, to);
+            if(districtName == null)
+                programPage = programRepository.findByAgencyAgencyStatusId(id, pageable, status, from, to);
+            else
+                programPage = programRepository.findByAgencyAgencyStatusIdAndLocationDistrict(id, pageable, status, from, to,districtName);
         }
 
         for (Program program : programPage) {

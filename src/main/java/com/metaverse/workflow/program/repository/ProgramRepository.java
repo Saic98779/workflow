@@ -275,4 +275,491 @@ public interface ProgramRepository extends JpaRepository<Program, Long> {
     List<Program> findProgramsWithParticipants();
 
     List<Program> findByAgency_AgencyIdAndActivityId(Long agencyId, Long activityId);
+
+    Page<Program> findAllByStartDateBetweenAndLocationDistrict(Date from, Date to, Pageable pageable, String districtName);
+
+    Page<Program> findByAgencyAgencyIdAndStartDateBetweenAndLocationDistrict(Long id, Date from, Date to, Pageable pageable, String districtName);
+
+
+    default Page<Program> findByAgencyAgencyStatusIdAndLocationDistrict(
+            Long agencyId,
+            Pageable pageable,
+            String status,
+            Date fromDate,
+            Date toDate,
+            String district
+    ) {
+
+        Date today = new Date();
+
+        boolean hasDateRange = fromDate != null && toDate != null;
+        boolean hasDistrict = district != null && !district.isBlank();
+
+        // ---------- NO DATE RANGE ----------
+        if (!hasDateRange) {
+
+            if (agencyId == -1) {
+                return switch (status) {
+
+                    case "programsScheduled" -> hasDistrict
+                            ? findProgramScheduledAndLocationDistrict(pageable, district)
+                            : findProgramScheduled(pageable);
+
+                    case "programsInProcess" -> hasDistrict
+                            ? findProgramInProcessAndLocationDistrict(today, pageable, district)
+                            : findProgramInProcess(today, pageable);
+
+                    case "programsCompleted" -> hasDistrict
+                            ? findProgramsCompletedAndLocationDistrict(today, pageable, district)
+                            : findProgramsCompleted(today, pageable);
+
+                    case "programsCompletedDataPending" -> hasDistrict
+                            ? findProgramsCompletedDataPendingAndLocationDistrict(today, pageable, district)
+                            : findProgramsCompletedDataPending(today, pageable);
+
+                    case "programsOverdue" -> hasDistrict
+                            ? findProgramOverDueAndLocationDistrict(today, pageable, district)
+                            : findProgramOverDue(today, pageable);
+
+                    case "programsYetToBegin" -> hasDistrict
+                            ? findProgramYetToBeginAndLocationDistrict(today, pageable, district)
+                            : findProgramYetToBegin(today, pageable);
+
+                    default -> Page.empty(pageable);
+                };
+            }
+
+            // ---------- NO DATE RANGE + AGENCY ----------
+            return switch (status) {
+
+                case "programsScheduled" -> hasDistrict
+                        ? findProgramScheduledAndLocationDistrict(agencyId, today, pageable, district)
+                        : findProgramScheduled(agencyId, today, pageable);
+
+                case "programsInProcess" -> hasDistrict
+                        ? findProgramInProcessAndLocationDistrict(agencyId, today, pageable, district)
+                        : findProgramInProcess(agencyId, today, pageable);
+
+                case "programsCompleted" -> hasDistrict
+                        ? findProgramsCompletedAndLocationDistrict(agencyId, today, pageable, district)
+                        : findProgramsCompleted(agencyId, today, pageable);
+
+                case "programsCompletedDataPending" -> hasDistrict
+                        ? findProgramsCompletedDataPendingAndLocationDistrict(agencyId, today, pageable, district)
+                        : findProgramsCompletedDataPending(agencyId, today, pageable);
+
+                case "programsOverdue" -> hasDistrict
+                        ? findProgramOverDueAndLocationDistrict(agencyId, today, pageable, district)
+                        : findProgramOverDue(agencyId, today, pageable);
+
+                case "programsYetToBegin" -> hasDistrict
+                        ? findProgramYetToBeginAndLocationDistrict(agencyId, today, pageable, district)
+                        : findProgramYetToBegin(agencyId, today, pageable);
+
+                default -> Page.empty(pageable);
+            };
+        }
+
+        // ------------------------------------------------------------------
+        // ---------- WITH DATE RANGE ----------
+        // ------------------------------------------------------------------
+
+        if (agencyId == -1) {
+
+            return switch (status) {
+
+                case "programsScheduled" -> hasDistrict
+                        ? findProgramScheduledAndLocationDistrict(fromDate, toDate, pageable, district)
+                        : findProgramScheduled(fromDate, toDate, pageable);
+
+                case "programsInProcess" -> hasDistrict
+                        ? findProgramInProcessAndLocationDistrict(today, fromDate, toDate, pageable, district)
+                        : findProgramInProcess(today, fromDate, toDate, pageable);
+
+                case "programsCompleted" -> hasDistrict
+                        ? findProgramsCompletedAndLocationDistrict(today, fromDate, toDate, pageable, district)
+                        : findProgramsCompleted(today, fromDate, toDate, pageable);
+
+                case "programsCompletedDataPending" -> hasDistrict
+                        ? findProgramsCompletedDataPendingAndLocationDistrict(today, fromDate, toDate, pageable, district)
+                        : findProgramsCompletedDataPending(today, fromDate, toDate, pageable);
+
+                case "programsOverdue" -> hasDistrict
+                        ? findProgramOverDueAndLocationDistrict(today, fromDate, toDate, pageable, district)
+                        : findProgramOverDue(today, fromDate, toDate, pageable);
+
+                case "programsYetToBegin" -> hasDistrict
+                        ? findProgramYetToBeginAndLocationDistrict(today, fromDate, toDate, pageable, district)
+                        : findProgramYetToBegin(today, fromDate, toDate, pageable);
+
+                default -> Page.empty(pageable);
+            };
+        }
+
+        // ---------- WITH DATE RANGE + AGENCY ----------
+        return switch (status) {
+
+            case "programsScheduled" -> hasDistrict
+                    ? findProgramScheduledAndLocationDistrict(agencyId, fromDate, toDate, pageable, district)
+                    : findProgramScheduled(agencyId, fromDate, toDate, pageable);
+
+            case "programsInProcess" -> hasDistrict
+                    ? findProgramInProcessAndLocationDistrict(agencyId, today, fromDate, toDate, pageable, district)
+                    : findProgramInProcess(agencyId, today, fromDate, toDate, pageable);
+
+            case "programsCompleted" -> hasDistrict
+                    ? findProgramsCompletedAndLocationDistrict(agencyId, today, fromDate, toDate, pageable, district)
+                    : findProgramsCompleted(agencyId, today, fromDate, toDate, pageable);
+
+            case "programsCompletedDataPending" -> hasDistrict
+                    ? findProgramsCompletedDataPendingAndLocationDistrict(agencyId, today, fromDate, toDate, pageable, district)
+                    : findProgramsCompletedDataPending(agencyId, today, fromDate, toDate, pageable);
+
+            case "programsOverdue" -> hasDistrict
+                    ? findProgramOverDueAndLocationDistrict(agencyId, today, fromDate, toDate, pageable, district)
+                    : findProgramOverDue(agencyId, today, fromDate, toDate, pageable);
+
+            case "programsYetToBegin" -> hasDistrict
+                    ? findProgramYetToBeginAndLocationDistrict(agencyId, today, fromDate, toDate, pageable, district)
+                    : findProgramYetToBegin(agencyId, today, fromDate, toDate, pageable);
+
+            default -> Page.empty(pageable);
+        };
+    }
+    @Query("""
+       SELECT p FROM Program p 
+       WHERE LOWER(p.location.district) = LOWER(:district)
+       """)
+    Page<Program> findProgramScheduledAndLocationDistrict(
+            Pageable pageable,
+            @Param("district") String district
+    );
+
+    @Query("""
+       SELECT p FROM Program p 
+       WHERE p.agency.agencyId = :agencyId
+         AND LOWER(p.location.district) = LOWER(:district)
+       """)
+    Page<Program> findProgramScheduledAndLocationDistrict(
+            @Param("agencyId") Long agencyId,
+            @Param("today") Date today,
+            Pageable pageable,
+            @Param("district") String district
+    );
+
+    @Query("""
+       SELECT p FROM Program p 
+       WHERE p.startDate BETWEEN :startDate AND :endDate
+         AND LOWER(p.location.district) = LOWER(:district)
+       """)
+    Page<Program> findProgramScheduledAndLocationDistrict(
+            @Param("startDate") Date startDate,
+            @Param("endDate") Date endDate,
+            Pageable pageable,
+            @Param("district") String district
+    );
+
+    @Query("""
+       SELECT p FROM Program p 
+       WHERE p.agency.agencyId = :agencyId
+         AND p.startDate BETWEEN :startDate AND :endDate
+         AND LOWER(p.location.district) = LOWER(:district)
+       """)
+    Page<Program> findProgramScheduledAndLocationDistrict(
+            @Param("agencyId") Long agencyId,
+            @Param("startDate") Date startDate,
+            @Param("endDate") Date endDate,
+            Pageable pageable,
+            @Param("district") String district
+    );
+    @Query("""
+       SELECT p FROM Program p
+       WHERE p.startDate <= :today
+         AND p.endDate >= :today
+         AND LOWER(p.location.district) = LOWER(:district)
+       """)
+    Page<Program> findProgramInProcessAndLocationDistrict(
+            @Param("today") Date today,
+            Pageable pageable,
+            @Param("district") String district
+    );
+
+    @Query("""
+       SELECT p FROM Program p
+       WHERE p.agency.agencyId = :agencyId
+         AND p.startDate <= :today
+         AND p.endDate >= :today
+         AND LOWER(p.location.district) = LOWER(:district)
+       """)
+    Page<Program> findProgramInProcessAndLocationDistrict(
+            @Param("agencyId") Long agencyId,
+            @Param("today") Date today,
+            Pageable pageable,
+            @Param("district") String district
+    );
+
+    @Query("""
+       SELECT p FROM Program p
+       WHERE p.startDate <= :today
+         AND p.endDate >= :today
+         AND p.startDate BETWEEN :startDate AND :endDate
+         AND LOWER(p.location.district) = LOWER(:district)
+       """)
+    Page<Program> findProgramInProcessAndLocationDistrict(
+            @Param("today") Date today,
+            @Param("startDate") Date startDate,
+            @Param("endDate") Date endDate,
+            Pageable pageable,
+            @Param("district") String district
+    );
+
+    @Query("""
+       SELECT p FROM Program p
+       WHERE p.agency.agencyId = :agencyId
+         AND p.startDate <= :today
+         AND p.endDate >= :today
+         AND p.startDate BETWEEN :startDate AND :endDate
+         AND LOWER(p.location.district) = LOWER(:district)
+       """)
+    Page<Program> findProgramInProcessAndLocationDistrict(
+            @Param("agencyId") Long agencyId,
+            @Param("today") Date today,
+            @Param("startDate") Date startDate,
+            @Param("endDate") Date endDate,
+            Pageable pageable,
+            @Param("district") String district
+    );
+    @Query("""
+       SELECT p FROM Program p
+       WHERE p.endDate < :today
+         AND LOWER(p.status) = LOWER('Program Expenditure Updated')
+         AND LOWER(p.location.district) = LOWER(:district)
+       """)
+    Page<Program> findProgramsCompletedAndLocationDistrict(
+            @Param("today") Date today,
+            Pageable pageable,
+            @Param("district") String district
+    );
+
+    @Query("""
+       SELECT p FROM Program p
+       WHERE p.agency.agencyId = :agencyId
+         AND p.endDate < :today
+         AND LOWER(p.status) = LOWER('Program Expenditure Updated')
+         AND LOWER(p.location.district) = LOWER(:district)
+       """)
+    Page<Program> findProgramsCompletedAndLocationDistrict(
+            @Param("agencyId") Long agencyId,
+            @Param("today") Date today,
+            Pageable pageable,
+            @Param("district") String district
+    );
+
+    @Query("""
+       SELECT p FROM Program p
+       WHERE p.endDate < :today
+         AND LOWER(p.status) = LOWER('Program Expenditure Updated')
+         AND p.startDate BETWEEN :startDate AND :endDate
+         AND LOWER(p.location.district) = LOWER(:district)
+       """)
+    Page<Program> findProgramsCompletedAndLocationDistrict(
+            @Param("today") Date today,
+            @Param("startDate") Date startDate,
+            @Param("endDate") Date endDate,
+            Pageable pageable,
+            @Param("district") String district
+    );
+
+    @Query("""
+       SELECT p FROM Program p
+       WHERE p.agency.agencyId = :agencyId
+         AND p.endDate < :today
+         AND LOWER(p.status) = LOWER('Program Expenditure Updated')
+         AND p.startDate BETWEEN :startDate AND :endDate
+         AND LOWER(p.location.district) = LOWER(:district)
+       """)
+    Page<Program> findProgramsCompletedAndLocationDistrict(
+            @Param("agencyId") Long agencyId,
+            @Param("today") Date today,
+            @Param("startDate") Date startDate,
+            @Param("endDate") Date endDate,
+            Pageable pageable,
+            @Param("district") String district
+    );
+    @Query("""
+       SELECT p FROM Program p
+       WHERE p.endDate < :today
+         AND p.status <> 'Program Expenditure Updated'
+         AND p.participants IS NOT EMPTY
+         AND LOWER(p.location.district) = LOWER(:district)
+       """)
+    Page<Program> findProgramsCompletedDataPendingAndLocationDistrict(
+            @Param("today") Date today,
+            Pageable pageable,
+            @Param("district") String district
+    );
+
+    @Query("""
+       SELECT p FROM Program p
+       WHERE p.agency.agencyId = :agencyId
+         AND p.endDate < :today
+         AND p.status <> 'Program Expenditure Updated'
+         AND p.participants IS NOT EMPTY
+         AND LOWER(p.location.district) = LOWER(:district)
+       """)
+    Page<Program> findProgramsCompletedDataPendingAndLocationDistrict(
+            @Param("agencyId") Long agencyId,
+            @Param("today") Date today,
+            Pageable pageable,
+            @Param("district") String district
+    );
+
+    @Query("""
+       SELECT p FROM Program p
+       WHERE p.endDate < :today
+         AND p.status <> 'Program Expenditure Updated'
+         AND p.participants IS NOT EMPTY
+         AND p.startDate BETWEEN :startDate AND :endDate
+         AND LOWER(p.location.district) = LOWER(:district)
+       """)
+    Page<Program> findProgramsCompletedDataPendingAndLocationDistrict(
+            @Param("today") Date today,
+            @Param("startDate") Date startDate,
+            @Param("endDate") Date endDate,
+            Pageable pageable,
+            @Param("district") String district
+    );
+
+    @Query("""
+       SELECT p FROM Program p
+       WHERE p.agency.agencyId = :agencyId
+         AND p.endDate < :today
+         AND p.status <> 'Program Expenditure Updated'
+         AND p.participants IS NOT EMPTY
+         AND p.startDate BETWEEN :startDate AND :endDate
+         AND LOWER(p.location.district) = LOWER(:district)
+       """)
+    Page<Program> findProgramsCompletedDataPendingAndLocationDistrict(
+            @Param("agencyId") Long agencyId,
+            @Param("today") Date today,
+            @Param("startDate") Date startDate,
+            @Param("endDate") Date endDate,
+            Pageable pageable,
+            @Param("district") String district
+    );
+    @Query("""
+       SELECT p FROM Program p
+       WHERE p.endDate < :today
+         AND p.status <> 'Program Expenditure Updated'
+         AND p.participants IS EMPTY
+         AND LOWER(p.location.district) = LOWER(:district)
+       """)
+    Page<Program> findProgramOverDueAndLocationDistrict(
+            @Param("today") Date today,
+            Pageable pageable,
+            @Param("district") String district
+    );
+
+    @Query("""
+       SELECT p FROM Program p
+       WHERE p.agency.agencyId = :agencyId
+         AND p.endDate < :today
+         AND p.status <> 'Program Expenditure Updated'
+         AND p.participants IS EMPTY
+         AND LOWER(p.location.district) = LOWER(:district)
+       """)
+    Page<Program> findProgramOverDueAndLocationDistrict(
+            @Param("agencyId") Long agencyId,
+            @Param("today") Date today,
+            Pageable pageable,
+            @Param("district") String district
+    );
+
+    @Query("""
+       SELECT p FROM Program p
+       WHERE p.endDate < :today
+         AND p.status <> 'Program Expenditure Updated'
+         AND p.participants IS EMPTY
+         AND p.startDate BETWEEN :startDate AND :endDate
+         AND LOWER(p.location.district) = LOWER(:district)
+       """)
+    Page<Program> findProgramOverDueAndLocationDistrict(
+            @Param("today") Date today,
+            @Param("startDate") Date startDate,
+            @Param("endDate") Date endDate,
+            Pageable pageable,
+            @Param("district") String district
+    );
+
+    @Query("""
+       SELECT p FROM Program p
+       WHERE p.agency.agencyId = :agencyId
+         AND p.endDate < :today
+         AND p.status <> 'Program Expenditure Updated'
+         AND p.participants IS EMPTY
+         AND p.startDate BETWEEN :startDate AND :endDate
+         AND LOWER(p.location.district) = LOWER(:district)
+       """)
+    Page<Program> findProgramOverDueAndLocationDistrict(
+            @Param("agencyId") Long agencyId,
+            @Param("today") Date today,
+            @Param("startDate") Date startDate,
+            @Param("endDate") Date endDate,
+            Pageable pageable,
+            @Param("district") String district
+    );
+    @Query("""
+       SELECT p FROM Program p
+       WHERE p.startDate > :today
+         AND LOWER(p.location.district) = LOWER(:district)
+       """)
+    Page<Program> findProgramYetToBeginAndLocationDistrict(
+            @Param("today") Date today,
+            Pageable pageable,
+            @Param("district") String district
+    );
+
+    @Query("""
+       SELECT p FROM Program p
+       WHERE p.agency.agencyId = :agencyId
+         AND p.startDate > :today
+         AND LOWER(p.location.district) = LOWER(:district)
+       """)
+    Page<Program> findProgramYetToBeginAndLocationDistrict(
+            @Param("agencyId") Long agencyId,
+            @Param("today") Date today,
+            Pageable pageable,
+            @Param("district") String district
+    );
+
+    @Query("""
+       SELECT p FROM Program p
+       WHERE p.startDate > :today
+         AND p.startDate BETWEEN :startDate AND :endDate
+         AND LOWER(p.location.district) = LOWER(:district)
+       """)
+    Page<Program> findProgramYetToBeginAndLocationDistrict(
+            @Param("today") Date today,
+            @Param("startDate") Date startDate,
+            @Param("endDate") Date endDate,
+            Pageable pageable,
+            @Param("district") String district
+    );
+
+    @Query("""
+       SELECT p FROM Program p
+       WHERE p.agency.agencyId = :agencyId
+         AND p.startDate > :today
+         AND p.startDate BETWEEN :startDate AND :endDate
+         AND LOWER(p.location.district) = LOWER(:district)
+       """)
+    Page<Program> findProgramYetToBeginAndLocationDistrict(
+            @Param("agencyId") Long agencyId,
+            @Param("today") Date today,
+            @Param("startDate") Date startDate,
+            @Param("endDate") Date endDate,
+            Pageable pageable,
+            @Param("district") String district
+    );
+
 }
