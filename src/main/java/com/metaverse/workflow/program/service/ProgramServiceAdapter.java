@@ -447,7 +447,7 @@ public class ProgramServiceAdapter implements ProgramService {
         return WorkflowResponse.builder()
                 .status(200)
                 .message("Success")
-                .data(ProgramSummeryMapper.map(program,(monitoringScore /monitoringList.size() )))
+                .data(ProgramSummeryMapper.map(program, (monitoringScore / monitoringList.size())))
                 .build();
     }
 
@@ -609,25 +609,66 @@ public class ProgramServiceAdapter implements ProgramService {
     }
 
     @Override
-    public WorkflowResponse getProgramStatusSummery(Long agencyId, Date fromDate, Date toDate) {
+    public WorkflowResponse getProgramStatusSummery(Long agencyId, Date fromDate, Date toDate, String district) {
 
         boolean hasDates = fromDate != null && toDate != null;
         List<Program> programs;
+        if (district == null) {
+            if (agencyId == -1)
+                programs = hasDates ? programRepository.findByStartDateBetween(fromDate, toDate)
+                        : programRepository.findAll();
+            else {
+                if (!agencyRepository.existsById(agencyId))
+                    return WorkflowResponse.builder().status(400)
+                            .message("Agency with ID " + agencyId + " does not exist.").build();
 
-        if (agencyId == -1)
-            programs = hasDates ? programRepository.findByStartDateBetween(fromDate, toDate)
-                    : programRepository.findAll();
-        else {
-            if (!agencyRepository.existsById(agencyId))
-                return WorkflowResponse.builder().status(400)
-                        .message("Agency with ID " + agencyId + " does not exist.").build();
+                programs = hasDates ? programRepository.findByAgencyAgencyIdAndStartDateBetween(agencyId, fromDate, toDate)
+                        : programRepository.findByAgencyAgencyId(agencyId);
+            }
+        }else{
+            if (agencyId == -1) {
 
-            programs = hasDates ? programRepository.findByAgencyAgencyIdAndStartDateBetween(agencyId, fromDate, toDate)
-                    : programRepository.findByAgencyAgencyId(agencyId);
+                if (district != null && !district.isEmpty()) {
+                    // All agencies + district
+                    programs = hasDates ?
+                            programRepository.findByLocationDistrictAndStartDateBetween(
+                                    district, fromDate, toDate)
+                            : programRepository.findByLocationDistrict(district);
+                } else {
+                    // All agencies, no district
+                    programs = hasDates ?
+                            programRepository.findByStartDateBetween(fromDate, toDate)
+                            : programRepository.findAll();
+                }
+
+            } else {
+
+                if (!agencyRepository.existsById(agencyId)) {
+                    return WorkflowResponse.builder().status(400)
+                            .message("Agency with ID " + agencyId + " does not exist.")
+                            .build();
+                }
+
+                if (district != null && !district.isEmpty()) {
+                    // specific agency + district
+                    programs = hasDates ?
+                            programRepository.findByAgencyAgencyIdAndLocationDistrictAndStartDateBetween(
+                                    agencyId, district, fromDate, toDate)
+                            : programRepository.findByAgencyAgencyIdAndLocationDistrict(
+                            agencyId, district);
+                } else {
+                    // specific agency, no district
+                    programs = hasDates ?
+                            programRepository.findByAgencyAgencyIdAndStartDateBetween(
+                                    agencyId, fromDate, toDate)
+                            : programRepository.findByAgencyAgencyId(agencyId);
+                }
+            }
+
         }
 
 
-        int completed = 0, inProcess = 0, completedDataPending = 0, yetToBegin = 0, overDue = 0,expApproved = 0;
+        int completed = 0, inProcess = 0, completedDataPending = 0, yetToBegin = 0, overDue = 0, expApproved = 0;
         Date today = new Date();
 
         for (Program program : programs) {
@@ -653,7 +694,7 @@ public class ProgramServiceAdapter implements ProgramService {
             } else if (startDate.after(today)) {
                 yetToBegin++;
             }
-            if(program.getStatus() == "Program Expenditure Approved") {
+            if (program.getStatus() == "Program Expenditure Approved") {
                 expApproved++;
             }
         }
@@ -687,7 +728,6 @@ public class ProgramServiceAdapter implements ProgramService {
     }
 
 
-
     public void updateOverduePrograms() {
         Date twoDaysAgo = java.sql.Date.valueOf(LocalDate.now().plusDays(2));
         List<Program> overdueProgramUpdate = new ArrayList<>();
@@ -711,22 +751,19 @@ public class ProgramServiceAdapter implements ProgramService {
 
     @Override
     public List<String> getProgramByAgencyAndActivity(Long agencyId, Long activityId) throws DataException {
-       List<Program> programs= programRepository.findByAgency_AgencyIdAndActivityId(agencyId,activityId);
-       if(programs.isEmpty())
-       {
-           throw new DataException("Program data not found", "PROGRAM-DATA-NOT-FOUND", 400);
-       }
+        List<Program> programs = programRepository.findByAgency_AgencyIdAndActivityId(agencyId, activityId);
+        if (programs.isEmpty()) {
+            throw new DataException("Program data not found", "PROGRAM-DATA-NOT-FOUND", 400);
+        }
         return programs.stream().map(Program::getProgramTitle).toList();
 
     }
 
-    public  WorkflowResponse getProgramsWithParticipants(Long agencyId)
-    {
+    public WorkflowResponse getProgramsWithParticipants(Long agencyId) {
         List<Program> programs;
-        if(agencyId == -1) {
+        if (agencyId == -1) {
             programs = programRepository.findProgramsWithParticipants();
-        }
-        else {
+        } else {
             programs = programRepository.findProgramsWithParticipantsByAgency(agencyId);
         }
         return WorkflowResponse.builder()
