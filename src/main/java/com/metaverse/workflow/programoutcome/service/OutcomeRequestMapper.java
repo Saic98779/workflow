@@ -24,7 +24,8 @@ public class OutcomeRequestMapper {
                 .build();
     }
 
-    public static ONDCTransaction mapOndcTransaction(ONDCTransactionRequest request, ONDCRegistration ondcRegistration) {
+    public static ONDCTransaction mapOndcTransaction(ONDCTransactionRequest request, ONDCRegistration ondcRegistration,Agency agency
+    ) {
         return ONDCTransaction.builder()
                 .ondcRegistration(ondcRegistration)
                 .transactionDate(DateUtil.stringToDate(request.getTransactionDate(), DATE_FORMAT))
@@ -33,6 +34,7 @@ public class OutcomeRequestMapper {
                 .productName(request.getProductName())
                 .productUnits(request.getProductUnits())
                 .productQuantity(request.getProductQuantity())
+                .agency(agency)
                 .build();
     }
 
@@ -89,7 +91,7 @@ public class OutcomeRequestMapper {
     }
 
 
-    public static GeMTransaction mapGeMTransaction(GeMTransactionRequest request, GeMRegistration geMRegistration) {
+    public static GeMTransaction mapGeMTransaction(GeMTransactionRequest request, GeMRegistration geMRegistration,Agency agency) {
         return GeMTransaction.builder()
                 .procurementDate(DateUtil.stringToDate(request.getProcurementDate(), DATE_FORMAT))
                 .productName(request.getProductName())
@@ -98,6 +100,7 @@ public class OutcomeRequestMapper {
                 .quantity(request.getQuantity())
                 .productValue(request.getProductValue())
                 .gemRegistration(geMRegistration)
+                .agency(agency)
                 .build();
     }
 
@@ -113,7 +116,7 @@ public class OutcomeRequestMapper {
                 .build();
     }
 
-    public static TReDSTransaction mapTredsTransaction(TReDSTransactionRequest request, TReDSRegistration tredsRegistration) {
+    public static TReDSTransaction mapTredsTransaction(TReDSTransactionRequest request, TReDSRegistration tredsRegistration,Agency agency) {
         return TReDSTransaction.builder()
                 .tredsRegistration(tredsRegistration)
                 .tredsTransactionDate(DateUtil.stringToDate(request.getTredsTransactionDate(), DATE_FORMAT))
@@ -129,6 +132,7 @@ public class OutcomeRequestMapper {
                 .paymentSettlementDate(DateUtil.stringToDate(request.getPaymentSettlementDate(), DATE_FORMAT))
                 .buyerDueDateToPay(DateUtil.stringToDate(request.getBuyerDueDateToPay(), DATE_FORMAT))
                 .repaymentDate(DateUtil.stringToDate(request.getRepaymentDate(), DATE_FORMAT))
+                .agency(agency)
                 .build();
     }
 
@@ -610,13 +614,14 @@ public class OutcomeRequestMapper {
 
     }
 
-    public static ECommerceTransaction mapECommerceTransaction(ECommerceTransactionRequest request, ECommerceRegistration eCommerceRegistration) {
+    public static ECommerceTransaction mapECommerceTransaction(ECommerceTransactionRequest request, ECommerceRegistration eCommerceRegistration,Agency agency) {
         return ECommerceTransaction.builder()
                 .fromDate(DateUtil.covertStringToDate(request.getFromDate()))
                 .toDate(DateUtil.covertStringToDate(request.getToDate()))
                 .numberOfTransactions(request.getNumberOfTransactions())
                 .totalBusinessAmount(request.getTotalBusinessAmount())
                 .ecommerceRegistration(eCommerceRegistration)
+                .agency(agency)
                 .build();
     }
 

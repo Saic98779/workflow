@@ -528,7 +528,10 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                 List<ONDCRegistration> ondcRegistrationList = ondcRegistrationRepository.findByParticipantId(ondcTransactionRequest.getParticipantId());
                 if (ondcRegistrationList == null || ondcRegistrationList.isEmpty())
                     return WorkflowResponse.builder().status(400).message("Invalid Ondc Registration").build();
-                ondcTransactionRepository.save(OutcomeRequestMapper.mapOndcTransaction(ondcTransactionRequest, ondcRegistrationList.get(0)));
+                Agency agency = agencyRepository.findById(ondcTransactionRequest.getAgencyId() == null ? 0 : ondcTransactionRequest.getAgencyId())
+                        .orElseThrow(() -> new DataException("Agency data not found", "AGENCY-DATA-NOT-FOUND", 400));
+
+                ondcTransactionRepository.save(OutcomeRequestMapper.mapOndcTransaction(ondcTransactionRequest, ondcRegistrationList.get(0),agency));
                 status = outcomeName + " Saved Successfully.";
                 break;
             }
@@ -658,7 +661,10 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                 GeMRegistration gemRegistration = geMRegistrationRepository.findByParticipantParticipantId(request.getParticipantId());
                 if (gemRegistration == null)
                     return WorkflowResponse.builder().status(400).message("Invalid Gem Registration").build();
-                geMTransactionRepository.save(OutcomeRequestMapper.mapGeMTransaction(request, gemRegistration));
+                Agency agency = agencyRepository.findById(request.getAgencyId() == null ? 0 : request.getAgencyId())
+                        .orElseThrow(() -> new DataException("Agency data not found", "AGENCY-DATA-NOT-FOUND", 400));
+
+                geMTransactionRepository.save(OutcomeRequestMapper.mapGeMTransaction(request, gemRegistration,agency));
                 status = outcomeName + " Saved Successfully.";
                 break;
             }
@@ -714,7 +720,10 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                 List<TReDSRegistration> tredsRegistrationList = tredsRegistrationRepository.findByParticipantId(tredsTransactionRequest.getParticipantId());
                 if (tredsRegistrationList == null || tredsRegistrationList.isEmpty())
                     return WorkflowResponse.builder().status(400).message("Invalid TReDS Registration").build();
-                tredsTransactionRepository.save(OutcomeRequestMapper.mapTredsTransaction(tredsTransactionRequest, tredsRegistrationList.get(0)));
+                Agency agency = agencyRepository.findById(tredsTransactionRequest.getAgencyId() == null ? 0 : tredsTransactionRequest.getAgencyId())
+                        .orElseThrow(() -> new DataException("Agency data not found", "AGENCY-DATA-NOT-FOUND", 400));
+
+                tredsTransactionRepository.save(OutcomeRequestMapper.mapTredsTransaction(tredsTransactionRequest, tredsRegistrationList.get(0),agency));
                 status = outcomeName + " Saved Successfully.";
                 break;
             }
@@ -1434,9 +1443,11 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                             .message("Invalid E-Commerce Registration")
                             .build();
                 }
+                Agency agency = agencyRepository.findById(eCommerceTransactionRequest.getAgencyId() == null ? 0 : eCommerceTransactionRequest.getAgencyId())
+                        .orElseThrow(() -> new DataException("Agency data not found", "AGENCY-DATA-NOT-FOUND", 400));
 
                 eCommerceTransactionRepository.save(
-                        OutcomeRequestMapper.mapECommerceTransaction(eCommerceTransactionRequest, eCommerceRegistration)
+                        OutcomeRequestMapper.mapECommerceTransaction(eCommerceTransactionRequest, eCommerceRegistration,agency)
                 );
 
                 status = outcomeName + " Saved Successfully.";

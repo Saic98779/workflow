@@ -1,8 +1,10 @@
 package com.metaverse.workflow.model.outcomes;
 
+import com.metaverse.workflow.model.Agency;
 import com.metaverse.workflow.model.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import net.minidev.json.annotate.JsonIgnore;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
@@ -63,6 +65,11 @@ public class TReDSTransaction {
 
     @Column(name = "repayment_date")
     private Date repaymentDate;
+
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "agency_id")
+    private Agency agency;
 
     @CreatedDate
     @Column(name = "created_timestamp", updatable = false)

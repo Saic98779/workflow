@@ -36,7 +36,6 @@ public class TrainingProgramExcelGenerator {
         // Headers
         String[] headers = {
                 "S.No",
-                "Agency",
                 "Activity",
                 "Budget Allocated",
                 "Training Target",
@@ -73,12 +72,11 @@ public class TrainingProgramExcelGenerator {
                 double achievement = dto.getTrainingAchievement() != null ? dto.getTrainingAchievement() : 0;
 
                 row.createCell(0).setCellValue(serialNo++);
-                row.createCell(1).setCellValue(dto.getAgency());
-                row.createCell(2).setCellValue(dto.getActivity());
-                row.createCell(3).setCellValue(budget);
-                row.createCell(4).setCellValue(target);
-                row.createCell(5).setCellValue(expenditure);
-                row.createCell(6).setCellValue(achievement);
+                row.createCell(1).setCellValue(dto.getActivity());
+                row.createCell(2).setCellValue(budget);
+                row.createCell(3).setCellValue(target);
+                row.createCell(4).setCellValue(expenditure);
+                row.createCell(5).setCellValue(achievement);
 
                 totalBudget += budget;
                 totalTarget += target;
