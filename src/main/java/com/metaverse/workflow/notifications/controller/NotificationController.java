@@ -25,7 +25,7 @@ public class NotificationController {
     @GetMapping("/role/{role}")
     public ResponseEntity<WorkflowResponse> getNotificationsByRole(@PathVariable String role) {
 
-        List<NotificationDto> notifications = notificationService.getNotificationsByRole(role);
+        NotificationDto notifications = notificationService.getNotificationsByRole(role);
 
         return ResponseEntity.ok(
                 WorkflowResponse.success("Notifications fetched successfully", notifications)

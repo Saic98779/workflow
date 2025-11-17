@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -117,12 +118,40 @@ public class NotificationServiceImpl {
             notificationRepository.save(saved);
         }
     }
-    public List<NotificationDto> getNotificationsByRole(String role) {
-        return notificationRepository.findByReceiverRole(role)
-                .stream()
-                .map(NotificationMapper::toDto)
+
+    public NotificationDto getNotificationsByRole(String role) {
+
+        List<Notifications> list = notificationRepository.findByReceiverRole(role);
+
+        if (list.isEmpty()) return null;
+
+        // Base notification = the most recent one OR first one
+        Notifications base = list.stream()
+                .max(Comparator.comparing(Notifications::getLastMessageAt))
+                .orElse(list.get(0));
+
+        // Merge all messages from all notifications
+        List<NotificationMessage> allMessages = list.stream()
+                .flatMap(n -> n.getMessages().stream())
+                .sorted(Comparator.comparing(NotificationMessage::getCreatedAt).reversed())
                 .toList();
+
+        // Build DTO manually
+        return NotificationDto.builder()
+                .id(base.getId())
+                .receiverId(base.getReceiver().getUserId())
+                .receiverName(base.getReceiver().getFirstName() + " " + base.getReceiver().getLastName())
+                .receiverRole(base.getReceiver().getUserRole())
+                .status(base.getStatus())
+                .recipientType(base.getRecipientType())
+                .lastMessageAt(base.getLastMessageAt())
+                .messages(allMessages.stream()
+                        .map(NotificationMapper::toMessageDto)
+                        .toList()
+                )
+                .build();
     }
+
 
     public List<NotificationDto> getNotificationsForUser(String userId) {
         return notificationRepository.findByReceiver_UserIdOrderByLastMessageAtDesc(userId)

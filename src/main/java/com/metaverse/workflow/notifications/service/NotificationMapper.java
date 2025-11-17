@@ -66,7 +66,7 @@ public class NotificationMapper {
     // ============================================================
     // Convert NotificationMessage → NotificationMessageDto
     // ============================================================
-    private NotificationMessageDto toMessageDto(NotificationMessage msg) {
+    NotificationMessageDto toMessageDto(NotificationMessage msg) {
         if (msg == null) return null;
 
         return NotificationMessageDto.builder()
