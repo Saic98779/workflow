@@ -2,14 +2,17 @@ package com.metaverse.workflow.ticketSystem.service;
 
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.enums.TicketStatus;
+import com.metaverse.workflow.enums.RemarkBy;
+
 import com.metaverse.workflow.login.repository.LoginRepository;
 import com.metaverse.workflow.model.*;
-import com.metaverse.workflow.notifications.dto.NotificationRequestDto;
+import com.metaverse.workflow.notifications.dto.GlobalNotificationRequest;
 import com.metaverse.workflow.notifications.service.NotificationServiceImpl;
 import com.metaverse.workflow.program.service.ProgramServiceAdapter;
 import com.metaverse.workflow.ticketSystem.dto.TicketCommentDto;
 import com.metaverse.workflow.ticketSystem.dto.TicketDto;
 import com.metaverse.workflow.ticketSystem.repository.*;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
@@ -58,15 +61,19 @@ public class TicketService {
                 ticketRepo.save(ticket);
             }
 
-            // Notification
+            // 🔔 Send notification to ASSIGNEE (Unified Notification)
             if (ticket.getAssignee() != null) {
-                NotificationRequestDto ndto = new NotificationRequestDto();
-                ndto.setCallCenterUserId(ticket.getAssignee().getUserId());
-                ndto.setMessage("A new ticket is assigned to you: " + ticket.getTicketId());
-                ndto.setAgencyId(-1L);
-                ndto.setParticipantId(-1L);
-                ndto.setProgramId(-1L);
-                notificationService.sendToUser(ndto);
+
+                GlobalNotificationRequest req = GlobalNotificationRequest.builder()
+                        .userId(ticket.getAssignee().getUserId())        // receiver
+                        .message("A new ticket is assigned to you: " + ticket.getTicketId())
+                        .sentBy(RemarkBy.ADMIN)                           // system action
+                        .agencyId(-1L)
+                        .participantId(-1L)
+                        .programId(-1L)
+                        .build();
+
+                notificationService.saveNotification(req);
             }
 
             return WorkflowResponse.success("Ticket created successfully", new TicketDto(ticket));
@@ -111,27 +118,32 @@ public class TicketService {
             TicketStatus oldStatus = ticket.getStatus();
             User actor = null;
 
-            // Assignee update
+            // ================= ASSIGNEE CHANGE =================
             if (dto.getAssigneeId() != null) {
                 actor = getUser(dto.getAssigneeId());
                 ticket.setAssignee(actor);
 
-                NotificationRequestDto ndto = new NotificationRequestDto();
-                ndto.setCallCenterUserId(actor.getUserId());
-                ndto.setMessage("You have been assigned ticket: " + ticket.getTicketId());
-                ndto.setAgencyId(-1L);
-                ndto.setProgramId(-1L);
-                ndto.setParticipantId(-1L);
-                notificationService.sendToUser(ndto);
+                GlobalNotificationRequest req = GlobalNotificationRequest.builder()
+                        .userId(actor.getUserId())
+                        .message("You have been assigned ticket: " + ticket.getTicketId())
+                        .sentBy(RemarkBy.ADMIN)
+                        .agencyId(-1L)
+                        .programId(-1L)
+                        .participantId(-1L)
+                        .build();
+
+                notificationService.saveNotification(req);
             }
 
+            // Basic field updates
             Optional.ofNullable(dto.getTitle()).ifPresent(ticket::setTitle);
             Optional.ofNullable(dto.getDescription()).ifPresent(ticket::setDescription);
             Optional.ofNullable(dto.getPriority()).ifPresent(ticket::setPriority);
             Optional.ofNullable(dto.getType()).ifPresent(ticket::setType);
 
-            // Status update
+            // ================= STATUS UPDATE =================
             if (dto.getStatus() != null) {
+
                 TicketStatus newStatus = dto.getStatus();
                 ticket.setStatus(newStatus);
 
@@ -142,22 +154,27 @@ public class TicketService {
                 saveHistory(ticket, oldStatus, newStatus, actor, fromUser, toUser,
                         "Status changed to " + newStatus);
 
+                // Notify assignee about status change
                 if (ticket.getAssignee() != null) {
-                    NotificationRequestDto ndto = new NotificationRequestDto();
-                    ndto.setCallCenterUserId(ticket.getAssignee().getUserId());
-                    ndto.setMessage(
-                            "Ticket " + ticket.getTicketId() + " status updated to: " + newStatus
-                    );
-                    ndto.setAgencyId(-1L);
-                    ndto.setProgramId(-1L);
-                    ndto.setParticipantId(-1L);
-                    notificationService.sendToUser(ndto);
+
+                    GlobalNotificationRequest req = GlobalNotificationRequest.builder()
+                            .userId(ticket.getAssignee().getUserId())
+                            .message("Ticket " + ticket.getTicketId() + " status updated to: " + newStatus)
+                            .sentBy(RemarkBy.ADMIN)
+                            .agencyId(-1L)
+                            .programId(-1L)
+                            .participantId(-1L)
+                            .build();
+
+                    notificationService.saveNotification(req);
                 }
             }
 
-            // Comments
+            // ================= COMMENTS ADDED =================
             if (dto.getComments() != null && !dto.getComments().isEmpty()) {
+
                 for (TicketCommentDto commentDto : dto.getComments()) {
+
                     if (commentDto.getMessage() == null || commentDto.getMessage().isBlank())
                         continue;
 
@@ -172,14 +189,19 @@ public class TicketService {
 
                     ticket.getComments().add(comment);
 
+                    // Notify assignee about comment
                     if (ticket.getAssignee() != null) {
-                        NotificationRequestDto ndto = new NotificationRequestDto();
-                        ndto.setCallCenterUserId(ticket.getAssignee().getUserId());
-                        ndto.setMessage("New comment added on Ticket: " + ticket.getTicketId());
-                        ndto.setAgencyId(-1L);
-                        ndto.setProgramId(-1L);
-                        ndto.setParticipantId(-1L);
-                        notificationService.sendToUser(ndto);
+
+                        GlobalNotificationRequest req = GlobalNotificationRequest.builder()
+                                .userId(ticket.getAssignee().getUserId())
+                                .message("New comment added on ticket: " + ticket.getTicketId())
+                                .sentBy(RemarkBy.CALL_CENTER)
+                                .agencyId(-1L)
+                                .programId(-1L)
+                                .participantId(-1L)
+                                .build();
+
+                        notificationService.saveNotification(req);
                     }
                 }
             }
@@ -214,13 +236,9 @@ public class TicketService {
         historyRepo.save(history);
     }
 
-    // ========================= FETCH ALL TICKETS =========================
+    // ========================= FETCHING & FILTERS =========================
 
-    public WorkflowResponse getAllTickets(
-            List<TicketStatus> statusFilter,
-            int page,
-            int size
-    ) {
+    public WorkflowResponse getAllTickets(List<TicketStatus> statusFilter, int page, int size) {
         try {
             Pageable pageable = PageRequest.of(page, size, Sort.by("updatedAt").descending());
 
@@ -228,60 +246,37 @@ public class TicketService {
 
             Page<Ticket> ticketPage = ticketRepo.findByStatusIn(finalStatuses, pageable);
 
-            List<TicketDto> ticketDtos = ticketPage.stream()
-                    .map(TicketDto::new)
-                    .toList();
+            List<TicketDto> ticketDtos = ticketPage.stream().map(TicketDto::new).toList();
 
-            return WorkflowResponse.success(
-                    "Tickets fetched successfully",
-                    ticketDtos,
-                    ticketPage.getTotalPages(),
-                    ticketPage.getTotalElements()
-            );
+            return WorkflowResponse.success("Tickets fetched successfully", ticketDtos,
+                    ticketPage.getTotalPages(), ticketPage.getTotalElements());
 
         } catch (Exception e) {
             return WorkflowResponse.error("Failed to fetch tickets: " + e.getMessage());
         }
     }
 
-    // ========================= FETCH TICKETS FOR USER =========================
-
-    public WorkflowResponse getTicketsForUser(
-            String userId,
-            List<TicketStatus> statusFilter,
-            Pageable pageable
-    ) {
+    public WorkflowResponse getTicketsForUser(String userId, List<TicketStatus> statusFilter, Pageable pageable) {
         try {
             List<TicketStatus> finalStatuses = buildStatusList(statusFilter);
 
-            pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("updatedAt").descending());
-
+            pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(),
+                    Sort.by("updatedAt").descending());
 
             Page<Ticket> ticketPage =
                     ticketRepo.findByAssignee_UserIdOrReporter_UserIdAndStatusIn(
-                            userId,
-                            userId,
-                            finalStatuses,
-                            pageable
+                            userId, userId, finalStatuses, pageable
                     );
 
-            List<TicketDto> ticketDtos = ticketPage.stream()
-                    .map(TicketDto::new)
-                    .toList();
-
-            return WorkflowResponse.success(
-                    "Tickets fetched successfully",
-                    ticketDtos,
+            return WorkflowResponse.success("Tickets fetched successfully",
+                    ticketPage.stream().map(TicketDto::new).toList(),
                     ticketPage.getTotalPages(),
-                    ticketPage.getTotalElements()
-            );
+                    ticketPage.getTotalElements());
 
         } catch (Exception e) {
             return WorkflowResponse.error("Failed to fetch user tickets: " + e.getMessage());
         }
     }
-
-    // ========================= STATUS FILTER BUILDER =========================
 
     private List<TicketStatus> buildStatusList(List<TicketStatus> statusFilter) {
 
@@ -298,8 +293,6 @@ public class TicketService {
         return statusFilter;
     }
 
-    // ========================= REPORTER/ASSIGNEE TICKETS =========================
-
     public WorkflowResponse getReportById(int page, int size, String reporterId) {
         try {
             Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
@@ -309,19 +302,14 @@ public class TicketService {
                             reporterId, reporterId, pageable
                     );
 
-            return WorkflowResponse.success(
-                    "Tickets fetched successfully",
+            return WorkflowResponse.success("Tickets fetched successfully",
                     ticketPage.stream().map(TicketDto::new).toList(),
-                    ticketPage.getTotalPages(),
-                    ticketPage.getTotalElements()
-            );
+                    ticketPage.getTotalPages(), ticketPage.getTotalElements());
 
         } catch (Exception e) {
             return WorkflowResponse.error("Failed to fetch report: " + e.getMessage());
         }
     }
-
-    // ========================= ROLE → STATUS LIST =========================
 
     public List<TicketStatus> getStatusesForRole(String role) {
         return roleTicketStatusRepository.findByRoleName(role)
@@ -335,10 +323,7 @@ public class TicketService {
             Ticket ticket = ticketRepo.findById(ticketId)
                     .orElseThrow(() -> new RuntimeException("Ticket not found"));
 
-            return WorkflowResponse.success(
-                    "Ticket details fetched successfully",
-                    new TicketDto(ticket)
-            );
+            return WorkflowResponse.success("Ticket details fetched successfully", new TicketDto(ticket));
 
         } catch (Exception e) {
             return WorkflowResponse.error("Failed to fetch ticket: " + e.getMessage());

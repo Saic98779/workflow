@@ -6,9 +6,7 @@ import com.metaverse.workflow.expenditure.repository.BulkExpenditureTransactionR
 import com.metaverse.workflow.expenditure.repository.ProgramExpenditureRepository;
 import com.metaverse.workflow.login.service.AuthRequest;
 import com.metaverse.workflow.model.*;
-import com.metaverse.workflow.nontraining.repository.NonTrainingActivityRepository;
 import com.metaverse.workflow.nontrainingExpenditures.repository.ListingOnNSERepository;
-import com.metaverse.workflow.nontrainingExpenditures.repository.NonTrainingResourceRepository;
 import com.metaverse.workflow.nontrainingExpenditures.repository.NonTrainingSubActivityRepository;
 import com.metaverse.workflow.program.repository.ProgramRepository;
 import com.metaverse.workflow.trainingandnontrainingtarget.repository.NonTrainingTargetRepository;

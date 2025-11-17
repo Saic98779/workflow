@@ -5,8 +5,6 @@ import com.metaverse.workflow.enums.NotificationStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import org.hibernate.annotations.Filter;
-import org.hibernate.annotations.Where;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -27,9 +25,10 @@ public class Notifications extends BaseEntity {
     @Column(name = "date_of_first_notification")
     private LocalDateTime dateOfFirstNotification;
 
+    /** Receiver (can be call center agent, admin, or assignee) */
     @ManyToOne
-    @JoinColumn(name = "call_center_agent_id", referencedColumnName = "user_id")
-    private User callCenterAgent;
+    @JoinColumn(name = "receiver_id", referencedColumnName = "user_id")
+    private User receiver;
 
     @ManyToOne
     @JoinColumn(name = "agency_id")
@@ -43,17 +42,22 @@ public class Notifications extends BaseEntity {
     @JoinColumn(name = "program_id")
     private Program program;
 
-    // Remarks provided by Agency
-    @OneToMany(mappedBy = "notification", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Where(clause = "remark_by = 'AGENCY'")
-    @OrderBy("remarkedAt DESC")
-    private List<NotificationRemark> remarksByAgency = new ArrayList<>();
+    // ----------------------------------------------------------------------
+    // MESSAGES (Unified Remarks Handling)
+    // ----------------------------------------------------------------------
 
-    // Remarks provided by Call Center
     @OneToMany(mappedBy = "notification", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Where(clause = "remark_by = 'CALL_CENTER'")
-    @OrderBy("remarkedAt DESC")
-    private List<NotificationRemark> remarksByCallCenter = new ArrayList<>();
+    private List<NotificationMessage> messages = new ArrayList<>();
+
+    /** For global sorting of notifications */
+    @Column(name = "last_message_at")
+    private LocalDateTime lastMessageAt;
+
+    public void updateLastMessageTime() {
+        this.lastMessageAt = LocalDateTime.now();
+    }
+
+    // ----------------------------------------------------------------------
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
@@ -65,7 +69,6 @@ public class Notifications extends BaseEntity {
     @Column(name = "date_of_closure")
     private LocalDateTime dateOfClosure;
 
-    // Notifications that intended to be sent to different recipient types
     @Enumerated(EnumType.STRING)
     @Column(name = "recipient_type", nullable = false)
     private NotificationRecipientType recipientType;

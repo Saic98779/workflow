@@ -4,9 +4,9 @@ import com.metaverse.workflow.activity.repository.ActivityRepository;
 import com.metaverse.workflow.activity.repository.SubActivityRepository;
 import com.metaverse.workflow.agency.repository.AgencyRepository;
 import com.metaverse.workflow.common.enums.ExpenditureType;
-import com.metaverse.workflow.common.enums.UserRole;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.enums.BillRemarksStatus;
+import com.metaverse.workflow.enums.RemarkBy;
 import com.metaverse.workflow.exceptions.*;
 import com.metaverse.workflow.expenditure.repository.BulkExpenditureRepository;
 import com.metaverse.workflow.expenditure.repository.BulkExpenditureTransactionRepository;
@@ -15,7 +15,7 @@ import com.metaverse.workflow.expenditure.repository.ProgramExpenditureRepositor
 import com.metaverse.workflow.login.repository.LoginRepository;
 import com.metaverse.workflow.model.*;
 
-import com.metaverse.workflow.notifications.dto.NotificationRequestDto;
+import com.metaverse.workflow.notifications.dto.GlobalNotificationRequest;
 import com.metaverse.workflow.notifications.service.NotificationServiceImpl;
 import com.metaverse.workflow.program.repository.ProgramRepository;
 import com.metaverse.workflow.program.repository.ProgramSessionFileRepository;
@@ -701,7 +701,6 @@ public class ExpenditureServiceAdepter implements ExpenditureService {
         return new ExpenditureSummaryResponse(summaries, grandTotal);
     }
 
-
     @Override
     public WorkflowResponse addRemarkOrResponse(ExpenditureRemarksDTO remarks, BillRemarksStatus status) throws DataException {
 
@@ -722,40 +721,49 @@ public class ExpenditureServiceAdepter implements ExpenditureService {
         agencyComment.setExpenditure(expenditure); // Ensure bidirectional relationship
         expenditure.getAgencyComments().add(agencyComment);
 
-
-        if(user.getUserRole().equals("ADMIN")){
-            // admin to agency
-            System.err.println("admin to agency");
-            NotificationRequestDto notificationRequestDto = new NotificationRequestDto();
-            notificationRequestDto.setAgencyId(expenditure.getAgency().getAgencyId());
-            notificationRequestDto.setMessage(remarks.getSpiuComments());
-            notificationRequestDto.setProgramId(-1L);
-            notificationRequestDto.setParticipantId(-1L);
-            notificationRequestDto.setCallCenterUserId("-1");
-            notificationService.sendFromCallCenterToAgency(notificationRequestDto);
-
-        }else if(remarks.getAgencyComments() != null){
-            // agency to admin
-            NotificationRequestDto notificationRequestDto = new NotificationRequestDto();
-            notificationRequestDto.setAgencyId(-1L);
-            System.err.println("agency to admin");
-            notificationRequestDto.setAgencyId(-1L);
-            notificationRequestDto.setMessage(remarks.getAgencyComments());
-            notificationRequestDto.setProgramId(-1L);
-            notificationRequestDto.setParticipantId(-1L);
-            notificationRequestDto.setCallCenterUserId("-1");
-            notificationService.sendFromAgencyToCallCenter(notificationRequestDto); // need to change
-        }
-
-        // 4. Set status if provided
-        if (status != null) {
-            expenditure.setStatus(status);
-        }
-
-        // 5. Save all changes (cascading will persist the comments if configured)
+        // 4. Persist comment changes
         programExpenditureRepository.save(expenditure);
 
-        // 6. Return response
+        // 5. Send notifications
+        if (user.getUserRole() != null && user.getUserRole().equalsIgnoreCase("ADMIN")) {
+            // ADMIN -> Agency (notify agency admin if present else fallback to system admin)
+            User agencyAdmin = getAgencyAdminOrFallback(expenditure.getAgency());
+
+            GlobalNotificationRequest req = GlobalNotificationRequest.builder()
+                    .userId(agencyAdmin.getUserId())
+                    .message(remarks.getSpiuComments())
+                    .sentBy(RemarkBy.ADMIN)
+                    .agencyId(expenditure.getAgency() != null ? expenditure.getAgency().getAgencyId() : -1L)
+                    .programId(expenditure.getProgram() != null ? expenditure.getProgram().getProgramId() : -1L)
+                    .participantId(-1L)
+                    .build();
+
+            notificationService.saveNotification(req);
+
+        } else if (remarks.getAgencyComments() != null && !remarks.getAgencyComments().isBlank()) {
+            // Agency -> Admin
+            User adminUser = userRepo.findFirstByUserRoleIgnoreCase("ADMIN")
+                    .orElseThrow(() -> new DataException("Admin user not found", "ADMIN_NOT_FOUND", 400));
+
+            GlobalNotificationRequest req = GlobalNotificationRequest.builder()
+                    .userId(adminUser.getUserId())
+                    .message(remarks.getAgencyComments())
+                    .sentBy(RemarkBy.AGENCY)
+                    .agencyId(expenditure.getAgency() != null ? expenditure.getAgency().getAgencyId() : -1L)
+                    .programId(expenditure.getProgram() != null ? expenditure.getProgram().getProgramId() : -1L)
+                    .participantId(-1L)
+                    .build();
+
+            notificationService.saveNotification(req);
+        }
+
+        // 6. Set status if provided
+        if (status != null) {
+            expenditure.setStatus(status);
+            programExpenditureRepository.save(expenditure);
+        }
+
+        // 7. Return response
         return WorkflowResponse.builder()
                 .message("Remark or Response added successfully.")
                 .status(200)
@@ -799,13 +807,58 @@ public class ExpenditureServiceAdepter implements ExpenditureService {
         // 6. Save transaction (with cascading, comments will persist)
         transactionRepo.save(transaction);
 
-        // 7. Return success response
+        // 7. Send notifications similar to addRemarkOrResponse
+        if (user.getUserRole() != null && user.getUserRole().equalsIgnoreCase("ADMIN")) {
+            User agencyAdmin = getAgencyAdminOrFallback(transaction.getAgency());
+
+            GlobalNotificationRequest req = GlobalNotificationRequest.builder()
+                    .userId(agencyAdmin.getUserId())
+                    .message(remarks.getSpiuComments())
+                    .sentBy(RemarkBy.ADMIN)
+                    .agencyId(transaction.getAgency() != null ? transaction.getAgency().getAgencyId() : -1L)
+                    .programId(transaction.getProgram() != null ? transaction.getProgram().getProgramId() : -1L)
+                    .participantId(-1L)
+                    .build();
+
+            notificationService.saveNotification(req);
+
+        } else if (remarks.getAgencyComments() != null && !remarks.getAgencyComments().isBlank()) {
+
+            User adminUser = userRepo.findFirstByUserRoleIgnoreCase("ADMIN")
+                    .orElseThrow(() -> new DataException("Admin user not found", "ADMIN_NOT_FOUND", 400));
+
+            GlobalNotificationRequest req = GlobalNotificationRequest.builder()
+                    .userId(adminUser.getUserId())
+                    .message(remarks.getAgencyComments())
+                    .sentBy(RemarkBy.AGENCY)
+                    .agencyId(transaction.getAgency() != null ? transaction.getAgency().getAgencyId() : -1L)
+                    .programId(transaction.getProgram() != null ? transaction.getProgram().getProgramId() : -1L)
+                    .participantId(-1L)
+                    .build();
+
+            notificationService.saveNotification(req);
+        }
+
+        // 8. Return success response
         return WorkflowResponse.builder()
                 .message("Remark or Response added successfully.")
                 .status(200)
                 .build();
     }
+    private User getAgencyAdminOrFallback(Agency agency) throws DataException {
+        if (agency != null && agency.getUsers() != null) {
+            Optional<User> agencyAdmin = agency.getUsers()
+                    .stream()
+                    .filter(u -> u.getUserRole() != null &&
+                            u.getUserRole().equalsIgnoreCase("AGENCY_ADMIN"))
+                    .findFirst();
 
+            if (agencyAdmin.isPresent()) return agencyAdmin.get();
+        }
 
+        // fallback to system admin
+        return userRepo.findFirstByUserRoleIgnoreCase("ADMIN")
+                .orElseThrow(() -> new DataException("Admin user not found", "ADMIN_NOT_FOUND", 400));
+    }
 
 }

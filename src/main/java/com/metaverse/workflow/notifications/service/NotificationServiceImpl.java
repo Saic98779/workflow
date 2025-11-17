@@ -4,24 +4,21 @@ import com.metaverse.workflow.agency.repository.AgencyRepository;
 import com.metaverse.workflow.enums.RemarkBy;
 import com.metaverse.workflow.login.repository.LoginRepository;
 import com.metaverse.workflow.model.*;
-import com.metaverse.workflow.notifications.dto.NotificationRequestDto;
-import com.metaverse.workflow.notifications.dto.NotificationStatusUpdateDto;
+import com.metaverse.workflow.notifications.dto.GlobalNotificationRequest;
+import com.metaverse.workflow.enums.NotificationRecipientType;
+import com.metaverse.workflow.enums.NotificationStatus;
+
+import com.metaverse.workflow.notifications.dto.NotificationDto;
 import com.metaverse.workflow.notifications.repository.NotificationRepository;
 import com.metaverse.workflow.participant.repository.ParticipantRepository;
 import com.metaverse.workflow.program.repository.ProgramRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.metaverse.workflow.enums.NotificationRecipientType;
-import com.metaverse.workflow.enums.NotificationStatus;
-import lombok.RequiredArgsConstructor;
-
-import java.time.LocalDate;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -33,194 +30,128 @@ public class NotificationServiceImpl {
     private final ParticipantRepository participantRepository;
     private final ProgramRepository programRepository;
 
-    // 1. Call Center -> Agency
-    public Notifications sendFromCallCenterToAgency(NotificationRequestDto dto) {
-
-        Optional<User> callCenter = Optional.empty();
-        if(!dto.getCallCenterUserId().equals("-1")) {
-             callCenter = userRepository.findByUserId(dto.getCallCenterUserId());
-        }
-        Agency agency = null;
-        if(!dto.getAgencyId().equals("-1")) {
-            agency  = agencyRepository.findById(dto.getAgencyId())
-                    .orElseThrow(() -> new RuntimeException("Agency not found"));
-        }
-        Participant participant = null;
-        if (dto.getParticipantId() != null && !dto.getParticipantId().equals(-1L)) {
-            participant = participantRepository.findById(dto.getParticipantId())
-                    .orElseThrow(() -> new RuntimeException("Participant not found"));
-        }
-
-        Program program = null;
-        if (dto.getProgramId() != null && !dto.getProgramId().equals(-1L)) {
-            program = (Program) programRepository.findByProgramId(dto.getProgramId())
-                    .orElseThrow(() -> new RuntimeException("Program not found"));
-        }
-
-        Notifications notification = Notifications.builder()
-                .dateOfNotification(LocalDate.now().atStartOfDay())
-                .dateOfFirstNotification(LocalDate.now().atStartOfDay())
-                .callCenterAgent(callCenter.isPresent() ? (callCenter.get() instanceof User ? (User) callCenter.get() : null) : null)
-                .agency(agency)
-                .status(NotificationStatus.OPEN)
-                .participant(participant)
-                .program(program)
-                .remarksByAgency(new ArrayList<>())
-                .remarksByCallCenter(new ArrayList<>())
-                .recipientType(NotificationRecipientType.AGENCY)
-                .build();
-
-        // Add initial remark from Call Center
-        if (dto.getMessage() != null && !dto.getMessage().isBlank()) {
-            NotificationRemark remark = NotificationRemark.builder()
-                    .notification(notification)
-                    .remarkBy(dto.getProgramId().equals(-1L) ? RemarkBy.ADMIN :  RemarkBy.CALL_CENTER)
-                    .remarkText(dto.getMessage())
-                    .remarkedAt(java.time.LocalDateTime.now())
-                    .build();
-            notification.setRemarksByCallCenter(List.of(remark));
-            notification.setRemarksByAgency(List.of());
-        }
-
-        return notificationRepository.save(notification);
-    }
-
+    // =============================================================
+    // GLOBAL, UNIVERSAL, ASYNC NOTIFICATION CREATOR
+    // =============================================================
     @Async
-    public void sendToUser(NotificationRequestDto dto) {
+    public void saveNotification(GlobalNotificationRequest req) {
 
-        User user = null;
-        if (dto.getCallCenterUserId() != null && !dto.getCallCenterUserId().equals("-1")) {
-            user = userRepository.findByUserId(dto.getCallCenterUserId())
-                    .orElseThrow(() -> new RuntimeException("User not found: " + dto.getCallCenterUserId()));
+        // ----------------------------------------------------------
+        // 1. CREATE BASE NOTIFICATION
+        // ----------------------------------------------------------
+        Notifications notification = new Notifications();
+        notification.setDateOfNotification(LocalDateTime.now());
+        notification.setDateOfFirstNotification(LocalDateTime.now());
+        notification.setStatus(NotificationStatus.OPEN);
+        notification.setMessages(new ArrayList<>());
+
+        // ----------------------------------------------------------
+        // 2. SET RECEIVER USER (GENERIC)
+        // ----------------------------------------------------------
+        if (req.getUserId() != null && !req.getUserId().equals("-1")) {
+            User receiver = userRepository.findByUserId(req.getUserId())
+                    .orElseThrow(() -> new RuntimeException("User not found: " + req.getUserId()));
+            notification.setReceiver(receiver);
         }
 
-        Notifications notification = Notifications.builder()
-                .dateOfNotification(LocalDateTime.now())
-                .dateOfFirstNotification(LocalDateTime.now())
-                .callCenterAgent(user)       // THIS IS THE ASSIGNEE
-                .status(NotificationStatus.OPEN)
-                .recipientType(NotificationRecipientType.CALL_CENTER)   // IMPORTANT FIX
-                .remarksByAgency(new ArrayList<>())
-                .remarksByCallCenter(new ArrayList<>())
-                .build();
-
-        if (dto.getMessage() != null && !dto.getMessage().isBlank()) {
-            NotificationRemark remark = NotificationRemark.builder()
-                    .notification(notification)
-                    .remarkBy(RemarkBy.CALL_CENTER)
-                    .remarkText(dto.getMessage())
-                    .remarkedAt(LocalDate.now().atStartOfDay())
-                    .build();
-
-            notification.getRemarksByCallCenter().add(remark);
+        // ----------------------------------------------------------
+        // 3. OPTIONAL AGENCY
+        // ----------------------------------------------------------
+        if (req.getAgencyId() != null && req.getAgencyId() != -1) {
+            Agency agency = agencyRepository.findById(req.getAgencyId())
+                    .orElseThrow(() -> new RuntimeException("Agency not found"));
+            notification.setAgency(agency);
         }
 
-        notificationRepository.save(notification);
-    }
-
-
-
-    // 2. Agency -> Call Center
-    public Notifications sendFromAgencyToCallCenter(NotificationRequestDto dto) {
-
-        Agency agency = null;
-        if (dto.getAgencyId() != null && !dto.getAgencyId().equals(-1L))
-            agency =  agencyRepository.findById(dto.getAgencyId())
-                .orElseThrow(() -> new RuntimeException("Agency not found"));
-
-        User callCenter = null;
-        if (dto.getCallCenterUserId() != null && !dto.getCallCenterUserId().equals("-1"))
-                userRepository.findById(dto.getCallCenterUserId())
-                .orElseThrow(() -> new RuntimeException("Call center user not found"));
-
-        Participant participant = null;
-        if (dto.getParticipantId() != null && !dto.getParticipantId().equals(-1L)) {
-            participant = participantRepository.findById(dto.getParticipantId())
+        // ----------------------------------------------------------
+        // 4. OPTIONAL PARTICIPANT
+        // ----------------------------------------------------------
+        if (req.getParticipantId() != null && req.getParticipantId() != -1) {
+            Participant participant = participantRepository.findById(req.getParticipantId())
                     .orElseThrow(() -> new RuntimeException("Participant not found"));
+            notification.setParticipant(participant);
         }
 
-        Program program = null;
-        if (dto.getProgramId() != null && !dto.getProgramId().equals(-1L)) {
-            program = (Program) programRepository.findByProgramId(dto.getProgramId())
+        // ----------------------------------------------------------
+        // 5. OPTIONAL PROGRAM
+        // ----------------------------------------------------------
+        if (req.getProgramId() != null && req.getProgramId() != -1) {
+            Program program = programRepository.findByProgramId(req.getProgramId())
                     .orElseThrow(() -> new RuntimeException("Program not found"));
+            notification.setProgram(program);
         }
 
-        Notifications notification = Notifications.builder()
-                .dateOfNotification(LocalDate.now().atStartOfDay())
-                .dateOfFirstNotification(LocalDate.now().atStartOfDay())
-                .agency(agency)
-                .callCenterAgent(callCenter)
-                .participant(participant)
-                .program(program)
-                .status(NotificationStatus.OPEN)
-                .recipientType(dto.getProgramId().equals(-1L) ? NotificationRecipientType.ADMIN :NotificationRecipientType.CALL_CENTER)
-                .remarksByAgency(new ArrayList<>())
-                .remarksByCallCenter(new ArrayList<>())
-                .build();
+        // ----------------------------------------------------------
+        // 6. DECIDE RECIPIENT TYPE BASED ON SENDER
+        // ----------------------------------------------------------
+        if (req.getSentBy() == RemarkBy.AGENCY) {
+            notification.setRecipientType(NotificationRecipientType.CALL_CENTER);
 
-        // Add initial remark from Agency
-        if (dto.getMessage() != null && !dto.getMessage().isBlank()) {
-            NotificationRemark remark = NotificationRemark.builder()
-                    .notification(notification)
-                    .remarkBy(RemarkBy.AGENCY)
-                    .remarkText(dto.getMessage())
-                    .remarkedAt(java.time.LocalDateTime.now())
-                    .build();
-            notification.getRemarksByAgency().add(remark);
+        } else if (req.getSentBy() == RemarkBy.CALL_CENTER) {
+            notification.setRecipientType(NotificationRecipientType.AGENCY);
+
+        } else {
+            notification.setRecipientType(NotificationRecipientType.ADMIN);
         }
 
-        return notificationRepository.save(notification);
-    }
+        notification.updateLastMessageTime();
 
-    // 3. Get all notifications by Agency
-    public List<Notifications> getAllByAgencyAndStatuses(Long agencyId, List<NotificationStatus> statuses) {
-        return notificationRepository.findByAgency_AgencyIdAndStatusInOrderByRemarkedAtDesc(agencyId, statuses);
-    }
+        // Save base notification first
+        Notifications saved = notificationRepository.save(notification);
 
-    public List<Notifications> getAllByAgency(Long agencyId) {
-        return notificationRepository.findByAgency_AgencyIdAndStatusInOrderByRemarkedAtDesc(agencyId,
-                List.of(NotificationStatus.OPEN, NotificationStatus.IN_PROGRESS));
-    }
+        // ----------------------------------------------------------
+        // 7. ADD FIRST MESSAGE (IF PRESENT)
+        // ----------------------------------------------------------
+        if (req.getMessage() != null && !req.getMessage().isBlank()) {
 
-    // 4. Get all notifications by Call Center Agent (userId)
-    public List<Notifications> getAllByCallCenterUser(String userId) {
-        return notificationRepository.findByCallCenterAgent_UserIdAndStatusInOrderByRemarkedAtDesc(userId,
-                List.of(NotificationStatus.OPEN, NotificationStatus.IN_PROGRESS));
-    }
-
-
-    public List<Notifications> getAllByCallCenterUserAndStatuses(String userId, List<NotificationStatus> statuses) {
-        return notificationRepository.findByCallCenterAgent_UserIdAndStatusInOrderByRemarkedAtDesc(userId, statuses);
-    }
-
-    public Notifications updateStatus(NotificationStatusUpdateDto dto) {
-        Notifications notification = notificationRepository.findById(dto.getNotificationId())
-                .orElseThrow(() -> new RuntimeException("Notification not found with ID: " + dto.getNotificationId()));
-
-        notification.setStatus(dto.getStatus());
-
-        if (dto.getRemark() != null && !dto.getRemark().isBlank()) {
-            NotificationRemark remark = NotificationRemark.builder()
-                    .notification(notification)
-                    .remarkBy(dto.getRemarkBy())
-                    .remarkText(dto.getRemark())
-                    .remarkedAt(java.time.LocalDateTime.now())
+            NotificationMessage msg = NotificationMessage.builder()
+                    .notification(saved)
+                    .text(req.getMessage())
+                    .sentBy(req.getSentBy())
+                    .createdAt(LocalDateTime.now())
                     .build();
 
-            if (dto.getRemarkBy() == RemarkBy.AGENCY) {
-                notification.getRemarksByAgency().add(remark);
-            } else {
-                notification.getRemarksByCallCenter().add(remark);
-            }
-        }
+            saved.getMessages().add(msg);
+            saved.updateLastMessageTime();
 
-        switch (dto.getStatus()) {
-            case CLOSED -> notification.setDateOfClosure(java.time.LocalDateTime.now());
-            case COMPLETED -> notification.setDateOfFix(java.time.LocalDateTime.now());
-            case OPEN -> notification.setDateOfFirstNotification(java.time.LocalDateTime.now());
-            default -> {}
+            notificationRepository.save(saved);
         }
-
-        return notificationRepository.save(notification);
     }
+    public List<NotificationDto> getNotificationsByRole(String role) {
+        return notificationRepository.findByReceiverRole(role)
+                .stream()
+                .map(NotificationMapper::toDto)
+                .toList();
+    }
+
+    public List<NotificationDto> getNotificationsForUser(String userId) {
+        return notificationRepository.findByReceiver_UserIdOrderByLastMessageAtDesc(userId)
+                .stream()
+                .map(NotificationMapper::toDto)
+                .toList();
+    }
+
+    public NotificationDto getNotificationById(Long id) {
+        Notifications n = notificationRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Notification not found"));
+        return NotificationMapper.toDto(n);
+    }
+
+    public void markAsFixed(Long id) {
+        Notifications n = notificationRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Notification not found"));
+        n.setDateOfFix(LocalDateTime.now());
+        n.setStatus(NotificationStatus.COMPLETED);
+        notificationRepository.save(n);
+    }
+
+    public void markAsClosed(Long id) {
+        Notifications n = notificationRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Notification not found"));
+        n.setDateOfClosure(LocalDateTime.now());
+        n.setStatus(NotificationStatus.CLOSED);
+        notificationRepository.save(n);
+    }
+
+
 }

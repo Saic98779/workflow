@@ -16,4 +16,5 @@ public interface LoginRepository extends JpaRepository<User, String> {
 
     Optional<User> findByUserId(String s);
 
+    Optional<User> findFirstByUserRoleIgnoreCase(String role);
 }

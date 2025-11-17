@@ -6,6 +6,7 @@ import com.metaverse.workflow.common.fileservice.StorageService;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.common.util.DateUtil;
 import com.metaverse.workflow.enums.BillRemarksStatus;
+import com.metaverse.workflow.enums.RemarkBy;
 import com.metaverse.workflow.exceptions.DataException;
 import com.metaverse.workflow.login.repository.LoginRepository;
 import com.metaverse.workflow.model.*;
@@ -14,7 +15,7 @@ import com.metaverse.workflow.nontrainingExpenditures.repository.NonTrainingExpe
 import com.metaverse.workflow.nontrainingExpenditures.repository.NonTrainingResourceExpenditureRepo;
 import com.metaverse.workflow.nontrainingExpenditures.repository.NonTrainingSubActivityRepository;
 import com.metaverse.workflow.nontrainingExpenditures.repository.ResourceRepo;
-import com.metaverse.workflow.notifications.dto.NotificationRequestDto;
+import com.metaverse.workflow.notifications.dto.GlobalNotificationRequest;
 import com.metaverse.workflow.notifications.service.NotificationServiceImpl;
 import com.metaverse.workflow.program.repository.ProgramSessionFileRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -316,6 +318,7 @@ public class NonTrainingExpenditureService {
     }
 
     public WorkflowResponse addRemarkOrResponse(NonTrainingExpenditureRemarksDTO remarks, BillRemarksStatus status) throws DataException {
+
         // 1. Retrieve user and expenditure
         User user = userRepo.findById(remarks.getUserId())
                 .orElseThrow(() -> new DataException("User not found for ID: " + remarks.getUserId(), "USER_NOT_FOUND", 400));
@@ -323,54 +326,80 @@ public class NonTrainingExpenditureService {
         NonTrainingExpenditure expenditure = nonTrainingExpenditureRepository.findById(remarks.getNonTrainingExpenditureId())
                 .orElseThrow(() -> new DataException("Non Training Expenditure not found", "EXPENDITURE_NOT_FOUND", 400));
 
-        // 2. Create and associate SpiuComment
+        // 2. Create and associate SPIU Comment
         NonTrainingSpiuComments spiuComment = NonTrainingExpenditureMapper.mapToEntitySpiuComments(remarks, user);
         spiuComment.setNonTrainingExpenditure(expenditure);
         expenditure.getSpiuComments().add(spiuComment);
 
-        // 3. Create and associate AgencyComment
+        // 3. Create and associate Agency Comment
         NonTrainingAgencyComments agencyComment = NonTrainingExpenditureMapper.mapToEntityAgencyComments(remarks, user);
-        agencyComment.setNonTrainingExpenditure(expenditure); // Ensure bidirectional relationship
+        agencyComment.setNonTrainingExpenditure(expenditure);
         expenditure.getAgencyComments().add(agencyComment);
 
+        // ======== NOTIFICATION LOGIC (UPDATED) ========
 
-        if (user.getUserRole().equals("ADMIN")) {
-            // admin to agency
-            System.err.println("admin to agency");
-            NotificationRequestDto notificationRequestDto = new NotificationRequestDto();
-            notificationRequestDto.setAgencyId(expenditure.getAgency().getAgencyId());
-            notificationRequestDto.setMessage(remarks.getSpiuComments());
-            notificationRequestDto.setProgramId(-1L);
-            notificationRequestDto.setParticipantId(-1L);
-            notificationRequestDto.setCallCenterUserId("-1");
-            notificationService.sendFromCallCenterToAgency(notificationRequestDto);
+        if (user.getUserRole().equalsIgnoreCase("ADMIN")) {
 
-        } else if (remarks.getAgencyComments() != null) {
-            // agency to admin
-            NotificationRequestDto notificationRequestDto = new NotificationRequestDto();
-            notificationRequestDto.setAgencyId(-1L);
-            System.err.println("agency to admin");
-            notificationRequestDto.setAgencyId(-1L);
-            notificationRequestDto.setMessage(remarks.getAgencyComments());
-            notificationRequestDto.setProgramId(-1L);
-            notificationRequestDto.setParticipantId(-1L);
-            notificationRequestDto.setCallCenterUserId("-1");
-            notificationService.sendFromAgencyToCallCenter(notificationRequestDto); // need to change
+            // ---- ADMIN → AGENCY ADMIN ----
+            User agencyAdmin = getAgencyAdminOrFallback(expenditure.getAgency());
+
+            GlobalNotificationRequest req = GlobalNotificationRequest.builder()
+                    .userId(agencyAdmin.getUserId())
+                    .sentBy(RemarkBy.ADMIN)
+                    .message(remarks.getSpiuComments())
+                    .agencyId(expenditure.getAgency() != null ? expenditure.getAgency().getAgencyId() : -1L)
+                    .programId(-1L)
+                    .participantId(-1L)
+                    .build();
+
+            notificationService.saveNotification(req);
+        }
+        else {
+
+            // ---- AGENCY → SYSTEM ADMIN ----
+            User adminUser = userRepo.findFirstByUserRoleIgnoreCase("ADMIN")
+                    .orElseThrow(() -> new DataException("Admin user not found", "ADMIN_NOT_FOUND", 400));
+
+            GlobalNotificationRequest req = GlobalNotificationRequest.builder()
+                    .userId(adminUser.getUserId())
+                    .sentBy(RemarkBy.AGENCY)
+                    .message(remarks.getAgencyComments())
+                    .agencyId(expenditure.getAgency() != null ? expenditure.getAgency().getAgencyId() : -1L)
+                    .programId(-1L)
+                    .participantId(-1L)
+                    .build();
+
+            notificationService.saveNotification(req);
         }
 
-        // 4. Set status if provided
+        // 4. Update status if provided
         if (status != null) {
             expenditure.setStatus(status);
         }
 
-        // 5. Save all changes (cascading will persist the comments if configured)
+        // 5. Save changes
         nonTrainingExpenditureRepository.save(expenditure);
 
-        // 6. Return response
         return WorkflowResponse.builder()
                 .message("Remark or Response added successfully.")
                 .status(200)
                 .build();
     }
+    private User getAgencyAdminOrFallback(Agency agency) throws DataException {
+        if (agency != null && agency.getUsers() != null) {
+            Optional<User> agencyAdmin = agency.getUsers()
+                    .stream()
+                    .filter(u -> u.getUserRole() != null &&
+                            u.getUserRole().equalsIgnoreCase("AGENCY_ADMIN"))
+                    .findFirst();
+
+            if (agencyAdmin.isPresent()) return agencyAdmin.get();
+        }
+
+        // fallback to system admin
+        return userRepo.findFirstByUserRoleIgnoreCase("ADMIN")
+                .orElseThrow(() -> new DataException("Admin user not found", "ADMIN_NOT_FOUND", 400));
+    }
+
 }
 

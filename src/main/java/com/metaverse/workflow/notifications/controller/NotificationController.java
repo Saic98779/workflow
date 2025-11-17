@@ -1,187 +1,99 @@
 package com.metaverse.workflow.notifications.controller;
 
-import com.metaverse.workflow.enums.NotificationStatus;
-import com.metaverse.workflow.model.Notifications;
-import com.metaverse.workflow.notifications.dto.*;
+import com.metaverse.workflow.common.response.WorkflowResponse;
+import com.metaverse.workflow.notifications.dto.GlobalNotificationRequest;
+import com.metaverse.workflow.notifications.dto.NotificationDto;
 import com.metaverse.workflow.notifications.service.NotificationServiceImpl;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
+
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 @RestController
-@RequestMapping("/notifications")
 @RequiredArgsConstructor
+@RequestMapping("/api/notifications")
 public class NotificationController {
 
     private final NotificationServiceImpl notificationService;
 
-    // 1. Call Center -> Agency
-    @SuppressWarnings("unused")
-    @Operation(
-            summary = "Send Notification from Call Center to Agency",
-            description = "Creates a new notification initiated by a call center agent to an agency."
-    )
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Notification sent successfully",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = NotificationResponseDto.class))),
-            @ApiResponse(responseCode = "400", description = "Invalid request data",
-                    content = @Content(mediaType = "application/problem+json"))
-    })
-    @PostMapping("/send/callcenter-to-agency")
-    public ResponseEntity<NotificationResponseDto> sendFromCallCenterToAgency(
-            @RequestBody NotificationRequestDto dto) {
-        Notifications notification = notificationService.sendFromCallCenterToAgency(dto);
-        return ResponseEntity.ok(NotificationMapper.toDto(notification));
+    // =========================================================================
+    // 1. GET NOTIFICATIONS BY ROLE (ADMIN, CALL_CENTER, AGENCY_ADMIN, etc.)
+    // =========================================================================
+    @GetMapping("/role/{role}")
+    public ResponseEntity<WorkflowResponse> getNotificationsByRole(@PathVariable String role) {
+
+        List<NotificationDto> notifications = notificationService.getNotificationsByRole(role);
+
+        return ResponseEntity.ok(
+                WorkflowResponse.success("Notifications fetched successfully", notifications)
+        );
     }
 
-    // 2. Agency -> Call Center
-    @SuppressWarnings("unused")
-    @Operation(
-            summary = "Send Notification from Agency to Call Center",
-            description = "Creates a new notification initiated by an agency to a call center agent."
-    )
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Notification sent successfully",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = NotificationResponseDto.class))),
-            @ApiResponse(responseCode = "400", description = "Invalid request data",
-                    content = @Content(mediaType = "application/problem+json"))
-    })
-    @PostMapping("/send/agency-to-callcenter")
-    public ResponseEntity<NotificationResponseDto> sendFromAgencyToCallCenter(
-            @RequestBody NotificationRequestDto dto) {
-        Notifications notification = notificationService.sendFromAgencyToCallCenter(dto);
-        return ResponseEntity.ok(NotificationMapper.toDto(notification));
+    // =========================================================================
+    // 2. GET NOTIFICATIONS FOR SPECIFIC USER (Receiver)
+    // =========================================================================
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<WorkflowResponse> getNotificationsForUser(@PathVariable String userId) {
+
+        List<NotificationDto> notifications = notificationService.getNotificationsForUser(userId);
+
+        return ResponseEntity.ok(
+                WorkflowResponse.success("User notifications fetched successfully", notifications)
+        );
     }
 
-    // 3. Get all notifications by Agency and optional list of statuses
-    @Operation(
-            summary = "Get Notifications by Agency",
-            description = "Fetches all notifications assigned to the specified agency. "
-                    + "You can optionally filter by a list of NotificationStatus values."
-    )
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Notifications retrieved successfully",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = NotificationResponseDto.class))),
-            @ApiResponse(responseCode = "404", description = "Agency not found",
-                    content = @Content(mediaType = "application/problem+json"))
-    })
-    @GetMapping("/agency/{agencyId}")
-    public ResponseEntity<List<NotificationResponseDto>> getByAgency(
-            @PathVariable Long agencyId,
-            @RequestParam(required = false) List<NotificationStatus> statuses
-    ) {
-        List<Notifications> list = (statuses == null || statuses.isEmpty())
-                ? notificationService.getAllByAgency(agencyId)
-                : notificationService.getAllByAgencyAndStatuses(agencyId, statuses);
+    // =========================================================================
+    // 3. GET SINGLE NOTIFICATION BY ID
+    // =========================================================================
+    @GetMapping("/{id}")
+    public ResponseEntity<WorkflowResponse> getNotificationById(@PathVariable Long id) {
 
-        return ResponseEntity.ok(list.stream()
-                .map(NotificationMapper::toDto)
-                .toList());
+        NotificationDto notification = notificationService.getNotificationById(id);
+
+        return ResponseEntity.ok(
+                WorkflowResponse.success("Notification details fetched", notification)
+        );
     }
 
-    // 4. Get all notifications by Call Center Agent
-    @SuppressWarnings("unused")
-    @Operation(
-            summary = "Get Notifications by Call Center Agent",
-            description = "Fetches all notifications assigned to a specific call center agent (userId). "
-                    + "You can optionally filter by a list of NotificationStatus values."
-    )
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Notifications retrieved successfully",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = NotificationResponseDto.class))),
-            @ApiResponse(responseCode = "404", description = "Call center agent not found",
-                    content = @Content(mediaType = "application/problem+json"))
-    })
-    @GetMapping("/callcenter/{userId}")
-    public ResponseEntity<List<NotificationResponseDto>> getByCallCenter(
-            @PathVariable String userId,
-            @RequestParam(required = false) List<NotificationStatus> statuses
-    ) {
-        List<Notifications> list = (statuses == null || statuses.isEmpty())
-                ? notificationService.getAllByCallCenterUser(userId)
-                : notificationService.getAllByCallCenterUserAndStatuses(userId, statuses);
+    // =========================================================================
+    // 4. SEND / CREATE A NEW NOTIFICATION (ASYNC)
+    // =========================================================================
+    @PostMapping("/send")
+    public ResponseEntity<WorkflowResponse> sendNotification(@RequestBody GlobalNotificationRequest req) {
 
-        return ResponseEntity.ok(list.stream()
-                .map(NotificationMapper::toDto)
-                .toList());
+        notificationService.saveNotification(req); // async
+
+        return ResponseEntity.ok(
+                WorkflowResponse.success("Notification sent successfully")
+        );
     }
 
-    @GetMapping("/callcenter/remarks/{userId}")
-    public ResponseEntity<Map<String, List<RemarkDto>>> getAllCallCenterRemarks(
-            @PathVariable String userId,
-            @RequestParam(required = false) List<NotificationStatus> statuses
-    ) {
-        List<Notifications> list = (statuses == null || statuses.isEmpty())
-                ? notificationService.getAllByCallCenterUser(userId)
-                : notificationService.getAllByCallCenterUserAndStatuses(userId, statuses);
+    // =========================================================================
+    // 5. MARK AS FIXED
+    // =========================================================================
+    @PutMapping("/{id}/fix")
+    public ResponseEntity<WorkflowResponse> markAsFixed(@PathVariable Long id) {
 
-        // Flatten all remarks and map NotificationRemark -> RemarkDto
-        List<RemarkDto> allRemarks = list.stream()
-                .flatMap(n -> n.getRemarksByAgency().stream())
-                .map(r -> new RemarkDto(r.getRemarkText(),r.getNotification().getAgency().getAgencyName(), null, r.getRemarkedAt()))
-                .toList();
+        notificationService.markAsFixed(id);
 
-        Map<String, List<RemarkDto>> response = Map.of("remarks", allRemarks);
-
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(
+                WorkflowResponse.success("Notification marked as FIXED")
+        );
     }
 
-    @GetMapping("/agency/remarks/{agencyId}")
-    public ResponseEntity<Map<String, List<RemarkDto>>> getAllAgencyRemarks(
-            @PathVariable Long agencyId,
-            @RequestParam(required = false) List<NotificationStatus> statuses
-    ) {
-        List<Notifications> list = (statuses == null || statuses.isEmpty())
-                ? notificationService.getAllByAgency(agencyId)
-                : notificationService.getAllByAgencyAndStatuses(agencyId, statuses);
-        List<RemarkDto> allRemarks = list.stream()
-                .flatMap(n -> n.getRemarksByCallCenter().stream())
-                .map(r -> {
-                    String agentName = Optional.ofNullable(r.getNotification())
-                            .map(n -> n.getCallCenterAgent())
-                            .map(a -> a.getFirstName() + " " + a.getLastName())
-                            .orElse("N/A");
-                    return new RemarkDto(r.getRemarkText(), null, agentName, r.getRemarkedAt());
-                })
-                .toList();
+    // =========================================================================
+    // 6. MARK AS CLOSED
+    // =========================================================================
+    @PutMapping("/{id}/close")
+    public ResponseEntity<WorkflowResponse> markAsClosed(@PathVariable Long id) {
 
-        Map<String, List<RemarkDto>> response = Map.of("remarks", allRemarks);
+        notificationService.markAsClosed(id);
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(
+                WorkflowResponse.success("Notification marked as CLOSED")
+        );
     }
-
-
-
-    @Operation(
-            summary = "Update Notification Status",
-            description = "Updates the status of a notification by its ID."
-    )
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Notification status updated successfully",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = NotificationResponseDto.class))),
-            @ApiResponse(responseCode = "404", description = "Notification not found",
-                    content = @Content(mediaType = "application/problem+json"))
-    })
-    @PatchMapping("/status")
-    public ResponseEntity<NotificationResponseDto> updateStatus(
-            @RequestBody NotificationStatusUpdateDto dto) {
-
-        Notifications updated = notificationService.updateStatus(dto);
-        return ResponseEntity.ok(NotificationMapper.toDto(updated));
-    }
-
 }
