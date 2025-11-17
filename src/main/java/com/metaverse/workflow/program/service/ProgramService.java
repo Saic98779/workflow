@@ -35,7 +35,7 @@ public interface  ProgramService {
     WorkflowResponse importProgramsFromExcel(MultipartFile file);
     WorkflowResponse deleteProgramAndDependencies(Long programId);
     List<ProgramFilePathInfo> getProgramFileByType(FileType fileType);
-    WorkflowResponse getProgramStatusSummery(Long agencyId, Date fromDate,Date toDate);
+    WorkflowResponse getProgramStatusSummery(Long agencyId, Date fromDate,Date toDate,String district);
     WorkflowResponse getProgramSessionsByProgramId(Long programId)throws DataException;
     List<String> getProgramByAgencyAndActivity(Long agencyId,Long activityId) throws DataException;
     WorkflowResponse getProgramsWithParticipants(Long agencyId);

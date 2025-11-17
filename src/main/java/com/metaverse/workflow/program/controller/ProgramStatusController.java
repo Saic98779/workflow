@@ -89,8 +89,9 @@ public class ProgramStatusController {
     @GetMapping("/summary/{agencyId}")
     public WorkflowResponse getProgramsStatusSummery(@PathVariable Long agencyId,
                                                      @RequestParam(required = false) String fromDate,
-                                                     @RequestParam(required = false) String toDate) {
-        return programService.getProgramStatusSummery(agencyId, DateUtil.covertStringToDate(fromDate),DateUtil.covertStringToDate(toDate) );
+                                                     @RequestParam(required = false) String toDate,
+                                                     @RequestParam(required = false) String districtName) {
+        return programService.getProgramStatusSummery(agencyId, DateUtil.covertStringToDate(fromDate),DateUtil.covertStringToDate(toDate),districtName );
     }
 
     @GetMapping("/status-list/{agencyId}")
