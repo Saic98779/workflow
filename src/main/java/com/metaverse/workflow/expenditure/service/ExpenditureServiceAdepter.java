@@ -327,9 +327,9 @@ public class ExpenditureServiceAdepter implements ExpenditureService {
                         "ACTIVITY-DETAILS-NOT-FOUND",
                         400
                 ));
-        SubActivity subActivity = subActivityRepository.findById(expenditureRequest.getActivityId())
+        SubActivity subActivity = subActivityRepository.findById(expenditureRequest.getSubActivityId())
                 .orElseThrow(() -> new DataException(
-                        "SubActivity details for the subActivity id " + expenditureRequest.getAgencyId() + " do not exist.",
+                        "SubActivity details for the subActivity id " + expenditureRequest.getSubActivityId() + " do not exist.",
                         "SUB-ACTIVITY-DETAILS-NOT-FOUND",
                         400
                 ));
