@@ -1,6 +1,7 @@
 package com.metaverse.workflow.nontrainingExpenditures.service;
 
 import com.metaverse.workflow.agency.repository.AgencyRepository;
+import com.metaverse.workflow.common.enums.NotificationType;
 import com.metaverse.workflow.common.fileservice.FileUpdateUtil;
 import com.metaverse.workflow.common.fileservice.StorageService;
 import com.metaverse.workflow.common.response.WorkflowResponse;
@@ -346,6 +347,7 @@ public class NonTrainingExpenditureService {
             GlobalNotificationRequest req = GlobalNotificationRequest.builder()
                     .userId(agencyAdmin.getUserId())
                     .sentBy(RemarkBy.ADMIN)
+                    .notificationType(NotificationType.NON_TRAINING_EXPENDITURE)
                     .message(remarks.getSpiuComments())
                     .agencyId(expenditure.getAgency() != null ? expenditure.getAgency().getAgencyId() : -1L)
                     .programId(-1L)
@@ -364,6 +366,7 @@ public class NonTrainingExpenditureService {
             GlobalNotificationRequest req = GlobalNotificationRequest.builder()
                     .userId(adminUser.getUserId())
                     .sentBy(RemarkBy.AGENCY)
+                    .notificationType(NotificationType.NON_TRAINING_EXPENDITURE)
                     .message(remarks.getAgencyComments())
                     .agencyId(expenditure.getAgency() != null ? expenditure.getAgency().getAgencyId() : -1L)
                     .programId(-1L)

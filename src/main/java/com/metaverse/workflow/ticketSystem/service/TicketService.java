@@ -1,5 +1,6 @@
 package com.metaverse.workflow.ticketSystem.service;
 
+import com.metaverse.workflow.common.enums.NotificationType;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.enums.TicketStatus;
 import com.metaverse.workflow.enums.RemarkBy;
@@ -69,6 +70,7 @@ public class TicketService {
                         .message("A new ticket is assigned to you: " + ticket.getTicketId())
                         .sentBy(RemarkBy.ADMIN)                           // system action
                         .agencyId(-1L)
+                        .notificationType(NotificationType.TICKETS)
                         .participantId(-1L)
                         .programId(-1L)
                         .build();
@@ -128,6 +130,7 @@ public class TicketService {
                         .message("You have been assigned ticket: " + ticket.getTicketId())
                         .sentBy(RemarkBy.ADMIN)
                         .agencyId(-1L)
+                        .notificationType(NotificationType.TICKETS)
                         .programId(-1L)
                         .participantId(-1L)
                         .build();
@@ -162,6 +165,7 @@ public class TicketService {
                             .message("Ticket " + ticket.getTicketId() + " status updated to: " + newStatus)
                             .sentBy(RemarkBy.ADMIN)
                             .agencyId(-1L)
+                            .notificationType(NotificationType.TICKETS)
                             .programId(-1L)
                             .participantId(-1L)
                             .build();
@@ -196,6 +200,7 @@ public class TicketService {
                                 .userId(ticket.getAssignee().getUserId())
                                 .message("New comment added on ticket: " + ticket.getTicketId())
                                 .sentBy(RemarkBy.CALL_CENTER)
+                                .notificationType(NotificationType.TICKETS)
                                 .agencyId(-1L)
                                 .programId(-1L)
                                 .participantId(-1L)

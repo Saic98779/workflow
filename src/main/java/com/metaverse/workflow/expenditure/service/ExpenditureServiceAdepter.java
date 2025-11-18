@@ -4,6 +4,7 @@ import com.metaverse.workflow.activity.repository.ActivityRepository;
 import com.metaverse.workflow.activity.repository.SubActivityRepository;
 import com.metaverse.workflow.agency.repository.AgencyRepository;
 import com.metaverse.workflow.common.enums.ExpenditureType;
+import com.metaverse.workflow.common.enums.NotificationType;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.enums.BillRemarksStatus;
 import com.metaverse.workflow.enums.RemarkBy;
@@ -732,6 +733,7 @@ public class ExpenditureServiceAdepter implements ExpenditureService {
             GlobalNotificationRequest req = GlobalNotificationRequest.builder()
                     .userId(agencyAdmin.getUserId())
                     .message(remarks.getSpiuComments())
+                    .notificationType(NotificationType.TRAINING_EXPENDITURE)
                     .sentBy(RemarkBy.ADMIN)
                     .agencyId(expenditure.getAgency() != null ? expenditure.getAgency().getAgencyId() : -1L)
                     .programId(expenditure.getProgram() != null ? expenditure.getProgram().getProgramId() : -1L)
@@ -749,6 +751,7 @@ public class ExpenditureServiceAdepter implements ExpenditureService {
             GlobalNotificationRequest req = GlobalNotificationRequest.builder()
                     .userId(adminUser.getUserId())
                     .message(remarks.getAgencyComments())
+                    .notificationType(NotificationType.TRAINING_EXPENDITURE)
                     .sentBy(RemarkBy.AGENCY)
                     .agencyId(expenditure.getAgency() != null ? expenditure.getAgency().getAgencyId() : -1L)
                     .programId(expenditure.getProgram() != null ? expenditure.getProgram().getProgramId() : -1L)
@@ -817,6 +820,7 @@ public class ExpenditureServiceAdepter implements ExpenditureService {
                     .userId(agencyAdmin.getUserId())
                     .message(remarks.getSpiuComments())
                     .sentBy(RemarkBy.ADMIN)
+                    .notificationType(NotificationType.TRAINING_EXPENDITURE)
                     .agencyId(transaction.getAgency() != null ? transaction.getAgency().getAgencyId() : -1L)
                     .programId(transaction.getProgram() != null ? transaction.getProgram().getProgramId() : -1L)
                     .participantId(-1L)
@@ -833,6 +837,7 @@ public class ExpenditureServiceAdepter implements ExpenditureService {
                     .userId(adminUser.getUserId())
                     .message(remarks.getAgencyComments())
                     .sentBy(RemarkBy.AGENCY)
+                    .notificationType(NotificationType.TRAINING_EXPENDITURE)
                     .agencyId(transaction.getAgency() != null ? transaction.getAgency().getAgencyId() : -1L)
                     .programId(transaction.getProgram() != null ? transaction.getProgram().getProgramId() : -1L)
                     .participantId(-1L)

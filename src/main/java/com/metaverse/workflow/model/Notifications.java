@@ -1,5 +1,6 @@
 package com.metaverse.workflow.model;
 
+import com.metaverse.workflow.common.enums.NotificationType;
 import com.metaverse.workflow.enums.NotificationRecipientType;
 import com.metaverse.workflow.enums.NotificationStatus;
 import jakarta.persistence.*;
@@ -62,6 +63,8 @@ public class Notifications extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private NotificationStatus status;
+
+    private NotificationType notificationType;
 
     @Column(name = "date_of_fix")
     private LocalDateTime dateOfFix;

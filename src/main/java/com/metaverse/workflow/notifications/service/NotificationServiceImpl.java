@@ -45,6 +45,7 @@ public class NotificationServiceImpl {
         notification.setDateOfNotification(LocalDateTime.now());
         notification.setDateOfFirstNotification(LocalDateTime.now());
         notification.setStatus(NotificationStatus.OPEN);
+        notification.setNotificationType(req.getNotificationType());
         notification.setMessages(new ArrayList<>());
 
         // ----------------------------------------------------------
