@@ -314,7 +314,7 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
                         nonTrainingProgramDto.setFinancialExpenditure(approved+pending);
                         nonTrainingProgramDto.setFinancialExpenditurePending(pending);
                         nonTrainingProgramDto.setFinancialExpenditureApproved(approved);
-                        nonTrainingProgramDto.setPercentage((financialTarget != 0.0) ? Math.round((approved+pending / financialTarget) * 100 * 100.0) / 100.0 : 0.0);
+                        nonTrainingProgramDto.setPercentage((financialTarget != 0.0) ? Math.round(((approved+pending) / financialTarget) * 100 * 100.0) / 100.0 : 0.0);
                         try {
                             nonTrainingProgramDto.setPhysicalPercentage(String.valueOf(Math.round(((physicalTarget != 0.0) ? (Double.parseDouble((String) objects[0]) / physicalTarget) * 100 : 0.0) * 100.0) / 100.0));
                         } catch (Exception ee) {

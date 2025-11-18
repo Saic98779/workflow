@@ -1,21 +1,20 @@
 package com.metaverse.workflow.notifications.dto;
 
+import com.metaverse.workflow.common.enums.NotificationType;
 import com.metaverse.workflow.enums.RemarkBy;
 import lombok.Builder;
 import lombok.Data;
 
 @Data
 @Builder
-public class GlobalNotificationRequest {
+public class GlobalNotificationResponse {
 
-    private String userId;        // Receiver (assignee / agent / admin)
+    private Long notificationId;
     private Long agencyId;
     private Long participantId;
     private Long programId;
-
-    private String message;       // the content
-    private RemarkBy sentBy;      // CALL_CENTER / AGENCY / ADMIN
-
+    private String message;
+    private RemarkBy sentBy;
+    private NotificationType notificationType;
     private Boolean isRead;
 }
-

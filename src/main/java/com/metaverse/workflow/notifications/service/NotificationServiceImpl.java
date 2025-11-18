@@ -8,6 +8,7 @@ import com.metaverse.workflow.notifications.dto.GlobalNotificationRequest;
 import com.metaverse.workflow.enums.NotificationRecipientType;
 import com.metaverse.workflow.enums.NotificationStatus;
 
+import com.metaverse.workflow.notifications.dto.GlobalNotificationResponse;
 import com.metaverse.workflow.notifications.dto.NotificationDto;
 import com.metaverse.workflow.notifications.repository.NotificationRepository;
 import com.metaverse.workflow.participant.repository.ParticipantRepository;
@@ -182,5 +183,28 @@ public class NotificationServiceImpl {
         notificationRepository.save(n);
     }
 
+    public List<GlobalNotificationResponse> getAllUnReadNotifications(Long agencyId, Boolean isRead) {
+
+        List<Notifications> unReadNotifications = notificationRepository.findByIsReadAndAgency_agencyId(isRead, agencyId);
+
+        return unReadNotifications.stream().map(notification ->
+                GlobalNotificationResponse.builder()
+                        .notificationId(notification.getId())
+                        .agencyId(notification.getAgency().getAgencyId())
+                        .isRead(notification.getIsRead())
+                        .message(notification.getMessages().get(0).getText())
+                        .isRead(notification.getIsRead())
+                        .build()).toList();
+    }
+
+    public Notifications updateIsRead(Long notificationId, Boolean isRead) {
+
+        Notifications notification = notificationRepository.findById(notificationId)
+                .orElseThrow(() -> new RuntimeException("Notification not found"));
+
+        notification.setIsRead(isRead);
+
+        return notificationRepository.save(notification);
+    }
 
 }
