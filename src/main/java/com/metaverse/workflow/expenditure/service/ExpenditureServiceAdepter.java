@@ -736,6 +736,7 @@ public class ExpenditureServiceAdepter implements ExpenditureService {
                     .agencyId(expenditure.getAgency() != null ? expenditure.getAgency().getAgencyId() : -1L)
                     .programId(expenditure.getProgram() != null ? expenditure.getProgram().getProgramId() : -1L)
                     .participantId(-1L)
+                    .isRead(false)
                     .build();
 
             notificationService.saveNotification(req);
@@ -752,6 +753,7 @@ public class ExpenditureServiceAdepter implements ExpenditureService {
                     .agencyId(expenditure.getAgency() != null ? expenditure.getAgency().getAgencyId() : -1L)
                     .programId(expenditure.getProgram() != null ? expenditure.getProgram().getProgramId() : -1L)
                     .participantId(-1L)
+                    .isRead(false)
                     .build();
 
             notificationService.saveNotification(req);

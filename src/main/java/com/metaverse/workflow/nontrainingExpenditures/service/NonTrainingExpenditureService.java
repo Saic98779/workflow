@@ -349,6 +349,7 @@ public class NonTrainingExpenditureService {
                     .message(remarks.getSpiuComments())
                     .agencyId(expenditure.getAgency() != null ? expenditure.getAgency().getAgencyId() : -1L)
                     .programId(-1L)
+                    .isRead(false)
                     .participantId(-1L)
                     .build();
 
@@ -366,6 +367,7 @@ public class NonTrainingExpenditureService {
                     .message(remarks.getAgencyComments())
                     .agencyId(expenditure.getAgency() != null ? expenditure.getAgency().getAgencyId() : -1L)
                     .programId(-1L)
+                    .isRead(false)
                     .participantId(-1L)
                     .build();
 

@@ -1,5 +1,7 @@
 package com.metaverse.workflow.notifications.repository;
 
+import com.metaverse.workflow.enums.NotificationRecipientType;
+import com.metaverse.workflow.enums.NotificationStatus;
 import com.metaverse.workflow.model.Notifications;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -20,4 +22,6 @@ public interface NotificationRepository extends JpaRepository<Notifications, Lon
     List<Notifications> findByReceiverRole(@Param("role") String role);
 
     Collection<Notifications> findByReceiver_UserIdOrderByLastMessageAtDesc(String userId);
+
+    List<Notifications> findByIsReadAndAgency_agencyId(Boolean isRead,Long agencyId);
 }

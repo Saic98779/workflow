@@ -96,4 +96,31 @@ public class NotificationController {
                 WorkflowResponse.success("Notification marked as CLOSED")
         );
     }
+
+
+
+
+
+    @GetMapping("/un-read")
+    public ResponseEntity<WorkflowResponse> getNotifications(@RequestParam Long agencyId, @RequestParam Boolean isRead) {
+
+        try{
+            List<GlobalNotificationRequest> notifications = notificationService.getAllUnReadNotifications(agencyId, isRead);
+            WorkflowResponse.builder().data(notifications).status(200).message("Success").build();
+            return ResponseEntity.ok(WorkflowResponse.builder().data(notifications).status(200).message("Success").build());
+
+        }catch (Exception e){
+           return ResponseEntity.badRequest().body(WorkflowResponse.builder().message(e.getMessage()).status(400).message("Failed").build());
+        }
+    }
+
+    @PutMapping("/{notificationId}/read")
+    public ResponseEntity<WorkflowResponse> updateIsRead(@PathVariable Long notificationId, @RequestParam Boolean isRead) {
+        try{
+             notificationService.updateIsRead(notificationId, isRead);
+            return ResponseEntity.ok(WorkflowResponse.builder().status(200).message("Success").build());
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body(WorkflowResponse.builder().message(e.getMessage()).status(400).message("Failed").build());
+        }
+    }
 }

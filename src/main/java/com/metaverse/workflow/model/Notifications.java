@@ -72,4 +72,6 @@ public class Notifications extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "recipient_type", nullable = false)
     private NotificationRecipientType recipientType;
+
+    private Boolean isRead;
 }
