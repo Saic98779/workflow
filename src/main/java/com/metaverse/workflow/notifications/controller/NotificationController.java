@@ -2,6 +2,7 @@ package com.metaverse.workflow.notifications.controller;
 
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.notifications.dto.GlobalNotificationRequest;
+import com.metaverse.workflow.notifications.dto.GlobalNotificationResponse;
 import com.metaverse.workflow.notifications.dto.NotificationDto;
 import com.metaverse.workflow.notifications.service.NotificationServiceImpl;
 
@@ -105,7 +106,7 @@ public class NotificationController {
     public ResponseEntity<WorkflowResponse> getNotifications(@RequestParam Long agencyId, @RequestParam Boolean isRead) {
 
         try{
-            List<GlobalNotificationRequest> notifications = notificationService.getAllUnReadNotifications(agencyId, isRead);
+            List<GlobalNotificationResponse> notifications = notificationService.getAllUnReadNotifications(agencyId, isRead);
             WorkflowResponse.builder().data(notifications).status(200).message("Success").build();
             return ResponseEntity.ok(WorkflowResponse.builder().data(notifications).status(200).message("Success").build());
 

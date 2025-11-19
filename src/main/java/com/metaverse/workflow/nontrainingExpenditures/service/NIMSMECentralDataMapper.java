@@ -2,11 +2,15 @@ package com.metaverse.workflow.nontrainingExpenditures.service;
 
 import com.metaverse.workflow.common.util.DateUtil;
 import com.metaverse.workflow.model.NIMSMECentralData;
+import com.metaverse.workflow.model.NonTrainingAgencyComments;
+import com.metaverse.workflow.model.NonTrainingSpiuComments;
 import com.metaverse.workflow.model.NonTrainingSubActivity;
 import com.metaverse.workflow.nontrainingExpenditures.Dto.CentralDataRequest;
 import com.metaverse.workflow.nontrainingExpenditures.Dto.CentralDataResponse;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 public class NIMSMECentralDataMapper {
 
@@ -68,7 +72,22 @@ public class NIMSMECentralDataMapper {
         res.setCheckNo(entity.getCheckNo());
         res.setCheckDate(DateUtil.dateToString(entity.getCheckDate(),"dd-MM-YYYY"));
         res.setUploadBillUrl(entity.getUploadBillUrl());
-
+        res.setStatus(entity.getBillStatus());
+        res.setAgencyComments(
+                Optional.ofNullable(entity.getAgencyComments())
+                        .orElse(List.of())
+                        .stream()
+                        .map(NonTrainingAgencyComments::getFormattedRemark)
+                        .toList()
+        );
+        res.setSpiuComments(
+                Optional.ofNullable(entity.getSpiuComments())
+                        .orElse(List.of())
+                        .stream()
+                        .map(NonTrainingSpiuComments::getFormattedRemark)
+                        .toList()
+        );
+        res.setStatus(entity.getBillStatus());
         return res;
     }
 }

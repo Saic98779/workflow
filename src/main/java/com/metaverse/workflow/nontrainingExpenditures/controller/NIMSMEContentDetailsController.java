@@ -1,13 +1,19 @@
 package com.metaverse.workflow.nontrainingExpenditures.controller;
 
 import com.metaverse.workflow.common.response.WorkflowResponse;
+import com.metaverse.workflow.common.util.RestControllerBase;
+import com.metaverse.workflow.enums.BillRemarksStatus;
+import com.metaverse.workflow.exceptions.DataException;
 import com.metaverse.workflow.nontrainingExpenditures.Dto.NIMSMEContentDetailsDto;
 import com.metaverse.workflow.nontrainingExpenditures.service.NIMSMEContentDetailsService;
+import com.metaverse.workflow.nontrainingExpenditures.service.NonTrainingExpenditureRemarksDTO;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -115,4 +121,16 @@ public class NIMSMEContentDetailsController {
                             .build());
         }
     }
+
+    @PutMapping("content/save/remarks/")
+    public ResponseEntity<?> addingRemarksToResourceExpenditure(Principal principal, @RequestBody NonTrainingExpenditureRemarksDTO remarksDTO,
+                                                                @RequestParam(value = "status", required = false) BillRemarksStatus status,
+                                                                HttpServletRequest servletRequest) {
+        try {
+            return  ResponseEntity.ok(service.addRemarkOrResponse(remarksDTO, status));
+        } catch (DataException e) {
+            return RestControllerBase.error(e);
+        }
+    }
+
 }

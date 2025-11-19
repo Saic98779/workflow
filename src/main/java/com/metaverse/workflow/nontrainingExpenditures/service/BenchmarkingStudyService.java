@@ -1,6 +1,7 @@
 package com.metaverse.workflow.nontrainingExpenditures.service;
 
 import com.metaverse.workflow.common.response.WorkflowResponse;
+import com.metaverse.workflow.enums.BillRemarksStatus;
 import com.metaverse.workflow.exceptions.DataException;
 import com.metaverse.workflow.nontrainingExpenditures.Dto.BenchmarkingStudyRequest;
 import org.springframework.web.multipart.MultipartFile;
@@ -11,5 +12,5 @@ public interface BenchmarkingStudyService {
     WorkflowResponse getBenchmarkingStudyBySubActivityId(Long subActivityId) throws DataException;
     WorkflowResponse deleteBenchmarkingStudy(Long benchmarkingStudyId) throws DataException;
     WorkflowResponse getBenchmarkingStudyById(Long benchmarkingStudyId) throws DataException;
-
+    WorkflowResponse addRemarkOrResponse(NonTrainingExpenditureRemarksDTO remarksDTO, BillRemarksStatus status) throws DataException;
 }

@@ -1,6 +1,9 @@
 package com.metaverse.workflow.nontrainingExpenditures.Dto;
 
+import com.metaverse.workflow.enums.BillRemarksStatus;
 import lombok.Data;
+
+import java.util.List;
 
 @Data
 public class BenchmarkingStudyResponse {
@@ -26,4 +29,7 @@ public class BenchmarkingStudyResponse {
     private String modeOfTravel;
     private String checkNo;
     private String checkDate;
+    private BillRemarksStatus status;
+    private List<String> spiuComments;
+    private List<String> agencyComments;
 }

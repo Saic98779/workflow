@@ -1,6 +1,9 @@
 package com.metaverse.workflow.nontrainingExpenditures.Dto;
 
+import com.metaverse.workflow.enums.BillRemarksStatus;
 import lombok.Data;
+
+import java.util.List;
 
 @Data
 public class CentralDataResponse {
@@ -21,4 +24,7 @@ public class CentralDataResponse {
     private String checkNo;
     private String checkDate;
     private String uploadBillUrl;
+    private BillRemarksStatus status;
+    private List<String> spiuComments;
+    private List<String> agencyComments;
 }

@@ -6,9 +6,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.metaverse.workflow.activitylog.ActivityLogService;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.common.util.RestControllerBase;
+import com.metaverse.workflow.enums.BillRemarksStatus;
 import com.metaverse.workflow.exceptions.DataException;
 import com.metaverse.workflow.nontrainingExpenditures.Dto.CentralDataRequest;
 import com.metaverse.workflow.nontrainingExpenditures.service.NIMSMECentralDataService;
+import com.metaverse.workflow.nontrainingExpenditures.service.NonTrainingExpenditureRemarksDTO;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.websocket.server.PathParam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -102,6 +105,17 @@ public class CentralDataController {
             WorkflowResponse response = service.deleteCentralData(centralDataId);
             logService.logs(principal.getName(), "DELETE", "Central data deleted successfully | ID: " + centralDataId, "CentralData", "/central-data/"+centralDataId);
             return ResponseEntity.ok(response);
+        } catch (DataException e) {
+            return RestControllerBase.error(e);
+        }
+    }
+
+    @PutMapping("/save/remarks/")
+    public ResponseEntity<?> addingRemarksToResourceExpenditure(Principal principal, @RequestBody NonTrainingExpenditureRemarksDTO remarksDTO,
+                                                                @RequestParam(value = "status", required = false) BillRemarksStatus status,
+                                                                HttpServletRequest servletRequest) {
+        try {
+            return  ResponseEntity.ok(service.addRemarkOrResponse(remarksDTO, status));
         } catch (DataException e) {
             return RestControllerBase.error(e);
         }

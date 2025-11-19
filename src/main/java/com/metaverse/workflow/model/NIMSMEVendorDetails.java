@@ -1,11 +1,13 @@
 package com.metaverse.workflow.model;
 
+import com.metaverse.workflow.enums.BillRemarksStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "nimsme_vendor_details")
@@ -29,4 +31,14 @@ public class NIMSMEVendorDetails extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sub_activity_id", nullable = false)
     private NonTrainingSubActivity nonTrainingSubActivity;
+
+    @Column(name = "status")
+    private BillRemarksStatus status;
+
+    @OneToMany(cascade = CascadeType.ALL,mappedBy = "nimsmeVendorDetails")
+    private List<NonTrainingSpiuComments> spiuComments;
+
+    @OneToMany(cascade = CascadeType.ALL,mappedBy = "nimsmeVendorDetails")
+    private List<NonTrainingAgencyComments> agencyComments;
+
 }

@@ -1,8 +1,10 @@
 package com.metaverse.workflow.nontrainingExpenditures.Dto;
 
+import com.metaverse.workflow.enums.BillRemarksStatus;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 public class NIMSMEContentDetailsDto {
@@ -16,4 +18,7 @@ public class NIMSMEContentDetailsDto {
     private Date dateOfUpload;
     private String url;
     private Long subActivityId;
+    private BillRemarksStatus billStatus;
+    private List<String> spiuComments;
+    private List<String> agencyComments;
 }

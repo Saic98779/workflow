@@ -1,10 +1,14 @@
 package com.metaverse.workflow.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.metaverse.workflow.enums.BillRemarksStatus;
 import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.List;
+
 @Data
 @Entity
 @Table(name = "benchmarking_study")
@@ -89,4 +93,13 @@ public class BenchmarkingStudy {
 
     @Column(name = "check_date")
     private Date checkDate;
+
+    @Column(name = "status")
+    private BillRemarksStatus status;
+
+    @OneToMany(cascade = CascadeType.ALL,mappedBy = "benchmarkingStudy")
+    private List<NonTrainingSpiuComments> spiuComments;
+
+    @OneToMany(cascade = CascadeType.ALL,mappedBy = "benchmarkingStudy")
+    private List<NonTrainingAgencyComments> agencyComments;
 }

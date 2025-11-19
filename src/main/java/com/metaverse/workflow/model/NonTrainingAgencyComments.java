@@ -33,6 +33,36 @@ public class NonTrainingAgencyComments {
     @JsonIgnore
     private NonTrainingExpenditure nonTrainingExpenditure;
 
+    @ManyToOne
+    @JoinColumn(name = "benchmarkingStudy")
+    @JsonIgnore
+    private BenchmarkingStudy benchmarkingStudy;
+
+    @ManyToOne
+    @JoinColumn(name = "nimsmeCentralData")
+    @JsonIgnore
+    private NIMSMECentralData nimsmeCentralData;
+
+    @ManyToOne
+    @JoinColumn(name = "nimsmeContentDetails")
+    @JsonIgnore
+    private NIMSMEContentDetails nimsmeContentDetails;
+
+    @ManyToOne
+    @JoinColumn(name = "nimsmeVendorDetails")
+    @JsonIgnore
+    private NIMSMEVendorDetails nimsmeVendorDetails;
+
+    @ManyToOne
+    @JoinColumn(name = "nonTrainingResourceExpenditure")
+    @JsonIgnore
+    private NonTrainingResourceExpenditure nonTrainingResourceExpenditure;
+
+    @ManyToOne
+    @JoinColumn(name = "travelAndTransport")
+    @JsonIgnore
+    private TravelAndTransport travelAndTransport;
+
 //    @ManyToOne
 //    @JoinColumn(name = "bulkExpenditureTransaction", referencedColumnName = "bulk_expenditure_transaction_id")
 //    @JsonIgnore
