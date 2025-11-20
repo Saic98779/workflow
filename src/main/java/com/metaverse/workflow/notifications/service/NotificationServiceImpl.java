@@ -98,6 +98,7 @@ public class NotificationServiceImpl {
         }
 
         notification.updateLastMessageTime();
+        notification.setIsRead(false);
 
         // Save base notification first
         Notifications saved = notificationRepository.save(notification);
@@ -140,7 +141,7 @@ public class NotificationServiceImpl {
 
         // Build DTO manually
         return NotificationDto.builder()
-                .id(base.getId())
+                .notificationId(base.getId())
                 .receiverId(base.getReceiver().getUserId())
                 .receiverName(base.getReceiver().getFirstName() + " " + base.getReceiver().getLastName())
                 .receiverRole(base.getReceiver().getUserRole())
@@ -148,7 +149,7 @@ public class NotificationServiceImpl {
                 .recipientType(base.getRecipientType())
                 .lastMessageAt(base.getLastMessageAt())
                 .messages(allMessages.stream()
-                        .map(NotificationMapper::toMessageDto)
+                        .map(msg -> NotificationMapper.toMessageDto(msg, base))
                         .toList()
                 )
                 .build();
@@ -193,6 +194,9 @@ public class NotificationServiceImpl {
                         .notificationId(notification.getId())
                         .agencyId(notification.getAgency().getAgencyId())
                         .isRead(notification.getIsRead())
+                        .sentBy(notification.getMessages().get(0).getSentBy())
+                        .notificationType(notification.getNotificationType())
+                        .createdAt(notification.getMessages().get(0).getCreatedAt())
                         .message(notification.getMessages().get(0).getText())
                         .isRead(notification.getIsRead())
                         .build()).toList();

@@ -1,5 +1,6 @@
 package com.metaverse.workflow.notifications.dto;
 
+import com.metaverse.workflow.common.enums.NotificationType;
 import com.metaverse.workflow.enums.RemarkBy;
 import lombok.*;
 
@@ -17,6 +18,8 @@ public class NotificationMessageDto {
     private String text;
 
     private RemarkBy sentBy;
+
+    private NotificationType notificationType;
 
     private LocalDateTime createdAt;
 }

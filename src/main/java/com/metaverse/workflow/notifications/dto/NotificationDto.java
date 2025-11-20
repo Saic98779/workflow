@@ -14,7 +14,7 @@ import java.util.List;
 @Builder
 public class NotificationDto {
 
-    private Long id;
+    private Long notificationId;
 
     private LocalDateTime dateOfNotification;
     private LocalDateTime dateOfFirstNotification;

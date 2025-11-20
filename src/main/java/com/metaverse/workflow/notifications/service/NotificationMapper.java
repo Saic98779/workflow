@@ -20,7 +20,7 @@ public class NotificationMapper {
         if (entity == null) return null;
 
         return NotificationDto.builder()
-                .id(entity.getId())
+                .notificationId(entity.getId())
                 .dateOfNotification(entity.getDateOfNotification())
                 .dateOfFirstNotification(entity.getDateOfFirstNotification())
 
@@ -46,34 +46,36 @@ public class NotificationMapper {
                 .lastMessageAt(entity.getLastMessageAt())
 
                 // messages mapped + sorted DESC
-                .messages(toMessageDtoList(entity.getMessages()))
+                .messages(toMessageDtoList(entity.getMessages(), entity))
                 .build();
     }
 
     // ============================================================
     // Convert List<NotificationMessage> → List<NotificationMessageDto>
     // ============================================================
-    private List<NotificationMessageDto> toMessageDtoList(List<NotificationMessage> messages) {
+    private List<NotificationMessageDto> toMessageDtoList(List<NotificationMessage> messages, Notifications notifications) {
 
         if (messages == null) return List.of();
 
         return messages.stream()
                 .sorted(Comparator.comparing(NotificationMessage::getCreatedAt).reversed())
-                .map(NotificationMapper::toMessageDto)
+                .map(msg -> toMessageDto(msg, notifications))
                 .toList();
     }
 
     // ============================================================
     // Convert NotificationMessage → NotificationMessageDto
     // ============================================================
-    NotificationMessageDto toMessageDto(NotificationMessage msg) {
+    NotificationMessageDto toMessageDto(NotificationMessage msg, Notifications notifications) {
         if (msg == null) return null;
 
         return NotificationMessageDto.builder()
                 .id(msg.getId())
+                .notificationType(notifications.getNotificationType())
                 .text(msg.getText())
                 .sentBy(msg.getSentBy())
                 .createdAt(msg.getCreatedAt())
                 .build();
     }
+
 }

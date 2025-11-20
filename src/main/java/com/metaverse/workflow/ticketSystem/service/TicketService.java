@@ -65,12 +65,16 @@ public class TicketService {
             // 🔔 Send notification to ASSIGNEE (Unified Notification)
             if (ticket.getAssignee() != null) {
 
+                User user = getUser(ticket.getAssignee().getUserId());
+
                 GlobalNotificationRequest req = GlobalNotificationRequest.builder()
                         .userId(ticket.getAssignee().getUserId())        // receiver
                         .message("A new ticket is assigned to you: " + ticket.getTicketId())
                         .sentBy(RemarkBy.ADMIN)                           // system action
                         .agencyId(-1L)
+                        .isRead(false)
                         .notificationType(NotificationType.TICKETS)
+                        .agencyId(user.getAgency() != null ? user.getAgency().getAgencyId() : -1L)
                         .participantId(-1L)
                         .programId(-1L)
                         .build();
@@ -120,6 +124,9 @@ public class TicketService {
             TicketStatus oldStatus = ticket.getStatus();
             User actor = null;
 
+            User user = getUser(ticket.getAssignee().getUserId());
+
+
             // ================= ASSIGNEE CHANGE =================
             if (dto.getAssigneeId() != null) {
                 actor = getUser(dto.getAssigneeId());
@@ -129,7 +136,8 @@ public class TicketService {
                         .userId(actor.getUserId())
                         .message("You have been assigned ticket: " + ticket.getTicketId())
                         .sentBy(RemarkBy.ADMIN)
-                        .agencyId(-1L)
+                        .isRead(false)
+                        .agencyId(user.getAgency() != null ? user.getAgency().getAgencyId() : -1L)
                         .notificationType(NotificationType.TICKETS)
                         .programId(-1L)
                         .participantId(-1L)
@@ -157,6 +165,7 @@ public class TicketService {
                 saveHistory(ticket, oldStatus, newStatus, actor, fromUser, toUser,
                         "Status changed to " + newStatus);
 
+
                 // Notify assignee about status change
                 if (ticket.getAssignee() != null) {
 
@@ -165,7 +174,9 @@ public class TicketService {
                             .message("Ticket " + ticket.getTicketId() + " status updated to: " + newStatus)
                             .sentBy(RemarkBy.ADMIN)
                             .agencyId(-1L)
+                            .isRead(false)
                             .notificationType(NotificationType.TICKETS)
+                            .agencyId(user.getAgency() != null ? user.getAgency().getAgencyId() : -1L)
                             .programId(-1L)
                             .participantId(-1L)
                             .build();
@@ -201,7 +212,9 @@ public class TicketService {
                                 .message("New comment added on ticket: " + ticket.getTicketId())
                                 .sentBy(RemarkBy.CALL_CENTER)
                                 .notificationType(NotificationType.TICKETS)
+                                .agencyId(user.getAgency() != null ? user.getAgency().getAgencyId() : -1L)
                                 .agencyId(-1L)
+                                .isRead(false)
                                 .programId(-1L)
                                 .participantId(-1L)
                                 .build();
