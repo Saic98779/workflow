@@ -5,9 +5,14 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.metaverse.workflow.activitylog.ActivityLogService;
 import com.metaverse.workflow.common.response.WorkflowResponse;
+import com.metaverse.workflow.common.util.RestControllerBase;
+import com.metaverse.workflow.enums.BillRemarksStatus;
+import com.metaverse.workflow.exceptions.DataException;
 import com.metaverse.workflow.expenditure.service.BulkExpenditureRequest;
 import com.metaverse.workflow.nontrainingExpenditures.Dto.TravelAndTransportDto;
+import com.metaverse.workflow.nontrainingExpenditures.service.NonTrainingExpenditureRemarksDTO;
 import com.metaverse.workflow.nontrainingExpenditures.service.TravelAndTransportService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -86,6 +91,18 @@ public class TravelAndTransportController {
             return ResponseEntity.internalServerError().body(
                     WorkflowResponse.builder()
                             .message("FAILURE: Unexpected server error — " + e.getMessage()).status(500).build());
+        }
+    }
+
+    @PutMapping("/save/remarks")
+    public ResponseEntity<?> addingRemarks(Principal principal,@RequestBody NonTrainingExpenditureRemarksDTO remarksDTO,
+                                           @RequestParam(value = "status", required = false) BillRemarksStatus status,
+                                           HttpServletRequest servletRequest) {
+        try {
+            logService.logs(principal.getName(), "UPDATE", "Adding/updating remarks for non expenditure with status: " + status, "Expenditure", servletRequest.getRequestURI());
+            return  ResponseEntity.ok(travelService.addRemarkOrResponse(remarksDTO, status));
+        } catch (DataException e) {
+            return RestControllerBase.error(e);
         }
     }
 }

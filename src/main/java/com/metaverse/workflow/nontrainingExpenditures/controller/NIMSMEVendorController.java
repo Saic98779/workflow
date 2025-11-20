@@ -3,8 +3,14 @@ package com.metaverse.workflow.nontrainingExpenditures.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.metaverse.workflow.common.response.WorkflowResponse;
+import com.metaverse.workflow.common.util.RestControllerBase;
+import com.metaverse.workflow.enums.BillRemarksStatus;
+import com.metaverse.workflow.exceptions.DataException;
+import com.metaverse.workflow.login.service.LoginService;
 import com.metaverse.workflow.nontrainingExpenditures.Dto.NIMSMEVendorDetailsDto;
 import com.metaverse.workflow.nontrainingExpenditures.service.NIMSMEVendorDetailsService;
+import com.metaverse.workflow.nontrainingExpenditures.service.NonTrainingExpenditureRemarksDTO;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -115,6 +122,17 @@ public class NIMSMEVendorController {
                     WorkflowResponse.builder().status(500).message("An unexpected error occurred: " + e.getMessage())
                             .build()
             );
+        }
+    }
+
+    @PutMapping("/save/remarks")
+    public ResponseEntity<?> addingRemarks(Principal principal, @RequestBody NonTrainingExpenditureRemarksDTO remarksDTO,
+                                           @RequestParam(value = "status", required = false) BillRemarksStatus status,
+                                           HttpServletRequest servletRequest) {
+        try {
+            return  ResponseEntity.ok(service.addRemarkOrResponse(remarksDTO, status));
+        } catch (DataException e) {
+            return RestControllerBase.error(e);
         }
     }
 }

@@ -1,11 +1,13 @@
 package com.metaverse.workflow.nontrainingExpenditures.Dto;
 
+import com.metaverse.workflow.enums.BillRemarksStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -31,5 +33,8 @@ public class TravelAndTransportDto {
     private Long nonTrainingSubActivityId;
     private String checkNo;
     private String checkDate;
+    private List<String> spiuComments;
+    private List<String> agencyComments;
+    private BillRemarksStatus status;
 
 }

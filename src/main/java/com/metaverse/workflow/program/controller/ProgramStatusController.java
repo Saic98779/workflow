@@ -61,7 +61,9 @@ public class ProgramStatusController {
                 !status.equals(ProgramStatusConstants.ATTENDANCE_MARKED) &&
                 !status.equals(ProgramStatusConstants.PROGRAM_EXECUTION_UPDATED) &&
                 !status.equals(ProgramStatusConstants.PROGRAM_EXECUTION) &&
-                !status.equals(ProgramStatusConstants.PROGRAM_EXPENDITURE_UPDATED);
+                !status.equals(ProgramStatusConstants.PROGRAM_EXPENDITURE_UPDATED) &&
+                !status.equals(ProgramStatusConstants.PROGRAM_EXPENDITURE_APPROVED) &&
+                !status.equals(ProgramStatusConstants.COLLAGE_ADDED);
     }
 
     @GetMapping("/{agencyId}")

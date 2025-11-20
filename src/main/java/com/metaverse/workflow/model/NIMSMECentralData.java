@@ -1,5 +1,6 @@
 package com.metaverse.workflow.model;
 
+import com.metaverse.workflow.enums.BillRemarksStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -8,6 +9,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.util.Date;
+import java.util.List;
+
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -74,5 +77,12 @@ public class NIMSMECentralData {
     @UpdateTimestamp
     private Date updatedOn;
 
+    @Column(name = "bill_status")
+    private BillRemarksStatus billStatus;
 
+    @OneToMany(mappedBy = "nimsmeCentralData")
+    private List<NonTrainingSpiuComments> spiuComments;
+
+    @OneToMany(mappedBy = "nimsmeCentralData")
+    private List<NonTrainingAgencyComments> agencyComments;
 }

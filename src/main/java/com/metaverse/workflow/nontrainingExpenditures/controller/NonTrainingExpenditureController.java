@@ -33,6 +33,7 @@ public class NonTrainingExpenditureController extends RestControllerBase {
     private final NonTrainingExpenditureService service;
     private final NonTrainingActivityService nonTrainingActivityService;
     private final ActivityLogService logService;
+    private final NonTrainingResourceExpenditureService nonTrainingResourceExpenditureService;
 
     @PostMapping(path = "/save",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> create(Principal principal, @RequestPart("dto") String dto, @RequestPart(value = "file", required = false) MultipartFile file) {
@@ -275,6 +276,19 @@ public class NonTrainingExpenditureController extends RestControllerBase {
         try {
             logService.logs(principal.getName(), "UPDATE", "Adding/updating remarks for non expenditure with status: " + status, "Program Expenditure", servletRequest.getRequestURI());
             return  ResponseEntity.ok(service.addRemarkOrResponse(remarksDTO, status));
+        } catch (DataException e) {
+            return RestControllerBase.error(e);
+        }
+    }
+
+
+    @PutMapping("/save/remarks/resource")
+    public ResponseEntity<?> addingRemarksToResourceExpenditure(Principal principal,@RequestBody NonTrainingExpenditureRemarksDTO remarksDTO,
+                                           @RequestParam(value = "status", required = false) BillRemarksStatus status,
+                                           HttpServletRequest servletRequest) {
+        try {
+            logService.logs(principal.getName(), "UPDATE", "Adding/updating remarks for non expenditure with status: " + status, "Non-Training Expenditure", servletRequest.getRequestURI());
+            return  ResponseEntity.ok(nonTrainingResourceExpenditureService.addRemarkOrResponse(remarksDTO, status));
         } catch (DataException e) {
             return RestControllerBase.error(e);
         }

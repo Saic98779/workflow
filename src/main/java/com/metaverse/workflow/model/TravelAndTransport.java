@@ -1,6 +1,7 @@
 package com.metaverse.workflow.model;
 
 import com.metaverse.workflow.common.enums.PaymentType;
+import com.metaverse.workflow.enums.BillRemarksStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -52,4 +53,13 @@ public class TravelAndTransport {
 
     @Column(name = "updated_on", insertable = false, updatable = true)
     private Date updatedOn;
+
+    @Column(name = "status")
+    private BillRemarksStatus status;
+    
+    @OneToMany(cascade = CascadeType.ALL,mappedBy = "travelAndTransport")
+    private List<NonTrainingSpiuComments> spiuComments;
+
+    @OneToMany(cascade = CascadeType.ALL,mappedBy = "travelAndTransport")
+    private List<NonTrainingAgencyComments> agencyComments;
 }

@@ -3,9 +3,15 @@ package com.metaverse.workflow.nontrainingExpenditures.service;
 
 import com.metaverse.workflow.common.util.DateUtil;
 import com.metaverse.workflow.model.BenchmarkingStudy;
+import com.metaverse.workflow.model.NonTrainingAgencyComments;
+import com.metaverse.workflow.model.NonTrainingSpiuComments;
 import com.metaverse.workflow.model.NonTrainingSubActivity;
 import com.metaverse.workflow.nontrainingExpenditures.Dto.BenchmarkingStudyRequest;
 import com.metaverse.workflow.nontrainingExpenditures.Dto.BenchmarkingStudyResponse;
+import jakarta.persistence.GeneratedValue;
+
+import java.util.List;
+import java.util.Optional;
 
 public class BenchmarkingStudyMapper {
 
@@ -66,6 +72,21 @@ public class BenchmarkingStudyMapper {
         response.setReportSubmissionDate(DateUtil.dateToString(entity.getReportSubmissionDate(), DATE_PATTERN));
         response.setCheckNo(entity.getCheckNo());
         response.setCheckDate(DateUtil.dateToString(entity.getCheckDate(), "dd-MM-yyyy"));
+        response.setStatus(entity.getStatus());
+        response.setAgencyComments(
+                Optional.ofNullable(entity.getAgencyComments())
+                        .orElse(List.of())
+                        .stream()
+                        .map(NonTrainingAgencyComments::getFormattedRemark)
+                        .toList()
+        );
+        response.setSpiuComments(
+                Optional.ofNullable(entity.getSpiuComments())
+                        .orElse(List.of())
+                        .stream()
+                        .map(NonTrainingSpiuComments::getFormattedRemark)
+                        .toList()
+        );
         return response;
     }
 

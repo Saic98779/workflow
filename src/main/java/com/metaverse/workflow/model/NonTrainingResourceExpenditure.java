@@ -1,12 +1,14 @@
 package com.metaverse.workflow.model;
 
+import com.metaverse.workflow.enums.BillRemarksStatus;
+import com.metaverse.workflow.enums.RemarkBy;
 import jakarta.persistence.*;
 import lombok.*;
-import net.minidev.json.annotate.JsonIgnore;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.util.Date;
+import java.util.List;
 
 @Setter
 @Getter
@@ -15,8 +17,7 @@ import java.util.Date;
 @AllArgsConstructor
 @Builder
 @Table(name = "non_training_resource_expenditure")
-public class
-NonTrainingResourceExpenditure {
+public class NonTrainingResourceExpenditure {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -46,4 +47,14 @@ NonTrainingResourceExpenditure {
     @Column(name = "updated_on", insertable = false, updatable = true)
     @UpdateTimestamp
     private Date updatedOn;
+
+    @Column(name = "status")
+    private BillRemarksStatus status;
+
+    @OneToMany(cascade = CascadeType.ALL,mappedBy = "nonTrainingResourceExpenditure")
+    private List<NonTrainingSpiuComments> spiuComments;
+
+    @OneToMany(cascade = CascadeType.ALL,mappedBy = "nonTrainingResourceExpenditure")
+    private List<NonTrainingAgencyComments> agencyComments;
+
 }
