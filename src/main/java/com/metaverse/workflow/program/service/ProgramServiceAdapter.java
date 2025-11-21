@@ -679,24 +679,33 @@ public class ProgramServiceAdapter implements ProgramService {
             if (startDate == null || endDate == null) continue;
 
 
+            String programStatus = program.getStatus();
+
             if (endDate.before(today)) {
-                if ("Program Expenditure Updated".equalsIgnoreCase(status)) {
+
+                if ("Program Expenditure Updated".equalsIgnoreCase(programStatus)) {
                     completed++;
-                } else {
-                    if (program.getParticipants().isEmpty()) {
+                }
+                else if ("Program Expenditure Approved".equalsIgnoreCase(programStatus)) {
+                    expApproved++;
+                }
+                else {
+                    if (program.getParticipants() == null || program.getParticipants().isEmpty()) {
                         overDue++;
                     } else {
                         completedDataPending++;
                     }
                 }
+
             } else if (!today.before(startDate) && !today.after(endDate)) {
+
                 inProcess++;
+
             } else if (startDate.after(today)) {
+
                 yetToBegin++;
             }
-            if (program.getStatus() == "Program Expenditure Approved") {
-                expApproved++;
-            }
+
         }
 
         return WorkflowResponse.builder()
