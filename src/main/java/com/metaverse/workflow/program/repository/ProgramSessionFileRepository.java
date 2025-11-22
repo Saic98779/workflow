@@ -67,4 +67,12 @@ public interface ProgramSessionFileRepository extends JpaRepository<ProgramSessi
     @Modifying(clearAutomatically = true)
     @Query("UPDATE ProgramSessionFile p SET p.filePath = :filePath WHERE p.nimsmeCentralData.centralDataId = :centralDataId")
     int updateFilePathByCentralDataId(@Param("filePath") String filePath, @Param("centralDataId") Long centralDataId);
+
+    @Modifying
+    @Query("update ProgramSessionFile p set p.filePath = :filePath where p.nonTrainingConsumablesBulk.id = :bulkId")
+    int updateFilePathByNonTrainingConsumablesBulkId(@Param("filePath") String filePath,
+                                                      @Param("bulkId") Long bulkId);
+
+
+    void deleteByNonTrainingConsumablesBulkId(Long id);
 }

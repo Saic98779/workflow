@@ -68,6 +68,11 @@ public class NonTrainingAgencyComments {
 //    @JsonIgnore
 //    private BulkExpenditureTransaction bulkExpenditureTransaction;
 
+    @ManyToOne
+    @JoinColumn(name = "nonTrainingConsumablesBulk")
+    @JsonIgnore
+    private NonTrainingConsumablesBulk nonTrainingConsumablesBulk;
+
     @Transient
     public String getFormattedRemark() {
         if (remarkTimestamp == null || remarks == null) return "";
