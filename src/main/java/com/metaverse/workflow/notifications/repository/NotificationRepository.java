@@ -16,7 +16,7 @@ public interface NotificationRepository extends JpaRepository<Notifications, Lon
 
     @Query("""
         SELECT n FROM Notifications n
-        WHERE LOWER(n.receiver.userRole) = LOWER(:role)
+        WHERE LOWER(n.receiver.userRole) = LOWER(:role) and n.isRead = false
         ORDER BY n.lastMessageAt DESC
     """)
     List<Notifications> findByReceiverRole(@Param("role") String role);
