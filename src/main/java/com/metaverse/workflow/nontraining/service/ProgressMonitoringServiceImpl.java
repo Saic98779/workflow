@@ -291,7 +291,7 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
 
             switch ((int) activityId) {
                 case 13, 16, 17, 18, 22, 23, 24, 25, 27, 30, 31, 6, 8, 9, 11, 12, 20, 21, 106, 1, 2, 3, 4, 5, 32, 33,
-                     34, 35, 36, 37, 28, 29 -> {
+                     34, 35, 36, 37, 28, 29, 107 -> {
                     List<NonTrainingSubActivity> subActivities = activity.getSubActivities();
 
                     for (NonTrainingSubActivity subActivity : subActivities) {
@@ -423,7 +423,7 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
 
             /*
             Expenditure Table
-                COI     ->  27  : Technology firm, 28 : Staff - Call center Agency
+                COI     ->  27  : Technology firm, 28 : Staff - Call center Agency, 132,133
                 CODE    ->  73  : IT Infrastructure Setup
                 CITD    ->  4   : Administration Exp,  90 : Operating Expenses
                 CIPET   ->  12  : Other Administrative / Operating Expenses
@@ -433,7 +433,7 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
                 TGTPC-4 ->  110 : Admin Cost , Logistic
                 TGTPC-10->  124 : Admn Cost including logistics etc.
             */
-            case 27, 28, 73, 90, 12, 38, 39, 40, 64, 37, 110, 124 -> { //
+            case 27, 28, 73, 90, 12, 38, 39, 40, 64, 37, 110, 124 ,132, 133-> { //
                 Optional<List<NonTrainingExpenditure>> nonTrainingSubActivity = nonTrainingExpenditureRepository.findByNonTrainingSubActivity_SubActivityId(subActivityId);
                 if (nonTrainingSubActivity.isPresent()) {
                     Map<String, Double> result =

@@ -40,6 +40,7 @@ public class NotificationDto {
 
     // Last message time
     private LocalDateTime lastMessageAt;
+    private Boolean isRead;
 
     // All messages in this thread
     private List<NotificationMessageDto> messages;
