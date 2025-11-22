@@ -29,6 +29,7 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import java.time.Duration;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -263,6 +264,63 @@ public class MoMSMEReportSubmittedService {
                 .status(200)
                 .message("Interventions retrieved successfully.")
                 .data(interventions)
+                .build();
+    }
+
+    // ------------------ New dropdown helper methods ------------------
+
+    public WorkflowResponse getUniqueInterventions() throws DataException {
+        List<String> interventions = moMSMEReportRepo.findDistinctInterventions();
+        if (interventions == null || interventions.isEmpty()) {
+            throw new DataException("Intervention not found", "INTERVENTION_NOT_FOUND", 400);
+        }
+        return WorkflowResponse.builder()
+                .status(200)
+                .message("Unique interventions retrieved successfully.")
+                .data(interventions)
+                .totalElements(interventions.size())
+                .build();
+    }
+
+    public WorkflowResponse getComponentsByIntervention(String intervention) throws DataException {
+        if (intervention == null || intervention.trim().isEmpty()) {
+            throw new DataException("Intervention must be provided", "INTERVENTION_REQUIRED", 400);
+        }
+        List<String> components = moMSMEReportRepo.findDistinctComponentsByIntervention(intervention);
+        if (components == null || components.isEmpty()) {
+            throw new DataException("Components not found for intervention: " + intervention, "COMPONENTS_NOT_FOUND", 400);
+        }
+        return WorkflowResponse.builder()
+                .status(200)
+                .message("Components retrieved successfully for intervention: " + intervention)
+                .data(components)
+                .totalElements(components.size())
+                .build();
+    }
+
+    public WorkflowResponse getActivitiesByComponent(String component) throws DataException {
+        if (component == null || component.trim().isEmpty()) {
+            throw new DataException("Component must be provided", "COMPONENT_REQUIRED", 400);
+        }
+        List<Object[]> rows = moMSMEReportRepo.findDistinctActivityAndMoMSMEActivityIdByComponent(component);
+        if (rows == null || rows.isEmpty()) {
+            throw new DataException("Activities not found for component: " + component, "ACTIVITIES_NOT_FOUND", 400);
+        }
+
+        List<Map<String, Object>> activities = rows.stream()
+                .map(r -> {
+                    Map<String, Object> m = new HashMap<>();
+                    m.put("activity", r[0] != null ? String.valueOf(r[0]) : null);
+                    m.put("moMSMEActivityId", r[1] != null ? ((Number) r[1]).longValue() : null);
+                    return m;
+                })
+                .collect(Collectors.toList());
+
+        return WorkflowResponse.builder()
+                .status(200)
+                .message("Activities retrieved successfully for component: " + component)
+                .data(activities)
+                .totalElements(activities.size())
                 .build();
     }
 

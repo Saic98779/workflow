@@ -58,6 +58,42 @@ public class MoMSMEReportSubmittedController {
 
     }
 
+    // ------------------ New dropdown endpoints ------------------
+
+    @GetMapping("/interventions/unique")
+    public ResponseEntity<?> getUniqueInterventions() {
+        try {
+            WorkflowResponse response = service.getUniqueInterventions();
+            return ResponseEntity.ok(response);
+        } catch (DataException e) {
+            return RestControllerBase.error(e);
+        }
+    }
+
+    @GetMapping("/components")
+    public ResponseEntity<?> getComponentsByIntervention(@RequestParam String intervention) {
+        try {
+            WorkflowResponse response = service.getComponentsByIntervention(intervention);
+            return ResponseEntity.ok(response);
+        } catch (DataException e) {
+            return RestControllerBase.error(e);
+        }
+    }
+
+    /**
+     * Returns activities for a given component along with the corresponding moMSMEActivityId.
+     * Example: GET /momsme/activities?component=ComponentA
+     */
+    @GetMapping("/activities")
+    public ResponseEntity<?> getActivitiesByComponent(@RequestParam String component) {
+        try {
+            WorkflowResponse response = service.getActivitiesByComponent(component);
+            return ResponseEntity.ok(response);
+        } catch (DataException e) {
+            return RestControllerBase.error(e);
+        }
+    }
+
     @Tag(name = "MoMSME Reports", description = "Endpoints for MoMSME Monthly Reports")
     @GetMapping("/report/by-month")
     @Operation(
