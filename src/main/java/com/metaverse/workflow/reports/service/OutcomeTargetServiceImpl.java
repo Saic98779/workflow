@@ -57,8 +57,6 @@ public class OutcomeTargetServiceImpl implements OutcomeTargetService {
 
 
     public List<OutcomeTargetDTO> getTargetsByYear(String financialYear, Long agencyId) {
-        List<PhysicalTarget> targets = physicalTargetRepository.findByFinancialYear(financialYear);
-        OutcomeTargetResponse outcomeTargetResponse = null;
         int fyStartYear = Integer.parseInt(financialYear.split("-")[0]);
         LocalDate q1Start = LocalDate.of(fyStartYear, 4, 1);
         LocalDate q1End = LocalDate.of(fyStartYear, 6, 30);
