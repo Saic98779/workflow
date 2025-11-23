@@ -18,4 +18,6 @@ public class OutcomeTargetDTO {
     private Integer achievedQ4;
     private Integer totalTarget;
     private Integer totalAchieved;
+    private Integer grandTotalTarget;
+    private Integer grandTotalAchieved;
 }

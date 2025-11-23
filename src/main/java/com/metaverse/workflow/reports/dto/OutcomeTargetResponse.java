@@ -12,7 +12,5 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class OutcomeTargetResponse {
-    private int grandTargetTotal;
-    private int grandAchievedTotal;
     private List<OutcomeTargetDTO> outcomeTargetDTOList;
 }
