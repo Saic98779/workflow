@@ -61,4 +61,8 @@ public class ProgramSessionFile {
     @JoinColumn(name = "nimsme_vendor_details")
     private NIMSMEVendorDetails nimsmeVendorDetails;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "bulk_id")
+    private NonTrainingConsumablesBulk nonTrainingConsumablesBulk;
+
 }

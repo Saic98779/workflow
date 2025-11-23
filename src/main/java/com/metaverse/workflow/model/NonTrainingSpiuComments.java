@@ -63,6 +63,11 @@ public class NonTrainingSpiuComments {
     @JsonIgnore
     private TravelAndTransport travelAndTransport;
 
+    @ManyToOne
+    @JoinColumn(name = "nonTrainingConsumablesBulk")
+    @JsonIgnore
+    private NonTrainingConsumablesBulk nonTrainingConsumablesBulk;
+
 //    @ManyToOne
 //    @JoinColumn(name = "bulkExpenditureTransaction", referencedColumnName = "bulk_expenditure_transaction_id")
 //    @JsonIgnore
