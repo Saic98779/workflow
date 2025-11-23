@@ -21,6 +21,8 @@
 
 	<properties>
 		<java.version>17</java.version>
+        <!-- Build timestamp format used by buildnumber-maven-plugin -->
+        <maven.build.timestamp.format>yyyy-MM-dd'T'HH:mm:ssZ</maven.build.timestamp.format>
 	</properties>
 
 	<dependencies>
@@ -159,6 +161,23 @@
 
 	<build>
 		<finalName>workflow</finalName>
+        <!-- Configure resources so only the small swagger-build.properties is filtered -->
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+                <includes>
+                    <include>**/*</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>swagger-build.properties</include>
+                </includes>
+            </resource>
+        </resources>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
@@ -172,6 +191,25 @@
 					</excludes>
 				</configuration>
 			</plugin>
+            <!-- Generate a build timestamp property during the validate phase -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>buildnumber-maven-plugin</artifactId>
+                <version>1.4</version>
+                <executions>
+                    <execution>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>create</goal>
+                        </goals>
+                        <configuration>
+                            <doCheck>false</doCheck>
+                            <doUpdate>false</doUpdate>
+                            <timestampFormat>${maven.build.timestamp.format}</timestampFormat>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
 		</plugins>
 	</build>
 
