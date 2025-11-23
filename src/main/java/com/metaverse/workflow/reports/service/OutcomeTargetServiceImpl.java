@@ -4,7 +4,6 @@ import com.metaverse.workflow.model.PhysicalTarget;
 import com.metaverse.workflow.programoutcome.repository.*;
 import com.metaverse.workflow.programoutcometargets.repository.PhysicalRepository;
 import com.metaverse.workflow.reports.dto.OutcomeTargetDTO;
-import com.metaverse.workflow.reports.dto.OutcomeTargetResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
