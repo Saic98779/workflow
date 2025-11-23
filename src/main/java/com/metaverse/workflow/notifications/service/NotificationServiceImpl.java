@@ -88,7 +88,10 @@ public class NotificationServiceImpl {
         // 6. DECIDE RECIPIENT TYPE BASED ON SENDER
         // ----------------------------------------------------------
         if (req.getSentBy() == RemarkBy.AGENCY) {
-            notification.setRecipientType(NotificationRecipientType.CALL_CENTER);
+            if(req.getParticipantId() != -1){
+                notification.setRecipientType(NotificationRecipientType.CALL_CENTER);
+            }
+            notification.setRecipientType(NotificationRecipientType.AGENCY);
 
         } else if (req.getSentBy() == RemarkBy.CALL_CENTER) {
             notification.setRecipientType(NotificationRecipientType.AGENCY);
@@ -146,6 +149,7 @@ public class NotificationServiceImpl {
                 .receiverName(base.getReceiver().getFirstName() + " " + base.getReceiver().getLastName())
                 .receiverRole(base.getReceiver().getUserRole())
                 .status(base.getStatus())
+                .isRead(base.getIsRead())
                 .recipientType(base.getRecipientType())
                 .lastMessageAt(base.getLastMessageAt())
                 .messages(allMessages.stream()
@@ -189,7 +193,7 @@ public class NotificationServiceImpl {
 
         List<Notifications> unReadNotifications = notificationRepository.findByIsReadAndAgency_agencyId(isRead, agencyId);
 
-        return unReadNotifications.stream().map(notification ->
+        return unReadNotifications.stream().filter(notification -> notification.getMessages().get(0).getSentBy() == RemarkBy.ADMIN).map(notification ->
                 GlobalNotificationResponse.builder()
                         .notificationId(notification.getId())
                         .agencyId(notification.getAgency().getAgencyId())
@@ -198,7 +202,6 @@ public class NotificationServiceImpl {
                         .notificationType(notification.getNotificationType())
                         .createdAt(notification.getMessages().get(0).getCreatedAt())
                         .message(notification.getMessages().get(0).getText())
-                        .isRead(notification.getIsRead())
                         .build()).toList();
     }
 
