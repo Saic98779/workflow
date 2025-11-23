@@ -91,13 +91,13 @@ public class NotificationServiceImpl {
             if(req.getParticipantId() != -1){
                 notification.setRecipientType(NotificationRecipientType.CALL_CENTER);
             }
-            notification.setRecipientType(NotificationRecipientType.AGENCY);
+            notification.setRecipientType(NotificationRecipientType.ADMIN);
 
         } else if (req.getSentBy() == RemarkBy.CALL_CENTER) {
             notification.setRecipientType(NotificationRecipientType.AGENCY);
 
         } else {
-            notification.setRecipientType(NotificationRecipientType.ADMIN);
+            notification.setRecipientType(NotificationRecipientType.AGENCY);
         }
 
         notification.updateLastMessageTime();

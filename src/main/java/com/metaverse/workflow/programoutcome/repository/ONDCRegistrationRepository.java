@@ -46,7 +46,5 @@ public interface ONDCRegistrationRepository extends JpaRepository<ONDCRegistrati
 
     Page<ONDCRegistration> findByAgency_AgencyId(Long agencyId, Pageable pageable);
 
-    long countByAgency(Long agencyId);
 
-    long countONDCRegistrationAll(Date start, Date end);
 }

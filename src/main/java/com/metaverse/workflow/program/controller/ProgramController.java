@@ -7,7 +7,9 @@ import com.metaverse.workflow.exceptions.DataException;
 
 import java.io.*;
 
+import com.metaverse.workflow.login.repository.LoginRepository;
 import com.metaverse.workflow.model.*;
+import com.metaverse.workflow.program.repository.ProgramRepository;
 import com.metaverse.workflow.program.service.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -32,6 +34,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.nio.file.Path;
 import java.security.Principal;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @AllArgsConstructor
@@ -42,6 +45,12 @@ public class ProgramController {
     ProgramService programService;
     @Autowired
     private ActivityLogService logService;
+
+    @Autowired
+    LoginRepository loginRepository;
+
+    @Autowired
+    ProgramRepository programRepository;
 
 //    @Autowired
 //    OverdueProgramUpdater overdueProgramUpdater;
@@ -269,7 +278,7 @@ public class ProgramController {
 
     @GetMapping("/program/file/paths/status")
     public ResponseEntity<List<ProgramFileResponse>> getAllProgramFilePaths(
-            @RequestParam(value = "fileType", required = false) FileType fileType) {
+            @RequestParam(value = "fileType", required = false) FileType fileType, Principal principal) throws DataException {
 
         if (fileType == null) {
             return ResponseEntity.badRequest().build();
@@ -284,17 +293,36 @@ public class ProgramController {
         String basePrefix = "/home/metaverseedu/public_html/";
         String urlPrefix = "https://metaverseedu.in/";
 
-        List<ProgramFileResponse> fileResponses = paths.stream()
-                .map(info -> {
-                    String fullPath = info.getFilePath().toAbsolutePath().toString();
-                    String url = fullPath.startsWith(basePrefix)
-                            ? urlPrefix + fullPath.substring(basePrefix.length())
-                            : fullPath;
-                    return new ProgramFileResponse(info.getProgramId(), url);
-                })
-                .toList();
+        User byUserId = loginRepository.findByUserId(principal.getName())
+                .orElseThrow(() -> new DataException("Admin user not found", "ADMIN_NOT_FOUND", 400));
+        System.err.println(byUserId.getUserId());
+            if (byUserId.getAgency() != null && byUserId.getAgency().getAgencyId() != null) {
+                Long agencyId = byUserId.getAgency().getAgencyId();
+                List<Long> byAgencyAgencyId = programRepository.findByAgencyAgencyId(agencyId).stream().map(info -> info.getProgramId()).toList();
 
-        return ResponseEntity.ok(fileResponses);
+                List<ProgramFileResponse> fileResponses = paths.stream()
+                        .filter(info -> byAgencyAgencyId.contains(info.getProgramId())).map(info -> {
+                            String fullPath = info.getFilePath().toAbsolutePath().toString();
+                            String url = fullPath.startsWith(basePrefix)
+                                    ? urlPrefix + fullPath.substring(basePrefix.length())
+                                    : fullPath;
+                            return new ProgramFileResponse(info.getProgramId(), url);
+                        })
+                        .toList();
+                return ResponseEntity.ok(fileResponses);
+            }
+
+                List<ProgramFileResponse> fileResponses = paths.stream()
+                        .map(info -> {
+                            String fullPath = info.getFilePath().toAbsolutePath().toString();
+                            String url = fullPath.startsWith(basePrefix)
+                                    ? urlPrefix + fullPath.substring(basePrefix.length())
+                                    : fullPath;
+                            return new ProgramFileResponse(info.getProgramId(), url);
+                        })
+                        .toList();
+                return ResponseEntity.ok(fileResponses);
+
     }
 
 
