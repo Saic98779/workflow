@@ -63,6 +63,7 @@ public interface ProgramRepository extends JpaRepository<Program, Long> {
                    case "programsCompletedDataPending" -> findProgramsCompletedDataPending(today, pageable);
                    case "programsOverdue" -> findProgramOverDue(today, pageable);
                    case "programsYetToBegin" -> findProgramYetToBegin(today, pageable);
+                   case "programExpenditureApproved" -> findProgramExpenditureApproved(pageable);
                    default -> Page.empty(pageable);
                };
            }
@@ -73,6 +74,7 @@ public interface ProgramRepository extends JpaRepository<Program, Long> {
                case "programsCompletedDataPending" -> findProgramsCompletedDataPending(agencyId, today, pageable);
                case "programsOverdue" -> findProgramOverDue(agencyId, today, pageable);
                case "programsYetToBegin" -> findProgramYetToBegin(agencyId, today, pageable);
+               case "programExpenditureApproved" -> findProgramExpenditureApproved(agencyId, pageable);
                default -> Page.empty(pageable);
            };
        }
@@ -85,6 +87,7 @@ public interface ProgramRepository extends JpaRepository<Program, Long> {
                    case "programsCompletedDataPending" -> findProgramsCompletedDataPending(today,fromDate,toDate, pageable);
                    case "programsOverdue" -> findProgramOverDue(today,fromDate,toDate, pageable);
                    case "programsYetToBegin" -> findProgramYetToBegin(today,fromDate,toDate, pageable);
+                   case "programExpenditureApproved" -> findProgramExpenditureApproved(fromDate, toDate, pageable);
                    default -> Page.empty(pageable);
                };
            }
@@ -95,6 +98,7 @@ public interface ProgramRepository extends JpaRepository<Program, Long> {
                case "programsCompletedDataPending" -> findProgramsCompletedDataPending(agencyId, today, fromDate,toDate,pageable);
                case "programsOverdue" -> findProgramOverDue(agencyId, today, fromDate,toDate,pageable);
                case "programsYetToBegin" -> findProgramYetToBegin(agencyId, today, fromDate,toDate,pageable);
+               case "programExpenditureApproved" -> findProgramExpenditureApproved(agencyId, fromDate, toDate, pageable);
                default -> Page.empty(pageable);
            };
        }
@@ -775,6 +779,46 @@ public interface ProgramRepository extends JpaRepository<Program, Long> {
             Pageable pageable,
             @Param("district") String district
     );
+
+    @Query("""
+    SELECT p FROM Program p
+    WHERE p.status = 'Program Expenditure Approved'
+      AND p.agency.agencyId = :agencyId
+""")
+    Page<Program> findProgramExpenditureApproved(
+            @Param("agencyId") Long agencyId,
+            Pageable pageable);
+
+
+    @Query("""
+    SELECT p FROM Program p
+    WHERE p.status = 'Program Expenditure Approved'
+      AND p.startDate BETWEEN :startDate AND :endDate
+""")
+    Page<Program> findProgramExpenditureApproved(
+            @Param("fromDate") Date fromDate,
+            @Param("toDate") Date toDate,
+            Pageable pageable);
+
+    @Query("""
+    SELECT p FROM Program p
+    WHERE p.status = 'Program Expenditure Approved'
+      AND p.agency.agencyId = :agencyId
+      AND p.startDate BETWEEN :startDate AND :endDate
+""")
+    Page<Program> findProgramExpenditureApproved(
+            @Param("agencyId") Long agencyId,
+            @Param("fromDate") Date fromDate,
+            @Param("toDate") Date toDate,
+            Pageable pageable);
+
+    @Query("""
+    SELECT p 
+    FROM Program p
+    WHERE p.status = 'Program Expenditure Approved'
+""")
+    Page<Program> findProgramExpenditureApproved(Pageable pageable);
+
 
     List<Program> findByLocationDistrictAndStartDateBetween(String district, Date fromDate, Date toDate);
 
