@@ -27,4 +27,6 @@ public interface ICSchemeRepository extends JpaRepository<ICScheme,Long> {
     List<ICScheme> findByAgencyAgencyId(Long agencyId);
 
     Page<ICScheme> findByAgency_AgencyId(Long agencyId, Pageable pageable);
+
+    long countByAgency_AgencyId(Long agencyId);
 }

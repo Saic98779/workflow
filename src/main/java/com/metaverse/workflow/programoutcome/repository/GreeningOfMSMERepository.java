@@ -24,4 +24,6 @@ public interface GreeningOfMSMERepository extends JpaRepository<GreeningOfMSME,L
     }
 
     Page<GreeningOfMSME> findByAgency_AgencyId(Long agencyId, Pageable pageable);
+
+    long countByAgency_AgencyId(Long agencyId);
 }

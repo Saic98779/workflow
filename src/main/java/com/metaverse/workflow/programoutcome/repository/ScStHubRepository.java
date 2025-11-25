@@ -25,4 +25,6 @@ public interface ScStHubRepository extends JpaRepository<ScStHub,Long> {
     List<ScStHub> findByAgencyAgencyId(Long agencyId);
 
     Page<ScStHub> findByAgency_AgencyId(Long agencyId, Pageable pageable);
+
+    long countByAgency_AgencyId(Long agencyId);
 }

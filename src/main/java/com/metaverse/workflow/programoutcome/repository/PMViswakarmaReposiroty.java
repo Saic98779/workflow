@@ -20,4 +20,6 @@ public interface PMViswakarmaReposiroty extends JpaRepository<PMViswakarma,Long>
     List<PMViswakarma> findByAgencyAgencyId(Long agencyId);
 
     Page<PMViswakarma> findByAgency_AgencyId(Long agencyId, Pageable pageable);
+
+    long countByAgency_AgencyId(Long agencyId);
 }

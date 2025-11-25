@@ -24,4 +24,6 @@ public interface ConsortiaTenderRepository  extends JpaRepository<ConsortiaTende
     List<ConsortiaTender> findByAgencyAgencyId(Long agencyId);
 
     Page<ConsortiaTender> findByAgency_AgencyId(Long agencyId, Pageable pageable);
+
+    long countByAgency_AgencyId(Long agencyId);
 }

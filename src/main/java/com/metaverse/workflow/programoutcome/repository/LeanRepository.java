@@ -28,4 +28,6 @@ public interface LeanRepository extends JpaRepository<Lean,Long> {
     List<Lean> findByAgencyAgencyId(Long agencyId);
 
     Page<Lean> findByAgency_AgencyId(Long agencyId, Pageable pageable);
+
+    long countByAgency_AgencyId(Long agencyId);
 }

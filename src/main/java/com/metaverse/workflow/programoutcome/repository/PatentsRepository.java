@@ -26,4 +26,6 @@ public interface PatentsRepository extends JpaRepository<Patents,Long> {
     List<Patents> findByAgencyAgencyId(Long agencyId);
 
     Page<Patents> findByAgency_AgencyId(Long agencyId, Pageable pageable);
+
+    long countByAgency_AgencyId(Long agencyId);
 }

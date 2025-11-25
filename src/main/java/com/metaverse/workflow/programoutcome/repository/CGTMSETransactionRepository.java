@@ -28,4 +28,6 @@ public interface CGTMSETransactionRepository extends JpaRepository<CGTMSETransac
    }
 
     Page<CGTMSETransaction> findByAgency_AgencyId(Long agencyId, Pageable pageable);
+
+    long countByAgency_AgencyId(Long agencyId);
 }

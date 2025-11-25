@@ -24,4 +24,6 @@ public interface LoanRepository extends JpaRepository<Loan,Long> {
     }
 
     Page<Loan> findByAgency_AgencyId(Long agencyId, Pageable pageable);
+
+    long countByAgency_AgencyId(Long agencyId);
 }

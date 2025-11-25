@@ -24,4 +24,6 @@ public interface SkillUpgradationRepository extends JpaRepository<SkillUpgradati
     }
 
     Page<SkillUpgradation> findByAgency_AgencyId(Long agencyId, Pageable pageable);
+
+    long countByAgency_AgencyId(Long agencyId);
 }

@@ -24,4 +24,6 @@ public interface CopyRightsRepository extends JpaRepository<CopyRights,Long> {
     List<CopyRights> findByAgencyAgencyId(Long agencyId);
 
     Page<CopyRights> findByAgency_AgencyId(Long agencyId, Pageable pageable);
+
+    long countByAgency_AgencyId(Long agencyId);
 }

@@ -27,4 +27,6 @@ public interface PMSRepository extends JpaRepository<PMS,Long> {
     List<PMS> findByAgencyAgencyId(Long agencyId);
 
     Page<PMS> findByAgency_AgencyId(Long agencyId, Pageable pageable);
+
+    long countByAgency_AgencyId(Long agencyId);
 }

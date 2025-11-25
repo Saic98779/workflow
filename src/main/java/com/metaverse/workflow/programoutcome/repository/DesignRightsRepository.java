@@ -24,4 +24,6 @@ public interface DesignRightsRepository extends JpaRepository<DesignRights,Long>
     List<DesignRights> findByAgencyAgencyId(Long agencyId);
 
     Page<DesignRights> findByAgency_AgencyId(Long agencyId, Pageable pageable);
+
+    long countByAgency_AgencyId(Long agencyId);
 }

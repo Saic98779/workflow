@@ -18,4 +18,6 @@ public interface ExportPromotionRepository extends JpaRepository<ExportPromotion
     }
 
     Page<ExportPromotion> findByAgency_AgencyId(Long agencyId, Pageable pageable);
+
+    long countByAgency_AgencyId(Long agencyId);
 }

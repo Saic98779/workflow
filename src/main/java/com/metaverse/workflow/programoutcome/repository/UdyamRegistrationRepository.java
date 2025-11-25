@@ -41,4 +41,6 @@ public interface UdyamRegistrationRepository extends JpaRepository<UdyamRegistra
     boolean existsByInfluencedParticipant_InfluencedId(Long influencedId);
 
     Page<UdyamRegistration> findByAgency_AgencyId(Long agencyId, Pageable pageable);
+
+    long countByAgency_AgencyId(Long agencyId);
 }

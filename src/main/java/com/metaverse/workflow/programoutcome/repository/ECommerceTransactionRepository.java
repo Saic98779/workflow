@@ -24,4 +24,6 @@ public interface ECommerceTransactionRepository extends JpaRepository<ECommerceT
             return countByEcommerceRegistration_Agency_AgencyIdAndCreatedOnBetween(agencyId, start, end);
         }
     }
+
+    long countByAgency_AgencyId(Long agencyId);
 }

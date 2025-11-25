@@ -35,4 +35,6 @@ public interface GeMRegistrationRepository extends JpaRepository<GeMRegistration
     GeMRegistration findByInfluencedParticipant_InfluencedId(Long participantId);
 
     Page<GeMRegistration> findByAgency_AgencyId(Long agencyId, Pageable pageable);
+
+    long countByAgency_AgencyId(Long agencyId);
 }

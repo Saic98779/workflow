@@ -25,4 +25,6 @@ public interface PMMYRepository extends JpaRepository<PMMY, Long> {
     List<PMMY> findByAgencyAgencyId(Long agencyId);
 
     Page<PMMY> findByAgency_AgencyId(Long agencyId, Pageable pageable);
+
+    long countByAgency_AgencyId(Long agencyId);
 }

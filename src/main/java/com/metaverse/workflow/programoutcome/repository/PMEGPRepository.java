@@ -26,4 +26,6 @@ public interface PMEGPRepository extends JpaRepository<PMEGP,Long> {
     List<PMEGP> findByAgencyAgencyId(Long agencyId);
 
     Page<PMEGP> findByAgency_AgencyId(Long agencyId, Pageable pageable);
+
+    long countByAgency_AgencyId(Long agencyId);
 }

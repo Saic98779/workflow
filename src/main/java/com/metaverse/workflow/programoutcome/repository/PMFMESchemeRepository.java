@@ -26,4 +26,6 @@ public interface PMFMESchemeRepository extends JpaRepository<PMFMEScheme,Long> {
     List<PMFMEScheme> findByAgencyAgencyId(Long agencyId);
 
     Page<PMFMEScheme> findByAgency_AgencyId(Long agencyId, Pageable pageable);
+
+    long countByAgency_AgencyId(Long agencyId);
 }

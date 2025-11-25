@@ -10,7 +10,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface ONDCRegistrationRepository extends JpaRepository<ONDCRegistration, Long> {
@@ -47,4 +46,5 @@ public interface ONDCRegistrationRepository extends JpaRepository<ONDCRegistrati
     Page<ONDCRegistration> findByAgency_AgencyId(Long agencyId, Pageable pageable);
 
 
+    long countByAgency_AgencyId(Long agencyId);
 }

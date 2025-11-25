@@ -25,4 +25,6 @@ public interface VendorDevelopmentRepository extends JpaRepository<VendorDevelop
     List<VendorDevelopment> findByAgencyAgencyId(Long agencyId);
 
     Page<VendorDevelopment> findByAgency_AgencyId(Long agencyId, Pageable pageable);
+
+    long countByAgency_AgencyId(Long agencyId);
 }

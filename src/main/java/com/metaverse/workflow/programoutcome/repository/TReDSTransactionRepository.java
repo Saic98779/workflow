@@ -35,4 +35,5 @@ public interface TReDSTransactionRepository extends JpaRepository<TReDSTransacti
 
     Page<TReDSTransaction> findByTredsRegistration_Agency_AgencyId(Long agencyId, Pageable pageable);
 
+    long countByAgency_AgencyId(Long agencyId);
 }

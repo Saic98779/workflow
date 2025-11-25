@@ -1,6 +1,5 @@
 package com.metaverse.workflow.programoutcome.repository;
 
-import com.metaverse.workflow.model.outcomes.CopyRights;
 import com.metaverse.workflow.model.outcomes.ZEDCertification;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -37,4 +36,6 @@ public interface ZEDCertificationRepository extends JpaRepository<ZEDCertificati
     List<ZEDCertification> findByAgencyAgencyIdAndZedCertificationType(Long agencyId, String silver);
 
     Page<ZEDCertification> findByAgency_AgencyId(Long agencyId, Pageable pageable);
+
+    long countByAgency_AgencyId(Long agencyId);
 }

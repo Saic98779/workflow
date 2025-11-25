@@ -1,6 +1,5 @@
 package com.metaverse.workflow.programoutcome.repository;
 
-import com.metaverse.workflow.model.outcomes.ONDCRegistration;
 import com.metaverse.workflow.model.outcomes.TReDSRegistration;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -43,4 +42,6 @@ public interface TReDSRegistrationRepository extends JpaRepository<TReDSRegistra
     List<TReDSRegistration> findByInfluencedParticipant_InfluencedId(Long participantId);
 
     Page<TReDSRegistration> findByAgency_AgencyId(Long agencyId, Pageable pageable);
+
+    long countByAgency_AgencyId(Long agencyId);
 }

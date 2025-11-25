@@ -33,4 +33,6 @@ public interface ECommerceRegistrationRepository extends JpaRepository<ECommerce
     }
 
     Page<ECommerceRegistration> findByAgency_AgencyId(Long agencyId, Pageable pageable);
+
+    long countByAgency_AgencyId(Long agencyId);
 }

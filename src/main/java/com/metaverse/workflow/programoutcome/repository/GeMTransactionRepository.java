@@ -27,4 +27,6 @@ public interface GeMTransactionRepository extends JpaRepository<GeMTransaction,L
     long countByProcurementDateBetween(Date start, Date end);
 
     long countByGemRegistration_AgencyAgencyIdAndProcurementDateBetween(Long agencyId, Date start, Date end);
+
+    long countByAgency_AgencyId(Long agencyId);
 }

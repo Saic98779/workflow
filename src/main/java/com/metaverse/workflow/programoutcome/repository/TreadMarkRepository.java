@@ -26,4 +26,6 @@ public interface TreadMarkRepository extends JpaRepository<TreadMark,Long> {
     List<TreadMark> findByAgencyAgencyId(Long agencyId);
 
     Page<TreadMark> findByAgency_AgencyId(Long agencyId, Pageable pageable);
+
+    long countByAgency_AgencyId(Long agencyId);
 }

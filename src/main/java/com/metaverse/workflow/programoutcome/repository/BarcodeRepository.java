@@ -28,4 +28,6 @@ public interface BarcodeRepository extends JpaRepository<Barcode, Long> {
    List<Barcode> findByAgencyAgencyId(Long agencyId);
 
     Page<Barcode> findByAgency_AgencyId(Long agencyId, Pageable pageable);
+
+    long countByAgency_AgencyId(Long agencyId);
 }

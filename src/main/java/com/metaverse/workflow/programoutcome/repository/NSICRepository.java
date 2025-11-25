@@ -24,4 +24,6 @@ public interface NSICRepository extends JpaRepository<NSIC,Long> {
     List<NSIC> findByAgencyAgencyId(Long agencyId);
 
     Page<NSIC> findByAgency_AgencyId(Long agencyId, Pageable pageable);
+
+    long countByAgency_AgencyId(Long agencyId);
 }

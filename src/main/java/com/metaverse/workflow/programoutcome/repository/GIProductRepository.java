@@ -26,4 +26,6 @@ public interface GIProductRepository extends JpaRepository<GIProduct,Long> {
     List<GIProduct> findByAgencyAgencyId(Long agencyId);
 
     Page<GIProduct> findByAgency_AgencyId(Long agencyId, Pageable pageable);
+
+    long countByAgency_AgencyId(Long agencyId);
 }

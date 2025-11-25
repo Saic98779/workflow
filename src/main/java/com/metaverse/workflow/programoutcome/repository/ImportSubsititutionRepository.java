@@ -18,4 +18,6 @@ public interface ImportSubsititutionRepository extends JpaRepository<ImportSubsi
     }
 
     Page<ImportSubsititution> findByAgency_AgencyId(Long agencyId, Pageable pageable);
+
+    long countByAgency_AgencyId(Long agencyId);
 }

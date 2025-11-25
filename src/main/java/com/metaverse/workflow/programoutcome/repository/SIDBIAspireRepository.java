@@ -26,4 +26,6 @@ public interface SIDBIAspireRepository extends JpaRepository<SIDBIAspire,Long> {
     List<SIDBIAspire> findByAgencyAgencyId(Long agencyId);
 
     Page<SIDBIAspire> findByAgency_AgencyId(Long agencyId, Pageable pageable);
+
+    long countByAgency_AgencyId(Long agencyId);
 }
