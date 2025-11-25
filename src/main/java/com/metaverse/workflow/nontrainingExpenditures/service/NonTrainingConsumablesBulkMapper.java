@@ -12,7 +12,7 @@ public class NonTrainingConsumablesBulkMapper {
         e.setPurchasedQuantity(dto.getPurchasedQuantity());
         e.setUnitCost(dto.getUnitCost());
         e.setConsumedQuantity(dto.getConsumedQuantity());
-        e.setAvailableQuantity(dto.getAvailableQuantity());
+        e.setAvailableQuantity(dto.getPurchasedQuantity());
         e.setTotalCost(dto.getTotalCost());
         e.setBillNo(dto.getBillNo());
         e.setBillDate(DateUtil.covertStringToDate(dto.getBillDate()));
@@ -22,7 +22,7 @@ public class NonTrainingConsumablesBulkMapper {
         e.setIfscCode(dto.getIfscCode());
         e.setTransactionId(dto.getTransactionId());
         e.setCheckNo(dto.getCheckNo());
-       e.setCheckDate(DateUtil.covertStringToDate(dto.getCheckDate()));
+        e.setCheckDate(DateUtil.covertStringToDate(dto.getCheckDate()));
         return e;
     }
 
@@ -50,8 +50,8 @@ public class NonTrainingConsumablesBulkMapper {
         dto.setSubActivityId(e.getNonTrainingSubActivity().getSubActivityId());
         return dto;
     }
-    public static NonTrainingConsumablesBulk updateBulkConsumable(NonTrainingConsumablesBulk existing, NonTrainingConsumablesBulkDto dto) {
 
+    public static NonTrainingConsumablesBulk updateBulkConsumable(NonTrainingConsumablesBulk existing, NonTrainingConsumablesBulkDto dto) {
         existing.setItemName(dto.getItemName() != null ? dto.getItemName() : existing.getItemName());
         existing.setPurchaseDate(dto.getPurchaseDate() != null ? DateUtil.covertStringToDate(dto.getPurchaseDate()) : existing.getPurchaseDate());
         existing.setPurchasedQuantity(dto.getPurchasedQuantity() != null ? dto.getPurchasedQuantity() : existing.getPurchasedQuantity());
