@@ -29,6 +29,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.metaverse.workflow.common.constants.ProgramStatusConstants.PROGRAM_EXPENDITURE_UPDATED;
+
 @Service
 public class ExpenditureServiceAdepter implements ExpenditureService {
     @Autowired
@@ -150,6 +152,39 @@ public class ExpenditureServiceAdepter implements ExpenditureService {
                 .data(responses)
                 .build();
     }
+
+    @Override
+    public WorkflowResponse getAllProgramExpenditureByStatus(BillRemarksStatus status, long agencyId) {
+
+        List<ProgramExpenditure> expenditures =
+                programExpenditureRepository.findByStatusAndProgram_StatusAndAgency_AgencyId(status, PROGRAM_EXPENDITURE_UPDATED, agencyId);
+
+        if (expenditures.isEmpty()) {
+            return WorkflowResponse.builder()
+                    .message("No expenditures found for status " + status)
+                    .status(404)
+                    .build();
+        }
+
+        ProgramExpenditureResponse response = null;
+
+        for (ProgramExpenditure pe : expenditures) {
+            List<Long> fileIds = programSessionFileRepository
+                    .findByBulkExpenditureId(pe.getProgramExpenditureId())
+                    .stream()
+                    .map(ProgramSessionFile::getProgramSessionFileId)
+                    .toList();
+
+            response =
+                    ExpenditureResponseMapper.mapProgramExpenditure(pe, fileIds);
+        }
+        return WorkflowResponse.builder()
+                .status(200)
+                .message("Success")
+                .data(response)
+                .build();
+    }
+
 
     @Override
     public WorkflowResponse getAllProgramExpenditureByProgramIdByAgencyId(ExpenditureType expenditureType, Long agencyId, Long programId) {

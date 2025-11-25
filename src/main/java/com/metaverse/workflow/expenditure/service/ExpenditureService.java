@@ -34,5 +34,7 @@ public interface ExpenditureService {
     ExpenditureSummaryResponse getExpenditureHeadOfExpenseWise(Long programId) throws DataException;
     WorkflowResponse addRemarkOrResponse(ExpenditureRemarksDTO remarks, BillRemarksStatus status) throws DataException;
     WorkflowResponse addRemarkOrResponseTransaction(ExpenditureRemarksDTO remarks, BillRemarksStatus status) throws DataException;
+
+    WorkflowResponse getAllProgramExpenditureByStatus(BillRemarksStatus status, long agencyId);
 }
 

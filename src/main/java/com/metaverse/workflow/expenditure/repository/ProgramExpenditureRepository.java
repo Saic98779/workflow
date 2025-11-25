@@ -1,6 +1,7 @@
 package com.metaverse.workflow.expenditure.repository;
 
 import com.metaverse.workflow.common.enums.ExpenditureType;
+import com.metaverse.workflow.enums.BillRemarksStatus;
 import com.metaverse.workflow.model.ProgramExpenditure;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -39,4 +40,5 @@ public interface ProgramExpenditureRepository extends JpaRepository<ProgramExpen
 
     List<ProgramExpenditure> findBySubActivity_SubActivityIdAndAgency_AgencyId(Long subActivityListIDs,Long agencyId);
 
+    List<ProgramExpenditure> findByStatusAndProgram_StatusAndAgency_AgencyId(BillRemarksStatus status, String programExpenditureUpdated, long agencyId);
 }

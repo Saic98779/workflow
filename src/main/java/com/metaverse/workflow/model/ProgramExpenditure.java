@@ -21,7 +21,7 @@ import java.util.List;
 public class ProgramExpenditure {
 
         @Id
-        @GeneratedValue(strategy = GenerationType.AUTO)
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
         @Column(name="program_expenditure_id")
         private Long programExpenditureId;
 

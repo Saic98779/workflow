@@ -10,6 +10,7 @@ import com.metaverse.workflow.common.util.RestControllerBase;
 import com.metaverse.workflow.enums.BillRemarksStatus;
 import com.metaverse.workflow.exceptions.*;
 import com.metaverse.workflow.expenditure.service.*;
+import com.metaverse.workflow.model.Agency;
 import com.metaverse.workflow.model.HeadOfExpense;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
@@ -114,6 +115,11 @@ public class ExpenditureController {
     @GetMapping("/program/expenditure/{expenditureType}")
     public ResponseEntity<?> getAllProgramExpenditure(@PathVariable ExpenditureType expenditureType) {
             return ResponseEntity.ok(expenditureService.getAllProgramExpenditure(expenditureType));
+    }
+
+    @GetMapping("/program/expenditure/status")
+    public ResponseEntity<?> getAllProgramExpenditureByStatus(@RequestParam BillRemarksStatus status, @RequestParam long agencyId) {
+        return ResponseEntity.ok(expenditureService.getAllProgramExpenditureByStatus(status, agencyId));
     }
 
     @GetMapping("/bulk/expenditure")
