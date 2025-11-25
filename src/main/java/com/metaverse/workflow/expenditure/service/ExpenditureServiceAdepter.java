@@ -726,7 +726,8 @@ public class ExpenditureServiceAdepter implements ExpenditureService {
         programExpenditureRepository.save(expenditure);
 
         // 5. Send notifications
-        if (user.getUserRole() != null && user.getUserRole().equalsIgnoreCase("ADMIN")) {
+        String userRole = user.getUserRole();
+        if (userRole.equalsIgnoreCase("ADMIN")  || userRole.equalsIgnoreCase("FINANCE") ) {
             // ADMIN -> Agency (notify agency admin if present else fallback to system admin)
             User agencyAdmin = getAgencyAdminOrFallback(expenditure.getAgency());
 
@@ -734,7 +735,7 @@ public class ExpenditureServiceAdepter implements ExpenditureService {
                     .userId(agencyAdmin.getUserId())
                     .message(remarks.getSpiuComments())
                     .notificationType(NotificationType.TRAINING_EXPENDITURE)
-                    .sentBy(RemarkBy.ADMIN)
+                    .sentBy(userRole.equals(RemarkBy.ADMIN.name()) ? RemarkBy.ADMIN : RemarkBy.FINANCE)
                     .isRead(false)
                     .agencyId(expenditure.getAgency() != null ? expenditure.getAgency().getAgencyId() : -1L)
                     .programId(expenditure.getProgram() != null ? expenditure.getProgram().getProgramId() : -1L)

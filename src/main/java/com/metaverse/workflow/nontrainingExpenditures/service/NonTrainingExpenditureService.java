@@ -339,14 +339,16 @@ public class NonTrainingExpenditureService {
 
         // ======== NOTIFICATION LOGIC (UPDATED) ========
 
-        if (user.getUserRole().equalsIgnoreCase("ADMIN")) {
+
+        String userRole = user.getUserRole();
+        if (userRole.equalsIgnoreCase("ADMIN")  || userRole.equalsIgnoreCase("FINANCE") ) {
 
             // ---- ADMIN → AGENCY ADMIN ----
             User agencyAdmin = getAgencyAdminOrFallback(expenditure.getAgency());
 
             GlobalNotificationRequest req = GlobalNotificationRequest.builder()
                     .userId(agencyAdmin.getUserId())
-                    .sentBy(RemarkBy.ADMIN)
+                    .sentBy(userRole.equals(RemarkBy.ADMIN.name()) ? RemarkBy.ADMIN : RemarkBy.FINANCE)
                     .notificationType(NotificationType.NON_TRAINING_EXPENDITURE)
                     .message(remarks.getSpiuComments())
                     .agencyId(expenditure.getAgency() != null ? expenditure.getAgency().getAgencyId() : -1L)

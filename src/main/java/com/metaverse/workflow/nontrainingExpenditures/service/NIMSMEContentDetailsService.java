@@ -165,7 +165,8 @@ public class NIMSMEContentDetailsService {
 
         // ======== NOTIFICATION LOGIC (UPDATED) ========
 
-        if (user.getUserRole().equalsIgnoreCase("ADMIN")) {
+        String userRole = user.getUserRole();
+        if (userRole.equalsIgnoreCase("ADMIN")  || userRole.equalsIgnoreCase("FINANCE") ) {
 
             // ---- ADMIN → AGENCY ADMIN ----
             Agency agency = expenditure.getNonTrainingSubActivity().getNonTrainingActivity().getAgency();
@@ -173,7 +174,7 @@ public class NIMSMEContentDetailsService {
 
             GlobalNotificationRequest req = GlobalNotificationRequest.builder()
                     .userId(agencyAdmin.getUserId())
-                    .sentBy(RemarkBy.ADMIN)
+                    .sentBy(userRole.equals(RemarkBy.ADMIN.name()) ? RemarkBy.ADMIN : RemarkBy.FINANCE)
                     .notificationType(NotificationType.NON_TRAINING_EXPENDITURE)
                     .message(remarks.getSpiuComments())
                     .agencyId(agency != null ? agency.getAgencyId() : -1L)

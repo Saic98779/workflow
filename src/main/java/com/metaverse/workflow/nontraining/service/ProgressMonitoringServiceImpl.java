@@ -369,16 +369,25 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
 
              */
             case 26, 14, 15, 16, 17, 74, 125, 6, 62, 82, 84, 72 -> { //
-                List<NonTrainingResource> nonTrainingSubActivity = nonTrainingResourcesRepository.findByNonTrainingSubActivity_subActivityId(subActivityId);
-                if (nonTrainingSubActivity != null || !nonTrainingSubActivity.isEmpty()) {
-                    Double financialAchieved = nonTrainingSubActivity.stream().map(
-                            r -> r.getNonTrainingResourceExpenditures()).mapToDouble(
-                            exp -> exp.stream().mapToDouble(
-                                    resExp -> resExp.getAmount()).sum()).sum();
-                    Object[] objects = {String.valueOf(nonTrainingSubActivity.size()), financialAchieved,0.0};
+                List<NonTrainingResource> nonTrainingSubActivity =
+                        nonTrainingResourcesRepository.findByNonTrainingSubActivity_subActivityId(subActivityId);
+
+                if (nonTrainingSubActivity != null && !nonTrainingSubActivity.isEmpty()) {
+                    Map<String, Double> result = nonTrainingSubActivity.stream()
+                            .flatMap(r -> r.getNonTrainingResourceExpenditures().stream())
+                            .collect(Collectors.groupingBy(
+                                    exp -> exp.getStatus() == BillRemarksStatus.APPROVED ? "APPROVED" : "OTHER",
+                                    Collectors.summingDouble(NonTrainingResourceExpenditure::getAmount)
+                            ));
+
+                    double approved = result.getOrDefault("APPROVED", 0.0);
+                    double pending = result.getOrDefault("OTHER", 0.0);
+
+                    Object[] objects = {String.valueOf(nonTrainingSubActivity.size()), approved, pending};
+
                     return objects;
                 } else {
-                    Object[] objects = {String.valueOf(0), 0.0,0.0};
+                    Object[] objects = {"0", 0.0, 0.0, 0.0};
                     return objects;
                 }
             }
@@ -388,17 +397,36 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
             ALEAP  -> 69  : Dashboard/ Central Management System
             */
             case 63, 79, 80, 81, 69 -> { //
-                List<NIMSMEVendorDetails> nonTrainingSubActivity = nimsmeVendorDetailsRepository.findByNonTrainingSubActivity_subActivityId(subActivityId);
-                if (nonTrainingSubActivity != null || !nonTrainingSubActivity.isEmpty()) {
-                    Optional<List<NonTrainingExpenditure>> byNonTrainingSubActivity = nonTrainingExpenditureRepository.findByNonTrainingSubActivity_SubActivityId(subActivityId);
-                    double financialAchieved = 0.0;
+                List<NIMSMEVendorDetails> nonTrainingSubActivity =
+                        nimsmeVendorDetailsRepository.findByNonTrainingSubActivity_subActivityId(subActivityId);
+
+                if (nonTrainingSubActivity != null && !nonTrainingSubActivity.isEmpty()) {
+
+                    Optional<List<NonTrainingExpenditure>> byNonTrainingSubActivity =
+                            nonTrainingExpenditureRepository.findByNonTrainingSubActivity_SubActivityId(subActivityId);
+                    double approved = 0.0;
+                    double pending = 0.0;
+
                     if (byNonTrainingSubActivity.isPresent()) {
-                        financialAchieved = byNonTrainingSubActivity.get().stream().mapToDouble(amount -> amount.getExpenditureAmount()).sum();
+
+                        List<NonTrainingExpenditure> expenditureList = byNonTrainingSubActivity.get();
+                        // Group APPROVED vs OTHER
+                        Map<String, Double> result = expenditureList.stream()
+                                .collect(Collectors.groupingBy(
+                                        exp -> exp.getStatus() == BillRemarksStatus.APPROVED ? "APPROVED" : "OTHER",
+                                        Collectors.summingDouble(NonTrainingExpenditure::getExpenditureAmount)
+                                ));
+
+                        approved = result.getOrDefault("APPROVED", 0.0);
+                        pending = result.getOrDefault("OTHER", 0.0);
                     }
-                    Object[] objects = {String.valueOf(nonTrainingSubActivity.size()), financialAchieved,0.0};
+
+                    Object[] objects = {
+                            String.valueOf(nonTrainingSubActivity.size()), approved, pending
+                    };
                     return objects;
                 } else {
-                    Object[] objects = {String.valueOf(0), 0.0,0.0};
+                    Object[] objects = {"0", 0.0, 0.0, 0.0};
                     return objects;
                 }
             }
@@ -406,17 +434,36 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
              NIMSME -> 77 : Video, 78 : Documents
             */
             case 77, 78 -> { //
-                List<NIMSMEContentDetails> nonTrainingSubActivity = nimsmeContentDetailsRepository.findByNonTrainingSubActivity_subActivityId(subActivityId);
-                if (nonTrainingSubActivity != null || !nonTrainingSubActivity.isEmpty()) {
-                    Optional<List<NonTrainingExpenditure>> byNonTrainingSubActivity = nonTrainingExpenditureRepository.findByNonTrainingSubActivity_SubActivityId(subActivityId);
-                    double financialAchieved = 0.0;
+                List<NIMSMEContentDetails> nonTrainingSubActivity =
+                        nimsmeContentDetailsRepository.findByNonTrainingSubActivity_subActivityId(subActivityId);
+
+                if (nonTrainingSubActivity != null && !nonTrainingSubActivity.isEmpty()) {
+
+                    Optional<List<NonTrainingExpenditure>> byNonTrainingSubActivity =
+                            nonTrainingExpenditureRepository.findByNonTrainingSubActivity_SubActivityId(subActivityId);
+
+                    double approved = 0.0;
+                    double pending = 0.0;
+
                     if (byNonTrainingSubActivity.isPresent()) {
-                        financialAchieved = byNonTrainingSubActivity.get().stream().mapToDouble(amount -> amount.getExpenditureAmount()).sum();
+
+                        List<NonTrainingExpenditure> expenditureList = byNonTrainingSubActivity.get();
+                        Map<String, Double> result = expenditureList.stream()
+                                .collect(Collectors.groupingBy(
+                                        exp -> exp.getStatus() == BillRemarksStatus.APPROVED ? "APPROVED" : "OTHER",
+                                        Collectors.summingDouble(NonTrainingExpenditure::getExpenditureAmount)
+                                ));
+
+                        approved = result.getOrDefault("APPROVED", 0.0);
+                        pending = result.getOrDefault("OTHER", 0.0);
                     }
-                    Object[] objects = {String.valueOf(nonTrainingSubActivity.size()), financialAchieved,0.0};
+
+                    Object[] objects = {
+                            String.valueOf(nonTrainingSubActivity.size()),approved,pending };
                     return objects;
                 } else {
-                    Object[] objects = {String.valueOf(0), 0.0,0.0};
+
+                    Object[] objects = {"0",0.0, 0.0};
                     return objects;
                 }
             }
@@ -457,9 +504,22 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
              */
             case 19 -> {
                 List<TravelAndTransport> nonTrainingSubActivity = travelAndTransportRepository.findByNonTrainingSubActivity_SubActivityId(subActivityId);
-                Double financialAchieved = nonTrainingSubActivity.stream().mapToDouble(exp -> exp.getAmount()).sum();
-                Object[] targetAndFinancialAchieved = {String.valueOf(nonTrainingSubActivity.size()), financialAchieved,0.0};
-                return targetAndFinancialAchieved;
+                if (!nonTrainingSubActivity.isEmpty() && nonTrainingSubActivity != null) {
+                    Map<String, Double> result =
+                            nonTrainingSubActivity.stream()
+                                    .collect(Collectors.groupingBy(
+                                            p -> p.getStatus() == BillRemarksStatus.APPROVED ? "APPROVED" : "OTHER",
+                                            Collectors.summingDouble(TravelAndTransport::getAmount)
+                                    ));
+                    Double approved = result.getOrDefault("APPROVED",0.0);
+                    Double pending = result.getOrDefault("OTHER",0.0);
+
+                    Object[] objects = {String.valueOf(nonTrainingSubActivity.size()), approved,pending};
+                    return objects;
+                } else {
+                    Object[] objects = {String.valueOf(0), 0.0,0.0};
+                    return objects;
+                }
             }
             default -> {
                 return new Object[]{String.valueOf(0), 0.0,0.0};
