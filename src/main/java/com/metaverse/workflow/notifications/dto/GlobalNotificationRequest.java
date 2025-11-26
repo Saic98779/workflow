@@ -15,7 +15,7 @@ public class GlobalNotificationRequest {
     private Long programId;
     private NotificationType notificationType;
     private String message;       // the content
-    private RemarkBy sentBy;      // CALL_CENTER / AGENCY / ADMIN
+    private String sentBy;      // CALL_CENTER / AGENCY / ADMIN
 
     private Boolean isRead;
 }

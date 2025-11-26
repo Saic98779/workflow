@@ -17,7 +17,7 @@ public class NotificationMessageDto {
 
     private String text;
 
-    private RemarkBy sentBy;
+    private String sentBy;
 
     private NotificationType notificationType;
 

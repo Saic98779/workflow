@@ -70,7 +70,7 @@ public class TicketService {
                 GlobalNotificationRequest req = GlobalNotificationRequest.builder()
                         .userId(ticket.getAssignee().getUserId())        // receiver
                         .message("A new ticket is assigned to you: " + ticket.getTicketId())
-                        .sentBy(RemarkBy.ADMIN)                           // system action
+                        .sentBy(ticket.getAssignee().getAgency().getAgencyName())                           // system action
                         .agencyId(-1L)
                         .isRead(false)
                         .notificationType(NotificationType.TICKETS)
@@ -135,7 +135,7 @@ public class TicketService {
                 GlobalNotificationRequest req = GlobalNotificationRequest.builder()
                         .userId(actor.getUserId())
                         .message("You have been assigned ticket: " + ticket.getTicketId())
-                        .sentBy(RemarkBy.ADMIN)
+                        .sentBy(ticket.getAssignee().getAgency().getAgencyName())
                         .isRead(false)
                         .agencyId(user.getAgency() != null ? user.getAgency().getAgencyId() : -1L)
                         .notificationType(NotificationType.TICKETS)
@@ -172,7 +172,7 @@ public class TicketService {
                     GlobalNotificationRequest req = GlobalNotificationRequest.builder()
                             .userId(ticket.getAssignee().getUserId())
                             .message("Ticket " + ticket.getTicketId() + " status updated to: " + newStatus)
-                            .sentBy(RemarkBy.ADMIN)
+                            .sentBy(ticket.getAssignee().getAgency().getAgencyName())
                             .agencyId(-1L)
                             .isRead(false)
                             .notificationType(NotificationType.TICKETS)
@@ -210,7 +210,7 @@ public class TicketService {
                         GlobalNotificationRequest req = GlobalNotificationRequest.builder()
                                 .userId(ticket.getAssignee().getUserId())
                                 .message("New comment added on ticket: " + ticket.getTicketId())
-                                .sentBy(RemarkBy.CALL_CENTER)
+                                .sentBy(ticket.getAssignee().getAgency().getAgencyName())
                                 .notificationType(NotificationType.TICKETS)
                                 .agencyId(user.getAgency() != null ? user.getAgency().getAgencyId() : -1L)
                                 .agencyId(-1L)

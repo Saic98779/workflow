@@ -348,7 +348,7 @@ public class NonTrainingExpenditureService {
 
             GlobalNotificationRequest req = GlobalNotificationRequest.builder()
                     .userId(agencyAdmin.getUserId())
-                    .sentBy(userRole.equals(RemarkBy.ADMIN.name()) ? RemarkBy.ADMIN : RemarkBy.FINANCE)
+                    .sentBy(agencyAdmin.getAgency().getAgencyName())
                     .notificationType(NotificationType.NON_TRAINING_EXPENDITURE)
                     .message(remarks.getSpiuComments())
                     .agencyId(expenditure.getAgency() != null ? expenditure.getAgency().getAgencyId() : -1L)
@@ -367,7 +367,7 @@ public class NonTrainingExpenditureService {
 
             GlobalNotificationRequest req = GlobalNotificationRequest.builder()
                     .userId(adminUser.getUserId())
-                    .sentBy(RemarkBy.AGENCY)
+                    .sentBy(user.getAgency().getAgencyName())
                     .notificationType(NotificationType.NON_TRAINING_EXPENDITURE)
                     .message(remarks.getAgencyComments())
                     .agencyId(expenditure.getAgency() != null ? expenditure.getAgency().getAgencyId() : -1L)
