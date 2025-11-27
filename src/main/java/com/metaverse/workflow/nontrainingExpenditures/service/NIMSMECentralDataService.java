@@ -179,7 +179,7 @@ public class NIMSMECentralDataService {
 
             GlobalNotificationRequest req = GlobalNotificationRequest.builder()
                     .userId(agencyAdmin.getUserId())
-                    .sentBy(userRole.equals(RemarkBy.ADMIN.name()) ? RemarkBy.ADMIN : RemarkBy.FINANCE)
+                    .sentBy(agency.getAgencyName())
                     .notificationType(NotificationType.NON_TRAINING_EXPENDITURE)
                     .message(remarks.getSpiuComments())
                     .agencyId(agency != null ? agency.getAgencyId() : -1L)
@@ -199,7 +199,7 @@ public class NIMSMECentralDataService {
 
             GlobalNotificationRequest req = GlobalNotificationRequest.builder()
                     .userId(adminUser.getUserId())
-                    .sentBy(RemarkBy.AGENCY)
+                    .sentBy(agency.getAgencyName())
                     .notificationType(NotificationType.NON_TRAINING_EXPENDITURE)
                     .message(remarks.getAgencyComments())
                     .agencyId(agency != null ? agency.getAgencyId() : -1L)

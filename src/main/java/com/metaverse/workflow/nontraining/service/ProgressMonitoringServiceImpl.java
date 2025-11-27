@@ -286,7 +286,6 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
                 nonTrainingActivityRepository.findByAgency_AgencyId(agencyId);
 
         for (NonTrainingActivity activity : byAgencyAgencyId) {
-            System.out.println(activity.getActivityName());
             long activityId = activity.getActivityId();
 
             switch ((int) activityId) {
@@ -383,8 +382,8 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
                     double approved = result.getOrDefault("APPROVED", 0.0);
                     double pending = result.getOrDefault("OTHER", 0.0);
 
-                    Object[] objects = {String.valueOf(nonTrainingSubActivity.size()), approved, pending};
-
+                    String physicalAchievement = nonTrainingAchievementRepository.findByNonTrainingSubActivity_SubActivityId(subActivityId).map(d -> d.getPhysicalTargetAchievement()).orElse("0");
+                    Object[] objects = {physicalAchievement, approved, pending};
                     return objects;
                 } else {
                     Object[] objects = {"0", 0.0, 0.0, 0.0};
@@ -420,11 +419,8 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
                         approved = result.getOrDefault("APPROVED", 0.0);
                         pending = result.getOrDefault("OTHER", 0.0);
                     }
-
-                    Object[] objects = {
-                            String.valueOf(nonTrainingSubActivity.size()), approved, pending
-                    };
-                    return objects;
+                    String physicalAchievement = nonTrainingAchievementRepository.findByNonTrainingSubActivity_SubActivityId(subActivityId).map(d -> d.getPhysicalTargetAchievement()).orElse("0");
+                    Object[] objects = {physicalAchievement, approved, pending};                    return objects;
                 } else {
                     Object[] objects = {"0", 0.0, 0.0, 0.0};
                     return objects;
@@ -458,9 +454,8 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
                         pending = result.getOrDefault("OTHER", 0.0);
                     }
 
-                    Object[] objects = {
-                            String.valueOf(nonTrainingSubActivity.size()),approved,pending };
-                    return objects;
+                    String physicalAchievement = nonTrainingAchievementRepository.findByNonTrainingSubActivity_SubActivityId(subActivityId).map(d -> d.getPhysicalTargetAchievement()).orElse("0");
+                    Object[] objects = {physicalAchievement, approved, pending};                    return objects;
                 } else {
 
                     Object[] objects = {"0",0.0, 0.0};
@@ -492,7 +487,8 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
                          Double approved = result.getOrDefault("APPROVED",0.0);
                          Double pending = result.getOrDefault("OTHER",0.0);
 
-                    Object[] objects = {String.valueOf(nonTrainingSubActivity.get().size()), approved,pending};
+                    String physicalAchievement = nonTrainingAchievementRepository.findByNonTrainingSubActivity_SubActivityId(subActivityId).map(d -> d.getPhysicalTargetAchievement()).orElse("0");
+                    Object[] objects = {physicalAchievement, approved, pending};
                     return objects;
                 } else {
                     Object[] objects = {String.valueOf(0), 0.0,0.0};
@@ -514,7 +510,8 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
                     Double approved = result.getOrDefault("APPROVED",0.0);
                     Double pending = result.getOrDefault("OTHER",0.0);
 
-                    Object[] objects = {String.valueOf(nonTrainingSubActivity.size()), approved,pending};
+                    String physicalAchievement = nonTrainingAchievementRepository.findByNonTrainingSubActivity_SubActivityId(subActivityId).map(d -> d.getPhysicalTargetAchievement()).orElse("0");
+                    Object[] objects = {physicalAchievement, approved, pending};
                     return objects;
                 } else {
                     Object[] objects = {String.valueOf(0), 0.0,0.0};

@@ -17,7 +17,7 @@ public class GlobalNotificationResponse {
     private Long participantId;
     private Long programId;
     private String message;
-    private RemarkBy sentBy;
+    private String sentBy;
     private NotificationType notificationType;
     private Boolean isRead;
     private LocalDateTime createdAt;

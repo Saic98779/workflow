@@ -30,9 +30,6 @@ public class NonTrainingTargets extends TargetsBase {
     @Column(name = "financial_year")
     private String financialYear;
 
-    @OneToMany(mappedBy = "nonTrainingTarget", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<NonTrainingAchievement> achievements;
-
     @Column(name="created_on",insertable = true,updatable = false)
     @CreationTimestamp
     private Date createdOn;

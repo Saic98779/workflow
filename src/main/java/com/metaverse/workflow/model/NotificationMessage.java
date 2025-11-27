@@ -26,8 +26,7 @@ public class NotificationMessage {
     @Column(nullable = false)
     private String text;
 
-    @Enumerated(EnumType.STRING)
-    private RemarkBy sentBy;   // AGENCY / CALL_CENTER / ADMIN
+    private String sentBy;   // AGENCY / CALL_CENTER / ADMIN
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;

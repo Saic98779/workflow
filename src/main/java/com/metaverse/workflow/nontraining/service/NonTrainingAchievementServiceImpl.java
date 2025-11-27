@@ -1,9 +1,11 @@
 package com.metaverse.workflow.nontraining.service;
 
 import com.metaverse.workflow.model.NonTrainingAchievement;
+import com.metaverse.workflow.model.NonTrainingSubActivity;
 import com.metaverse.workflow.model.NonTrainingTargets;
 import com.metaverse.workflow.nontraining.dto.PhysicalFinancialDto;
 import com.metaverse.workflow.nontraining.repository.NonTrainingAchievementRepository;
+import com.metaverse.workflow.nontrainingExpenditures.repository.NonTrainingSubActivityRepository;
 import com.metaverse.workflow.trainingandnontrainingtarget.repository.NonTrainingTargetRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,9 @@ public class NonTrainingAchievementServiceImpl implements NonTrainingAchievement
     @Autowired
     private NonTrainingTargetRepository nonTrainingTargetRepository;
 
+    @Autowired
+    private NonTrainingSubActivityRepository nonTrainingSubActivityRepository;
+
     @Override
     public PhysicalFinancialDto getPhysicalFinancial(Long subActivityId) {
 
@@ -35,15 +40,28 @@ public class NonTrainingAchievementServiceImpl implements NonTrainingAchievement
         if (updatedRequest == null || updatedRequest.getNonTrainingSubActivityId() == null)
             return Optional.empty();
 
-        NonTrainingAchievement existing = nonTrainingAchievementRepository
-                .findById(nonTrainingAchievementId)
-                .orElseThrow(() -> new EntityNotFoundException(
-                        "Non Training Sub Activity found with id " + updatedRequest.getNonTrainingSubActivityId()
-                ));
-        existing.setPhysicalTargetAchievement(updatedRequest.getPhysicalTargetAchievement());
-        existing.setFinancialTargetAchievement(updatedRequest.getFinancialTargetAchievement());
-        NonTrainingAchievement saved = nonTrainingAchievementRepository.save(existing);
-        return Optional.of(saved);
+       Optional<NonTrainingAchievement> existing = nonTrainingAchievementRepository.findByNonTrainingSubActivity_SubActivityId(updatedRequest.getNonTrainingSubActivityId());
+       if(existing.isPresent()) {
+           NonTrainingAchievement nonTrainingAchievement = existing.get();
+           nonTrainingAchievement.setPhysicalTargetAchievement(updatedRequest.getPhysicalTargetAchievement());
+           nonTrainingAchievement.setFinancialTargetAchievement(updatedRequest.getFinancialTargetAchievement());
+           NonTrainingAchievement saved = nonTrainingAchievementRepository.save(nonTrainingAchievement);
+           return Optional.of(saved);
+       }else {
+           NonTrainingAchievement achievement = new NonTrainingAchievement();
+           Optional<NonTrainingSubActivity> byId = nonTrainingSubActivityRepository.findById(updatedRequest.getNonTrainingSubActivityId());
+           if(byId.isPresent()) {
+               achievement.setPhysicalTargetAchievement(updatedRequest.getPhysicalTargetAchievement());
+               achievement.setFinancialTargetAchievement(updatedRequest.getFinancialTargetAchievement());
+               NonTrainingSubActivity nonTrainingSubActivity = byId.get();
+               achievement.setNonTrainingSubActivity(nonTrainingSubActivity);
+               achievement.setNonTrainingActivity(nonTrainingSubActivity.getNonTrainingActivity());
+               NonTrainingAchievement save = nonTrainingAchievementRepository.save(achievement);
+               return Optional.of(save);
+           }
+
+       }
+       return Optional.empty();
     }
 
 }

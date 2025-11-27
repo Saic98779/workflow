@@ -2,6 +2,7 @@ package com.metaverse.workflow.notifications.service;
 
 import com.metaverse.workflow.agency.repository.AgencyRepository;
 import com.metaverse.workflow.enums.RemarkBy;
+import com.metaverse.workflow.enums.UserType;
 import com.metaverse.workflow.login.repository.LoginRepository;
 import com.metaverse.workflow.model.*;
 import com.metaverse.workflow.notifications.dto.GlobalNotificationRequest;
@@ -51,8 +52,9 @@ public class NotificationServiceImpl {
         // ----------------------------------------------------------
         // 2. SET RECEIVER USER (GENERIC)
         // ----------------------------------------------------------
+        User receiver = null;
         if (req.getUserId() != null && !req.getUserId().equals("-1")) {
-            User receiver = userRepository.findByUserId(req.getUserId())
+             receiver = userRepository.findByUserId(req.getUserId())
                     .orElseThrow(() -> new RuntimeException("User not found: " + req.getUserId()));
             notification.setReceiver(receiver);
         }
@@ -87,7 +89,7 @@ public class NotificationServiceImpl {
         // ----------------------------------------------------------
         // 6. DECIDE RECIPIENT TYPE BASED ON SENDER
         // ----------------------------------------------------------
-        if (req.getSentBy() == RemarkBy.AGENCY) {
+ /*       if (req.getSentBy() == RemarkBy.AGENCY) {
             if(req.getParticipantId() != -1){
                 notification.setRecipientType(NotificationRecipientType.CALL_CENTER);
             }
@@ -98,6 +100,15 @@ public class NotificationServiceImpl {
 
         } else {
             notification.setRecipientType(NotificationRecipientType.AGENCY);
+        }
+*/
+        if(receiver.getUserRole().equalsIgnoreCase("ADMIN")){
+            if(req.getParticipantId() != -1 ){
+                notification.setRecipientType(NotificationRecipientType.CALL_CENTER);
+            }
+            notification.setRecipientType(NotificationRecipientType.AGENCY);
+        }else {
+            notification.setRecipientType(NotificationRecipientType.ADMIN);
         }
 
         notification.updateLastMessageTime();
@@ -193,7 +204,7 @@ public class NotificationServiceImpl {
 
         List<Notifications> unReadNotifications = notificationRepository.findByIsReadAndAgency_agencyId(isRead, agencyId);
 
-        return unReadNotifications.stream().filter(notification -> notification.getMessages().get(0).getSentBy() == RemarkBy.ADMIN).map(notification ->
+        return unReadNotifications.stream().filter(notification -> notification.getMessages().get(0).getSentBy() == null).map(notification ->
                 GlobalNotificationResponse.builder()
                         .notificationId(notification.getId())
                         .agencyId(notification.getAgency().getAgencyId())
