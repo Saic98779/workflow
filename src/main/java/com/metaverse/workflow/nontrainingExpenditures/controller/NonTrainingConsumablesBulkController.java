@@ -7,6 +7,7 @@ import com.metaverse.workflow.common.util.RestControllerBase;
 import com.metaverse.workflow.exceptions.DataException;
 import com.metaverse.workflow.nontrainingExpenditures.service.NonTrainingConsumablesBulkDto;
 import com.metaverse.workflow.nontrainingExpenditures.service.NonTrainingConsumablesBulkService;
+import com.metaverse.workflow.nontrainingExpenditures.service.NonTrainingConsumablesTransactionsDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -36,7 +37,7 @@ public class NonTrainingConsumablesBulkController {
             NonTrainingConsumablesBulkDto bulkDto =
                     objectMapper.readValue(NonTrainingConsumablesBulkDto, NonTrainingConsumablesBulkDto.class);
 
-            WorkflowResponse response = service.saveBulkConsumable(bulkDto,file);
+            WorkflowResponse response = service.saveBulkConsumable(bulkDto, file);
 
             logService.logs(principal.getName(),
                     "SAVE", "Non-Training Consumables Bulk created successfully",
@@ -126,6 +127,101 @@ public class NonTrainingConsumablesBulkController {
         }
     }
 
+    @PostMapping(path = "/consumables/transactions/save",
+            consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> createTransaction(
+            @RequestBody NonTrainingConsumablesTransactionsDTO dto,
+            Principal principal
+    ) {
+        try {
+            WorkflowResponse response = service.saveTransaction(dto);
+
+            logService.logs(
+                    principal.getName(),
+                    "SAVE",
+                    "Non-Training Consumables Transaction created successfully",
+                    "NonTrainingConsumablesTransactions",
+                    "/non-training/consumables/transactions/save"
+            );
+
+            return ResponseEntity.ok(response);
+
+        } catch (DataException e) {
+            return error(e);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    @PutMapping(path = "/consumables/transactions/update/{id}",
+            consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> updateTransaction(@PathVariable Long id, @RequestBody NonTrainingConsumablesTransactionsDTO dto, Principal principal) {
+        try {
+            NonTrainingConsumablesTransactionsDTO updated = service.updateTransaction(id, dto);
+
+            logService.logs(
+                    principal.getName(),
+                    "UPDATE", "Non-Training Consumables Transaction updated successfully | ID: " + id,
+                    "NonTrainingConsumablesTransactions", "/non-training/consumables/transactions/update/" + id
+            );
+
+            return ResponseEntity.ok(
+                    WorkflowResponse.builder().status(200).message("Updated Successfully")
+                            .data(updated).build()
+            );
+
+        } catch (DataException e) {
+            return error(e);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @DeleteMapping("/consumables/transactions/delete/{id}")
+    public ResponseEntity<?> deleteTransaction(@PathVariable Long id, Principal principal) {
+        try {
+            service.deleteTransaction(id);
+            logService.logs(
+                    principal.getName(),
+                    "DELETE", "Non-Training Consumables Transaction deleted successfully | ID: " + id,
+                    "NonTrainingConsumablesTransactions", "/non-training/consumables/transactions/delete/" + id
+            );
+
+            return ResponseEntity.ok(
+                    WorkflowResponse.builder().status(200).message("Deleted Successfully").build()
+            );
+
+        } catch (DataException e) {
+            return RestControllerBase.error(e);
+        }
+    }
+
+    @GetMapping("/consumables/transactions/{id}")
+    public ResponseEntity<?> getTransactionById(@PathVariable Long id) {
+        try {
+            NonTrainingConsumablesTransactionsDTO dto = service.getTransaction(id);
+            return ResponseEntity.ok(dto);
+
+        } catch (DataException e) {
+            return error(e);
+        }
+    }
+
+    @GetMapping("/consumables/transactions/sub-activity/{subActivityId}")
+    public ResponseEntity<?> getTransactionBySubActivity(@PathVariable Long subActivityId) {
+        try {
+            return ResponseEntity.ok(
+                    WorkflowResponse.builder()
+                            .status(200).message("Success")
+                            .data(service.getTransactionBySubActivityId(subActivityId))
+                            .build()
+            );
+
+        } catch (Exception e) {
+            return error(new DataException("Failed to fetch records", "FETCH_ERROR", 500));
+        }
+    }
 
 
 }
