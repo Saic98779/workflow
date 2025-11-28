@@ -443,7 +443,7 @@ public class ProgramServiceAdapter implements ProgramService {
         Program program = programRepository.findById(programId)
                 .orElseThrow(() -> new DataException("Program data not found", "PROGRAM-DATA-NOT-FOUND", 400));
         List<ProgramMonitoring> monitoringList = programMonitoringRepo.findByProgramId(programId);
-        double monitoringScore = monitoringList.stream().mapToDouble(ProgramMonitoring::getTotalScore).sum();
+        double monitoringScore = monitoringList.stream().mapToDouble( totScore ->  (totScore.getTotalScore()==null) ? 0 : totScore.getTotalScore()).sum();
         return WorkflowResponse.builder()
                 .status(200)
                 .message("Success")

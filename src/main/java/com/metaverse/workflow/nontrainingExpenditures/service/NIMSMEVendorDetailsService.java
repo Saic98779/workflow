@@ -208,29 +208,29 @@ public class NIMSMEVendorDetailsService {
 
         NIMSMEVendorDetails expenditure = repository.findById(remarks.getNonTrainingExpenditureId())
                 .orElseThrow(() -> new DataException("Non Training Expenditure not found", "EXPENDITURE_NOT_FOUND", 400));
-
-        // 2. Create and associate SPIU Comment
-        NonTrainingSpiuComments spiuComment = NonTrainingExpenditureMapper.mapToEntitySpiuComments(remarks, user);
-        spiuComment.setNimsmeVendorDetails(expenditure);
-        expenditure.getSpiuComments().add(spiuComment);
-
-        // 3. Create and associate Agency Comment
-        NonTrainingAgencyComments agencyComment = NonTrainingExpenditureMapper.mapToEntityAgencyComments(remarks, user);
-        agencyComment.setNimsmeVendorDetails(expenditure);
-        expenditure.getAgencyComments().add(agencyComment);
-
+        if(remarks.getAgencyComments() == null) {
+            // 2. Create and associate SPIU Comment
+            NonTrainingSpiuComments spiuComment = NonTrainingExpenditureMapper.mapToEntitySpiuComments(remarks, user);
+            spiuComment.setNimsmeVendorDetails(expenditure);
+            expenditure.getSpiuComments().add(spiuComment);
+        }else {
+            // 3. Create and associate Agency Comment
+            NonTrainingAgencyComments agencyComment = NonTrainingExpenditureMapper.mapToEntityAgencyComments(remarks, user);
+            agencyComment.setNimsmeVendorDetails(expenditure);
+            expenditure.getAgencyComments().add(agencyComment);
+        }
         // ======== NOTIFICATION LOGIC (UPDATED) ========
 
         String userRole = user.getUserRole();
-        if (userRole.equalsIgnoreCase("ADMIN")  || userRole.equalsIgnoreCase("FINANCE") ) {
+        if (userRole.equalsIgnoreCase("ADMIN")  || userRole.equalsIgnoreCase("FINANCE") || userRole.equalsIgnoreCase("SPIU")) {
 
             // ---- ADMIN → AGENCY ADMIN ----
             Agency agency = expenditure.getNonTrainingSubActivity().getNonTrainingActivity().getAgency();
-            User agencyAdmin = getAgencyAdminOrFallback(agency);
+            //User agencyAdmin = getAgencyAdminOrFallback(agency);
 
             GlobalNotificationRequest req = GlobalNotificationRequest.builder()
-                    .userId(agencyAdmin.getUserId())
-                    .sentBy(agency.getAgencyName())
+                    .userId(user.getUserId())
+                    .sentBy(userRole)
                     .notificationType(NotificationType.NON_TRAINING_EXPENDITURE)
                     .message(remarks.getSpiuComments())
                     .agencyId(agency != null ? agency.getAgencyId() : -1L)
@@ -243,13 +243,10 @@ public class NIMSMEVendorDetailsService {
         } else {
 
             // ---- AGENCY → SYSTEM ADMIN ----
-            User adminUser = userRepo.findFirstByUserRoleIgnoreCase("ADMIN")
-                    .orElseThrow(() -> new DataException("Admin user not found", "ADMIN_NOT_FOUND", 400));
-
             Agency agency = expenditure.getNonTrainingSubActivity().getNonTrainingActivity().getAgency();
 
             GlobalNotificationRequest req = GlobalNotificationRequest.builder()
-                    .userId(adminUser.getUserId())
+                    .userId(user.getUserId())
                     .sentBy(agency.getAgencyName())
                     .notificationType(NotificationType.NON_TRAINING_EXPENDITURE)
                     .message(remarks.getAgencyComments())
