@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
@@ -89,27 +90,21 @@ public class NotificationServiceImpl {
         // ----------------------------------------------------------
         // 6. DECIDE RECIPIENT TYPE BASED ON SENDER
         // ----------------------------------------------------------
- /*       if (req.getSentBy() == RemarkBy.AGENCY) {
-            if(req.getParticipantId() != -1){
-                notification.setRecipientType(NotificationRecipientType.CALL_CENTER);
-            }
-            notification.setRecipientType(NotificationRecipientType.ADMIN);
+       if(req.getSentBy().equalsIgnoreCase("ADMIN") || req.getSentBy().equalsIgnoreCase("SPIU") || req.getSentBy().equalsIgnoreCase("Finance")){
+           if(req.getParticipantId() != -1 ){
+               notification.setRecipientType(NotificationRecipientType.CALL_CENTER);
+           }
+           notification.setRecipientType(NotificationRecipientType.AGENCY);
+       }else {
+           if (Arrays.stream(NotificationRecipientType.values()).anyMatch(e -> e.name().equals(req.getSentBy()))) {
+               NotificationRecipientType remarkBy = NotificationRecipientType.valueOf(req.getSentBy());
+               notification.setRecipientType(remarkBy);
+           }
+       }
 
-        } else if (req.getSentBy() == RemarkBy.CALL_CENTER) {
-            notification.setRecipientType(NotificationRecipientType.AGENCY);
-
-        } else {
-            notification.setRecipientType(NotificationRecipientType.AGENCY);
-        }
-*/
-        if(receiver.getUserRole().equalsIgnoreCase("ADMIN")){
-            if(req.getParticipantId() != -1 ){
-                notification.setRecipientType(NotificationRecipientType.CALL_CENTER);
-            }
-            notification.setRecipientType(NotificationRecipientType.AGENCY);
-        }else {
-            notification.setRecipientType(NotificationRecipientType.ADMIN);
-        }
+       if(notification.getRecipientType() == null){
+           notification.setRecipientType(NotificationRecipientType.ADMIN);
+       }
 
         notification.updateLastMessageTime();
         notification.setIsRead(false);

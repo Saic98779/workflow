@@ -97,26 +97,28 @@ public class NonTrainingResourceExpenditureService {
                 .orElseThrow(() -> new DataException("Non Training Expenditure not found", "EXPENDITURE_NOT_FOUND", 400));
 
         // 2. Create and associate SPIU Comment
-        NonTrainingSpiuComments spiuComment = NonTrainingExpenditureMapper.mapToEntitySpiuComments(remarks, user);
-        spiuComment.setNonTrainingResourceExpenditure(expenditure);
-        expenditure.getSpiuComments().add(spiuComment);
 
-        // 3. Create and associate Agency Comment
-        NonTrainingAgencyComments agencyComment = NonTrainingExpenditureMapper.mapToEntityAgencyComments(remarks, user);
-        agencyComment.setNonTrainingResourceExpenditure(expenditure);
-        expenditure.getAgencyComments().add(agencyComment);
-
+        if(remarks.getAgencyComments() == null) {
+            NonTrainingSpiuComments spiuComment = NonTrainingExpenditureMapper.mapToEntitySpiuComments(remarks, user);
+            spiuComment.setNonTrainingResourceExpenditure(expenditure);
+            expenditure.getSpiuComments().add(spiuComment);
+        }else {
+            // 3. Create and associate Agency Comment
+            NonTrainingAgencyComments agencyComment = NonTrainingExpenditureMapper.mapToEntityAgencyComments(remarks, user);
+            agencyComment.setNonTrainingResourceExpenditure(expenditure);
+            expenditure.getAgencyComments().add(agencyComment);
+        }
         // ======== NOTIFICATION LOGIC (UPDATED) ========
 
         String userRole = user.getUserRole();
-        if (userRole.equalsIgnoreCase("ADMIN")  || userRole.equalsIgnoreCase("FINANCE") ) {
+        if (userRole.equalsIgnoreCase("ADMIN")  || userRole.equalsIgnoreCase("FINANCE") || userRole.equalsIgnoreCase("SPIU")) {
 
             // ---- ADMIN → AGENCY ADMIN ----
             Agency agency = expenditure.getNonTrainingResource().getNonTrainingActivity().getAgency();
-            User agencyAdmin = getAgencyAdminOrFallback(agency);
+            //User agencyAdmin = getAgencyAdminOrFallback(agency);
 
             GlobalNotificationRequest req = GlobalNotificationRequest.builder()
-                    .userId(agencyAdmin.getUserId())
+                    .userId(user.getUserId())
                     .sentBy(userRole)
                     .notificationType(NotificationType.NON_TRAINING_EXPENDITURE)
                     .message(remarks.getSpiuComments())
@@ -130,13 +132,10 @@ public class NonTrainingResourceExpenditureService {
         } else {
 
             // ---- AGENCY → SYSTEM ADMIN ----
-            User adminUser = userRepo.findFirstByUserRoleIgnoreCase("ADMIN")
-                    .orElseThrow(() -> new DataException("Admin user not found", "ADMIN_NOT_FOUND", 400));
-
             Agency agency = expenditure.getNonTrainingResource().getNonTrainingActivity().getAgency();
 
             GlobalNotificationRequest req = GlobalNotificationRequest.builder()
-                    .userId(adminUser.getUserId())
+                    .userId(user.getUserId())
                     .sentBy(agency.getAgencyName())
                     .notificationType(NotificationType.NON_TRAINING_EXPENDITURE)
                     .message(remarks.getAgencyComments())
