@@ -14,12 +14,8 @@ import java.util.List;
 @Repository
 public interface NotificationRepository extends JpaRepository<Notifications, Long> {
 
-    @Query("""
-        SELECT n FROM Notifications n
-        WHERE LOWER(n.receiver.userRole) = LOWER(:role) and n.isRead = false
-        ORDER BY n.lastMessageAt DESC
-    """)
-    List<Notifications> findByReceiverRole(@Param("role") String role);
+
+    List<Notifications> findByRecipientTypeAndIsRead(NotificationRecipientType role,Boolean isRead);
 
     Collection<Notifications> findByReceiver_UserIdOrderByLastMessageAtDesc(String userId);
 

@@ -1,12 +1,9 @@
 package com.metaverse.workflow.notifications.dto;
 
-import com.metaverse.workflow.common.enums.NotificationType;
-import com.metaverse.workflow.enums.RemarkBy;
-import jakarta.persistence.Column;
 import lombok.Builder;
 import lombok.Data;
 
-import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Builder
@@ -16,9 +13,6 @@ public class GlobalNotificationResponse {
     private Long agencyId;
     private Long participantId;
     private Long programId;
-    private String message;
-    private String sentBy;
-    private NotificationType notificationType;
+    private List<NotificationMessageDto> notificationMessageDto;
     private Boolean isRead;
-    private LocalDateTime createdAt;
 }
