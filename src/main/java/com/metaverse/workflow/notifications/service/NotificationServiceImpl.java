@@ -132,38 +132,31 @@ public class NotificationServiceImpl {
         }
     }
 
-    public NotificationDto getNotificationsByRole(String role) {
+    public List<GlobalNotificationResponse> getNotificationsByRole(String role) {
 
         List<Notifications> list = notificationRepository.findByRecipientTypeAndIsRead(NotificationRecipientType.ADMIN,false);
 
         if (list.isEmpty()) return null;
-
-        // Base notification = the most recent one OR first one
-        Notifications base = list.stream()
-                .max(Comparator.comparing(Notifications::getLastMessageAt))
-                .orElse(list.get(0));
-
-        // Merge all messages from all notifications
-        List<NotificationMessage> allMessages = list.stream()
-                .flatMap(n -> n.getMessages().stream())
-                .sorted(Comparator.comparing(NotificationMessage::getCreatedAt).reversed())
-                .toList();
-
         // Build DTO manually
-        return NotificationDto.builder()
-                .notificationId(base.getId())
-                .receiverId(base.getReceiver().getUserId())
-                .receiverName(base.getReceiver().getFirstName() + " " + base.getReceiver().getLastName())
-                .receiverRole(base.getReceiver().getUserRole())
-                .status(base.getStatus())
-                .isRead(base.getIsRead())
-                .recipientType(base.getRecipientType())
-                .lastMessageAt(base.getLastMessageAt())
-                .messages(allMessages.stream()
-                        .map(msg -> NotificationMapper.toMessageDto(msg, base))
-                        .toList()
-                )
-                .build();
+        return list.stream().map(notification ->
+                GlobalNotificationResponse.builder()
+                        .notificationId(notification.getId())
+                        .agencyId(notification.getAgency().getAgencyId())
+                        .isRead(notification.getIsRead())
+                        .notificationMessageDto(
+                                notification.getMessages().stream().filter(sent -> !sent.getSentBy().equalsIgnoreCase("ADMIN") ||
+                                                !sent.getSentBy().equalsIgnoreCase("FINANCE") ||
+                                                !sent.getSentBy().equalsIgnoreCase("SPIU"))
+                                        .map(msg -> {
+                                            NotificationMessageDto dto = new NotificationMessageDto();
+                                            dto.setSentBy(msg.getSentBy());
+                                            dto.setNotificationType(msg.getNotification().getNotificationType());
+                                            dto.setText(msg.getText());
+                                            dto.setCreatedAt(msg.getCreatedAt());
+                                            dto.setId(msg.getId());
+                                            return  dto;
+                                        }).toList()
+                        ).build()).toList();
     }
 
 
