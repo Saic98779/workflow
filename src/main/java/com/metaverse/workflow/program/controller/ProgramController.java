@@ -214,6 +214,20 @@ public class ProgramController {
         return ResponseEntity.ok(response);
     }
 
+    @DeleteMapping("/program/collage/images")
+    public ResponseEntity<WorkflowResponse> deleteCollageImage(Principal principal,
+                                                               @RequestParam("programId") Long programId,
+                                                               @RequestParam("fileId") Long fileId,
+                                                               HttpServletRequest servletRequest) {
+
+        WorkflowResponse response = programService.deleteCollageImage(programId, fileId);
+        logService.logs(principal.getName(), "DELETE", "deleted collage image", "report",
+                servletRequest.getRequestURI());
+
+        return ResponseEntity.ok(response);
+    }
+
+
     @PostMapping(value = "/program/execution/media-coverage", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_OCTET_STREAM_VALUE},
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<WorkflowResponse> saveMediaCoverage(Principal principal, @RequestPart("data") String data,

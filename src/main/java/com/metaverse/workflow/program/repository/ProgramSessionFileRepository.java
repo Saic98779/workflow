@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ProgramSessionFileRepository extends JpaRepository<ProgramSessionFile, Long> {
 
@@ -75,4 +76,6 @@ public interface ProgramSessionFileRepository extends JpaRepository<ProgramSessi
 
 
     void deleteByNonTrainingConsumablesBulkId(Long id);
+
+    Optional<ProgramSessionFile> findByProgramProgramIdAndProgramSessionFileIdAndFileType(Long programId, Long fileId, String collage);
 }

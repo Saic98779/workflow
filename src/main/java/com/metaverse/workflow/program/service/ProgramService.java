@@ -39,4 +39,6 @@ public interface  ProgramService {
     WorkflowResponse getProgramSessionsByProgramId(Long programId)throws DataException;
     List<String> getProgramByAgencyAndActivity(Long agencyId,Long activityId) throws DataException;
     WorkflowResponse getProgramsWithParticipants(Long agencyId);
+
+    WorkflowResponse deleteCollageImage(Long programId, Long fileId);
 }

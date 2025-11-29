@@ -6,6 +6,7 @@ import com.metaverse.workflow.activity.repository.SubActivityRepository;
 import com.metaverse.workflow.agency.repository.AgencyRepository;
 import com.metaverse.workflow.callcenter.repository.CallCenterVerificationRepository;
 import com.metaverse.workflow.common.constants.Constants;
+import com.metaverse.workflow.common.constants.ProgramStatusConstants;
 import com.metaverse.workflow.common.fileservice.FileSystemStorageService;
 import com.metaverse.workflow.common.fileservice.StorageService;
 import com.metaverse.workflow.common.response.WorkflowResponse;
@@ -422,6 +423,48 @@ public class ProgramServiceAdapter implements ProgramService {
                 .message("Image is required")
                 .build();
     }
+
+    @Override
+    public WorkflowResponse deleteCollageImage(Long programId, Long fileId) {
+
+        Optional<ProgramSessionFile> fileOpt =
+                programSessionFileRepository.findByProgramProgramIdAndProgramSessionFileIdAndFileType(
+                        programId, fileId, "COLLAGE");
+
+        if (fileOpt.isEmpty()) {
+            return WorkflowResponse.builder()
+                    .status(404)
+                    .message("Collage image not found for given programId and fileId")
+                    .build();
+        }
+
+        ProgramSessionFile file = fileOpt.get();
+
+        List<String> filePaths = new ArrayList<>();
+        filePaths.add(file.getFilePath());
+
+        // delete physical file
+        storageService.deleteAll(filePaths);
+
+        // delete db record
+        programSessionFileRepository.delete(file);
+
+        Program program = programRepository.findById(programId).get();
+
+        program.setStatus(ProgramStatusConstants.PROGRAM_EXECUTION_UPDATED);
+
+        programRepository.save(program);
+
+        return WorkflowResponse.builder()
+                .status(200)
+                .message("Collage image deleted successfully")
+                .data(Map.of(
+                        "programId", programId,
+                        "fileId", fileId
+                ))
+                .build();
+    }
+
 
     @Override
     public List<ProgramFilePathInfo> getProgramFileByType(FileType fileType) {

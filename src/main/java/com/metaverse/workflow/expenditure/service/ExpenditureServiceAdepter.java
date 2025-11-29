@@ -166,22 +166,21 @@ public class ExpenditureServiceAdepter implements ExpenditureService {
                     .build();
         }
 
-        ProgramExpenditureResponse response = null;
+        List<ProgramExpenditureResponse> responses = expenditures.stream()
+                .map(programExpenditure -> {
+                    List<Long> fileIds = programSessionFileRepository
+                            .findByBulkExpenditureId(programExpenditure.getProgramExpenditureId())
+                            .stream()
+                            .map(ProgramSessionFile::getProgramSessionFileId)
+                            .toList();
+                    return ExpenditureResponseMapper.mapProgramExpenditure(programExpenditure, fileIds);
+                })
+                .toList();
 
-        for (ProgramExpenditure pe : expenditures) {
-            List<Long> fileIds = programSessionFileRepository
-                    .findByBulkExpenditureId(pe.getProgramExpenditureId())
-                    .stream()
-                    .map(ProgramSessionFile::getProgramSessionFileId)
-                    .toList();
-
-            response =
-                    ExpenditureResponseMapper.mapProgramExpenditure(pe, fileIds);
-        }
         return WorkflowResponse.builder()
                 .status(200)
                 .message("Success")
-                .data(response)
+                .data(responses)
                 .build();
     }
 
