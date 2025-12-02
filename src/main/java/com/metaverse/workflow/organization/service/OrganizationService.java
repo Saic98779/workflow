@@ -13,7 +13,7 @@ public interface OrganizationService {
 
 	public WorkflowResponse getOrganizations();
 
-	public WorkflowResponse getOrganizations(int page, int size);
+    WorkflowResponse getOrganizations(int page, int size, String orgType);
 
 	Boolean isMobileNumberExists(Long mobileNo);
 

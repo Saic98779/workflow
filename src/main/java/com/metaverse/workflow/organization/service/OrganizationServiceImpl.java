@@ -9,7 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -30,7 +32,7 @@ public class OrganizationServiceImpl implements OrganizationService {
 		//Organization organization = OrganizationRequestMapper.map(organizationRequest);
 		Organization SavedOrganization = repository.save(organization);
 		OrganizationResponse response= OrganizationResponseMapper.map(SavedOrganization);
-		return WorkflowResponse.builder().message("Oraganization saved successfully").status(200).data(response).build();
+		return WorkflowResponse.builder().message("Organization saved successfully").status(200).data(response).build();
 	}
 	@Override
 	public Optional<Organization> getOrganizationById(Long organizationId) {
@@ -46,9 +48,14 @@ public class OrganizationServiceImpl implements OrganizationService {
 
 	@Override
 	@Cacheable("organizations")
-	public WorkflowResponse getOrganizations(int page, int size) {
+	public WorkflowResponse getOrganizations(int page, int size,String orgType) {
 		PageRequest pageRequest = PageRequest.of(page, size);
-		Page<Organization> organizations = repository.findAll(pageRequest);
+        Page<Organization> organizations;
+        if(orgType == null) {
+             organizations = repository.findAll(pageRequest);
+        }else {
+            organizations = repository.findByOrganizationType(orgType.toUpperCase(),pageRequest);
+        }
 		List<OrganizationResponse> organizationResponses =
 				OrganizationResponseMapper.mapOrganization(organizations.getContent());
 
