@@ -28,8 +28,9 @@ public class OrganizationController {
     @GetMapping("/organization/list")
     public ResponseEntity<WorkflowResponse> getResourcesByAgencyId(
         @RequestParam(defaultValue = "0") int page,
-        @RequestParam(defaultValue = "10") int size) {
-            return ResponseEntity.ok(organizationService.getOrganizations(page, size));
+        @RequestParam(defaultValue = "10") int size,
+        @RequestParam(required = false) String orgType) {
+            return ResponseEntity.ok(organizationService.getOrganizations(page, size,orgType));
     }
 
     @GetMapping("/organization-names")
