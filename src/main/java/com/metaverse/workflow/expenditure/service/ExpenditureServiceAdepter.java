@@ -747,53 +747,59 @@ public class ExpenditureServiceAdepter implements ExpenditureService {
                 .orElseThrow(() -> new DataException("Expenditure not found", "EXPENDITURE_NOT_FOUND", 400));
 
         // 2. Create and associate SpiuComment
-        SpiuComments spiuComment = ExpenditureRemarksMapper.mapToEntity(remarks, user);
-        spiuComment.setExpenditure(expenditure);
-        expenditure.getSpiuComments().add(spiuComment);
+        if(remarks.getAgencyComments() == null) {
 
-        // 3. Create and associate AgencyComment
-        AgencyComments agencyComment = ExpenditureRemarksMapper.mapToEntityAgencyComments(remarks, user);
-        agencyComment.setExpenditure(expenditure); // Ensure bidirectional relationship
-        expenditure.getAgencyComments().add(agencyComment);
+            SpiuComments spiuComment = ExpenditureRemarksMapper.mapToEntity(remarks, user);
+            spiuComment.setExpenditure(expenditure);
+            expenditure.getSpiuComments().add(spiuComment);
+        }
+
+        else {
+            // 3. Create and associate AgencyComment
+            AgencyComments agencyComment = ExpenditureRemarksMapper.mapToEntityAgencyComments(remarks, user);
+            agencyComment.setExpenditure(expenditure); // Ensure bidirectional relationship
+            expenditure.getAgencyComments().add(agencyComment);
+        }
 
         // 4. Persist comment changes
         programExpenditureRepository.save(expenditure);
 
         // 5. Send notifications
+
+
         String userRole = user.getUserRole();
-        if (userRole.equalsIgnoreCase("ADMIN")  || userRole.equalsIgnoreCase("FINANCE") ) {
-            // ADMIN -> Agency (notify agency admin if present else fallback to system admin)
-            User agencyAdmin = getAgencyAdminOrFallback(expenditure.getAgency());
+        if (userRole.equalsIgnoreCase("ADMIN")  || userRole.equalsIgnoreCase("FINANCE") || userRole.equalsIgnoreCase("SPIU")) {
+
+            // ---- ADMIN → AGENCY ADMIN ----
+            Agency agency = expenditure.getAgency();
+            //User agencyAdmin = getAgencyAdminOrFallback(agency);
 
             GlobalNotificationRequest req = GlobalNotificationRequest.builder()
-                    .userId(agencyAdmin.getUserId())
-                    .message(remarks.getSpiuComments())
+                    .userId(user.getUserId())
+                    .sentBy(userRole)
                     .notificationType(NotificationType.TRAINING_EXPENDITURE)
-                    .sentBy(agencyAdmin.getAgency().getAgencyName())
+                    .message(remarks.getSpiuComments())
+                    .agencyId(agency != null ? agency.getAgencyId() : -1L)
+                    .programId(-1L)
                     .isRead(false)
-                    .agencyId(expenditure.getAgency() != null ? expenditure.getAgency().getAgencyId() : -1L)
-                    .programId(expenditure.getProgram() != null ? expenditure.getProgram().getProgramId() : -1L)
                     .participantId(-1L)
-                    .isRead(false)
                     .build();
 
             notificationService.saveNotification(req);
+        } else {
 
-        } else if (remarks.getAgencyComments() != null && !remarks.getAgencyComments().isBlank()) {
-            // Agency -> Admin
-            User adminUser = userRepo.findFirstByUserRoleIgnoreCase("ADMIN")
-                    .orElseThrow(() -> new DataException("Admin user not found", "ADMIN_NOT_FOUND", 400));
+            // ---- AGENCY → SYSTEM ADMIN ----
+            Agency agency = expenditure.getAgency();
 
             GlobalNotificationRequest req = GlobalNotificationRequest.builder()
-                    .userId(adminUser.getUserId())
-                    .message(remarks.getAgencyComments())
+                    .userId(user.getUserId())
+                    .sentBy(agency.getAgencyName())
                     .notificationType(NotificationType.TRAINING_EXPENDITURE)
-                    .sentBy(adminUser.getAgency().getAgencyName())
+                    .message(remarks.getAgencyComments())
+                    .agencyId(agency != null ? agency.getAgencyId() : -1L)
+                    .programId(-1L)
                     .isRead(false)
-                    .agencyId(expenditure.getAgency() != null ? expenditure.getAgency().getAgencyId() : -1L)
-                    .programId(expenditure.getProgram() != null ? expenditure.getProgram().getProgramId() : -1L)
                     .participantId(-1L)
-                    .isRead(false)
                     .build();
 
             notificationService.saveNotification(req);

@@ -52,27 +52,29 @@ public class MoMSMEReportSubmittedService {
         MoMSMEReport moMSMEReport = moMSMEReportRepo.findById(dto.getMoMSMEActivityId())
                 .orElseThrow(() -> new DataException("MoMSME Report not found", "MOMSME-REPORT-DATA-NOT-FOUND", 400));
 
-        // Step 2: Get or create parent record
-        MoMSMEReportSubmitted parent = submittedRepository.findByFinancialYearAndMoMSMEReport_MoMSMEActivityId(
-                        dto.getFinancialYear(), dto.getMoMSMEActivityId())
-                .orElse(MoMSMEReportSubmitted.builder()
+        // Step 2: Get or create parent record (unique per FY + Activity)
+        MoMSMEReportSubmitted parent = submittedRepository
+                .findByFinancialYearAndMoMSMEReport_MoMSMEActivityId(dto.getFinancialYear(), dto.getMoMSMEActivityId())
+                .orElseGet(() -> MoMSMEReportSubmitted.builder()
                         .financialYear(dto.getFinancialYear())
                         .moMSMEReport(moMSMEReport)
                         .build());
 
         MoMSMEReportSubmitted savedParent = submittedRepository.save(parent);
 
-        // Step 3: Save or update Monthly record
+        // Step 3: Get or create monthly record (unique per FY + Activity + Month)
         MoMSMEReportSubmittedMonthly monthly = monthlyRepo
-                .findByMoMSMEReportSubmitted_SubmittedIdAndMonth(savedParent.getSubmittedId(), dto.getMonth())
-                .orElse(MoMSMEReportSubmittedMonthly.builder()
+                .findByMoMSMEReport_MoMSMEActivityIdAndFinancialYearAndMonth(
+                        dto.getMoMSMEActivityId(), dto.getFinancialYear(), dto.getMonth()
+                )
+                .orElseGet(() -> MoMSMEReportSubmittedMonthly.builder()
                         .moMSMEReportSubmitted(savedParent)
-                        .month(dto.getMonth())
                         .moMSMEReport(moMSMEReport)
-                        .moMSMEReport(moMSMEReport)
+                        .financialYear(dto.getFinancialYear())
                         .month(dto.getMonth())
                         .build());
 
+        // Step 4: Update monthly data
         monthly.setPhysicalAchievement(dto.getPhysicalAchievement());
         monthly.setFinancialAchievement(dto.getFinancialAchievement());
         monthly.setTotal(dto.getTotal());
@@ -83,6 +85,7 @@ public class MoMSMEReportSubmittedService {
 
         monthlyRepo.save(monthly);
 
+        // Step 5: Recalculate quarterly totals
         String quarter = getQuarterForMonth(dto.getMonth());
 
         List<MoMSMEReportSubmittedMonthly> quarterlyMonths =
@@ -91,50 +94,21 @@ public class MoMSMEReportSubmittedService {
                         .filter(m -> getQuarterForMonth(m.getMonth()).equals(quarter))
                         .toList();
 
-        double totalPhysical = quarterlyMonths.stream()
-                .mapToDouble(m -> m.getPhysicalAchievement() != null ? m.getPhysicalAchievement() : 0)
-                .sum();
-
-        double totalFinancial = quarterlyMonths.stream()
-                .mapToDouble(m -> m.getFinancialAchievement() != null ? m.getFinancialAchievement() : 0)
-                .sum();
-
-        int totalBeneficiaries = quarterlyMonths.stream()
-                .mapToInt(m -> m.getTotal() != null ? m.getTotal() : 0)
-                .sum();
-
-        int totalWomen = quarterlyMonths.stream()
-                .mapToInt(m -> m.getWomen() != null ? m.getWomen() : 0)
-                .sum();
-
-        int totalSc = quarterlyMonths.stream()
-                .mapToInt(m -> m.getSc() != null ? m.getSc() : 0)
-                .sum();
-
-        int totalSt = quarterlyMonths.stream()
-                .mapToInt(m -> m.getSt() != null ? m.getSt() : 0)
-                .sum();
-
-        int totalObc = quarterlyMonths.stream()
-                .mapToInt(m -> m.getObc() != null ? m.getObc() : 0)
-                .sum();
-
         MoMSMEReportSubmittedQuarterly quarterly = quarterlyRepo
                 .findByMoMSMEReportSubmitted_SubmittedIdAndQuarter(savedParent.getSubmittedId(), quarter)
-                .orElse(MoMSMEReportSubmittedQuarterly.builder()
+                .orElseGet(() -> MoMSMEReportSubmittedQuarterly.builder()
                         .moMSMEReportSubmitted(savedParent)
-                        .moMSMEReport(moMSMEReport)
                         .moMSMEReport(moMSMEReport)
                         .quarter(quarter)
                         .build());
 
-        quarterly.setPhysicalAchievement(totalPhysical);
-        quarterly.setFinancialAchievement(totalFinancial);
-        quarterly.setTotal(totalBeneficiaries);
-        quarterly.setWomen(totalWomen);
-        quarterly.setSc(totalSc);
-        quarterly.setSt(totalSt);
-        quarterly.setObc(totalObc);
+        quarterly.setPhysicalAchievement(quarterlyMonths.stream().mapToDouble(m -> m.getPhysicalAchievement() != null ? m.getPhysicalAchievement() : 0).sum());
+        quarterly.setFinancialAchievement(quarterlyMonths.stream().mapToDouble(m -> m.getFinancialAchievement() != null ? m.getFinancialAchievement() : 0).sum());
+        quarterly.setTotal(quarterlyMonths.stream().mapToInt(m -> m.getTotal() != null ? m.getTotal() : 0).sum());
+        quarterly.setWomen(quarterlyMonths.stream().mapToInt(m -> m.getWomen() != null ? m.getWomen() : 0).sum());
+        quarterly.setSc(quarterlyMonths.stream().mapToInt(m -> m.getSc() != null ? m.getSc() : 0).sum());
+        quarterly.setSt(quarterlyMonths.stream().mapToInt(m -> m.getSt() != null ? m.getSt() : 0).sum());
+        quarterly.setObc(quarterlyMonths.stream().mapToInt(m -> m.getObc() != null ? m.getObc() : 0).sum());
 
         MoMSMEReportSubmittedQuarterly savedQuarterly = quarterlyRepo.save(quarterly);
 
@@ -147,6 +121,8 @@ public class MoMSMEReportSubmittedService {
                 .status(200)
                 .build();
     }
+
+
 
     public WorkflowResponse getById(Long id) throws DataException { MoMSMEReportSubmittedDto dto = submittedRepository.findById(id) .map(MoMSMEReportSubmittedMapper::toDTO) .orElseThrow(() -> new DataException("MoMSMEReport not found with id " + id,"MO-MSME_REPORT_NOT_FOUND ",400)); return WorkflowResponse.builder() .status(200) .message("Submission retrieved successfully.") .data(dto) .build(); }
 
@@ -430,5 +406,30 @@ public class MoMSMEReportSubmittedService {
     // 🔹 Error Response
     private Map<String, Object> createErrorResponse(String message) {
         return Map.of("error", message);
+    }
+
+    public WorkflowResponse getMonthlyReportByQuarterAndIntervention(String intervention, String financialYear, String quarter) throws DataException {
+        List<MoMSMEReport> reports;
+        if(intervention.equals("All Intervention")){
+            reports = moMSMEReportRepo.findAll();
+            if (reports.isEmpty()) {
+                throw new DataException(
+                        "No MoMSME Reports found for financial year: " + financialYear,
+                        "MO-MSME_REPORT_NOT_FOUND",
+                        404);
+            }
+
+        }else {
+            reports = moMSMEReportRepo.findByIntervention(intervention);
+        }
+        List<MoMSMEReportDto> dtoList = reports.stream()
+                .map(entity -> MoMSMEReportSubmittedMapper.MoMSMEReportMapper.toDTOReportByQuarter(entity, quarter, financialYear))
+                .toList();
+
+        return WorkflowResponse.builder()
+                .status(200)
+                .message("Quarterly report retrieved successfully with quarterly achievements.")
+                .data(dtoList)
+                .build();
     }
 }

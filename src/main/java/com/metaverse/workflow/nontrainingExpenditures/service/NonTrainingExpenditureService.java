@@ -283,12 +283,33 @@ public class NonTrainingExpenditureService {
                 .build();
     }
 
-    public WorkflowResponse getAllExpenditureByNonTrainingActivityId(Long nonTrainingSubActivityId) throws DataException {
-        List<NonTrainingExpenditure> expenditureList = repository.findByNonTrainingSubActivity_SubActivityId(nonTrainingSubActivityId)
-                .orElseThrow(() -> new DataException("Expenditure not found with this activity id " + nonTrainingSubActivityId, "EXPENDITURE_NOT_FOUND", 400));
-        return WorkflowResponse.builder().status(200)
+    public WorkflowResponse getAllExpenditureByNonTrainingActivityId(Long nonTrainingSubActivityId,
+                                                                     BillRemarksStatus status) throws DataException {
+
+        List<NonTrainingExpenditure> expenditureList = repository
+                .findByNonTrainingSubActivity_SubActivityId(nonTrainingSubActivityId)
+                .orElseThrow(() -> new DataException("Expenditure not found with this activity id "
+                        + nonTrainingSubActivityId, "EXPENDITURE_NOT_FOUND", 400));
+
+        // status filter only when passed
+        if (status != null) {
+            expenditureList = expenditureList.stream()
+                    .filter(e -> status.equals(e.getStatus()))
+                    .toList();
+        }
+        else {
+            expenditureList = repository
+                    .findByNonTrainingSubActivity_SubActivityId(nonTrainingSubActivityId)
+                    .orElseThrow(() -> new DataException("Expenditure not found with this activity id " + nonTrainingSubActivityId,
+                            "EXPENDITURE_NOT_FOUND", 400));
+        }
+
+        return WorkflowResponse.builder()
+                .status(200)
                 .message("success")
-                .data(expenditureList.stream().map(NonTrainingExpenditureMapper::toDTO).toList())
+                .data(expenditureList.stream()
+                        .map(NonTrainingExpenditureMapper::toDTO)
+                        .toList())
                 .build();
     }
 

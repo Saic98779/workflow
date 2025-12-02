@@ -7,6 +7,7 @@ import lombok.Data;
 @AllArgsConstructor
 public class ProgramFileResponse {
     private Long programId;
+    private Long fileId;
     private String fileUrl;
 
 }

@@ -10,5 +10,6 @@ import java.nio.file.Path;
 public class ProgramFilePathInfo {
 
     private Long programId;
+    private Long fileId;
     private Path filePath;
 }

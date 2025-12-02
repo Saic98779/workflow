@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface MoMSMEReportRepo extends JpaRepository<MoMSMEReport,Long> {
 
@@ -20,4 +21,6 @@ public interface MoMSMEReportRepo extends JpaRepository<MoMSMEReport,Long> {
     // Return distinct activity name and corresponding moMSMEActivityId for a given component
     @Query("SELECT DISTINCT r.activity, r.moMSMEActivityId FROM MoMSMEReport r WHERE r.component = :component ORDER BY r.activity")
     List<Object[]> findDistinctActivityAndMoMSMEActivityIdByComponent(@Param("component") String component);
+
+    List<MoMSMEReport> findByIntervention(String intervention);
 }

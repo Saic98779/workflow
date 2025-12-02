@@ -26,6 +26,7 @@ public class ProgramRequest {
     private String endTime;
     private String spocName;
     private Long spocContactNo;
+    private String status;
     private Long locationId;
     private String kpi;
     private List<ProgramSession> programSessionList;

@@ -120,6 +120,7 @@ public class ProgramRequestMapper {
         existingProgram.setSpocContactNo(programRequest.getSpocContactNo());
         existingProgram.setKpi(programRequest.getKpi());
         existingProgram.setStartDate(newStartDate);
+        existingProgram.setStatus(programRequest.getStatus());
         existingProgram.setEndDate(DateUtil.stringToDate(programRequest.getEndDate(), "dd-MM-yyyy"));
         existingProgram.setAgency(agency);
         existingProgram.setLocation(location);

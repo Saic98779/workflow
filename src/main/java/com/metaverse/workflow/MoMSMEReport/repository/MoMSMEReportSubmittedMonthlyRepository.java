@@ -9,4 +9,6 @@ import java.util.Optional;
 public interface MoMSMEReportSubmittedMonthlyRepository extends JpaRepository<MoMSMEReportSubmittedMonthly, Long> {
     Optional<MoMSMEReportSubmittedMonthly> findByMoMSMEReportSubmitted_SubmittedIdAndMonth(Long submittedId, String month);
     List<MoMSMEReportSubmittedMonthly> findByMoMSMEReportSubmitted_SubmittedId(Long submittedId);
+
+    Optional<MoMSMEReportSubmittedMonthly> findByMoMSMEReport_MoMSMEActivityIdAndFinancialYearAndMonth(Long moMSMEActivityId, String financialYear, String month);
 }
