@@ -449,12 +449,6 @@ public class ProgramServiceAdapter implements ProgramService {
         // delete db record
         programSessionFileRepository.delete(file);
 
-        Program program = programRepository.findById(programId).get();
-
-        program.setStatus(ProgramStatusConstants.PROGRAM_EXECUTION_UPDATED);
-
-        programRepository.save(program);
-
         return WorkflowResponse.builder()
                 .status(200)
                 .message("Collage image deleted successfully")
@@ -475,6 +469,7 @@ public class ProgramServiceAdapter implements ProgramService {
                 .filter(file -> file.getProgram() != null)
                 .map(file -> new ProgramFilePathInfo(
                         file.getProgram().getProgramId(),
+                        file.getProgramSessionFileId(),
                         storageService.load(file.getFilePath())
                 ))
                 .collect(Collectors.toList());

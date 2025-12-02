@@ -315,12 +315,18 @@ public class ProgramController {
                 List<Long> byAgencyAgencyId = programRepository.findByAgencyAgencyId(agencyId).stream().map(info -> info.getProgramId()).toList();
 
                 List<ProgramFileResponse> fileResponses = paths.stream()
-                        .filter(info -> byAgencyAgencyId.contains(info.getProgramId())).map(info -> {
+                        .filter(info -> byAgencyAgencyId.contains(info.getProgramId()))
+                        .map(info -> {
                             String fullPath = info.getFilePath().toAbsolutePath().toString();
                             String url = fullPath.startsWith(basePrefix)
                                     ? urlPrefix + fullPath.substring(basePrefix.length())
                                     : fullPath;
-                            return new ProgramFileResponse(info.getProgramId(), url);
+
+                            return new ProgramFileResponse(
+                                    info.getProgramId(),
+                                    info.getFileId(),
+                                    url
+                            );
                         })
                         .toList();
                 return ResponseEntity.ok(fileResponses);
@@ -332,7 +338,7 @@ public class ProgramController {
                             String url = fullPath.startsWith(basePrefix)
                                     ? urlPrefix + fullPath.substring(basePrefix.length())
                                     : fullPath;
-                            return new ProgramFileResponse(info.getProgramId(), url);
+                            return new ProgramFileResponse(info.getProgramId(),info.getFileId(), url);
                         })
                         .toList();
                 return ResponseEntity.ok(fileResponses);

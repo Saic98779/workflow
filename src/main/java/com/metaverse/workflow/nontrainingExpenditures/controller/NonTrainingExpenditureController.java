@@ -239,15 +239,16 @@ public class NonTrainingExpenditureController extends RestControllerBase {
         }
     }
     @GetMapping("/all/expenditures")
-    public ResponseEntity<?> getExpenditureByActivity(@PathParam("nonTrainingActivityId") Long nonTrainingActivityId)
-    {
+    public ResponseEntity<?> getExpenditureByActivity(
+            @RequestParam("nonTrainingActivityId") Long nonTrainingActivityId,
+            @RequestParam(value = "status", required = false) BillRemarksStatus status) {
         try {
-            return ResponseEntity.ok(service.getAllExpenditureByNonTrainingActivityId(nonTrainingActivityId));
-        }catch (DataException e)
-        {
+            return ResponseEntity.ok(service.getAllExpenditureByNonTrainingActivityId(nonTrainingActivityId, status));
+        } catch (DataException e) {
             return RestControllerBase.error(e);
         }
     }
+
     @GetMapping("/all/resource/expenditures")
     public ResponseEntity<?> getResourceExpenditureByActivity(@PathParam("nonTrainingActivityId") Long nonTrainingActivityId)
     {

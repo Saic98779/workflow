@@ -24,6 +24,9 @@ public class MoMSMEReportSubmittedMonthly extends AuditEntity {
     @JoinColumn(name = "mo_msme_activity_id", nullable = false)
     private MoMSMEReport moMSMEReport;
 
+    @Column(name = "financial_year", nullable = false)
+    private String financialYear;
+
     @Column(name = "month")
     private String month;
 

@@ -133,6 +133,28 @@ public class MoMSMEReportSubmittedController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/report/by-quarter/intervention")
+    @Tag(name = "MoMSME Reports", description = "Endpoints for MoMSME Monthly Reports")
+    @Operation(
+            summary = "Get Monthly MoMSME Report by Quarter",
+            description = "Retrieves the monthly and quarterly MoMSME report for a given activity, financial year, and quarter.",
+            parameters = {
+                    @Parameter(name = "intervention", description = "ID of the MoMSME activity", required = true),
+                    @Parameter(name = "financialYear", description = "Financial year in format YYYY-YYYY", required = true),
+                    @Parameter(name = "quarter", description = "Quarter (e.g., Q1, Q2, Q3, Q4)", required = true)
+            }
+    )
+    public ResponseEntity<WorkflowResponse> getMonthlyReportByQuarter(
+            @RequestParam String intervention,
+            @RequestParam String financialYear,
+            @RequestParam String quarter
+    ) throws DataException {
+
+        WorkflowResponse response = service.getMonthlyReportByQuarterAndIntervention(intervention, financialYear, quarter);
+
+        return ResponseEntity.ok(response);
+    }
+
     @Tag(name = "MoMSME Reports", description = "Endpoints for MoMSME cumulative and quarterly reports")
     @GetMapping("/report/by-cumulative")
     @Operation(
