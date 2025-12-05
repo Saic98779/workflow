@@ -1,12 +1,12 @@
 package com.metaverse.workflow.trainingandnontrainingtarget.service;
 
-import com.metaverse.workflow.model.NonTrainingTargets;
+import com.metaverse.workflow.agency.repository.AgencyRepository;
+import com.metaverse.workflow.common.response.WorkflowResponse;
+import com.metaverse.workflow.exceptions.DataException;
+import com.metaverse.workflow.model.*;
 import com.metaverse.workflow.nontraining.repository.NonTrainingAchievementRepository;
 import com.metaverse.workflow.nontrainingExpenditures.Dto.CorpusDebitFinancing;
-import com.metaverse.workflow.nontrainingExpenditures.repository.ListingOnNSERepository;
-import com.metaverse.workflow.nontrainingExpenditures.repository.NonTrainingExpenditureRepository;
-import com.metaverse.workflow.nontrainingExpenditures.repository.NonTrainingResourceRepository;
-import com.metaverse.workflow.nontrainingExpenditures.repository.TravelAndTransportRepository;
+import com.metaverse.workflow.nontrainingExpenditures.repository.*;
 import com.metaverse.workflow.nontrainingExpenditures.service.WeHubService;
 import com.metaverse.workflow.trainingandnontrainingtarget.dtos.NonTrainingTargetsAndAchievementsResponse;
 import com.metaverse.workflow.trainingandnontrainingtarget.repository.NonTrainingTargetRepository;
@@ -28,6 +28,9 @@ public class NonTrainingTargetsAndAchievementsServiceImpl implements NonTraining
     private final NonTrainingResourceRepository nonTrainingResourceRepository;
     private final TravelAndTransportRepository travelAndTransportRepository;
     private final WeHubService service;
+    private final AgencyRepository agencyRepository;
+    private final NonTrainingSubActivityRepository  nonTrainingSubActivityRepository;
+
 
 
     private final ListingOnNSERepository listingOnNSERepository;
@@ -121,6 +124,9 @@ public class NonTrainingTargetsAndAchievementsServiceImpl implements NonTraining
             return dto;
         }).toList();
     }
+
+
+
 
     public static Date[] getFinancialYearRange(String financialYear) {
         // financialYear format: "YYYY-YYYY", e.g., "2025-2026"
@@ -403,4 +409,42 @@ public class NonTrainingTargetsAndAchievementsServiceImpl implements NonTraining
         }
         return new Object[]{registrations, sanctionedAmounts};
     }
+
+    @Override
+    public WorkflowResponse saveNonTrainingTarget(TargetRequest request) throws DataException {
+           NonTrainingSubActivity subActivity = nonTrainingSubActivityRepository.findById(request.getSubActivityId())
+                .orElseThrow(() -> new DataException("Sub Activity not found", "SUB_ACTIVITY_NOT_FOUND", 400));
+
+        Optional<NonTrainingTargets> existingTargetOpt =
+                nonTrainingTargetRepository.findByNonTrainingSubActivityAndFinancialYear(
+                        subActivity, request.getFinancialYear()
+                );
+
+        NonTrainingTargets trainingTarget;
+
+        if (existingTargetOpt.isPresent()) {
+            trainingTarget = existingTargetOpt.get();
+
+            if (request.getQ1Target() != null) trainingTarget.setQ1Target(request.getQ1Target());
+            if (request.getQ2Target() != null) trainingTarget.setQ2Target(request.getQ2Target());
+            if (request.getQ3Target() != null) trainingTarget.setQ3Target(request.getQ3Target());
+            if (request.getQ4Target() != null) trainingTarget.setQ4Target(request.getQ4Target());
+
+            if (request.getQ1Budget() != null) trainingTarget.setQ1Budget(request.getQ1Budget());
+            if (request.getQ2Budget() != null) trainingTarget.setQ2Budget(request.getQ2Budget());
+            if (request.getQ3Budget() != null) trainingTarget.setQ3Budget(request.getQ3Budget());
+            if (request.getQ4Budget() != null) trainingTarget.setQ4Budget(request.getQ4Budget());
+
+        } else {
+            trainingTarget = NonTrainingTargetMapper.mapToTrainingTarget(request, subActivity);
+        }
+        nonTrainingTargetRepository.save(trainingTarget);
+        return WorkflowResponse.builder()
+                .data(NonTrainingTargetMapper.mapToTrainingTargetResponse(trainingTarget))
+                .message("Target added successfully")
+                .status(200)
+                .build();
+    }
+
+
 }

@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface TrainingTargetService {
-    WorkflowResponse getTrainingTargetsByAgencyId(Long agencyId) throws DataException;
+    WorkflowResponse getTrainingTargetsByAgencyId(Long agencyId)throws DataException;
+    WorkflowResponse saveTrainingTarget(TargetRequest request)throws DataException;
+    WorkflowResponse getQuaterTrainingTargetsByAgencyId(Long agencyId)throws DataException;
 
 }

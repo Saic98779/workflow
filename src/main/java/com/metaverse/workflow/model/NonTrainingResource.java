@@ -82,4 +82,9 @@ public class NonTrainingResource {
     @UpdateTimestamp
     private Date updatedOn;
 
+    @ManyToOne
+    @JoinColumn(name = "visit_details_id")
+    private VisitDetails visitDetails;
+
+
 }

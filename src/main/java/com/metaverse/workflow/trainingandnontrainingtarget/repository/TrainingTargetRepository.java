@@ -1,10 +1,13 @@
 package com.metaverse.workflow.trainingandnontrainingtarget.repository;
 
+import com.metaverse.workflow.model.Agency;
+import com.metaverse.workflow.model.SubActivity;
 import com.metaverse.workflow.model.TrainingTargets;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Repository
@@ -20,5 +23,7 @@ public interface TrainingTargetRepository extends JpaRepository<TrainingTargets,
     List<TrainingTargets> findBySubActivity_SubActivityIdIn(Set<Long> subActivityIds);
 
     List<TrainingTargets> findBySubActivity_SubActivityId(Long subActivityId);
+
+    Optional<TrainingTargets> findByAgencyAndSubActivityAndFinancialYear(Agency agency, SubActivity subActivity, String financialYear);
 }
 
