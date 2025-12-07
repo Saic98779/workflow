@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController("programStatusLookupController")
 @RequestMapping("/program-status")
 @Slf4j
@@ -17,8 +19,8 @@ public class ProgramStatusLookupController {
     ProgramStatusService programStatusService;
 
     @GetMapping
-    public ResponseEntity<String> getProgramStatus() {
-        return ResponseEntity.ok(programStatusService.getStatus().toString());
+    public ResponseEntity<List<String>> getProgramStatus() {
+        return ResponseEntity.ok(programStatusService.getStatus());
     }
 
 }

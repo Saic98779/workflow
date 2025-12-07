@@ -48,7 +48,7 @@ public class ProgramParticipantDetails {
 
         HSSFRow row = sheet.createRow(0);
         String[] headers = {
-                "Name of the IA",	"Budget Head",	"Name of the Program","Total Participants","Male",
+                "Name of the IA",	"Budget Head",	"Name of the Program", "Start Date","End Date","Total Participants","Male",
                 "Female","Trans Gender"	,"SC",	"ST",	"BC","OC","Minorities","Physically Challenged","Total Expenditure"
         };
 
@@ -67,36 +67,38 @@ public class ProgramParticipantDetails {
             dataRow.createCell(0).setCellValue(program.getAgency().getAgencyName());
             dataRow.createCell(1).setCellValue(program.getProgramType());
             dataRow.createCell(2).setCellValue(program.getProgramTitle());
-            dataRow.createCell(3).setCellValue(program.getParticipants().size());
-            dataRow.createCell(4).setCellValue(program.getParticipants().stream()
+            dataRow.createCell(3).setCellValue(program.getStartDate());
+            dataRow.createCell(4).setCellValue(program.getEndDate());
+            dataRow.createCell(5).setCellValue(program.getParticipants().size());
+            dataRow.createCell(6).setCellValue(program.getParticipants().stream()
                     .filter(participant -> participant.getGender() != null && participant.getGender() == 'M')
                     .count());
-            dataRow.createCell(5).setCellValue(program.getParticipants().stream()
+            dataRow.createCell(7).setCellValue(program.getParticipants().stream()
                     .filter(participant -> participant.getGender() != null && participant.getGender() == 'F')
                     .count());
-            dataRow.createCell(6).setCellValue(program.getParticipants().stream()
+            dataRow.createCell(8).setCellValue(program.getParticipants().stream()
                     .filter(participant -> participant.getGender() != null && participant.getGender() == 'T')
                     .count());
-            dataRow.createCell(7).setCellValue(program.getParticipants().stream()
+            dataRow.createCell(9).setCellValue(program.getParticipants().stream()
                     .filter(participant -> "sc".equalsIgnoreCase(participant.getCategory()))
                     .count());
 
-            dataRow.createCell(8).setCellValue(program.getParticipants().stream()
+            dataRow.createCell(10).setCellValue(program.getParticipants().stream()
                     .filter(participant -> "st".equalsIgnoreCase(participant.getCategory()))
                     .count());
-            dataRow.createCell(9).setCellValue(program.getParticipants().stream()
+            dataRow.createCell(11).setCellValue(program.getParticipants().stream()
                     .filter(participant -> "bc".equalsIgnoreCase(participant.getCategory()))
                     .count());
-            dataRow.createCell(10).setCellValue(program.getParticipants().stream()
+            dataRow.createCell(12).setCellValue(program.getParticipants().stream()
                     .filter(participant -> "oc".equalsIgnoreCase(participant.getCategory()))
                     .count());
-            dataRow.createCell(11).setCellValue(program.getParticipants().stream()
+            dataRow.createCell(13).setCellValue(program.getParticipants().stream()
                     .filter(participant -> "minorities".equalsIgnoreCase(participant.getCategory()))
                     .count());
-            dataRow.createCell(12).setCellValue(program.getParticipants().stream()
+            dataRow.createCell(14).setCellValue(program.getParticipants().stream()
                     .filter(participant -> participant.getDisability() != null && participant.getDisability() == 'Y')
                     .count());
-            dataRow.createCell(13).setCellValue(expenditureList.stream().mapToDouble(ProgramExpenditure::getCost).sum() +
+            dataRow.createCell(15).setCellValue(expenditureList.stream().mapToDouble(ProgramExpenditure::getCost).sum() +
                     transactionList.stream().mapToDouble(BulkExpenditureTransaction::getAllocatedCost).sum());
               dataRowIndex++;
         }
