@@ -8,6 +8,7 @@ import com.metaverse.workflow.programoutcometargets.service.PhysicalTargetReques
 import com.metaverse.workflow.trainingandnontrainingtarget.dtos.NonTrainingTargetsAndAchievementsResponse;
 import com.metaverse.workflow.trainingandnontrainingtarget.service.NonTrainingTargetsAndAchievementsService;
 import com.metaverse.workflow.trainingandnontrainingtarget.service.TargetRequest;
+import com.metaverse.workflow.trainingandnontrainingtarget.service.TargetResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,14 +20,14 @@ import java.security.Principal;
 import java.util.List;
 
 @RestController
-@RequestMapping("/non-training/targets-and-achievements")
+@RequestMapping("/non-training")
 @RequiredArgsConstructor
 public class NonTrainingTargetController {
 
     private final NonTrainingTargetsAndAchievementsService nonTrainingTargetsAndAchievementsService;
     private final ActivityLogService logService;
 
-    @GetMapping("/agency/{agencyId}")
+    @GetMapping("/targets-and-achievements/agency/{agencyId}")
     public ResponseEntity<?> getAllTrainingTargets(@RequestParam String year, @PathVariable("agencyId") Long agencyId) {
         List<NonTrainingTargetsAndAchievementsResponse> response = nonTrainingTargetsAndAchievementsService.getTargetsAndAchievements(year, agencyId);
         return ResponseEntity.ok(response);
@@ -44,5 +45,10 @@ public class NonTrainingTargetController {
         } catch (DataException e) {
             return RestControllerBase.error(e);
         }
+    }
+    @GetMapping("targets/by-agency")
+    public ResponseEntity<List<TargetResponse>> getNonTrainingTargets(@RequestParam String year, @RequestParam Long agencyId) {
+        List<TargetResponse> response = nonTrainingTargetsAndAchievementsService.getNonTrainingTargets(year, agencyId);
+        return ResponseEntity.ok(response);
     }
 }

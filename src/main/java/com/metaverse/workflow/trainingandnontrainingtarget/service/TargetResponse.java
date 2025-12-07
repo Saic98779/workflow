@@ -10,18 +10,22 @@ import lombok.NoArgsConstructor;
 public class TargetResponse {
 
     private Long targetId;
+    private String activityName;
     private String agencyName;
     private String subActivityName;
 
-    private Long q1Target;
-    private Long q2Target;
-    private Long q3Target;
-    private Long q4Target;
 
-    private Double q1Budget;
-    private Double q2Budget;
-    private Double q3Budget;
-    private Double q4Budget;
+    private Long physicalTargetQ1;
+    private Long physicalTargetQ2;
+    private Long physicalTargetQ3;
+    private Long physicalTargetQ4;
+    private Long totalTrainingTarget;
 
+    private Double financialTargetQ1;
+    private Double financialTargetQ2;
+    private Double financialTargetQ3;
+    private Double financialTargetQ4;
+    private Double totalFinancialTarget;
     private String financialYear;
+
 }

@@ -10,5 +10,5 @@ import java.util.List;
 public interface NonTrainingTargetsAndAchievementsService {
     List<NonTrainingTargetsAndAchievementsResponse> getTargetsAndAchievements(String year, Long agencyId);
     WorkflowResponse saveNonTrainingTarget(TargetRequest request)throws DataException;
-
+    List<TargetResponse> getNonTrainingTargets(String year, Long agencyId);
 }

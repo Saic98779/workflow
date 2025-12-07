@@ -152,6 +152,50 @@ public class TrainingTargetsAndAchievementsServiceImpl implements TrainingTarget
         }).toList();
     }
 
+    @Override
+    public List<TargetResponse> getTrainingTargets(String year, Long agencyId) {
+
+        log.info("Fetching ONLY Targets for Agency: {} | FY: {}", agencyId, year);
+
+        List<TrainingTargets> targets =
+                trainingTargetRepository.findByAgency_AgencyIdAndFinancialYear(agencyId, year);
+
+        if (targets.isEmpty()) {
+            log.warn("No targets found for agency {} in FY {}", agencyId, year);
+            throw new RuntimeException("No targets found for agency " + agencyId + " in FY " + year);
+        }
+
+        return targets.stream().map(t -> {
+            TargetResponse dto = new TargetResponse();
+            dto.setTargetId(t.getTrainingTargetId());
+            dto.setAgencyName(t.getAgency().getAgencyName());
+            dto.setActivityName(t.getSubActivity().getActivity().getActivityName());
+            dto.setSubActivityName(t.getSubActivity().getSubActivityName());
+            dto.setFinancialYear(t.getFinancialYear());
+
+            // Training targets
+            dto.setPhysicalTargetQ1(t.getQ1Target());
+            dto.setPhysicalTargetQ2(t.getQ2Target());
+            dto.setPhysicalTargetQ3(t.getQ3Target());
+            dto.setPhysicalTargetQ3(t.getQ4Target());
+            dto.setTotalTrainingTarget(
+                    t.getQ1Target() + t.getQ2Target() + t.getQ3Target() + t.getQ4Target()
+            );
+
+            // Financial targets
+            dto.setFinancialTargetQ1(t.getQ1Budget());
+            dto.setFinancialTargetQ2(t.getQ2Budget());
+            dto.setFinancialTargetQ3(t.getQ3Budget());
+            dto.setFinancialTargetQ4(t.getQ4Budget());
+            dto.setTotalFinancialTarget(
+                    t.getQ1Budget() + t.getQ2Budget() + t.getQ3Budget() + t.getQ4Budget()
+            );
+
+            return dto;
+        }).toList();
+    }
+
+
     private boolean belongsToSubActivity(Participant p, TrainingTargets t) {
         return p.getPrograms().stream()
                 .anyMatch(pr -> pr.getSubActivityId()
