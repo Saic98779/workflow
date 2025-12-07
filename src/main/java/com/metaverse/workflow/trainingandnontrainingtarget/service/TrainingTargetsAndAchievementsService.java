@@ -6,4 +6,6 @@ import java.util.List;
 
 public interface TrainingTargetsAndAchievementsService {
     List<TrainingTargetsAndAchievementsResponse> getTargetsAndAchievements(String year, Long agencyId);
+
+    List<TargetResponse> getTrainingTargets(String year, Long agencyId);
 }

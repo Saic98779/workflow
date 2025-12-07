@@ -446,5 +446,50 @@ public class NonTrainingTargetsAndAchievementsServiceImpl implements NonTraining
                 .build();
     }
 
+    @Override
+    public List<TargetResponse> getNonTrainingTargets(String year, Long agencyId) {
+
+        List<NonTrainingTargets> targets =
+                nonTrainingTargetRepository
+                        .findByNonTrainingSubActivity_NonTrainingActivity_Agency_AgencyIdAndFinancialYear(agencyId, year);
+
+        if (targets.isEmpty()) {
+            throw new RuntimeException("No targets found for agency " + agencyId + " in FY " + year);
+        }
+
+        return targets.stream().map(t -> {
+            TargetResponse dto = new TargetResponse();
+
+            dto.setTargetId(t.getId());
+            dto.setActivityName(t.getNonTrainingSubActivity().getNonTrainingActivity().getActivityName());
+            dto.setSubActivityName(t.getNonTrainingSubActivity().getSubActivityName());
+            dto.setAgencyName(t.getNonTrainingSubActivity().getNonTrainingActivity().getAgency().getAgencyName());
+            dto.setFinancialYear(t.getFinancialYear());
+
+            // Physical targets
+            dto.setPhysicalTargetQ1(Optional.ofNullable(t.getQ1Target()).orElse(0L));
+            dto.setPhysicalTargetQ2(Optional.ofNullable(t.getQ2Target()).orElse(0L));
+            dto.setPhysicalTargetQ3(Optional.ofNullable(t.getQ3Target()).orElse(0L));
+            dto.setPhysicalTargetQ4(Optional.ofNullable(t.getQ4Target()).orElse(0L));
+            dto.setTotalTrainingTarget(
+                    dto.getPhysicalTargetQ1() + dto.getPhysicalTargetQ2() +
+                            dto.getPhysicalTargetQ3() + dto.getPhysicalTargetQ4()
+            );
+
+            // Financial targets
+            dto.setFinancialTargetQ1(Optional.ofNullable(t.getQ1Budget()).orElse(0.0));
+            dto.setFinancialTargetQ2(Optional.ofNullable(t.getQ2Budget()).orElse(0.0));
+            dto.setFinancialTargetQ3(Optional.ofNullable(t.getQ3Budget()).orElse(0.0));
+            dto.setFinancialTargetQ4(Optional.ofNullable(t.getQ4Budget()).orElse(0.0));
+            dto.setTotalFinancialTarget(
+                    dto.getFinancialTargetQ1() + dto.getFinancialTargetQ2() +
+                            dto.getFinancialTargetQ3() + dto.getFinancialTargetQ4()
+            );
+
+            return dto;
+        }).toList();
+    }
+
+
 
 }
