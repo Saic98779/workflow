@@ -41,4 +41,6 @@ public interface  ProgramService {
     WorkflowResponse getProgramsWithParticipants(Long agencyId);
 
     WorkflowResponse deleteCollageImage(Long programId, Long fileId);
+
+    WorkflowResponse updateProgramStatus(Long programId, ProgramRequestDto request)throws DataException;
 }

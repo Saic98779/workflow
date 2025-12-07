@@ -465,6 +465,49 @@ public class ProgramServiceAdapter implements ProgramService {
                 .build();
     }
 
+    @Override
+    @Transactional
+    public WorkflowResponse updateProgramStatus(Long programId, ProgramRequestDto request) throws DataException {
+        Program program = programRepository.findById(programId)
+                .orElseThrow(() -> new DataException("Program not found", "PROGRAM_NOT_FOUND", 400));
+
+        program.setProgramTitle(
+                request.getProgramTitle() != null ? request.getProgramTitle() : program.getProgramTitle());
+
+        program.setStartDate(
+                request.getStartDate() != null ? DateUtil.covertStringToDate(request.getStartDate()) : program.getStartDate());
+
+        program.setEndDate(
+                request.getEndDate() != null ? DateUtil.covertStringToDate(request.getEndDate()) : program.getEndDate());
+
+        program.setStartTime(
+                request.getStartTime() != null ? request.getStartTime() : program.getStartTime());
+
+        program.setEndTime(
+                request.getEndTime() != null ? request.getEndTime() : program.getEndTime());
+
+        program.setSpocName(
+                request.getSpocName() != null ? request.getSpocName() : program.getSpocName());
+
+        program.setSpocContactNo(
+                request.getSpocContactNo() != null ? request.getSpocContactNo() : program.getSpocContactNo());
+
+        program.setStatus(
+                request.getStatus() != null ? request.getStatus() : program.getStatus());
+
+        program.setLocation(request.getLocationId() != null ?
+                locationRepository.findById(request.getLocationId())
+                        .orElse(program.getLocation()) : program.getLocation());
+
+        Program updatedProgram = programRepository.save(program);
+
+        return WorkflowResponse.builder()
+                .status(200)
+                .message("Program updated successfully")
+                .data(ProgramResponseMapper.map(updatedProgram))
+                .build();
+    }
+
 
     @Override
     public List<ProgramFilePathInfo> getProgramFileByType(FileType fileType) {
@@ -824,6 +867,8 @@ public class ProgramServiceAdapter implements ProgramService {
                 .message("success")
                 .build();
     }
+
+
 }
 
 
