@@ -4,14 +4,18 @@ import com.metaverse.workflow.activitylog.ActivityLogService;
 import com.metaverse.workflow.common.constants.ProgramStatusConstants;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.common.util.DateUtil;
+import com.metaverse.workflow.common.util.RestControllerBase;
+import com.metaverse.workflow.exceptions.DataException;
 import com.metaverse.workflow.model.Program;
 import com.metaverse.workflow.program.repository.ProgramRepository;
+import com.metaverse.workflow.program.service.ProgramRequestDto;
 import com.metaverse.workflow.program.service.ProgramResponse;
 import com.metaverse.workflow.program.service.ProgramResponseMapper;
 import com.metaverse.workflow.program.service.ProgramService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -105,5 +109,15 @@ public class ProgramStatusController {
         List<ProgramResponse> response = programs != null ? programs.stream().map(ProgramResponseMapper::map).collect(Collectors.toList()) : null;
         return WorkflowResponse.builder().message("Success").status(200).data(response).build();
 
+    }
+
+    @PutMapping("/update/{programId}")
+    public ResponseEntity<?> updateProgram(@PathVariable Long programId, @RequestBody ProgramRequestDto request, Principal principal) {
+        try {
+            logService.logs(principal.getName(), "UPDATE", "Program updated successfully | ID: " + programId, "Program", "/program/update/" + programId);
+            return ResponseEntity.ok(programService.updateProgramStatus(programId, request));
+        } catch (DataException e) {
+            return RestControllerBase.error(e);
+        }
     }
 }
