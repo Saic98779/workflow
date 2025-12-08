@@ -412,7 +412,8 @@ public class NonTrainingTargetsAndAchievementsServiceImpl implements NonTraining
 
     @Override
     public WorkflowResponse saveNonTrainingTarget(TargetRequest request) throws DataException {
-           NonTrainingSubActivity subActivity = nonTrainingSubActivityRepository.findById(request.getSubActivityId())
+
+        NonTrainingSubActivity subActivity = nonTrainingSubActivityRepository.findById(request.getSubActivityId())
                 .orElseThrow(() -> new DataException("Sub Activity not found", "SUB_ACTIVITY_NOT_FOUND", 400));
 
         Optional<NonTrainingTargets> existingTargetOpt =
@@ -421,6 +422,7 @@ public class NonTrainingTargetsAndAchievementsServiceImpl implements NonTraining
                 );
 
         NonTrainingTargets trainingTarget;
+        String message;
 
         if (existingTargetOpt.isPresent()) {
             trainingTarget = existingTargetOpt.get();
@@ -435,16 +437,22 @@ public class NonTrainingTargetsAndAchievementsServiceImpl implements NonTraining
             if (request.getQ3Budget() != null) trainingTarget.setQ3Budget(request.getQ3Budget());
             if (request.getQ4Budget() != null) trainingTarget.setQ4Budget(request.getQ4Budget());
 
+            message = "Target updated successfully";
+
         } else {
             trainingTarget = NonTrainingTargetMapper.mapToTrainingTarget(request, subActivity);
+            message = "Target saved successfully";
         }
+
         nonTrainingTargetRepository.save(trainingTarget);
+
         return WorkflowResponse.builder()
                 .data(NonTrainingTargetMapper.mapToTrainingTargetResponse(trainingTarget))
-                .message("Target added successfully")
+                .message(message)   // 🔥 dynamic msg
                 .status(200)
                 .build();
     }
+
 
     @Override
     public List<TargetResponse> getNonTrainingTargets(String year, Long agencyId) {

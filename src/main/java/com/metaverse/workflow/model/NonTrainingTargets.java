@@ -27,6 +27,10 @@ public class NonTrainingTargets extends TargetsBase {
     @JoinColumn(name = "sub_activity_id", nullable = false)
     private NonTrainingSubActivity nonTrainingSubActivity;
 
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "activity_id", nullable = false)
+    private NonTrainingActivity nonTrainingActivity;
+
     @Column(name = "financial_year")
     private String financialYear;
 

@@ -48,6 +48,7 @@ public class TrainingTargetResponseMapper {
         TrainingTargets trainingTarget = new TrainingTargets();
         trainingTarget.setAgency(agency);
         trainingTarget.setSubActivity(subActivity);
+        trainingTarget.setActivity(subActivity.getActivity());
         trainingTarget.setFinancialYear(request.getFinancialYear());
 
         trainingTarget.setQ1Target(request.getQ1Target());
@@ -68,18 +69,22 @@ public class TrainingTargetResponseMapper {
 
         response.setTargetId(trainingTarget.getTrainingTargetId());
         response.setActivityName(trainingTarget.getSubActivity().getActivity().getActivityName());
-        response.setAgencyName(trainingTarget.getAgency().getAgencyName()); // or getAgencyName() based on your model
-        response.setSubActivityName(trainingTarget.getSubActivity().getSubActivityName()); // or getName()
+        response.setAgencyName(trainingTarget.getAgency().getAgencyName());
+        response.setSubActivityName(trainingTarget.getSubActivity().getSubActivityName());
 
         response.setPhysicalTargetQ1(trainingTarget.getQ1Target());
         response.setPhysicalTargetQ2(trainingTarget.getQ2Target());
         response.setPhysicalTargetQ3(trainingTarget.getQ3Target());
         response.setPhysicalTargetQ4(trainingTarget.getQ4Target());
+        response.setTotalTrainingTarget(trainingTarget.getQ1Target()+trainingTarget.getQ2Target()+
+                trainingTarget.getQ3Target()+trainingTarget.getQ4Target());
 
         response.setFinancialTargetQ1(trainingTarget.getQ1Budget());
         response.setFinancialTargetQ2(trainingTarget.getQ2Budget());
         response.setFinancialTargetQ3(trainingTarget.getQ3Budget());
         response.setFinancialTargetQ4(trainingTarget.getQ4Budget());
+        response.setTotalFinancialTarget(trainingTarget.getQ1Budget()+trainingTarget.getQ2Budget()+
+                trainingTarget.getQ3Budget()+trainingTarget.getQ4Budget());
 
         response.setFinancialYear(trainingTarget.getFinancialYear());
 

@@ -29,6 +29,10 @@ public class TrainingTargets extends TargetsBase {
     @JoinColumn(name = "sub_activity_id", nullable = false)
     private SubActivity subActivity;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "activity_id", nullable = false)
+    private Activity activity;
+
     @Column(name = "financial_year")
     private String financialYear;
 
