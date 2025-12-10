@@ -60,6 +60,7 @@ public class TrainingTargetServiceImpl implements TrainingTargetService {
                 );
 
         TrainingTargets trainingTarget;
+        String message;
 
         if (existingTargetOpt.isPresent()) {
             trainingTarget = existingTargetOpt.get();
@@ -74,13 +75,15 @@ public class TrainingTargetServiceImpl implements TrainingTargetService {
             if (request.getQ3Budget() != null) trainingTarget.setQ3Budget(request.getQ3Budget());
             if (request.getQ4Budget() != null) trainingTarget.setQ4Budget(request.getQ4Budget());
 
+            message = "Target updated successfully";
         } else {
             trainingTarget = TrainingTargetResponseMapper.mapToTrainingTarget(request, agency, subActivity);
+            message = "Target saved successfully";
         }
         trainingTargetRepository.save(trainingTarget);
          return WorkflowResponse.builder()
                  .data(TrainingTargetResponseMapper.mapToTrainingTargetResponse(trainingTarget))
-                 .message("Target added successfully")
+                 .message(message)
                  .status(200)
                  .build();
     }
