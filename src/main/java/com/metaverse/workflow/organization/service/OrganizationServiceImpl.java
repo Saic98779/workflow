@@ -80,4 +80,60 @@ public class OrganizationServiceImpl implements OrganizationService {
     public WorkflowResponse getAllOrganizations(){
         return WorkflowResponse.builder().message("Success").status(200).data(repository.getAllOrganizations()).build();
     }
+
+	@Override
+	public WorkflowResponse updateOrganization(Long organizationId, OrganizationRequest req) {
+			Organization org = repository.findById(organizationId)
+					.orElseThrow(() -> new RuntimeException("Organization not found: " + organizationId));
+
+		if (req.getOrganizationName() != null) org.setOrganizationName(req.getOrganizationName());
+		if (req.getOrganizationCategory() != null) org.setOrganizationCategory(req.getOrganizationCategory());
+		if (req.getOrganizationType() != null) org.setOrganizationType(req.getOrganizationType());
+		if (req.getUdyamRegistrationNo() != null) org.setUdyamregistrationNo(req.getUdyamRegistrationNo());
+		if (req.getDateOfRegistration() != null) org.setDateOfRegistration(req.getDateOfRegistration());
+		if (req.getStartupCertificateNo() != null) org.setStartupCertificateNo(req.getStartupCertificateNo());
+		if (req.getNatureOfStartup() != null) org.setNatureOfStartup(req.getNatureOfStartup());
+		if (req.getAreasOfWorking() != null) org.setAreasOfWorking(req.getAreasOfWorking());
+		if (req.getIncorporationDate() != null) org.setIncorporationDate(req.getIncorporationDate());
+		if (req.getDateOfIssue() != null) org.setDateOfIssue(req.getDateOfIssue());
+		if (req.getValidUpto() != null) org.setValidUpto(req.getValidUpto());
+		if (req.getStateId() != null) org.setStateId(req.getStateId());
+		if (req.getDistId() != null) org.setDistId(req.getDistId());
+		if (req.getMandal() != null) org.setMandal(req.getMandal());
+		if (req.getTown() != null) org.setTown(req.getTown());
+		if (req.getStreetNo() != null) org.setStreetNo(req.getStreetNo());
+		if (req.getHouseNo() != null) org.setHouseNo(req.getHouseNo());
+		if (req.getLatitude() != null) org.setLatitude(req.getLatitude());
+		if (req.getLongitude() != null) org.setLongitude(req.getLongitude());
+		if (req.getContactNo() != null) org.setContactNo(req.getContactNo());
+		if (req.getEmail() != null) org.setEmail(req.getEmail());
+		if (req.getWebsite() != null) org.setWebsite(req.getWebsite());
+		if (req.getOwnerName() != null) org.setOwnerName(req.getOwnerName());
+		if (req.getOwnerContactNo() != null) org.setOwnerContactNo(req.getOwnerContactNo());
+		if (req.getOwnerEmail() != null) org.setOwnerEmail(req.getOwnerEmail());
+		if (req.getOwnerAddress() != null) org.setOwnerAddress(req.getOwnerAddress());
+		if (req.getNameOfTheSHG() != null) org.setNameOfTheSHG(req.getNameOfTheSHG());
+		if (req.getNameOfTheVO() != null) org.setNameOfTheVO(req.getNameOfTheVO());
+		if (req.getGramaPanchayat() != null) org.setGramaPanchayat(req.getGramaPanchayat());
+
+		Organization save = repository.save(org);
+		if(save!=null)
+			return WorkflowResponse.builder().message("Organization Updated successfully").status(200).build();
+		return WorkflowResponse.builder().message("Organization not updated successfully").status(400).build();
+		}
+
+	@Override
+	public WorkflowResponse getOrganizationbyId(Long organizationId) {
+		Optional<Organization> byId = repository.findById(organizationId);
+		try{
+			if(byId.isPresent()){
+				return WorkflowResponse.builder().message("Organization found successfully").status(200).data(OrganizationResponseMapper.map(byId.get())).build();
+			}else {
+				return WorkflowResponse.builder().message("Organization not found").status(404).build();
+			}
+		} catch (Exception e) {
+			return WorkflowResponse.builder().message("Organization not found").status(404).message(e.getMessage()).build();
+		}
+
+	}
 }

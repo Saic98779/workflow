@@ -45,4 +45,16 @@ public class OrganizationController {
         return ResponseEntity.ok(mobileNumberExists);
     }
 
+    @GetMapping("/organization{organizationId}")
+    public ResponseEntity<WorkflowResponse> getOrganization(@PathVariable Long organizationId) {
+         WorkflowResponse response = organizationService.getOrganizationbyId(organizationId);
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/update/{organizationId}")
+    public ResponseEntity<WorkflowResponse> patchOrganization(@PathVariable Long organizationId, @RequestBody OrganizationRequest request
+    ) {
+        WorkflowResponse updated = organizationService.updateOrganization(organizationId, request);
+        return ResponseEntity.ok(updated);
+    }
 }
