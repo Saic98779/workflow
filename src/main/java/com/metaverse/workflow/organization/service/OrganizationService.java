@@ -18,4 +18,8 @@ public interface OrganizationService {
 	Boolean isMobileNumberExists(Long mobileNo);
 
     WorkflowResponse  getAllOrganizations();
+
+	WorkflowResponse updateOrganization(Long organizationId, OrganizationRequest request);
+
+	WorkflowResponse getOrganizationbyId(Long organizationId);
 }
