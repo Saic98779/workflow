@@ -22,6 +22,14 @@ public interface ProgramExpenditureRepository extends JpaRepository<ProgramExpen
 
     void deleteByProgramProgramId(Long programId);
 
+    Iterable<ProgramExpenditure>
+    findBySubActivity_SubActivityIdInAndAgency_AgencyIdAndBillDateBetween(
+            Set<Long> subActivityIds,
+            Long agencyId,
+            Date fromDate,
+            Date toDate
+    );
+
     @Query("SELECT SUM(pe.cost) FROM ProgramExpenditure pe " +
             "WHERE pe.agency.agencyId = :agencyId " +
             "AND pe.subActivity.subActivityId = :subActivityId " +

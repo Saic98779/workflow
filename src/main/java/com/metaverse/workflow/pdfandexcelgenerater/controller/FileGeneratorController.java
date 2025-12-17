@@ -6,19 +6,18 @@ import com.metaverse.workflow.exceptions.DataException;
 import com.metaverse.workflow.pdfandexcelgenerater.service.*;
 import com.metaverse.workflow.program.repository.ProgramRepository;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.websocket.server.PathParam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.security.Principal;
 
 @RestController
 @RequiredArgsConstructor
@@ -50,6 +49,7 @@ public class FileGeneratorController {
     private final  ParticipantDetailsExcel participantDetailsExcel;
     private final ProgramMonitoringPDF programMonitoringPDF;
     private final ProgramStatusPdfGenerator programStatusPdfGenerator;
+    private final TrainingTargetPreview trainingTargetPreview;
 
     @GetMapping(value = "/program/pdf/{agencyId}", produces = MediaType.APPLICATION_PDF_VALUE)
     public ResponseEntity<InputStreamResource> generatePdfReport(HttpServletResponse response, @PathVariable Long agencyId) throws IOException {
@@ -306,4 +306,18 @@ public class FileGeneratorController {
             throw new RuntimeException(e);
         }
     }
+
+    @PostMapping("/export/progress/excel")
+    public void exportExcelReport(@RequestBody ReportRequest request, HttpServletResponse response, Principal principal) throws IOException {
+
+        response.setContentType("application/octet-stream");
+        response.setHeader(
+                "Content-Disposition", "attachment; filename=Agency_Report.xls"
+        );
+        trainingTargetPreview.generateExcel(
+                request, principal.getName(), response.getOutputStream()
+        );
+    }
+
+
 }

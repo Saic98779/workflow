@@ -54,6 +54,7 @@ public class TrainingTargetsAndAchievementsServiceImpl implements TrainingTarget
                     t.getTrainingTargetId(), t.getSubActivity().getSubActivityName());
 
             TrainingTargetsAndAchievementsResponse dto = new TrainingTargetsAndAchievementsResponse();
+            dto.setAgencyName(t.getSubActivity().getActivity().getAgency().getAgencyName());
             dto.setActivityName(t.getSubActivity().getActivity().getActivityName());
             dto.setSubActivityName(t.getSubActivity().getSubActivityName());
             dto.setFinancialYear(t.getFinancialYear());
