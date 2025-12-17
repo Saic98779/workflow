@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class TrainingTargetsAndAchievementsResponse {
+    private String agencyName;
     private String activityName;
     private String subActivityName;
     private String financialYear;

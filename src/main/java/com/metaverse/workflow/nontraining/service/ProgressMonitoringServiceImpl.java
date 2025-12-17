@@ -675,6 +675,101 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
             this.activityName = activityName;
         }
     }
+    private static Set<Integer> getQuartersBetween(Date from, Date to) {
+        Calendar cal = Calendar.getInstance();
+        Set<Integer> quarters = new HashSet<>();
+
+        cal.setTime(from);
+        while (!cal.getTime().after(to)) {
+            int month = cal.get(Calendar.MONTH) + 1;
+
+            if (month <= 3) quarters.add(1);
+            else if (month <= 6) quarters.add(2);
+            else if (month <= 9) quarters.add(3);
+            else quarters.add(4);
+
+            cal.add(Calendar.MONTH, 1);
+        }
+        return quarters;
+    }
+
+    @Override
+    public List<TrainingProgramDto> getAllTrainingProgressMonitoringProgress(
+            Long agencyId,
+            Date fromDate,
+            Date toDate
+    ) {
+
+        List<TrainingProgramDto> result = new ArrayList<>();
+
+        Map<Long, String> activityNames = new HashMap<>();
+        Map<Long, String> subActivityNames = new HashMap<>();
+        Map<Long, Long> participantCountMap = new HashMap<>();
+        Map<Long, Double> expenditureMap = new HashMap<>();
+
+        // -------------------- ACTIVITIES & SUB ACTIVITIES --------------------
+        List<Activity> activities = activityRepository.findByAgencyAgencyId(agencyId);
+        if (activities.isEmpty()) {
+            return result;
+        }
+
+        String agencyName = activities.get(0).getAgency().getAgencyName();
+
+        for (Activity activity : activities) {
+            for (SubActivity subActivity : activity.getSubActivities()) {
+                activityNames.put(subActivity.getSubActivityId(), activity.getActivityName());
+                subActivityNames.put(subActivity.getSubActivityId(), subActivity.getSubActivityName());
+            }
+        }
+
+        Set<Long> subActivityIds = subActivityNames.keySet();
+
+        // -------------------- PARTICIPANT COUNT --------------------
+        List<SubActivityParticipantCountDTO> participantCounts =
+                activityRepository.findProgramCountByAgencyId(agencyId);
+
+        for (SubActivityParticipantCountDTO dto : participantCounts) {
+            participantCountMap.put(
+                    dto.getSubActivityId(),
+                    Long.valueOf(dto.getParticipantCount())
+            );
+        }
+
+        // -------------------- EXPENDITURE (APPROVED + PENDING) --------------------
+        Iterable<ProgramExpenditure> expenditures =
+                programExpenditureRepository
+                        .findBySubActivity_SubActivityIdInAndAgency_AgencyIdAndBillDateBetween(
+                                subActivityIds,
+                                agencyId,
+                                fromDate,
+                                toDate
+                        );
+
+        for (ProgramExpenditure p : expenditures) {
+            Long subActivityId = p.getSubActivity().getSubActivityId();
+            expenditureMap.merge(subActivityId, p.getCost(), Double::sum);
+        }
+
+        // -------------------- FINAL DTO BUILD --------------------
+        for (Long key : subActivityIds) {
+
+            long achievement = participantCountMap.getOrDefault(key, 0L);
+            double expenditure = expenditureMap.getOrDefault(key, 0.0);
+
+            result.add(
+                    TrainingProgramDto.builder()
+                            .agency(agencyName)
+                            .activity(activityNames.get(key))
+                            .subActivityId(key)
+                            .subActivity(subActivityNames.get(key))
+                            .trainingAchievement(achievement)
+                            .expenditure(Math.floor(expenditure))
+                            .build()
+            );
+        }
+
+        return result;
+    }
 
 
 }

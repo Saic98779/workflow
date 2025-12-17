@@ -47,6 +47,7 @@ public class NonTrainingTargetsAndAchievementsServiceImpl implements NonTraining
 
         return targets.stream().map(t -> {
             NonTrainingTargetsAndAchievementsResponse dto = new NonTrainingTargetsAndAchievementsResponse();
+            dto.setAgencyName(t.getNonTrainingActivity().getAgency().getAgencyName());
             dto.setActivityName(t.getNonTrainingSubActivity().getNonTrainingActivity().getActivityName());
             dto.setSubActivityName(t.getNonTrainingSubActivity().getSubActivityName());
             dto.setFinancialYear(t.getFinancialYear());
