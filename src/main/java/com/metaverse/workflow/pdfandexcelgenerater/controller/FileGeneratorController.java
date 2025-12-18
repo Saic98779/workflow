@@ -123,6 +123,7 @@ public class FileGeneratorController {
 
     @GetMapping("/program/excel")
     public void generateExcelReport(HttpServletResponse response) throws IOException {
+        response.setContentType("application/vnd.ms-excel");
         response.setContentType("application/octet-stream");
         response.setHeader("Content-Disposition", "attachment;fileName=Program_Details.xls");
         programExcelGenerator.generateProgramsExcel(response);
@@ -130,6 +131,7 @@ public class FileGeneratorController {
 
     @GetMapping("/organization/excel")
     public void generateOrganizationExcelReport(HttpServletResponse response) throws IOException {
+        response.setContentType("application/vnd.ms-excel");
         response.setContentType("application/octet-stream");
         response.setHeader("Content-Disposition", "attachment;fileName=Organization_Details.xls");
         organizationExcelGenerator.exportOrganizationsToExcel(response);
@@ -137,6 +139,7 @@ public class FileGeneratorController {
 
     @GetMapping("/location/excel/{agencyId}")
     public void generateLocationExcelReport(HttpServletResponse response, @PathVariable Long agencyId) throws IOException {
+        response.setContentType("application/vnd.ms-excel");
         response.setContentType("application/octet-stream");
         response.setHeader("Content-Disposition", "attachment;fileName=Location_Details.xls");
         locationExcelGenerator.locationsExportToExcel(response, agencyId);
@@ -144,6 +147,7 @@ public class FileGeneratorController {
 
     @GetMapping("/resource/excel/{agencyId}")
     public void generateResourceExcelReport(HttpServletResponse response, @PathVariable Long agencyId) throws IOException {
+        response.setContentType("application/vnd.ms-excel");
         response.setContentType("application/octet-stream");
         response.setHeader("Content-Disposition", "attachment;fileName=Resource_Details.xls");
         resourceExcelGenerator.exportAgencyResourcesToExcel(response, agencyId);
@@ -169,6 +173,7 @@ public class FileGeneratorController {
 
     @GetMapping("/program/summery/excel/{programId}")
     public void generateProgramSummeryExcel(@PathVariable Long programId, HttpServletResponse response) throws IOException, DataException {
+        response.setContentType("application/vnd.ms-excel");
         response.setContentType("application/octet-stream");
         response.setHeader("Content-Disposition", "attachment;fileName=Program_Summary_Details.xls");
         programSummeryExcelGenerator.generateProgramsExcel(response, programId);
@@ -178,6 +183,7 @@ public class FileGeneratorController {
     @GetMapping("/export-program-expenditure")
     public void exportProgramExpenditure(HttpServletResponse response,
                                          @RequestParam Long programId, @RequestParam Long agencyId) throws IOException {
+
         response.setContentType("application/vnd.ms-excel");
         response.setHeader("Content-Disposition", "attachment; filename=" + "program_expenditure_" + programId + ".xls");
 
@@ -298,12 +304,22 @@ public class FileGeneratorController {
     }
     @GetMapping("/export/training-programs/{agencyId}")
     public void exportTrainingProgramsExcel(HttpServletResponse response, @PathVariable Long agencyId) throws IOException {
+        response.setContentType("application/vnd.ms-excel");
+        response.setHeader(
+                "Content-Disposition",
+                "attachment; filename=Training_Programs.xls"
+        );
         excelGenerator.generateTrainingProgramExcel(response, agencyId);
     }
 
     @GetMapping("/export/momsme/{agencyId}")
     public void exportMoMSMEReport(@PathVariable Long agencyId, HttpServletResponse response) throws IOException {
         try {
+            response.setContentType("application/vnd.ms-excel");
+            response.setHeader(
+                    "Content-Disposition",
+                    "attachment; filename=Momsme_Report.xls"
+            );
             moMSMEExcelGenerator.generateExcel(agencyId,response);
         } catch (DataException e) {
             throw new RuntimeException(e);
