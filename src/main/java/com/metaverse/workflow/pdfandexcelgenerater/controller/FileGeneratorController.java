@@ -5,9 +5,11 @@ import com.metaverse.workflow.common.util.RestControllerBase;
 import com.metaverse.workflow.exceptions.DataException;
 import com.metaverse.workflow.pdfandexcelgenerater.service.*;
 import com.metaverse.workflow.program.repository.ProgramRepository;
+import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.websocket.server.PathParam;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -21,6 +23,7 @@ import java.security.Principal;
 
 @RestController
 @RequiredArgsConstructor
+@Slf4j
 public class FileGeneratorController {
     private final MoMSMEExcelGenerator moMSMEExcelGenerator;
     private final TrainingProgramExcelGenerator excelGenerator;
@@ -308,16 +311,32 @@ public class FileGeneratorController {
     }
 
     @PostMapping("/export/progress/excel")
-    public void exportExcelReport(@RequestBody ReportRequest request, HttpServletResponse response, Principal principal) throws IOException {
+    public void exportExcelReport(
+            @RequestBody ReportRequest request,
+            HttpServletResponse response) throws IOException {
 
-        response.setContentType("application/octet-stream");
+        log.info("Excel export request received");
+
+        response.setContentType("application/vnd.ms-excel");
         response.setHeader(
-                "Content-Disposition", "attachment; filename=Agency_Report.xls"
+                "Content-Disposition",
+                "attachment; filename=Agency_Report.xls"
         );
+
+        ServletOutputStream outputStream = response.getOutputStream();
+
         trainingTargetPreview.generateExcel(
-                request, principal.getName(), response.getOutputStream()
+                request,
+                request.getLoginName(),
+                outputStream
         );
+
+        outputStream.flush();
+        response.flushBuffer();
+
+        log.info("Excel export response sent successfully");
     }
+
 
 
 }

@@ -9,6 +9,7 @@ import java.util.List;
 public class ReportRequest {
 
     private List<Long> agencyIds;
+    private String loginName;
     private ReportType reportType;
     private TrainingType trainingType;
     private DateType dateType;
