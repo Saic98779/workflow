@@ -18,4 +18,16 @@ public class VisitDetailsResponseDTO {
     private String timeOfVisit;
 
     private List<String> resourceNames;
+
+    private String state;
+    private String district;
+    private String mandal;
+    private String town;
+    private String streetNo;
+    private String houseNo;
+    private Double latitude;
+    private Double longitude;
+    private Long contactNo;
+    private String email;
+    private Boolean withInHyderabad;
 }
