@@ -42,6 +42,8 @@ public class OrganizationResponse {
     private String nameOfTheVO;
     private String gramaPanchayat;
 	private List<Sector> sectorList;
+    private String districtName;
+    private String mandalName;
 
 
 	@Getter

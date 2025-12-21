@@ -1,6 +1,7 @@
 package com.metaverse.workflow.nontrainingExpenditures.service;
 
 
+import com.metaverse.workflow.common.util.CommonUtil;
 import com.metaverse.workflow.common.util.DateUtil;
 import com.metaverse.workflow.model.NonTrainingResource;
 import com.metaverse.workflow.model.NonTrainingSubActivity;
@@ -83,6 +84,8 @@ public class VisitDetailsMapper {
         dto.setLatitude(entity.getLatitude());
         dto.setLongitude(entity.getLongitude());
         dto.setWithInHyderabad(entity.getWithInHyderabad());
+        dto.setDistrictName(entity.getDistrict() != null ? CommonUtil.districtMap.get(Integer.valueOf(entity.getDistrict())) :null );
+        dto.setMandalName(entity.getMandal() != null ? CommonUtil.mandalMap.get(Integer.valueOf(entity.getMandal())) :null );
 
         // convert NonTrainingResource list → list of only names
         dto.setResourceNames(entity.getNonTrainingResourceList().stream()
