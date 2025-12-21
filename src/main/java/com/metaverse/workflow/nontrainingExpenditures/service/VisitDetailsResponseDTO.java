@@ -30,4 +30,6 @@ public class VisitDetailsResponseDTO {
     private Long contactNo;
     private String email;
     private Boolean withInHyderabad;
+    private String districtName;
+    private String mandalName;
 }

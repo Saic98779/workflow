@@ -1,5 +1,6 @@
 package com.metaverse.workflow.organization.service;
 
+import com.metaverse.workflow.common.util.CommonUtil;
 import com.metaverse.workflow.common.util.DateUtil;
 import com.metaverse.workflow.location.service.LocationResponse;
 import com.metaverse.workflow.model.Location;
@@ -49,6 +50,8 @@ public class OrganizationResponseMapper {
 				.nameOfTheSHG(request.getNameOfTheSHG())
 				.nameOfTheVO(request.getNameOfTheVO())
 				.gramaPanchayat(request.getGramaPanchayat()).nameOfTheSHG(request.getNameOfTheSHG()).nameOfTheVO(request.getNameOfTheVO()).gramaPanchayat(request.getGramaPanchayat())
+				.mandalName(request.getMandal() != null ? CommonUtil.mandalMap.get(Integer.valueOf(request.getMandal())): null)
+				.districtName(request.getDistId() != null ? CommonUtil.districtMap.get(Integer.valueOf(request.getDistId())) :null )
 				.sectorList(sectors).build();
 	}
 
