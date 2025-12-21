@@ -103,21 +103,20 @@ public class FileGeneratorController {
     }
 
     @GetMapping(value = "/program/participant/pdf/{programId}", produces = MediaType.APPLICATION_PDF_VALUE)
-    public ResponseEntity<?> generateParticipantPdfReport(@PathVariable Long programId) throws IOException {
+    public ResponseEntity<InputStreamResource> generateParticipantPdfReport(@PathVariable Long programId) throws IOException {
         if (!programRepository.existsById(programId)) {
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
                     .contentType(MediaType.TEXT_PLAIN)
-                    .body("Program with ID " + programId + " not found.");
+                    .body(null);
         }
         ByteArrayInputStream bis = participantsPDFGenerator.generateProgramParticipantPdf(programId);
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "inline; filename=Participant_Details.pdf");
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=Participant_Details.pdf");
         return ResponseEntity.ok()
                 .headers(headers)
                 .contentType(MediaType.APPLICATION_PDF)
                 .body(new InputStreamResource(bis));
-
     }
 
 
