@@ -1,12 +1,12 @@
 package com.metaverse.workflow.handHolidingSupport.model;
 
 import com.metaverse.workflow.model.BaseEntity;
+import com.metaverse.workflow.model.aleap_handholding.HandholdingSupport;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import java.time.LocalDate;
 
 @Entity
 @Table(name = "technology_support")

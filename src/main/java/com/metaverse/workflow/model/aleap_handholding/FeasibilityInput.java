@@ -1,4 +1,4 @@
-package com.metaverse.workflow.handHolidingSupport.model;
+package com.metaverse.workflow.model.aleap_handholding;
 
 import com.metaverse.workflow.model.BaseEntity;
 import jakarta.persistence.*;
