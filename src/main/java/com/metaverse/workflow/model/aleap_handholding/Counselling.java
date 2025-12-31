@@ -30,13 +30,14 @@ public class Counselling extends BaseEntity {
     @Column(name = "final_idea", columnDefinition = "TEXT")
     private String finalIdea;
 
-    @ManyToMany
+    @OneToMany(cascade = CascadeType.ALL)
     @JoinTable(
             name = "counselling_participants",
-            joinColumns = @JoinColumn(name = "id"),
-            inverseJoinColumns = @JoinColumn(name = "participant_id")
+            joinColumns = @JoinColumn(name = "counselling_id"),   // references Counselling.id
+            inverseJoinColumns = @JoinColumn(name = "participant_id") // references Participant.id
     )
     private List<Participant> participants;
+
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "organization_id", nullable = false)

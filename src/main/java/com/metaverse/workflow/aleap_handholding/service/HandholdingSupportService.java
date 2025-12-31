@@ -49,8 +49,7 @@ public class HandholdingSupportService {
                 .nonTrainingSubActivity(
                         subActivityRepo.findById(subActivityId)
                                 .orElseThrow(() ->
-                                        new DataException(
-                                                "SubActivity not found with id " + subActivityId,
+                                        new DataException("SubActivity not found with id " + subActivityId,
                                                 "SUB_ACTIVITY_NOT_FOUND",
                                                 400
                                         ))

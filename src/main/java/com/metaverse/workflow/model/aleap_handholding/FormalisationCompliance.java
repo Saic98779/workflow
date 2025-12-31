@@ -13,10 +13,10 @@ public class FormalisationCompliance extends BaseEntity {
 
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "handholding_support_id", nullable = false)
+    @JoinColumn(name = "handholding_support_id")
     private HandholdingSupport handholdingSupport;
 
-    @Column(name = "document_path", length = 500, nullable = false)
+    @Column(name = "document_path",  columnDefinition = "TEXT")
     private String documentPath;
 
     @Column(name = "details", columnDefinition = "TEXT")

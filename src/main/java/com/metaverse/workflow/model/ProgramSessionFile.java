@@ -1,5 +1,7 @@
 package com.metaverse.workflow.model;
 
+import com.metaverse.workflow.model.aleap_handholding.AleapDesignStudio;
+import com.metaverse.workflow.model.aleap_handholding.BusinessPlanDetails;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -64,5 +66,14 @@ public class ProgramSessionFile {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "bulk_id")
     private NonTrainingConsumablesBulk nonTrainingConsumablesBulk;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "business_plan_details_id")
+    private BusinessPlanDetails businessPlanDetails;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "aleap_design_studio_id")
+    private AleapDesignStudio aleapDesignStudio;
+
 
 }

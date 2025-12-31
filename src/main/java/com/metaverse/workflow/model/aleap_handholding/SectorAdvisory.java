@@ -4,14 +4,11 @@ import com.metaverse.workflow.model.BaseEntity;
 import com.metaverse.workflow.model.Organization;
 import com.metaverse.workflow.model.Participant;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.Date;
 import java.util.List;
-
+@Builder
 @Entity
 @Table(name = "sector_advisory")
 @Getter

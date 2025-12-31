@@ -4,11 +4,11 @@ import com.metaverse.workflow.model.BaseEntity;
 import com.metaverse.workflow.model.Organization;
 import com.metaverse.workflow.model.Participant;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -16,14 +16,19 @@ import java.util.List;
 @Table(name = "business_plan_details")
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class BusinessPlanDetails extends BaseEntity {
+public class BusinessPlanDetails  {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "business_plan_details_id")
+    protected Long businessPlanDetailsId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "handholding_support_id", nullable = false)
     private HandholdingSupport handholdingSupport;
-
 
     @Column(name = "plan_file_upload_path")
     private String planFileUploadPath;
@@ -57,4 +62,12 @@ public class BusinessPlanDetails extends BaseEntity {
 
     @Column(name = "counselling_time")
     private String counsellingTime;
+
+    @CreatedDate
+    @Column(name = "created_timestamp", updatable = false)
+    protected LocalDateTime createdTimestamp;
+
+    @LastModifiedDate
+    @Column(name = "last_modified")
+    protected LocalDateTime lastModified;
 }
