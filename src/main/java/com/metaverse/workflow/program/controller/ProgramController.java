@@ -55,6 +55,7 @@ public class ProgramController {
     @GetMapping("/programs/by-agency-and-activity")
     public ResponseEntity<?> getProgramByAgencyAndActivity(@RequestParam("agencyId") Long agencyId,
                                                            @RequestParam("activityId")Long activityId) {
+        SplunkSdkLogger.send("Called getProgramByAgencyAndActivity agencyId=" + agencyId + " activityId=" + activityId);
         try {
             return ResponseEntity.ok(programService.getProgramByAgencyAndActivity(agencyId,activityId));
         } catch (DataException exception) {
@@ -65,6 +66,7 @@ public class ProgramController {
 
     @GetMapping("/program/sessions/{programId}")
     public ResponseEntity<?> getProgramSessionByProgramId(@RequestParam("programId") Long programId) {
+        SplunkSdkLogger.send("Called getProgramSessionByProgramId programId=" + programId);
         try {
             return ResponseEntity.ok(programService.getProgramSessionsByProgramId(programId));
         } catch (DataException exception) {
@@ -80,6 +82,7 @@ public class ProgramController {
     @PostMapping(value = "/program/create", produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<WorkflowResponse> createProgram(@RequestBody ProgramRequest request, Principal principal, HttpServletRequest servletRequest
     ) {
+        SplunkSdkLogger.send("Called createProgram by=" + (principal != null ? principal.getName() : "anonymous") + " programTitle=" + request.getProgramTitle());
         WorkflowResponse response = programService.createProgram(request);
         logService.logs(principal.getName(), "SAVE", "program created successfully", "program", servletRequest.getRequestURL().toString());
         return ResponseEntity.ok(response);
@@ -92,6 +95,7 @@ public class ProgramController {
     @PostMapping(value = "/program/session/create", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_OCTET_STREAM_VALUE},
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<WorkflowResponse> createSession(Principal principal, @RequestPart("data") String data, @RequestPart(value = "files", required = false) List<MultipartFile> files, HttpServletRequest servletRequest) throws ParseException {
+        SplunkSdkLogger.send("Called createSession by=" + (principal != null ? principal.getName() : "anonymous") + " data=" + (data != null ? (data.length() > 200 ? data.substring(0, 200) + "..." : data) : "null"));
         log.info("Program controller, title : {}", data);
         JSONParser parser = new JSONParser();
         ProgramSessionRequest request = parser.parse(data, ProgramSessionRequest.class);
@@ -102,6 +106,7 @@ public class ProgramController {
 
     @PostMapping("/program/session/delete")
     public ResponseEntity<String> deleteSession(Principal principal, @RequestParam("sessionId") Long sessionId, HttpServletRequest servletRequest) throws ParseException {
+        SplunkSdkLogger.send("Called deleteSession by=" + (principal != null ? principal.getName() : "anonymous") + " sessionId=" + sessionId);
         String response = programService.deleteProgramSession(sessionId);
         logService.logs(principal.getName(), "DELETE", "program session delete successfully with id " + sessionId, "program session", servletRequest.getRequestURI());
         return ResponseEntity.ok(response);
@@ -113,6 +118,7 @@ public class ProgramController {
                                                                        @RequestParam(value = "agencyId", required = false) Long agencyId,
                                                                        @RequestParam(defaultValue = "0") int page,
                                                                        @RequestParam(defaultValue = "10") int size) {
+        SplunkSdkLogger.send("Called getParticipantsByProgramId programId=" + programId + " agencyId=" + agencyId + " page=" + page + " size=" + size);
         WorkflowResponse response = programService.getProgramParticipants(programId, agencyId, page, size);
         return ResponseEntity.ok(response);
     }
@@ -122,25 +128,29 @@ public class ProgramController {
                                                                            @RequestParam(value = "agencyId", required = false) Long agencyId,
                                                                            @RequestParam(defaultValue = "0") int page,
                                                                            @RequestParam(defaultValue = "10") int size) {
+        SplunkSdkLogger.send("Called getTempParticipantsByProgramId programId=" + programId + " agencyId=" + agencyId + " page=" + page + " size=" + size);
         WorkflowResponse response = programService.getTempProgramParticipants(programId, agencyId, page, size);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/program/{programId}")
     public ResponseEntity<WorkflowResponse> getProgramById(@PathVariable("programId") Long programId) {
+        SplunkSdkLogger.send("Called getProgramById programId=" + programId);
+        log.info("Fetched Program with ID from logger: " + programId);
         WorkflowResponse response = programService.getProgramById(programId);
-        SplunkSdkLogger.send("Fetched Program with ID: " + programId);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/programs")
     public ResponseEntity<WorkflowResponse> getPrograms() {
+        SplunkSdkLogger.send("Called getPrograms");
         WorkflowResponse response = programService.getPrograms();
         return ResponseEntity.ok(response);
     }
 
     @PostMapping(value = "/updateProgram", produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<WorkflowResponse> updateProgram(Principal principal, @RequestBody ProgramRequest request, HttpServletRequest servletRequest) {
+        SplunkSdkLogger.send("Called updateProgram by=" + (principal != null ? principal.getName() : "anonymous") + " programId=" + request.getProgramId());
         log.info("Updating Program with ID: {}", request.getProgramId());
         WorkflowResponse response = programService.updateProgram(request);
         logService.logs(principal.getName(), "UPDATE", "program updated successfully for id " + request.getProgramId(), "program", servletRequest.getRequestURI());
@@ -150,6 +160,7 @@ public class ProgramController {
 
     @PostMapping("/save/program/type")
     public ResponseEntity<WorkflowResponse> saveProgramTypes(Principal principal, @RequestBody ProgramTypeRequest request, HttpServletRequest servletRequest) {
+        SplunkSdkLogger.send("Called saveProgramTypes by=" + (principal != null ? principal.getName() : "anonymous") + " type=" + request.getProgramType());
         WorkflowResponse response = programService.saveProgramType(request);
         logService.logs(principal.getName(), "SAVE", "program type saved successfully", "program type", servletRequest.getRequestURI());
         return ResponseEntity.ok(response);
@@ -157,18 +168,21 @@ public class ProgramController {
 
     @GetMapping("/program/types")
     public ResponseEntity<WorkflowResponse> getAllProgramTypes() {
+        SplunkSdkLogger.send("Called getAllProgramTypes");
         WorkflowResponse response = programService.getAllProgramTypes();
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/program/types/agency/id/{agencyId}")
     public ResponseEntity<WorkflowResponse> getAllProgramTypesByAgencyId(@PathVariable Long agencyId) {
+        SplunkSdkLogger.send("Called getAllProgramTypesByAgencyId agencyId=" + agencyId);
         WorkflowResponse response = programService.getAllProgramTypeByAgencyId(agencyId);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/program/participant-verification/{programId}")
     public ResponseEntity<WorkflowResponse> getParticipantAndVerificationByProgramId(@PathVariable("programId") Long programId) {
+        SplunkSdkLogger.send("Called getParticipantAndVerificationByProgramId programId=" + programId);
         WorkflowResponse response = programService.getProgramParticipantAndVerifications(programId);
         return ResponseEntity.ok(response);
     }
@@ -177,6 +191,7 @@ public class ProgramController {
     @PostMapping(value = "/program/session/update", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_OCTET_STREAM_VALUE},
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<WorkflowResponse> editProgramSession(Principal principal, @RequestPart("data") String data, @RequestPart(value = "files", required = false) List<MultipartFile> files, HttpServletRequest servletRequest) throws ParseException {
+        SplunkSdkLogger.send("Called editProgramSession by=" + (principal != null ? principal.getName() : "anonymous") + " data=" + (data != null ? (data.length() > 200 ? data.substring(0, 200) + "..." : data) : "null"));
         log.info("Program controller, title : {}", data);
         JSONParser parser = new JSONParser();
         ProgramSessionRequest request = parser.parse(data, ProgramSessionRequest.class);
@@ -194,6 +209,7 @@ public class ProgramController {
                                                               @RequestPart(value = "image3", required = false) MultipartFile image3,
                                                               @RequestPart(value = "image4", required = false) MultipartFile image4,
                                                               @RequestPart(value = "image5", required = false) MultipartFile image5) throws ParseException, java.text.ParseException {
+        SplunkSdkLogger.send("Called saveSessionImages by=" + (principal != null ? principal.getName() : "anonymous") + " data=" + (data != null ? (data.length() > 200 ? data.substring(0, 200) + "..." : data) : "null"));
         log.info("Program controller save session images, data : {}", data);
         JSONParser parser = new JSONParser();
         ProgramSessionRequest request = parser.parse(data, ProgramSessionRequest.class);
@@ -206,6 +222,7 @@ public class ProgramController {
     public ResponseEntity<WorkflowResponse> saveCollageImages(Principal principal, @RequestParam("programId") Long programId,
                                                               @RequestPart(value = "image", required = false) MultipartFile image,
                                                               HttpServletRequest servletRequest) {
+        SplunkSdkLogger.send("Called saveCollageImages by=" + (principal != null ? principal.getName() : "anonymous") + " programId=" + programId);
         WorkflowResponse response = programService.saveCollageImages(programId, image);
         logService.logs(principal.getName(), "SAVE", "created collage for reports", "report", servletRequest.getRequestURI());
 
@@ -218,6 +235,7 @@ public class ProgramController {
                                                                @RequestParam("fileId") Long fileId,
                                                                HttpServletRequest servletRequest) {
 
+        SplunkSdkLogger.send("Called deleteCollageImage by=" + (principal != null ? principal.getName() : "anonymous") + " programId=" + programId + " fileId=" + fileId);
         WorkflowResponse response = programService.deleteCollageImage(programId, fileId);
         logService.logs(principal.getName(), "DELETE", "deleted collage image", "report",
                 servletRequest.getRequestURI());
@@ -233,6 +251,7 @@ public class ProgramController {
                                                               @RequestPart(value = "image2", required = false) MultipartFile image2,
                                                               @RequestPart(value = "image3", required = false) MultipartFile image3,
                                                               HttpServletRequest servletRequest) throws ParseException {
+        SplunkSdkLogger.send("Called saveMediaCoverage by=" + (principal != null ? principal.getName() : "anonymous") + " data=" + (data != null ? (data.length() > 200 ? data.substring(0, 200) + "..." : data) : "null"));
         log.info("Program controller save program media, data : {}", data);
         JSONParser parser = new JSONParser();
         MediaCoverageRequest request = parser.parse(data, MediaCoverageRequest.class);
@@ -244,6 +263,7 @@ public class ProgramController {
 
     @GetMapping("/program/file/download/{fileId}")
     public ResponseEntity<InputStreamResource> getProgramFile(@PathVariable("fileId") Long fileId) throws FileNotFoundException {
+        SplunkSdkLogger.send("Called getProgramFile fileId=" + fileId);
         Path path = programService.getProgramFile(fileId);
         if (path == null) {
             return ResponseEntity.noContent().build();
@@ -265,6 +285,7 @@ public class ProgramController {
 
     @GetMapping("/program/file/paths/{programId}")
     public ResponseEntity<List<String>> getAllProgramFilePaths(@PathVariable("programId") Long programId) {
+        SplunkSdkLogger.send("Called getAllProgramFilePaths programId=" + programId);
         List<Path> paths = programService.getAllProgramFile(programId);
 
         if (paths == null || paths.isEmpty()) {
@@ -292,6 +313,7 @@ public class ProgramController {
     public ResponseEntity<List<ProgramFileResponse>> getAllProgramFilePaths(
             @RequestParam(value = "fileType", required = false) FileType fileType, Principal principal) throws DataException {
 
+        SplunkSdkLogger.send("Called getAllProgramFilePaths by=" + (principal != null ? principal.getName() : "anonymous") + " fileType=" + fileType);
         if (fileType == null) {
             return ResponseEntity.badRequest().build();
         }
@@ -346,6 +368,7 @@ public class ProgramController {
 
     @GetMapping("/program/summary/{programId}")
     public ResponseEntity<?> getProgramSummeryById(@PathVariable("programId") Long programId) {
+        SplunkSdkLogger.send("Called getProgramSummeryById programId=" + programId);
         try {
             return ResponseEntity.ok(programService.getProgramSummaryByProgramId(programId));
         } catch (DataException exception) {
@@ -356,12 +379,14 @@ public class ProgramController {
 
     @GetMapping("/program/participants/dropdown/{programId}")
     public ResponseEntity<WorkflowResponse> getParticipantsByProgramIdDropDown(@PathVariable("programId") Long programId) {
+        SplunkSdkLogger.send("Called getParticipantsByProgramIdDropDown programId=" + programId);
         WorkflowResponse response = programService.getProgramParticipantsDropDown(programId);
         return ResponseEntity.ok(response);
     }
 
     @PostMapping(value = "/program/import", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<WorkflowResponse> importPrograms(Principal principal, @RequestPart("file") MultipartFile file, HttpServletRequest servletRequest) {
+        SplunkSdkLogger.send("Called importPrograms by=" + (principal != null ? principal.getName() : "anonymous") + " filename=" + (file != null ? file.getOriginalFilename() : "null"));
         WorkflowResponse response = programService.importProgramsFromExcel(file);
         logService.logs(principal.getName(), "IMPORT", "imported program from excel successfully", "program temp", servletRequest.getRequestURI());
         return ResponseEntity.ok(response);
@@ -369,6 +394,7 @@ public class ProgramController {
 
     @DeleteMapping("/program/delete/{programId}")
     public ResponseEntity<WorkflowResponse> deleteProgram(Principal principal, @PathVariable Long programId, HttpServletRequest servletRequest) {
+        SplunkSdkLogger.send("Called deleteProgram by=" + (principal != null ? principal.getName() : "anonymous") + " programId=" + programId);
         WorkflowResponse response = programService.deleteProgramAndDependencies(programId);
         logService.logs(principal.getName(), "DELETE", "deleted program successfully with id "+programId, "program temp", servletRequest.getRequestURI());
         return ResponseEntity.ok(response);
@@ -387,6 +413,7 @@ public class ProgramController {
     @GetMapping("/programs/with-participants/{agencyId}")
     public ResponseEntity<WorkflowResponse> getProgramsWithParticipantsByAgency(@PathVariable Long agencyId)
     {
+        SplunkSdkLogger.send("Called getProgramsWithParticipantsByAgency agencyId=" + agencyId);
         return ResponseEntity.ok(programService.getProgramsWithParticipants(agencyId));
     }
 }

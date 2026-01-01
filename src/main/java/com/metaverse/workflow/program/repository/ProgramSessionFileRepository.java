@@ -78,4 +78,6 @@ public interface ProgramSessionFileRepository extends JpaRepository<ProgramSessi
     void deleteByNonTrainingConsumablesBulkId(Long id);
 
     Optional<ProgramSessionFile> findByProgramProgramIdAndProgramSessionFileIdAndFileType(Long programId, Long fileId, String collage);
+
+    void deleteByFormalisationCompliance_FormalisationComplianceId(Long id);
 }

@@ -1,9 +1,8 @@
 package com.metaverse.workflow.model;
 
-//import com.metaverse.workflow.model.aleap_handholding.AleapDesignStudio;
-//import com.metaverse.workflow.model.aleap_handholding.BusinessPlanDetails;
 import com.metaverse.workflow.model.aleap_handholding.AleapDesignStudio;
 import com.metaverse.workflow.model.aleap_handholding.BusinessPlanDetails;
+import com.metaverse.workflow.model.aleap_handholding.FormalisationCompliance;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -13,17 +12,17 @@ import lombok.*;
 @Builder
 @Getter
 @Setter
-@Table(name = "program_session_file")
+@Table(name="program_session_file")
 public class ProgramSessionFile {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "program_session_file_id")
+    @GeneratedValue(strategy=GenerationType.AUTO)
+    @Column(name="program_session_file_id")
     private Long programSessionFileId;
 
-    @Column(name = "file_type")
+    @Column(name="file_type")
     private String fileType;
 
-    @Column(name = "file_path")
+    @Column(name="file_path")
     private String filePath;
 
     @ManyToOne
@@ -68,6 +67,10 @@ public class ProgramSessionFile {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "bulk_id")
     private NonTrainingConsumablesBulk nonTrainingConsumablesBulk;
+
+    @ManyToOne
+    @JoinColumn(name = "formalisation_compliance_id")
+    private FormalisationCompliance formalisationCompliance;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "business_plan_details_id")
