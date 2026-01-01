@@ -1,9 +1,12 @@
 package com.metaverse.workflow.pdfandexcelgenerater.service;
 
 import com.metaverse.workflow.agency.repository.AgencyRepository;
+import com.metaverse.workflow.program.controller.ProgramController;
 import jakarta.servlet.ServletOutputStream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -13,10 +16,12 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class TrainingTargetPreview {
+
+    private static final Logger log =
+            LogManager.getLogger(TrainingTargetPreview.class);
 
     private final ReportDataService reportDataService;
     private final AgencyRepository agencyRepository;

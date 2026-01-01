@@ -11,7 +11,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 
 @Component
-@Slf4j
 public class RequestLoggingFilter extends OncePerRequestFilter {
 
     @Override
@@ -21,11 +20,6 @@ public class RequestLoggingFilter extends OncePerRequestFilter {
             FilterChain filterChain
     ) throws ServletException, IOException {
         // Log request details
-        log.info("Request URI: {}", request.getRequestURI());
-        log.info("Request URL: {}", request.getRequestURL());
-        log.info("Context Path: {}", request.getContextPath());
-        log.info("Servlet Path: {}", request.getServletPath());
-        log.info("Method: {}", request.getMethod());
         
         // Continue with the filter chain
         filterChain.doFilter(request, response);

@@ -12,7 +12,6 @@ import com.metaverse.workflow.programoutcome.dto.*;
 import com.metaverse.workflow.programoutcome.repository.*;
 import com.metaverse.workflow.programoutcometargets.repository.PhysicalRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
 import org.springframework.data.domain.Page;
@@ -27,7 +26,6 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
-@Slf4j
 public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
 
 
@@ -470,7 +468,6 @@ public class ProgramOutcomeServiceAdapter implements ProgramOutcomeService {
                     .data(OutcomeDetails.builder().outcomeForm(columnList).build())
                     .build();
         } catch (ClassNotFoundException ex) {
-            log.error("Invalid out come name");
             return WorkflowResponse.builder().status(500)
                     .message("Internal server error...").build();
         }

@@ -8,6 +8,7 @@ import com.metaverse.workflow.login.service.ChangePasswordRequest;
 import com.metaverse.workflow.login.service.LoginService;
 import com.metaverse.workflow.login.service.LoginUserRequest;
 import com.metaverse.workflow.login.service.LoginUserResponse;
+import com.metaverse.workflow.program.controller.ProgramController;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -15,6 +16,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -24,13 +27,15 @@ import java.security.Principal;
 
 @RestController
 @AllArgsConstructor
-@Slf4j
 public class LoginController {
 
     @Autowired
     private LoginService loginService;
     @Autowired
     private ActivityLogService logService;
+
+    private static final Logger log =
+            LogManager.getLogger(LoginController.class);
 
     @Operation(summary = "Get user by id", responses = {
             @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = LoginUserResponse.class))),

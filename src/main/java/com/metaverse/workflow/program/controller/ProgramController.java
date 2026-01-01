@@ -3,6 +3,7 @@ package com.metaverse.workflow.program.controller;
 import com.metaverse.workflow.activitylog.ActivityLogService;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.common.util.RestControllerBase;
+import com.metaverse.workflow.configuration.SplunkSdkLogger;
 import com.metaverse.workflow.exceptions.DataException;
 
 import java.io.*;
@@ -15,17 +16,15 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import jakarta.persistence.EntityNotFoundException;
-import jakarta.servlet.ServletRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -34,11 +33,9 @@ import org.springframework.web.multipart.MultipartFile;
 import java.nio.file.Path;
 import java.security.Principal;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @AllArgsConstructor
-@Slf4j
 public class ProgramController {
 
     @Autowired
@@ -52,8 +49,8 @@ public class ProgramController {
     @Autowired
     ProgramRepository programRepository;
 
-//    @Autowired
-//    OverdueProgramUpdater overdueProgramUpdater;
+    private static final Logger log =
+            LogManager.getLogger(ProgramController.class);
 
     @GetMapping("/programs/by-agency-and-activity")
     public ResponseEntity<?> getProgramByAgencyAndActivity(@RequestParam("agencyId") Long agencyId,
@@ -132,6 +129,7 @@ public class ProgramController {
     @GetMapping("/program/{programId}")
     public ResponseEntity<WorkflowResponse> getProgramById(@PathVariable("programId") Long programId) {
         WorkflowResponse response = programService.getProgramById(programId);
+        SplunkSdkLogger.send("Fetched Program with ID: " + programId);
         return ResponseEntity.ok(response);
     }
 

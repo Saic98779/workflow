@@ -33,7 +33,6 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
-@Slf4j
 @Tag(name = "Authentication", description = "Authentication API")
 public class AuthenticationController {
 
@@ -47,7 +46,6 @@ public class AuthenticationController {
     @PostMapping("/register")
     @Operation(summary = "Register a new user")
     public ResponseEntity<ApplicationAPIResponse<AuthenticationResponse>> register(@RequestBody RegisterRequest request, Principal principal) {
-        log.info("Registering new user with email: {}", request.getEmail());
 
         if (loginRepository.findByEmail(request.getEmail()).isPresent()) {
             return ResponseEntity.badRequest().body(
@@ -132,7 +130,6 @@ public class AuthenticationController {
     @PostMapping("/login")
     @Operation(summary = "Authenticate a user")
     public ResponseEntity<ApplicationAPIResponse<AuthenticationResponse>> authenticate(@RequestBody AuthenticationRequest request) {
-        log.info("Authenticating user with email: {}", request.getEmail());
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
@@ -147,7 +144,6 @@ public class AuthenticationController {
                     .orElseThrow(() -> new RuntimeException("User not found"));
 
             String token = jwtService.generateToken(userDetails);
-            log.info("User authenticated successfully: {}", user.getEmail());
 
             AuthenticationResponse userData = AuthenticationResponse.builder()
                     .token(token)
@@ -171,7 +167,6 @@ public class AuthenticationController {
             return ResponseEntity.ok(response);
 
         } catch (Exception e) {
-            log.error("Authentication failed for user {}: {}", request.getEmail(), e.getMessage());
             ApplicationAPIResponse<AuthenticationResponse> errorResponse = ApplicationAPIResponse.<AuthenticationResponse>builder()
                     .status(403)
                     .message("Authentication failed")

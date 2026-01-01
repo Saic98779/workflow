@@ -18,7 +18,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-@Slf4j
 public class CounsellorServiceImpl implements CounsellorService {
     @Autowired
     CounsellorRegistrationRepository counsellorRegistrationRepository;
@@ -34,7 +33,6 @@ public class CounsellorServiceImpl implements CounsellorService {
 
     @Override
     public WorkflowResponse saveCounseller(CounsellorRegistrationRequest counsellorRequest) {
-        log.info("service counsellor");
         CounsellorRegistration counsellorRegistration = CounsellorRegistrationRequestMapper.map(counsellorRequest);
 
         Optional<Mandal> mandal = mandalRepositrory.findById(counsellorRequest.getMandalId());

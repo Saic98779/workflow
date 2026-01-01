@@ -4,10 +4,13 @@ import com.metaverse.workflow.expenditure.repository.ProgramExpenditureRepositor
 import com.metaverse.workflow.model.Participant;
 import com.metaverse.workflow.model.TrainingTargets;
 import com.metaverse.workflow.participant.repository.ParticipantRepository;
+import com.metaverse.workflow.program.controller.ProgramController;
 import com.metaverse.workflow.trainingandnontrainingtarget.dtos.TrainingTargetsAndAchievementsResponse;
 import com.metaverse.workflow.trainingandnontrainingtarget.repository.TrainingTargetRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -17,12 +20,14 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class TrainingTargetsAndAchievementsServiceImpl implements TrainingTargetsAndAchievementsService {
 
     private final TrainingTargetRepository trainingTargetRepository;
     private final ParticipantRepository participantRepository;
     private final ProgramExpenditureRepository programExpenditureRepository;
+
+    private static final Logger log =
+            LogManager.getLogger(TrainingTargetsAndAchievementsServiceImpl.class);
 
     public List<TrainingTargetsAndAchievementsResponse> getTargetsAndAchievements(String financialYear, Long agencyId) {
 

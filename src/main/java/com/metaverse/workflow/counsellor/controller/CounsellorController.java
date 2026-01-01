@@ -15,7 +15,6 @@ import java.security.Principal;
 
 @RestController
 @AllArgsConstructor
-@Slf4j
 public class CounsellorController {
 
     @Autowired

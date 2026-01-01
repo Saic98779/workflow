@@ -3,6 +3,8 @@ package com.metaverse.workflow;
 import com.metaverse.workflow.common.fileservice.StorageProperties;
 import com.metaverse.workflow.common.fileservice.StorageService;
 import com.metaverse.workflow.common.util.CommonUtil;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -18,16 +20,18 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @EnableScheduling
-@SpringBootApplication(scanBasePackages = "com.metaverse", exclude = {
-		org.springframework.boot.autoconfigure.http.client.HttpClientAutoConfiguration.class
-})
 @EnableAsync
-@EnableConfigurationProperties(StorageProperties.class)
-@EnableJpaAuditing
 @EnableCaching
+@EnableJpaAuditing
+@EnableConfigurationProperties(StorageProperties.class)
+@SpringBootApplication(scanBasePackages = "com.metaverse")
 public class WorkflowApplication extends SpringBootServletInitializer {
 
+	private static final Logger LOGGER =
+			LogManager.getLogger(WorkflowApplication.class);
+
 	public static void main(String[] args) {
+		LOGGER.error("SPLUNK-FINAL-TEST-FROM-JAVA");
 		SpringApplication.run(WorkflowApplication.class, args);
 	}
 
@@ -46,12 +50,28 @@ public class WorkflowApplication extends SpringBootServletInitializer {
 		};
 	}
 
+	/**
+	 * Application initialization.
+	 * Splunk logging validation is done ONLY via Log4j2 SplunkHttp appender.
+	 */
 	@Bean
-	CommandLineRunner init(StorageService storageService, CommonUtil commonUtil) {
-		return (args) -> {
-			//storageService.deleteAll();
+	CommandLineRunner init(StorageService storageService,
+						   CommonUtil commonUtil) {
+
+		return args -> {
 			storageService.init();
 			commonUtil.init();
+
+			// ✅ Single startup log — this is enough to validate Splunk
+			LOGGER.info("WorkflowApplication started successfully – Splunk logging active");
+		};
+	}
+
+	@Bean
+	CommandLineRunner splunkTestLogger() {
+		return args -> {
+			Logger log = LogManager.getLogger("SPLUNK_TEST");
+			log.error("SPLUNK-JAVA-AFTER-STARTUP");
 		};
 	}
 

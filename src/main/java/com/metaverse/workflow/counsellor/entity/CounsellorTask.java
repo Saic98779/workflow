@@ -14,14 +14,20 @@ import java.time.LocalTime;
 @Entity
 @Table(name = "counsellor_tasks")
 @Data
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class CounsellorTask extends BaseEntity {
 
-    @ManyToOne
-    @JoinColumn(name = "counsellor_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(
+            name = "counsellor_id",
+            referencedColumnName = "user_id"
+    )
     private User counsellor;
+
 
     private LocalDate taskDate;
 
@@ -48,4 +54,3 @@ public class CounsellorTask extends BaseEntity {
         ANALYTICS
     }
 }
-
