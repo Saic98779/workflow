@@ -34,7 +34,6 @@ import java.util.stream.Collectors;
 
 @RestController
 @AllArgsConstructor
-@Slf4j
 public class ProgramOutcomeController {
 
     @Autowired
@@ -57,7 +56,6 @@ public class ProgramOutcomeController {
                                                                      @PathVariable("outcome") String outcome,
                                                                      @PathParam("participantType") Boolean isInfluenced,
                                                                      @RequestParam(value = "type", required = false) String type) {
-        log.info("/program/outcome/details/");
         WorkflowResponse response = programOutcomeService.getOutcomeDetails(participantId, outcome, type,isInfluenced);
         return ResponseEntity.ok(response);
     }
@@ -67,7 +65,6 @@ public class ProgramOutcomeController {
     public ResponseEntity<?> saveOutcome(Principal principal, @PathVariable("outcome") String outcomeName,
                                          @RequestPart("data") String data,
                                          HttpServletRequest servletRequest) throws ParseException {
-        log.info("Program outcome : {}", data);
         WorkflowResponse response = null;
         try {
             response = programOutcomeService.saveOutCome(outcomeName, data);
@@ -178,7 +175,6 @@ public class ProgramOutcomeController {
             @RequestPart("data") String data,
             HttpServletRequest servletRequest) throws ParseException {
 
-        log.info("Updating Program Outcome: {} with data: {}", outcomeName, data);
         WorkflowResponse response;
 
         try {
@@ -186,7 +182,6 @@ public class ProgramOutcomeController {
         } catch (DataException exception) {
             return RestControllerBase.error(exception);
         } catch (Exception exception) {
-            log.error("Error updating outcome {}: {}", outcomeName, exception.getMessage(), exception);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
                     new WorkflowResponse("ERROR", "Unexpected error: " + exception.getMessage(), 500)
             );

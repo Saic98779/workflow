@@ -23,7 +23,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-@Slf4j
 public class ParticipantServiceAdapter implements ParticipantService {
 
     @Autowired
@@ -156,7 +155,6 @@ public class ParticipantServiceAdapter implements ParticipantService {
     }
 
     public WorkflowResponse getParticipantByTypeOfProgram(String typeOfProgram) {
-        log.info("getparticipant on mobaile number");
         List<Participant> participantList = participantRepository.findByProgramType(typeOfProgram);
         if (participantList.isEmpty())
             return WorkflowResponse.builder()

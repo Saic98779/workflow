@@ -21,7 +21,6 @@ import java.util.stream.Collectors;
 import java.util.Collections;
 
 @Service
-@Slf4j
 public class ProgramAttendanceServiceAdapter implements ProgramAttendanceService {
 
     private final ProgramRepository programRepository;

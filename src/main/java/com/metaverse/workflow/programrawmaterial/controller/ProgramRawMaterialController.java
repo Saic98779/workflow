@@ -2,11 +2,14 @@ package com.metaverse.workflow.programrawmaterial.controller;
 
 import com.metaverse.workflow.activitylog.ActivityLogService;
 import com.metaverse.workflow.common.response.WorkflowResponse;
+import com.metaverse.workflow.program.controller.ProgramController;
 import com.metaverse.workflow.programattendance.service.ProgramAttendanceRequest;
 import com.metaverse.workflow.programrawmaterial.service.ProgramRawMaterialRequest;
 import com.metaverse.workflow.programrawmaterial.service.ProgramRawMaterialService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -15,8 +18,10 @@ import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
 
 @RestController
-@Slf4j
 public class ProgramRawMaterialController {
+
+    private static final Logger log =
+            LogManager.getLogger(ProgramRawMaterialController.class);
 
     @Autowired
     private ProgramRawMaterialService programRawMaterialService;

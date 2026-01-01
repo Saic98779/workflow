@@ -23,7 +23,6 @@ import java.security.Principal;
 
 @RestController
 @RequiredArgsConstructor
-@Slf4j
 public class FileGeneratorController {
     private final MoMSMEExcelGenerator moMSMEExcelGenerator;
     private final TrainingProgramExcelGenerator excelGenerator;
@@ -458,7 +457,6 @@ public class FileGeneratorController {
             @RequestBody ReportRequest request,
             HttpServletResponse response) throws IOException {
 
-        log.info("Excel export request received");
 
         response.setContentType("application/vnd.ms-excel");
         response.setHeader("Content-Disposition", "attachment; filename=Agency_Report.xls");
@@ -470,6 +468,5 @@ public class FileGeneratorController {
         outputStream.flush();
         response.flushBuffer();
 
-        log.info("Excel export response sent successfully");
     }
 }

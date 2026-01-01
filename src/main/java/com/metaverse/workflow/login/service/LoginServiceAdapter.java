@@ -5,7 +5,10 @@ import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.exceptions.DataException;
 import com.metaverse.workflow.login.repository.LoginRepository;
 import com.metaverse.workflow.model.User;
+import com.metaverse.workflow.program.controller.ProgramController;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -15,7 +18,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-@Slf4j
 public class LoginServiceAdapter implements LoginService {
 
     @Autowired
@@ -28,6 +30,9 @@ public class LoginServiceAdapter implements LoginService {
     private PasswordEncoder passwordEncoder;
 
     private String defaultPassword = "Password@123";
+
+    private static final Logger log =
+            LogManager.getLogger(LoginServiceAdapter.class);
 
     @Override
     public LoginUserResponse getUserById(String id) {

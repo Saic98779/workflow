@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 import java.security.Principal;
 
 @RestController
-@Slf4j
 public class ESDPTrainingController {
     @Autowired
     private ESDPTrainingService esdpTrainingService;
