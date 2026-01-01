@@ -1,6 +1,7 @@
 package com.metaverse.workflow.handHolidingSupport.model;
 
 import com.metaverse.workflow.model.BaseEntity;
+import com.metaverse.workflow.model.aleap_handholding.HandholdingSupport;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

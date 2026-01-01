@@ -211,7 +211,7 @@ public class NotificationServiceImpl {
                                     dto.setId(msg.getId());
                                     return  dto;
                                 }).toList()
-                        ).build()).toList();
+                        ).build()).filter(obj-> !obj.getNotificationMessageDto().isEmpty()).toList();
     }
 
     public Notifications updateIsRead(Long notificationId, Boolean isRead) {
