@@ -51,7 +51,7 @@ public class TradeFairParticipationService {
                 .orElseThrow(() -> new DataException(
                         "Trade Fair Participation not found with id " + id,
                         "TRADE_FAIR_NOT_FOUND",
-                        400
+                        404
                 ));
 
         HandholdingSupport support = service.getOrCreateSupport(
@@ -114,7 +114,7 @@ public class TradeFairParticipationService {
                 .orElseThrow(() -> new DataException(
                         "Trade Fair Participation not found with id " + id,
                         "TRADE_FAIR_NOT_FOUND",
-                        400
+                        404
                 ));
 
         repository.delete(entity);

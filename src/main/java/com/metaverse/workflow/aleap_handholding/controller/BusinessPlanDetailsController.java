@@ -1,5 +1,8 @@
 package com.metaverse.workflow.aleap_handholding.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.metaverse.workflow.activitylog.ActivityLogService;
 import com.metaverse.workflow.aleap_handholding.request_dto.BusinessPlanRequest;
 import com.metaverse.workflow.aleap_handholding.service.BusinessPlanDetailsService;
@@ -23,15 +26,19 @@ public class BusinessPlanDetailsController {
  private final BusinessPlanDetailsService service;
     private final ActivityLogService logService;
 
-    @PostMapping(value = "/save", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    @PostMapping(value = "/save", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> save(
             Principal principal,
-            @RequestPart("data") BusinessPlanRequest request,
+            @RequestPart("businessPlanRequest") String request,
             @RequestPart(value = "file", required = false) MultipartFile file,
             HttpServletRequest servletRequest) {
 
         try {
-            WorkflowResponse response = service.save(request, file);
+            ObjectMapper objectMapper = new ObjectMapper();
+
+            BusinessPlanRequest businessPlanRequest =
+                    objectMapper.readValue(request, BusinessPlanRequest.class);
+            WorkflowResponse response = service.save(businessPlanRequest, file);
 
             logService.logs(
                     principal.getName(),
@@ -44,19 +51,27 @@ public class BusinessPlanDetailsController {
             return ResponseEntity.ok(response);
         } catch (DataException e) {
             return RestControllerBase.error(e);
+        } catch (JsonMappingException e) {
+            throw new RuntimeException(e);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
         }
     }
 
-    @PutMapping(value = "/update/{id}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    @PutMapping(value = "/update/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> update(
             Principal principal,
             @PathVariable Long id,
-            @RequestPart("data") BusinessPlanRequest request,
+            @RequestPart("businessPlanRequest") String request,
             @RequestPart(value = "file", required = false) MultipartFile file,
             HttpServletRequest servletRequest) {
 
         try {
-            WorkflowResponse response = service.update(id, request, file);
+            ObjectMapper objectMapper = new ObjectMapper();
+
+            BusinessPlanRequest businessPlanRequest =
+                    objectMapper.readValue(request, BusinessPlanRequest.class);
+            WorkflowResponse response = service.update(id, businessPlanRequest, file);
 
             logService.logs(
                     principal.getName(),
@@ -69,6 +84,10 @@ public class BusinessPlanDetailsController {
             return ResponseEntity.ok(response);
         } catch (DataException e) {
             return RestControllerBase.error(e);
+        } catch (JsonMappingException e) {
+            throw new RuntimeException(e);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
         }
     }
 

@@ -1,5 +1,7 @@
 package com.metaverse.workflow.aleap_handholding.response_dto;
+
 import lombok.*;
+
 import java.util.List;
 
 @Builder
@@ -9,7 +11,7 @@ import java.util.List;
 @Setter
 public class SectorAdvisoryResponse {
 
-    private Long id;
+    private Long sectorAdvisoryId;
     private Long handholdingSupportId;
 
     private Long organizationId;

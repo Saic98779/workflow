@@ -11,7 +11,8 @@ import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
-
+@Entity
+@Table(name="business_plan_details")
 @Getter
 @Setter
 @Builder
@@ -50,7 +51,7 @@ public class BusinessPlanDetails  {
 
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "organization_id", nullable = false)
+    @JoinColumn(name = "organization_id")
     private Organization organization;
 
     @Column(name ="counselled_by")

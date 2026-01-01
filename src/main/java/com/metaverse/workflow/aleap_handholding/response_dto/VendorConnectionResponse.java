@@ -9,14 +9,12 @@ import lombok.Setter;
 @Builder
 public class VendorConnectionResponse {
 
-    private Long id;
-
+    private Long vendorConnectionId;
     private Long handholdingSupportId;
     private Long nonTrainingActivityId;
     private Long nonTrainingSubActivityId;
     private String nonTrainingActivityName;
     private String nonTrainingSubActivityName;
-
     private String vendorSuggested;
     private String quotationDate;
     private String details;

@@ -47,6 +47,7 @@ public class RequestMapper {
 
     public static SectorAdvisory mapToSectorAdvisory(SectorAdvisoryRequest request, HandholdingSupport support, Organization organization, List<Participant> participants) {
         return SectorAdvisory.builder()
+                .adviseDetails(request.getAdviseDetails())
                 .handholdingSupport(support)
                 .organization(organization)
                 .participants(participants)

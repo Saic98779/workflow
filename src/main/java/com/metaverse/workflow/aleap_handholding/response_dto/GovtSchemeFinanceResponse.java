@@ -10,7 +10,7 @@ import lombok.Setter;
 @Builder
 public class GovtSchemeFinanceResponse {
 
-    private Long id;
+    private Long govtSchemeFinanceId;
 
     private Long handholdingSupportId;
     private Long nonTrainingActivityId;

@@ -13,10 +13,10 @@ import java.util.stream.Collectors;
 @Component
 public class ResponseMapper {
 
-       /* public static BusinessPlanResponse mapToBusinessPlanResponse(BusinessPlanDetails entity) {
+        public static BusinessPlanResponse mapToBusinessPlanResponse(BusinessPlanDetails entity) {
 
             return BusinessPlanResponse.builder()
-                    .id(entity.getBusinessPlanDetailsId())
+                    .businessPlanId(entity.getBusinessPlanDetailsId())
                     .handholdingSupportId(entity.getHandholdingSupport().getId())
                     .organizationId(entity.getOrganization().getOrganizationId())
                     .organizationName(entity.getOrganization().getOrganizationName())
@@ -32,21 +32,21 @@ public class ResponseMapper {
                     .nonTrainingSubActivityId(entity.getHandholdingSupport().getNonTrainingSubActivity().getSubActivityId())
                     .nonTrainingSubActivityName(entity.getHandholdingSupport().getNonTrainingSubActivity().getSubActivityName())
                     .handHoldingType(entity.getHandholdingSupport().getHandholdingSupportType())
-//                    .participantNames(
-//                            entity.getParticipants()
-//                                    .stream()
-//                                    .map(Participant::getParticipantName)
-//                                    .toList()
-//                    )
+                    .participantNames(
+                            entity.getParticipants()
+                                    .stream()
+                                    .map(Participant::getParticipantName)
+                                    .toList()
+                    )
                     .build();
-        }*/
+        }
 
     public static CounsellingResponse mapToCounsellingResponse(Counselling entity) {
 
         HandholdingSupport support = entity.getHandholdingSupport();
 
         return CounsellingResponse.builder()
-                .id(entity.getId())
+                .counselletingId(entity.getId())
                 .handholdingSupportId(support != null ? support.getId() : null)
                 .organizationId(
                         entity.getOrganization() != null
@@ -100,7 +100,8 @@ public class ResponseMapper {
     public static SectorAdvisoryResponse mapToSectorAdvisoryResponse(SectorAdvisory entity) {
 
         return SectorAdvisoryResponse.builder()
-                .id(entity.getId())
+                .adviseDetails(entity.getAdviseDetails())
+                .sectorAdvisoryId(entity.getId())
                 .handholdingSupportId(entity.getHandholdingSupport().getId())
                 .organizationId(entity.getOrganization().getOrganizationId())
                 .organizationName(entity.getOrganization().getOrganizationName())
@@ -165,7 +166,7 @@ public class ResponseMapper {
     public static GovtSchemeFinanceResponse mapToGovtSchemeFinanceResponse(GovtSchemeFinance entity) {
 
         return GovtSchemeFinanceResponse.builder()
-                .id(entity.getId())
+                .govtSchemeFinanceId(entity.getId())
                 .handholdingSupportId(entity.getHandholdingSupport().getId())
                 .nonTrainingActivityId(
                         entity.getHandholdingSupport()
@@ -192,7 +193,7 @@ public class ResponseMapper {
     ) {
 
         return CreditCounsellingResponse.builder()
-                .id(entity.getId())
+                .creditCounselingId(entity.getId())
                 .handholdingSupportId(entity.getHandholdingSupport().getId())
                 .nonTrainingActivityId(
                         entity.getHandholdingSupport()
@@ -253,7 +254,7 @@ public class ResponseMapper {
     ) {
 
         return MarketStudyResponse.builder()
-                .id(entity.getId())
+                .marketStudyId(entity.getId())
                 .handholdingSupportId(entity.getHandholdingSupport().getId())
                 .nonTrainingActivityId(
                         entity.getHandholdingSupport()
@@ -291,6 +292,7 @@ public class ResponseMapper {
                                 .map(Participant::getParticipantName)
                                 .collect(Collectors.toList())
                 )
+                .handHoldingType(entity.getHandholdingSupport().getHandholdingSupportType())
                 .build();
     }
     public static VendorConnectionResponse mapToVendorConnectionResponse(
@@ -298,7 +300,7 @@ public class ResponseMapper {
     ) {
 
         return VendorConnectionResponse.builder()
-                .id(entity.getId())
+                .vendorConnectionId(entity.getId())
                 .handholdingSupportId(entity.getHandholdingSupport().getId())
                 .nonTrainingActivityId(
                         entity.getHandholdingSupport()

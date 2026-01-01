@@ -9,7 +9,7 @@ import lombok.Setter;
 @Builder
 public class CreditCounsellingResponse {
 
-    private Long id;
+    private Long creditCounselingId;
 
     private Long handholdingSupportId;
     private Long nonTrainingActivityId;

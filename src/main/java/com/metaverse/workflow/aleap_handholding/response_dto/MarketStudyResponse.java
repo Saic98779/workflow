@@ -9,7 +9,7 @@ import java.util.List;
 @Setter
 @Builder
 public class MarketStudyResponse {
-    private Long id;
+    private Long marketStudyId;
     private String dateOfStudy;
     private Long handholdingSupportId;
     private Long organizationId;

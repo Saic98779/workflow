@@ -8,6 +8,6 @@ public class HandholdingSupportRequest {
     private Long handholdingSupportId;
     private Long nonTrainingActivityId;
     private Long nonTrainingSubActivityId;
-    private String nonTrainingAction;
+    private String handHoldingType;
 }
 

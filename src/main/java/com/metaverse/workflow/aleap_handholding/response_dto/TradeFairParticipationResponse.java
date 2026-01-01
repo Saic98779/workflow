@@ -10,13 +10,11 @@ import lombok.Setter;
 public class TradeFairParticipationResponse {
 
     private Long tradeFairParticipationId;
-
     private Long handholdingSupportId;
     private Long nonTrainingActivityId;
     private Long nonTrainingSubActivityId;
     private String nonTrainingActivityName;
     private String nonTrainingSubActivityName;
-
     private String eventType;
     private String eventDate;
     private String eventLocation;

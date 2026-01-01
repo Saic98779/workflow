@@ -52,7 +52,7 @@ public class VendorConnectionService {
                 .orElseThrow(() -> new DataException(
                         "Vendor Connection not found with id " + id,
                         "VENDOR_CONN_NOT_FOUND",
-                        400
+                        404
                 ));
 
         HandholdingSupport support = service.getOrCreateSupport(
@@ -119,7 +119,7 @@ public class VendorConnectionService {
                 .orElseThrow(() -> new DataException(
                         "Vendor Connection not found with id " + id,
                         "VENDOR_CONN_NOT_FOUND",
-                        400
+                        404
                 ));
 
         repository.delete(entity);

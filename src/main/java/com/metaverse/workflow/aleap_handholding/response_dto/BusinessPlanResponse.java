@@ -11,7 +11,7 @@ import java.util.List;
 @AllArgsConstructor
 public class BusinessPlanResponse {
 
-    private Long id;
+    private Long businessPlanId;
     private Long handholdingSupportId;
     private Long organizationId;
     private String organizationName;

@@ -31,7 +31,7 @@ public class SectorAdvisoryService {
 
         HandholdingSupport support = service.getOrCreateSupport(
                 request.getHandholdingSupportId(), request.getNonTrainingActivityId(),
-                request.getNonTrainingSubActivityId(), request.getNonTrainingAction()
+                request.getNonTrainingSubActivityId(), request.getHandHoldingType()
         );
 
         Organization organization = organizationRepo.findById(request.getOrganizationId())
@@ -67,7 +67,7 @@ public class SectorAdvisoryService {
                 request.getHandholdingSupportId(),
                 request.getNonTrainingActivityId(),
                 request.getNonTrainingSubActivityId(),
-                request.getNonTrainingAction()
+                request.getHandHoldingType()
         );
 
         existing.setHandholdingSupport(support);

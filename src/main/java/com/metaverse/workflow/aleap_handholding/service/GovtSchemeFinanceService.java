@@ -52,7 +52,7 @@ public class GovtSchemeFinanceService {
                 .orElseThrow(() -> new DataException(
                         "Govt Scheme Finance not found with id " + id,
                         "GOVT_SCHEME_NOT_FOUND",
-                        400
+                        404
                 ));
 
         HandholdingSupport support = service.getOrCreateSupport(
@@ -118,7 +118,7 @@ public class GovtSchemeFinanceService {
                 .orElseThrow(() -> new DataException(
                         "Govt Scheme Finance not found with id " + id,
                         "GOVT_SCHEME_NOT_FOUND",
-                        400
+                        404
                 ));
 
         repository.delete(entity);

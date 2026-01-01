@@ -23,7 +23,7 @@ public class HandholdingSupportService {
             Long supportId,
             Long activityId,
             Long subActivityId,
-            String nonTrainingAction
+            String handholdingType
     ) throws DataException {
 
         if (supportId != null) {
@@ -54,7 +54,7 @@ public class HandholdingSupportService {
                                                 400
                                         ))
                 )
-                .handholdingSupportType(nonTrainingAction)
+                .handholdingSupportType(handholdingType)
                 .build();
 
         return supportRepo.save(support);

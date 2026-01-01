@@ -109,4 +109,10 @@ public class CFCSupportController {
             return RestControllerBase.error(e);
         }
     }
+
+    @GetMapping("/sub-activity/{subActivityId}")
+    public ResponseEntity<?> getBySubActivityId(@PathVariable Long subActivityId) {
+        WorkflowResponse response = service.getByNonTrainingSubActivityId(subActivityId);
+        return ResponseEntity.ok(response);
+    }
 }

@@ -2,7 +2,6 @@ package com.metaverse.workflow.aleap_handholding.controller;
 
 import com.metaverse.workflow.activitylog.ActivityLogService;
 import com.metaverse.workflow.aleap_handholding.request_dto.VendorConnectionRequest;
-import com.metaverse.workflow.aleap_handholding.response_dto.VendorConnectionResponse;
 import com.metaverse.workflow.aleap_handholding.service.VendorConnectionService;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.common.util.RestControllerBase;

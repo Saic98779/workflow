@@ -17,7 +17,7 @@ public class CounsellingRequest {
     private List<Long> participantIds;
     private Long nonTrainingActivityId;
     private Long nonTrainingSubActivityId;
-    private String nonTrainingAction;
+    private String handHoldingType;
     private String counsellingDate;
     private String counsellingTime;
 }

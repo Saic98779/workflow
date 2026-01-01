@@ -13,7 +13,7 @@ public class VendorConnectionRequest {
     private String handHoldingType;
 
     private String vendorSuggested;
-    private String quotationDate;   // String → Date
+    private String quotationDate;
     private String details;
     private Double cost;
 }

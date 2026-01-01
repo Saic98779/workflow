@@ -9,7 +9,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CounsellingResponse {
-    private Long id;
+    private Long counselletingId;
     private Long handholdingSupportId;
     private Long organizationId;
     private String organizationName;

@@ -34,13 +34,13 @@ public class CounsellingService {
                 request.getHandholdingSupportId(),
                 request.getNonTrainingActivityId(),
                 request.getNonTrainingSubActivityId(),
-                request.getNonTrainingAction()
+                request.getHandHoldingType()
         );
         Organization organization = organizationRepo.findById(request.getOrganizationId())
                 .orElseThrow(() ->
                         new DataException(
                                 "Organization not found with id " + request.getOrganizationId(),
-                                "ORG_NOT_FOUND", 400
+                                "ORG_NOT_FOUND", 404
                         )
                 );
         List<Participant> participants = participantRepo.findAllById(request.getParticipantIds());
@@ -69,13 +69,13 @@ public class CounsellingService {
                 .orElseThrow(() -> new DataException(
                         "Counselling not found with id " + counsellingId,
                         "COUNSELLING_NOT_FOUND",
-                        400
+                        404
                 ));
         HandholdingSupport support = service.getOrCreateSupport(
                 request.getHandholdingSupportId(),
                 request.getNonTrainingActivityId(),
                 request.getNonTrainingSubActivityId(),
-                request.getNonTrainingAction()
+                request.getHandHoldingType()
         );
         existing.setHandholdingSupport(support);
 
@@ -165,7 +165,7 @@ public class CounsellingService {
                 .orElseThrow(() -> new DataException(
                         "Counselling not found with id " + counsellingId,
                         "COUNSELLING_NOT_FOUND",
-                        400
+                        404
                 ));
 
         repository.delete(counselling);
