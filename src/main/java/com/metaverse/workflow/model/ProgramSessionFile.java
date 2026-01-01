@@ -1,5 +1,6 @@
 package com.metaverse.workflow.model;
 
+import com.metaverse.workflow.model.aleap_handholding.FormalisationCompliance;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -64,5 +65,9 @@ public class ProgramSessionFile {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "bulk_id")
     private NonTrainingConsumablesBulk nonTrainingConsumablesBulk;
+
+    @ManyToOne
+    @JoinColumn(name = "formalisation_compliance_id")
+    private FormalisationCompliance formalisationCompliance;
 
 }
