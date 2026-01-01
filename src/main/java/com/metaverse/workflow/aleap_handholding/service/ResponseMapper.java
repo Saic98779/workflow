@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 @Component
 public class ResponseMapper {
 
-        public static BusinessPlanResponse mapToBusinessPlanResponse(BusinessPlanDetails entity) {
+       /* public static BusinessPlanResponse mapToBusinessPlanResponse(BusinessPlanDetails entity) {
 
             return BusinessPlanResponse.builder()
                     .id(entity.getBusinessPlanDetailsId())
@@ -32,14 +32,14 @@ public class ResponseMapper {
                     .nonTrainingSubActivityId(entity.getHandholdingSupport().getNonTrainingSubActivity().getSubActivityId())
                     .nonTrainingSubActivityName(entity.getHandholdingSupport().getNonTrainingSubActivity().getSubActivityName())
                     .handHoldingType(entity.getHandholdingSupport().getHandholdingSupportType())
-                    .participantNames(
-                            entity.getParticipants()
-                                    .stream()
-                                    .map(Participant::getParticipantName)
-                                    .toList()
-                    )
+//                    .participantNames(
+//                            entity.getParticipants()
+//                                    .stream()
+//                                    .map(Participant::getParticipantName)
+//                                    .toList()
+//                    )
                     .build();
-        }
+        }*/
 
     public static CounsellingResponse mapToCounsellingResponse(Counselling entity) {
 

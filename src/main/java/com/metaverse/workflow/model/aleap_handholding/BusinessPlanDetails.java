@@ -1,6 +1,5 @@
 package com.metaverse.workflow.model.aleap_handholding;
 
-import com.metaverse.workflow.model.BaseEntity;
 import com.metaverse.workflow.model.Organization;
 import com.metaverse.workflow.model.Participant;
 import jakarta.persistence.*;
@@ -12,8 +11,7 @@ import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
-@Entity
-@Table(name = "business_plan_details")
+
 @Getter
 @Setter
 @Builder
@@ -45,10 +43,11 @@ public class BusinessPlanDetails  {
     @ManyToMany
     @JoinTable(
             name = "business_plan_participants",
-            joinColumns = @JoinColumn(name = "business_plan_id"),
+            joinColumns = @JoinColumn(name = "business_plan_details_id"),
             inverseJoinColumns = @JoinColumn(name = "participant_id")
     )
     private List<Participant> participants;
+
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "organization_id", nullable = false)

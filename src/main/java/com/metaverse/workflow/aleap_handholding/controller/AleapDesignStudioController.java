@@ -19,7 +19,6 @@ import java.security.Principal;
 @RequestMapping("/aleap-design-studio")
 @RequiredArgsConstructor
 public class AleapDesignStudioController {
-
     private final AleapDesignStudioService service;
     private final ActivityLogService logService; // Assuming you have a logging service
 
@@ -114,4 +113,5 @@ public class AleapDesignStudioController {
             return RestControllerBase.error(e);
         }
     }
+
 }

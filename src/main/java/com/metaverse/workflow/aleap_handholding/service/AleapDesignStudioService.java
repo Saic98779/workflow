@@ -23,7 +23,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AleapDesignStudioService {
 
-    private final StorageService storageService;
+private final StorageService storageService;
     private final HandholdingSupportService service;
     private final AleapDesignStudioRepository repository;
     private final ProgramSessionFileRepository programSessionFileRepository;
@@ -210,4 +210,5 @@ public class AleapDesignStudioService {
                 .message("Aleap Design Studio deleted successfully")
                 .build();
     }
+
 }

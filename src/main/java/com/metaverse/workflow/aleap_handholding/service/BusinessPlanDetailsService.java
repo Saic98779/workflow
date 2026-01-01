@@ -25,7 +25,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BusinessPlanDetailsService {
 
-    private final HandholdingSupportService service;
+private final HandholdingSupportService service;
     private final BusinessPlanDetailsRepository repository;
     private final OrganizationRepository organizationRepo;
     private final ParticipantRepository participantRepo;
@@ -164,6 +164,7 @@ public class BusinessPlanDetailsService {
                 )
                 .build();
     }
+
 
 
 

@@ -1,6 +1,5 @@
 package com.metaverse.workflow.model.aleap_handholding;
 
-import com.metaverse.workflow.model.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -8,7 +7,6 @@ import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDateTime;
 import java.util.Date;
-import java.util.List;
 
 @Builder
 @Entity
@@ -17,7 +15,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class AleapDesignStudio{
+public class AleapDesignStudio {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

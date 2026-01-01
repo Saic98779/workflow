@@ -20,7 +20,7 @@ import java.security.Principal;
 @RequiredArgsConstructor
 public class BusinessPlanDetailsController {
 
-    private final BusinessPlanDetailsService service;
+ private final BusinessPlanDetailsService service;
     private final ActivityLogService logService;
 
     @PostMapping(value = "/save", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
@@ -110,4 +110,5 @@ public class BusinessPlanDetailsController {
         WorkflowResponse response = service.getByNonTrainingSubActivityId(subActivityId);
         return ResponseEntity.ok(response);
     }
+
 }
