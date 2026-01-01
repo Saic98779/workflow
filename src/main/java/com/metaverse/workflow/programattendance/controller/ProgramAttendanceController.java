@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
 
 @RestController
-@Slf4j
 @RequiredArgsConstructor
 public class ProgramAttendanceController {
 
@@ -44,8 +43,7 @@ public class ProgramAttendanceController {
     @PostMapping(value = "/participant/attendance", produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<WorkflowResponse> saveParticipantAttendance(@RequestBody ParticipantAttendanceRequest request,Principal principal,
                                                                       HttpServletRequest servletRequest) {
-        log.info("Participant attendance controller, programId: {}, participantId: {}", 
-                request.getProgramId(), request.getParticipantId());
+
         WorkflowResponse response = programAttendanceService.updateParticipantAttendance(request);
         logService.logs(principal.getName(), "SAVE",
                 "Participant attendance saved successfully | Program ID: " + request.getProgramId() +

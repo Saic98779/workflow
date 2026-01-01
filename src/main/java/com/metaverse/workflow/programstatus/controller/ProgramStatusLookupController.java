@@ -12,7 +12,6 @@ import java.util.List;
 
 @RestController("programStatusLookupController")
 @RequestMapping("/program-status")
-@Slf4j
 public class ProgramStatusLookupController {
 
     @Autowired

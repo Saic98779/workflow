@@ -19,7 +19,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-@Slf4j
 public class ESDPTrainingServiceAdepter implements  ESDPTrainingService {
     @Autowired
     ESDPTrainingRepository esdpTrainingRepository;
@@ -32,7 +31,6 @@ public class ESDPTrainingServiceAdepter implements  ESDPTrainingService {
 
     @Override
     public WorkflowResponse saveESDPTrainingProgram(ESDPTrainingRequest esdpTrainingRequest) {
-        log.info("save EsdpTraining apllication");
         Agency agency= agencyService.getAgencyById(esdpTrainingRequest.getAgencyId());
         Optional<Organization> organization=organizationService.getOrganizationById(esdpTrainingRequest.getOrganizationId());
         Optional<Participant> participant=participantService.getParticipantsById(esdpTrainingRequest.getParticipantId());

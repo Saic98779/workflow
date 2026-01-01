@@ -11,7 +11,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
-@Slf4j
 public class ProgramOutcomeUtil {
     @Autowired
     public static ProgramOutcomeService programOutcomeService;
