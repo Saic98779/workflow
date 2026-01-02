@@ -1,12 +1,16 @@
 package com.metaverse.workflow.unified.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.metaverse.workflow.aleap_handholding.request_dto.*;
 import com.metaverse.workflow.aleap_handholding.service.*;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.exceptions.DataException;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -30,6 +34,103 @@ public class UnifiedHandholdingService {
     private final VendorConnectionService vendorConnectionService;
     private final FormalisationComplianceService formalisationComplianceService;
 
+    private final ObjectMapper mapper = new ObjectMapper();
+
+    public WorkflowResponse save(String type, String data, MultipartFile file, MultipartFile image1, MultipartFile image2, MultipartFile image3) throws DataException {
+
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            WorkflowResponse response;
+            String lower = type == null ? "" : type.trim().toLowerCase();
+
+            switch (lower) {
+                case "aleapdesignstudio":
+                case "aleap-design-studio":
+                    AleapDesignStudioRequest aleapReq = mapper.readValue(data, AleapDesignStudioRequest.class);
+                    response = aleapService.save(aleapReq, image1, image2, image3);
+                    break;
+                case "businessplan":
+                case "business-plan":
+                case "businessplandetails":
+                    BusinessPlanRequest bpReq = mapper.readValue(data, BusinessPlanRequest.class);
+                    response = businessPlanService.save(bpReq, file);
+                    break;
+                case "banknbfcfinance":
+                case "bank-nbfc-finance":
+                    BankNbfcFinanceRequest bankReq = mapper.readValue(data, BankNbfcFinanceRequest.class);
+                    response = bankService.save(bankReq);
+                    break;
+                case "cfc-support":
+                case "cfcsupport":
+                    CFCSupportRequest cfcReq = mapper.readValue(data, CFCSupportRequest.class);
+                    response = cfcSupportService.save(cfcReq);
+                    break;
+                case "counselling":
+                    CounsellingRequest counsellingReq = mapper.readValue(data, CounsellingRequest.class);
+                    response = counsellingService.save(counsellingReq);
+                    break;
+                case "creditcounselling":
+                case "credit-counselling":
+                    CreditCounsellingRequest creditReq = mapper.readValue(data, CreditCounsellingRequest.class);
+                    response = creditCounsellingService.save(creditReq);
+                    break;
+                case "govtschemeapplication":
+                case "govt-scheme-application":
+                    GovtSchemeApplicationRequest govAppReq = mapper.readValue(data, GovtSchemeApplicationRequest.class);
+                    response = govtSchemeApplicationService.save(govAppReq);
+                    break;
+                case "govtschemefinance":
+                case "govt-scheme-finance":
+                    GovtSchemeFinanceRequest govFinReq = mapper.readValue(data, GovtSchemeFinanceRequest.class);
+                    response = govtSchemeFinanceService.save(govFinReq);
+                    break;
+                case "loandocumentpreparation":
+                case "loan-document-preparation":
+                    LoanDocumentPreparationRequest loanReq = mapper.readValue(data, LoanDocumentPreparationRequest.class);
+                    response = loanDocumentPreparationService.save(loanReq);
+                    break;
+                case "machineryidentification":
+                case "machinery-identification":
+                    MachineryIdentificationRequest machReq = mapper.readValue(data, MachineryIdentificationRequest.class);
+                    response = machineryIdentificationService.save(machReq);
+                    break;
+                case "marketstudy":
+                case "market-study":
+                    MarketStudyRequest marketReq = mapper.readValue(data, MarketStudyRequest.class);
+                    response = marketStudyService.save(marketReq);
+                    break;
+                case "sectoradvisory":
+                case "sector-advisory":
+                    SectorAdvisoryRequest sectorReq = mapper.readValue(data, SectorAdvisoryRequest.class);
+                    response = sectorAdvisoryService.save(sectorReq);
+                    break;
+                case "tradefairparticipation":
+                case "trade-fair-participation":
+                    TradeFairParticipationRequest tradeReq = mapper.readValue(data, TradeFairParticipationRequest.class);
+                    response = tradeFairParticipationService.save(tradeReq);
+                    break;
+                case "vendorconnection":
+                case "vendor-connection":
+                    VendorConnectionRequest vendorReq = mapper.readValue(data, VendorConnectionRequest.class);
+                    response = vendorConnectionService.save(vendorReq);
+                    break;
+                case "formalisationcompliance":
+                case "formalisation-compliance":
+                    FormalisationComplianceRequest request = mapper.readValue(data, FormalisationComplianceRequest.class);
+                    response = formalisationComplianceService.create(request, file);
+                    break;
+                default:
+                    throw new DataException("Missing id or subActivityId for formalisationcompliance", "MISSING_PARAM", 400);
+            }
+
+            return response;
+
+        } catch (Exception e) {
+            throw new DataException("Missing id or subActivityId for formalisationcompliance", "MISSING_PARAM", 400);
+        }
+    }
+
+    // existing get method kept
     public WorkflowResponse get(String type, Long id, Long subActivityId) throws DataException {
         String lower = type == null ? "" : type.trim().toLowerCase();
         WorkflowResponse response;

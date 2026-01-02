@@ -22,9 +22,9 @@ import java.security.Principal;
 @RestController
 @RequestMapping("/unified-handholding")
 @RequiredArgsConstructor
-public class UnifiedSaveController {
+public class UnifiedHandHoldingController extends RestControllerBase {
 
-    private static final Logger log = LoggerFactory.getLogger(UnifiedSaveController.class);
+    private static final Logger log = LoggerFactory.getLogger(UnifiedHandHoldingController.class);
 
     private final AleapDesignStudioService aleapService;
     private final BusinessPlanDetailsService businessPlanService;
@@ -55,103 +55,16 @@ public class UnifiedSaveController {
             @RequestPart(value = "image2", required = false) MultipartFile image2,
             @RequestPart(value = "image3", required = false) MultipartFile image3,
             HttpServletRequest servletRequest) {
-
         try {
-            ObjectMapper mapper = new ObjectMapper();
-            WorkflowResponse response;
-            String lower = type == null ? "" : type.trim().toLowerCase();
-
-            switch (lower) {
-                case "aleapdesignstudio":
-                case "aleap-design-studio":
-                    AleapDesignStudioRequest aleapReq = mapper.readValue(data, AleapDesignStudioRequest.class);
-                    response = aleapService.save(aleapReq, image1, image2, image3);
-                    break;
-                case "businessplan":
-                case "business-plan":
-                case "businessplandetails":
-                    BusinessPlanRequest bpReq = mapper.readValue(data, BusinessPlanRequest.class);
-                    response = businessPlanService.save(bpReq, file);
-                    break;
-                case "banknbfcfinance":
-                case "bank-nbfc-finance":
-                    BankNbfcFinanceRequest bankReq = mapper.readValue(data, BankNbfcFinanceRequest.class);
-                    response = bankService.save(bankReq);
-                    break;
-                case "cfc-support":
-                case "cfcsupport":
-                    CFCSupportRequest cfcReq = mapper.readValue(data, CFCSupportRequest.class);
-                    response = cfcSupportService.save(cfcReq);
-                    break;
-                case "counselling":
-                    CounsellingRequest counsellingReq = mapper.readValue(data, CounsellingRequest.class);
-                    response = counsellingService.save(counsellingReq);
-                    break;
-                case "creditcounselling":
-                case "credit-counselling":
-                    CreditCounsellingRequest creditReq = mapper.readValue(data, CreditCounsellingRequest.class);
-                    response = creditCounsellingService.save(creditReq);
-                    break;
-                case "govtschemeapplication":
-                case "govt-scheme-application":
-                    GovtSchemeApplicationRequest govAppReq = mapper.readValue(data, GovtSchemeApplicationRequest.class);
-                    response = govtSchemeApplicationService.save(govAppReq);
-                    break;
-                case "govtschemefinance":
-                case "govt-scheme-finance":
-                    GovtSchemeFinanceRequest govFinReq = mapper.readValue(data, GovtSchemeFinanceRequest.class);
-                    response = govtSchemeFinanceService.save(govFinReq);
-                    break;
-                case "loandocumentpreparation":
-                case "loan-document-preparation":
-                    LoanDocumentPreparationRequest loanReq = mapper.readValue(data, LoanDocumentPreparationRequest.class);
-                    response = loanDocumentPreparationService.save(loanReq);
-                    break;
-                case "machineryidentification":
-                case "machinery-identification":
-                    MachineryIdentificationRequest machReq = mapper.readValue(data, MachineryIdentificationRequest.class);
-                    response = machineryIdentificationService.save(machReq);
-                    break;
-                case "marketstudy":
-                case "market-study":
-                    MarketStudyRequest marketReq = mapper.readValue(data, MarketStudyRequest.class);
-                    response = marketStudyService.save(marketReq);
-                    break;
-                case "sectoradvisory":
-                case "sector-advisory":
-                    SectorAdvisoryRequest sectorReq = mapper.readValue(data, SectorAdvisoryRequest.class);
-                    response = sectorAdvisoryService.save(sectorReq);
-                    break;
-                case "tradefairparticipation":
-                case "trade-fair-participation":
-                    TradeFairParticipationRequest tradeReq = mapper.readValue(data, TradeFairParticipationRequest.class);
-                    response = tradeFairParticipationService.save(tradeReq);
-                    break;
-                case "vendorconnection":
-                case "vendor-connection":
-                    VendorConnectionRequest vendorReq = mapper.readValue(data, VendorConnectionRequest.class);
-                    response = vendorConnectionService.save(vendorReq);
-                    break;
-                case "formalisationcompliance":
-                case "formalisation-compliance":
-                    FormalisationComplianceRequest request = mapper.readValue(data, FormalisationComplianceRequest.class);
-                    response = formalisationComplianceService.create(request, file);
-                    break;
-                default:
-                    return RestControllerBase.error(new DataException("Unknown type: " + type, "UNKNOWN_TYPE", 400));
-            }
-
+            WorkflowResponse response = unifiedHandholdingService.save(type, data, file, image1, image2, image3);
             String user = principal != null ? principal.getName() : "anonymous";
-            logService.logs(user, "SAVE", type + " saved successfully", type, servletRequest.getRequestURI());
-
+            logService.logs(user, "FETCH", type + " fetched successfully", type, servletRequest.getRequestURI());
             return ResponseEntity.ok(response);
 
         } catch (DataException e) {
             return RestControllerBase.error(e);
-        } catch (Exception e) {
-            // JsonProcessingException and any other exceptions will be wrapped the same way
-            throw new RuntimeException(e);
         }
+
     }
 
     @PutMapping(value = "/update/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -292,13 +205,8 @@ public class UnifiedSaveController {
 
         try {
             WorkflowResponse response = unifiedHandholdingService.get(type, id, subActivityId);
-
             String user = principal != null ? principal.getName() : "anonymous";
-
-            // Activity log (kept for audit)
             logService.logs(user, "FETCH", type + " fetched successfully", type, servletRequest.getRequestURI());
-
-            // Also write standard info log for observability
             if (id != null) {
                 log.info("Fetched {} with ID: {}", type, id);
             } else if (subActivityId != null) {
