@@ -5,11 +5,11 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.metaverse.workflow.activitylog.ActivityLogService;
 import com.metaverse.workflow.aleap_handholding.request_dto.AleapDesignStudioRequest;
-import com.metaverse.workflow.aleap_handholding.request_dto.BusinessPlanRequest;
 import com.metaverse.workflow.aleap_handholding.service.AleapDesignStudioService;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.common.util.RestControllerBase;
 import com.metaverse.workflow.exceptions.DataException;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -20,7 +20,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.security.Principal;
 
 @RestController
-@RequestMapping("/aleap-design-studio")
+@RequestMapping("/handholding-support/aleap-design-studio")
+@Tag(name = "Handholding Support", description = "Bank/NBFC & Design Studio APIs")
 @RequiredArgsConstructor
 public class AleapDesignStudioController {
     private final AleapDesignStudioService service;

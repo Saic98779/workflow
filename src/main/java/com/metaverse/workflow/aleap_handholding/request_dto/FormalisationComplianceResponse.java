@@ -1,4 +1,4 @@
-package com.metaverse.workflow.formalisationcompliance.dto;
+package com.metaverse.workflow.aleap_handholding.request_dto;
 
 import lombok.Builder;
 import lombok.Getter;

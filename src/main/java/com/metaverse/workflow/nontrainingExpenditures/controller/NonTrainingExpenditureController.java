@@ -12,6 +12,7 @@ import com.metaverse.workflow.expenditure.service.ExpenditureRemarksDTO;
 import com.metaverse.workflow.nontraining.dto.NonTrainingSubActivityDto;
 import com.metaverse.workflow.nontraining.service.NonTrainingActivityService;
 import com.metaverse.workflow.nontrainingExpenditures.service.*;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.websocket.server.PathParam;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/non-training")
+@Tag(name = "Non Training", description = "Non-Training Expenditure APIs")
 @RequiredArgsConstructor
 public class NonTrainingExpenditureController extends RestControllerBase {
 

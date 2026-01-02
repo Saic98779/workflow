@@ -6,6 +6,7 @@ import com.metaverse.workflow.common.util.RestControllerBase;
 import com.metaverse.workflow.exceptions.DataException;
 import com.metaverse.workflow.nontrainingExpenditures.Dto.ListingOnNSERequest;
 import com.metaverse.workflow.nontrainingExpenditures.service.ListingOnNSEService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +16,7 @@ import java.security.Principal;
 @RestController
 @RequestMapping("/listing-on-nse")
 @RequiredArgsConstructor
+@Tag(name = "Non Training", description = "Listing on NSE APIs")
 public class ListingOnNSEController {
 
     private final ListingOnNSEService listingOnNSEService;

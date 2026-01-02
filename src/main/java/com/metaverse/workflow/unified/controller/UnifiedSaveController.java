@@ -1,6 +1,5 @@
 package com.metaverse.workflow.unified.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.metaverse.workflow.activitylog.ActivityLogService;
 import com.metaverse.workflow.aleap_handholding.request_dto.*;
@@ -8,11 +7,11 @@ import com.metaverse.workflow.aleap_handholding.service.*;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.common.util.RestControllerBase;
 import com.metaverse.workflow.exceptions.DataException;
-import com.metaverse.workflow.formalisationcompliance.dto.FormalisationComplianceRequest;
-import com.metaverse.workflow.formalisationcompliance.service.FormalisationComplianceService;
-import com.metaverse.workflow.model.aleap_handholding.FormalisationCompliance;
+import com.metaverse.workflow.unified.service.UnifiedHandholdingService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +23,8 @@ import java.security.Principal;
 @RequestMapping("/unified-handholding")
 @RequiredArgsConstructor
 public class UnifiedSaveController {
+
+    private static final Logger log = LoggerFactory.getLogger(UnifiedSaveController.class);
 
     private final AleapDesignStudioService aleapService;
     private final BusinessPlanDetailsService businessPlanService;
@@ -41,6 +42,8 @@ public class UnifiedSaveController {
     private final VendorConnectionService vendorConnectionService;
     private final ActivityLogService logService;
     private final FormalisationComplianceService formalisationComplianceService;
+
+    private final UnifiedHandholdingService unifiedHandholdingService;
 
     @PostMapping(value = "/save", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> save(
@@ -129,6 +132,11 @@ public class UnifiedSaveController {
                     VendorConnectionRequest vendorReq = mapper.readValue(data, VendorConnectionRequest.class);
                     response = vendorConnectionService.save(vendorReq);
                     break;
+                case "formalisationcompliance":
+                case "formalisation-compliance":
+                    FormalisationComplianceRequest request = mapper.readValue(data, FormalisationComplianceRequest.class);
+                    response = formalisationComplianceService.create(request, file);
+                    break;
                 default:
                     return RestControllerBase.error(new DataException("Unknown type: " + type, "UNKNOWN_TYPE", 400));
             }
@@ -140,9 +148,8 @@ public class UnifiedSaveController {
 
         } catch (DataException e) {
             return RestControllerBase.error(e);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
         } catch (Exception e) {
+            // JsonProcessingException and any other exceptions will be wrapped the same way
             throw new RuntimeException(e);
         }
     }
@@ -251,7 +258,7 @@ public class UnifiedSaveController {
                     response = vendorConnectionService.update(id, vendorReq);
                     break;
 
-                case "formalisationCompliance":
+                case "formalisationcompliance":
                 case "formalisation-compliance":
                     FormalisationComplianceRequest request = mapper.readValue(data, FormalisationComplianceRequest.class);
                     response = formalisationComplianceService.update(id, request, file);
@@ -270,10 +277,40 @@ public class UnifiedSaveController {
 
         } catch (DataException e) {
             return RestControllerBase.error(e);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    @GetMapping("/get")
+    public ResponseEntity<?> get(
+            Principal principal,
+            @RequestParam("type") String type,
+            @RequestParam(value = "id", required = false) Long id,
+            @RequestParam(value = "subActivityId", required = false) Long subActivityId,
+            HttpServletRequest servletRequest) {
+
+        try {
+            WorkflowResponse response = unifiedHandholdingService.get(type, id, subActivityId);
+
+            String user = principal != null ? principal.getName() : "anonymous";
+
+            // Activity log (kept for audit)
+            logService.logs(user, "FETCH", type + " fetched successfully", type, servletRequest.getRequestURI());
+
+            // Also write standard info log for observability
+            if (id != null) {
+                log.info("Fetched {} with ID: {}", type, id);
+            } else if (subActivityId != null) {
+                log.info("Fetched {} for subActivityId: {}", type, subActivityId);
+            } else {
+                log.info("Fetched {} (all)", type);
+            }
+
+            return ResponseEntity.ok(response);
+
+        } catch (DataException e) {
+            return RestControllerBase.error(e);
         }
     }
 
@@ -360,7 +397,7 @@ public class UnifiedSaveController {
                     response = vendorConnectionService.delete(id);
                     break;
 
-                case "formalisationCompliance":
+                case "formalisationcompliance":
                 case "formalisation-compliance":
                     response = formalisationComplianceService.delete(id);
                     break;
@@ -381,6 +418,4 @@ public class UnifiedSaveController {
         }
     }
 
-
 }
-

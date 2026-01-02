@@ -1,11 +1,11 @@
-package com.metaverse.workflow.formalisationcompliance.service;
+package com.metaverse.workflow.aleap_handholding.service;
 
 
+import com.metaverse.workflow.aleap_handholding.repository.FormalisationComplianceRepository;
+import com.metaverse.workflow.aleap_handholding.request_dto.FormalisationComplianceRequest;
+import com.metaverse.workflow.aleap_handholding.request_dto.FormalisationComplianceResponse;
 import com.metaverse.workflow.common.fileservice.StorageService;
 import com.metaverse.workflow.common.response.WorkflowResponse;
-import com.metaverse.workflow.formalisationcompliance.dto.FormalisationComplianceRequest;
-import com.metaverse.workflow.formalisationcompliance.dto.FormalisationComplianceResponse;
-import com.metaverse.workflow.formalisationcompliance.repository.FormalisationComplianceRepository;
 import com.metaverse.workflow.model.NonTrainingActivity;
 import com.metaverse.workflow.model.NonTrainingSubActivity;
 import com.metaverse.workflow.model.Organization;

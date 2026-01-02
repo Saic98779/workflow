@@ -11,6 +11,7 @@ import com.metaverse.workflow.nontrainingExpenditures.Dto.WeHubHandholdingReques
 import com.metaverse.workflow.nontrainingExpenditures.Dto.WeHubSDGRequest;
 import com.metaverse.workflow.nontrainingExpenditures.Dto.WeHubSelectedCompaniesRequest;
 import com.metaverse.workflow.nontrainingExpenditures.service.WeHubService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.mail.Header;
 import jakarta.websocket.server.PathParam;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,7 @@ import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
+@Tag(name = "Non Training", description = "WeHub APIs")
 public class WeHubController {
     private final WeHubService service;
     private  final ActivityLogService logService;

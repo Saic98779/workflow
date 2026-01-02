@@ -1,4 +1,4 @@
-package com.metaverse.workflow.formalisationcompliance.repository;
+package com.metaverse.workflow.aleap_handholding.repository;
 
 import com.metaverse.workflow.model.aleap_handholding.FormalisationCompliance;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,5 +10,4 @@ import java.util.List;
 public interface FormalisationComplianceRepository extends JpaRepository<FormalisationCompliance, Long> {
 
     List<FormalisationCompliance> findByNonTrainingSubActivity_SubActivityId(Long subActivityId);
-
 }

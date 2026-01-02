@@ -1,16 +1,13 @@
-package com.metaverse.workflow.formalisationcompliance.controller;
+package com.metaverse.workflow.aleap_handholding.controller;
 
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.metaverse.workflow.activitylog.ActivityLogService;
+import com.metaverse.workflow.aleap_handholding.request_dto.FormalisationComplianceRequest;
+import com.metaverse.workflow.aleap_handholding.service.FormalisationComplianceService;
 import com.metaverse.workflow.common.response.WorkflowResponse;
-import com.metaverse.workflow.common.util.RestControllerBase;
-import com.metaverse.workflow.exceptions.DataException;
-import com.metaverse.workflow.formalisationcompliance.dto.FormalisationComplianceRequest;
-import com.metaverse.workflow.formalisationcompliance.service.FormalisationComplianceService;
-import com.metaverse.workflow.login.service.LoginService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -22,6 +19,7 @@ import java.security.Principal;
 
 @RestController
 @RequestMapping("/formalisation-compliance")
+@Tag(name = "Handholding Support", description = "Formalisation Compliance APIs")
 @RequiredArgsConstructor
 public class FormalisationComplianceController {
 

@@ -10,6 +10,7 @@ import com.metaverse.workflow.login.service.LoginService;
 import com.metaverse.workflow.nontrainingExpenditures.Dto.NIMSMEVendorDetailsDto;
 import com.metaverse.workflow.nontrainingExpenditures.service.NIMSMEVendorDetailsService;
 import com.metaverse.workflow.nontrainingExpenditures.service.NonTrainingExpenditureRemarksDTO;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -23,6 +24,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/vendors")
+@Tag(name = "Non Training", description = "NIMSME Vendor Details APIs")
 public class NIMSMEVendorController {
 
     @Autowired

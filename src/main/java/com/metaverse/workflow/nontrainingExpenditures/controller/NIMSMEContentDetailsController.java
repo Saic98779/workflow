@@ -7,6 +7,7 @@ import com.metaverse.workflow.exceptions.DataException;
 import com.metaverse.workflow.nontrainingExpenditures.Dto.NIMSMEContentDetailsDto;
 import com.metaverse.workflow.nontrainingExpenditures.service.NIMSMEContentDetailsService;
 import com.metaverse.workflow.nontrainingExpenditures.service.NonTrainingExpenditureRemarksDTO;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,6 +19,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/central-data")
+@Tag(name = "Non Training", description = "NIMSME Content Details APIs")
 public class NIMSMEContentDetailsController {
 
     @Autowired

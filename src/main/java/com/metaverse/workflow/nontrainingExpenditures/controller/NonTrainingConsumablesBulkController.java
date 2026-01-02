@@ -8,6 +8,7 @@ import com.metaverse.workflow.exceptions.DataException;
 import com.metaverse.workflow.nontrainingExpenditures.service.NonTrainingConsumablesBulkDto;
 import com.metaverse.workflow.nontrainingExpenditures.service.NonTrainingConsumablesBulkService;
 import com.metaverse.workflow.nontrainingExpenditures.service.NonTrainingConsumablesTransactionsDTO;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +22,7 @@ import static com.metaverse.workflow.common.util.RestControllerBase.error;
 @RestController
 @RequestMapping("/non-training")
 @RequiredArgsConstructor
+@Tag(name = "Non Training", description = "Non - Training Consumables Bulk APIs")
 public class NonTrainingConsumablesBulkController {
 
     private final NonTrainingConsumablesBulkService service;
