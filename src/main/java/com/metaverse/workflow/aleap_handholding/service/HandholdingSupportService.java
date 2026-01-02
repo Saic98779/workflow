@@ -23,7 +23,7 @@ public class HandholdingSupportService {
             Long supportId,
             Long activityId,
             Long subActivityId,
-            String nonTrainingAction
+            String handholdingType
     ) throws DataException {
 
         if (supportId != null) {
@@ -49,13 +49,12 @@ public class HandholdingSupportService {
                 .nonTrainingSubActivity(
                         subActivityRepo.findById(subActivityId)
                                 .orElseThrow(() ->
-                                        new DataException(
-                                                "SubActivity not found with id " + subActivityId,
+                                        new DataException("SubActivity not found with id " + subActivityId,
                                                 "SUB_ACTIVITY_NOT_FOUND",
                                                 400
                                         ))
                 )
-                .handholdingSupportType(nonTrainingAction)
+                .handholdingSupportType(handholdingType)
                 .build();
 
         return supportRepo.save(support);

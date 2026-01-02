@@ -34,16 +34,16 @@ public class MarketStudy  extends BaseEntity {
     )
     private List<FeasibilityInput> feasibilityInputs;
 
-    @ManyToMany
+    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     @JoinTable(
-            name = "counselling_participants",
-            joinColumns = @JoinColumn(name = "id"),
-            inverseJoinColumns = @JoinColumn(name = "participant_id")
+            name = "market_study_participants",           // separate join table
+            joinColumns = @JoinColumn(name = "market_study_id"),  // FK to MarketStudy.id
+            inverseJoinColumns = @JoinColumn(name = "participant_id") // FK to Participant.participant_id
     )
     private List<Participant> participants;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "organization_id", nullable = false)
+    @JoinColumn(name = "organization_id")
     private Organization organization;
 
     @Column(name ="counselled_by")
