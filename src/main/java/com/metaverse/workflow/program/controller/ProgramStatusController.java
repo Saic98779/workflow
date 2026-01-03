@@ -112,12 +112,35 @@ public class ProgramStatusController {
     }
 
     @PutMapping("/update/{programId}")
-    public ResponseEntity<?> updateProgram(@PathVariable Long programId, @RequestBody ProgramRequestDto request, Principal principal) {
+    public ResponseEntity<?> updateProgram(
+            @PathVariable Long programId,
+            @RequestBody ProgramRequestDto request,
+            Principal principal) {
+
         try {
-            logService.logs(principal.getName(), "UPDATE", "Program updated successfully | ID: " + programId, "Program", "/program/update/" + programId);
+            String username = principal.getName();
+            String timestamp = java.time.LocalDateTime.now().toString();
+
+            String description = String.format(
+                    "Program updated successfully | Program ID: %d | Updated By: %s | Updated At: %s",
+                    programId,
+                    username,
+                    timestamp
+            );
+
+            logService.logs(
+                    username,
+                    "UPDATE",
+                    description,
+                    "Program",
+                    "/program/update/" + programId
+            );
+
             return ResponseEntity.ok(programService.updateProgramStatus(programId, request));
+
         } catch (DataException e) {
             return RestControllerBase.error(e);
         }
     }
+
 }
