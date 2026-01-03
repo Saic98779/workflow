@@ -6,6 +6,7 @@ import com.metaverse.workflow.aleap_handholding.service.LoanDocumentPreparationS
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.common.util.RestControllerBase;
 import com.metaverse.workflow.exceptions.DataException;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +15,8 @@ import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
 
 @RestController
-@RequestMapping("/loan-document-preparation")
+@RequestMapping("/handholding-support/loan-document-preparation")
+@Tag(name = "Handholding Support", description = "Loan Document Preparation APIs")
 @RequiredArgsConstructor
 public class LoanDocumentPreparationController {
 

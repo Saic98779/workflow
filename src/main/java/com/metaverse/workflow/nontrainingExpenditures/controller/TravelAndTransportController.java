@@ -12,6 +12,7 @@ import com.metaverse.workflow.expenditure.service.BulkExpenditureRequest;
 import com.metaverse.workflow.nontrainingExpenditures.Dto.TravelAndTransportDto;
 import com.metaverse.workflow.nontrainingExpenditures.service.NonTrainingExpenditureRemarksDTO;
 import com.metaverse.workflow.nontrainingExpenditures.service.TravelAndTransportService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -25,6 +26,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/travel")
+@Tag(name = "Non Training", description = "Travel and Transport APIs")
 @RequiredArgsConstructor
 public class TravelAndTransportController {
 

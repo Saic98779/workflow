@@ -11,6 +11,7 @@ import com.metaverse.workflow.exceptions.DataException;
 import com.metaverse.workflow.nontrainingExpenditures.Dto.CentralDataRequest;
 import com.metaverse.workflow.nontrainingExpenditures.service.NIMSMECentralDataService;
 import com.metaverse.workflow.nontrainingExpenditures.service.NonTrainingExpenditureRemarksDTO;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.websocket.server.PathParam;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,7 @@ import java.security.Principal;
 @RestController
 @RequestMapping("/central-data")
 @RequiredArgsConstructor
+@Tag(name = "Non Training", description = "Central Data APIs")
 public class CentralDataController {
 
     private final NIMSMECentralDataService service;

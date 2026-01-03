@@ -7,6 +7,7 @@ import com.metaverse.workflow.common.util.RestControllerBase;
 import com.metaverse.workflow.exceptions.DataException;
 import com.metaverse.workflow.nontrainingExpenditures.service.VisitDetailsRequest;
 import com.metaverse.workflow.nontrainingExpenditures.service.VisitDetailsService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,7 @@ import java.security.Principal;
 
 @RestController
 @RequestMapping("/visit-details")
+@Tag(name = "Non Training", description = "Visit Details APIs")
 @RequiredArgsConstructor
 public class VisitDetailsController {
 

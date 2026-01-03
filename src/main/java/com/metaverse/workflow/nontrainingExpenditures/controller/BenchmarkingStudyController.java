@@ -12,6 +12,7 @@ import com.metaverse.workflow.exceptions.DataException;
 import com.metaverse.workflow.nontrainingExpenditures.Dto.BenchmarkingStudyRequest;
 import com.metaverse.workflow.nontrainingExpenditures.service.BenchmarkingStudyService;
 import com.metaverse.workflow.nontrainingExpenditures.service.NonTrainingExpenditureRemarksDTO;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.websocket.server.PathParam;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,7 @@ import java.security.Principal;
 @RestController
 @RequestMapping("/benchmarking-study")
 @RequiredArgsConstructor
+@Tag(name = "Non Training", description = "Benchmarking Study APIs")
 public class BenchmarkingStudyController {
 
     private final BenchmarkingStudyService service;

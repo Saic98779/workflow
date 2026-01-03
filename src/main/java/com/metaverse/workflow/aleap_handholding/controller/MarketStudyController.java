@@ -7,6 +7,7 @@ import com.metaverse.workflow.aleap_handholding.service.MarketStudyService;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.common.util.RestControllerBase;
 import com.metaverse.workflow.exceptions.DataException;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +16,8 @@ import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
 
 @RestController
-@RequestMapping("/market-study")
+@RequestMapping("/handholding-support/market-study")
+@Tag(name = "Handholding Support", description = "Market Study APIs")
 @RequiredArgsConstructor
 public class MarketStudyController {
 
