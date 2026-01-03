@@ -2,9 +2,12 @@ package com.metaverse.workflow.program.controller;
 
 import com.metaverse.workflow.activitylog.ActivityLogService;
 import com.metaverse.workflow.common.constants.ProgramStatusConstants;
+import com.metaverse.workflow.common.enums.NotificationType;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.common.util.DateUtil;
 import com.metaverse.workflow.common.util.RestControllerBase;
+import com.metaverse.workflow.email.EmailNotificationController;
+import com.metaverse.workflow.email.EmailRequest;
 import com.metaverse.workflow.exceptions.DataException;
 import com.metaverse.workflow.model.Program;
 import com.metaverse.workflow.program.repository.ProgramRepository;
@@ -12,6 +15,8 @@ import com.metaverse.workflow.program.service.ProgramRequestDto;
 import com.metaverse.workflow.program.service.ProgramResponse;
 import com.metaverse.workflow.program.service.ProgramResponseMapper;
 import com.metaverse.workflow.program.service.ProgramService;
+import com.metaverse.workflow.notifications.dto.GlobalNotificationRequest;
+import com.metaverse.workflow.notifications.service.NotificationServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -36,6 +41,13 @@ public class ProgramStatusController {
     @Autowired
     private ActivityLogService logService;
 
+    // Notification/email services
+    @Autowired
+    private NotificationServiceImpl notificationService;
+
+    @Autowired
+    private EmailNotificationController emailNotificationController;
+
 
     @PostMapping("/{programId}")
     public WorkflowResponse updateProgramStatus(Principal principal,
@@ -54,7 +66,46 @@ public class ProgramStatusController {
         }
         program.setStatus(status);
         programRepository.save(program);
-        logService.logs(principal.getName(),"UPDATE","Program status updated successfully with status " + status,"program", servletRequest.getRequestURI());
+
+        // send notification (async)
+        try {
+            GlobalNotificationRequest req = GlobalNotificationRequest.builder()
+                    .userId("-1")
+                    .agencyId(program.getAgency() != null ? program.getAgency().getAgencyId() : -1)
+                    .programId(programId)
+                    .notificationType(NotificationType.RESCHEDULE_PROGRAMS)
+                    .message("Program " + programId + " status changed to " + status)
+                    .sentBy("ADMIN")
+                    .isRead(false)
+                    .build();
+
+            notificationService.saveNotification(req);
+        } catch (Exception e) {
+            // Don't block success - log and continue
+            logService.logs(principal != null ? principal.getName() : "system", "ERROR", "Failed to queue notification: " + e.getMessage(), "Notification", servletRequest.getRequestURI());
+        }
+
+        if(status.equalsIgnoreCase(ProgramStatusConstants.PROGRAM_SCHEDULED) || status.equalsIgnoreCase(ProgramStatusConstants.PROGRAM_EXPENDITURE_UPDATED)) {
+            // No email for these statuses
+        } else {
+            // send email (async)
+            try {
+                EmailRequest emailRequest = EmailRequest.builder()
+                        .to("saichaitanya550@gmail.com")
+                        .subject("Program Status Updated")
+                        .body("The status of program with ID " + programId + " has been updated to " + status + ".")
+                        .html(false)
+                        .build();
+                emailNotificationController.sendEmail(emailRequest);
+            }
+            catch (Exception e) {
+                // Don't block success - log and continue
+                logService.logs(principal != null ? principal.getName() : "system", "ERROR", "Failed to send email: " + e.getMessage(), "Email", servletRequest.getRequestURI());
+            }
+        }
+
+
+        logService.logs(principal != null ? principal.getName() : "system","UPDATE","Program status updated successfully with status " + status,"program", servletRequest.getRequestURI());
         return WorkflowResponse.builder().message("Program status updated successfully to: " + status).status(HttpStatus.OK.value()).data(programId).build();
     }
 
@@ -114,7 +165,7 @@ public class ProgramStatusController {
     @PutMapping("/update/{programId}")
     public ResponseEntity<?> updateProgram(@PathVariable Long programId, @RequestBody ProgramRequestDto request, Principal principal) {
         try {
-            logService.logs(principal.getName(), "UPDATE", "Program updated successfully | ID: " + programId, "Program", "/program/update/" + programId);
+            logService.logs(principal != null ? principal.getName() : "system", "UPDATE", "Program updated successfully | ID: " + programId, "Program", "/program/update/" + programId);
             return ResponseEntity.ok(programService.updateProgramStatus(programId, request));
         } catch (DataException e) {
             return RestControllerBase.error(e);

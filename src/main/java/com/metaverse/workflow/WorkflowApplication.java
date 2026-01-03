@@ -27,6 +27,14 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @SpringBootApplication(scanBasePackages = "com.metaverse")
 public class WorkflowApplication extends SpringBootServletInitializer {
 
+    // Must set Log4j2 plugin packages before any LogManager.getLogger() call.
+    // This ensures Log4j2 discovers custom appenders (like SplunkSdkAppender) when
+    // running inside servlet containers where plugin scanning can be classloader-sensitive.
+    static {
+        // You can also set this as a JVM arg: -Dlog4j2.plugin.packages=com.metaverse.workflow.logging
+        System.setProperty("log4j2.plugin.packages", "com.metaverse.workflow.logging");
+    }
+
 	private static final Logger LOGGER =
 			LogManager.getLogger(WorkflowApplication.class);
 

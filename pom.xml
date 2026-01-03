@@ -30,6 +30,19 @@
 			<id>splunk-artifactory</id>
 			<url>https://splunk.jfrog.io/splunk/ext-releases-local</url>
 		</repository>
+
+		<!-- Local m2 repository explicit entry so org.example:notifications-service can be resolved from ~/.m2/repository -->
+		<repository>
+			<id>local-m2</id>
+			<name>Local Maven Repository</name>
+			<url>file://${user.home}/.m2/repository</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
 	</repositories>
 
 
@@ -140,6 +153,11 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.kafka</groupId>
+			<artifactId>spring-kafka</artifactId>
 		</dependency>
 
 		<dependency>
@@ -341,6 +359,12 @@
 					<artifactId>log4j-to-slf4j</artifactId>
 				</exclusion>
 			</exclusions>
+		</dependency>
+
+		<!-- Add Spring Kafka dependency for producing email messages to Kafka -->
+		<dependency>
+			<groupId>org.springframework.kafka</groupId>
+			<artifactId>spring-kafka</artifactId>
 		</dependency>
 
 	</dependencies>
