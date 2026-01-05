@@ -69,4 +69,7 @@ public interface ParticipantRepository extends JpaRepository<Participant, Long> 
             nativeQuery = true
     )
     List<Object[]> findParticipantsByAgencyId(@Param("agencyId") Long agencyId);
+
+    List<Participant> findByOrganization_OrganizationId(Long organizationId);
+
 }

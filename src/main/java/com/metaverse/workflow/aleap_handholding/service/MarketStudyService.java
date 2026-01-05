@@ -8,12 +8,14 @@ import com.metaverse.workflow.aleap_handholding.response_dto.MarketStudyResponse
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.common.util.DateUtil;
 import com.metaverse.workflow.exceptions.DataException;
+import com.metaverse.workflow.model.InfluencedParticipant;
 import com.metaverse.workflow.model.Organization;
 import com.metaverse.workflow.model.Participant;
 import com.metaverse.workflow.model.aleap_handholding.FeasibilityInput;
 import com.metaverse.workflow.model.aleap_handholding.HandholdingSupport;
 import com.metaverse.workflow.model.aleap_handholding.MarketStudy;
 import com.metaverse.workflow.organization.repository.OrganizationRepository;
+import com.metaverse.workflow.participant.repository.InfluencedParticipantRepository;
 import com.metaverse.workflow.participant.repository.ParticipantRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +31,7 @@ public class MarketStudyService {
     private final ParticipantRepository participantRepo;
     private final MarketStudyRepository marketStudyRepository;
     private final FeasibilityInputRepository inputRepository;
+    private final InfluencedParticipantRepository influencedParticipantRepository;
 
     public WorkflowResponse save(MarketStudyRequest request) throws DataException {
 
@@ -46,18 +49,18 @@ public class MarketStudyService {
                         400
                 ));
 
-        List<Participant> participants =
-                participantRepo.findAllById(request.getParticipantIds());
+        List<Participant> participants = participantRepo.findAllById(request.getParticipantIds());
+        List<InfluencedParticipant> influencedParticipants = influencedParticipantRepository.findAllById(request.getInfluencedParticipantIds());
 
         MarketStudy entity = RequestMapper.mapToMarketStudy(
                 request,
                 support,
                 organization,
-                participants
+                participants,
+                influencedParticipants
         );
 
         MarketStudy saved = marketStudyRepository.save(entity);
-
         return WorkflowResponse.builder()
                 .status(200)
                 .message("Market Study saved successfully")

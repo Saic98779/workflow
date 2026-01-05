@@ -30,7 +30,6 @@ public class CounsellingService {
     private final ParticipantRepository participantRepo;
     private final InfluencedParticipantRepository influencedParticipantRepository;
 
-
     public WorkflowResponse save(CounsellingRequest request) throws DataException {
 
         HandholdingSupport support = service.getOrCreateSupport(

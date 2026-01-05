@@ -116,4 +116,9 @@ public class ParticipantController {
 	public ResponseEntity<WorkflowResponse> getPersonByMobileNo(@PathVariable Long mobileNo) {
 		return ResponseEntity.ok(participantService.getParticipantsOrInfluencedParticipantByMobileNo(mobileNo));
 	}
+
+	@GetMapping("/participants/search-by-organization/{organizationId}")
+	public ResponseEntity<WorkflowResponse> getPersonByOrganizationId(@PathVariable Long organizationId) {
+		return ResponseEntity.ok(participantService.getParticipantsOrInfluencedParticipantByOrganizationId(organizationId));
+	}
 }

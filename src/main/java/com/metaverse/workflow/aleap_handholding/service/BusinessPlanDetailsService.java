@@ -7,12 +7,14 @@ import com.metaverse.workflow.common.fileservice.StorageService;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.common.util.DateUtil;
 import com.metaverse.workflow.exceptions.DataException;
+import com.metaverse.workflow.model.InfluencedParticipant;
 import com.metaverse.workflow.model.Organization;
 import com.metaverse.workflow.model.Participant;
 import com.metaverse.workflow.model.ProgramSessionFile;
 import com.metaverse.workflow.model.aleap_handholding.BusinessPlanDetails;
 import com.metaverse.workflow.model.aleap_handholding.HandholdingSupport;
 import com.metaverse.workflow.organization.repository.OrganizationRepository;
+import com.metaverse.workflow.participant.repository.InfluencedParticipantRepository;
 import com.metaverse.workflow.participant.repository.ParticipantRepository;
 import com.metaverse.workflow.program.repository.ProgramSessionFileRepository;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +33,7 @@ private final HandholdingSupportService service;
     private final ParticipantRepository participantRepo;
     private final StorageService storageService;
     private final ProgramSessionFileRepository programSessionFileRepository;
+    private final InfluencedParticipantRepository influencedParticipantRepository;
 
     public String storageFiles(MultipartFile file, Long TravelAndTransportId, String folderName) {
         String filePath = storageService.store(file, TravelAndTransportId, folderName);
@@ -48,7 +51,9 @@ private final HandholdingSupportService service;
                         )
                 );
         List<Participant> participants = participantRepo.findAllById(request.getParticipantIds());
-        BusinessPlanDetails entity = RequestMapper.mapToBusinessPlan(request, support, organization, participants);
+        List<InfluencedParticipant> influencedParticipants = influencedParticipantRepository.findAllById(request.getInfluencedParticipantIds());
+
+        BusinessPlanDetails entity = RequestMapper.mapToBusinessPlan(request, support, organization, participants,influencedParticipants);
         BusinessPlanDetails saved = repository.save(entity);
         if (file != null && !file.isEmpty()) {
             String filePath = this.storageFiles(file, saved.getBusinessPlanDetailsId(), "NotTrainingBusinessPlan");

@@ -35,10 +35,16 @@ public class ResponseMapper {
                     .nonTrainingSubActivityName(entity.getHandholdingSupport().getNonTrainingSubActivity().getSubActivityName())
                     .handHoldingType(entity.getHandholdingSupport().getHandholdingSupportType())
                     .participantNames(
-                            entity.getParticipants()
-                                    .stream()
-                                    .map(Participant::getParticipantName)
-                                    .toList()
+                            Stream.concat(
+                                    entity.getParticipants() != null
+                                            ? entity.getParticipants().stream()
+                                            .map(Participant::getParticipantName)
+                                            : Stream.empty(),
+                                    entity.getInfluencedParticipants() != null
+                                            ? entity.getInfluencedParticipants().stream()
+                                            .map(InfluencedParticipant::getParticipantName)
+                                            : Stream.empty()
+                            ).toList()
                     )
                     .build();
         }
@@ -120,10 +126,16 @@ public class ResponseMapper {
                 .nonTrainingSubActivityName(entity.getHandholdingSupport().getNonTrainingSubActivity().getSubActivityName())
                 .handHoldingType(entity.getHandholdingSupport().getHandholdingSupportType())
                 .participantNames(
-                        entity.getParticipants()
-                                .stream()
-                                .map(Participant::getParticipantName)
-                                .toList()
+                        Stream.concat(
+                                entity.getParticipants() != null
+                                        ? entity.getParticipants().stream()
+                                        .map(Participant::getParticipantName)
+                                        : Stream.empty(),
+                                entity.getInfluencedParticipants() != null
+                                        ? entity.getInfluencedParticipants().stream()
+                                        .map(InfluencedParticipant::getParticipantName)
+                                        : Stream.empty()
+                        ).toList()
                 )
                 .build();
     }
@@ -293,10 +305,16 @@ public class ResponseMapper {
                 )
                 .counsellingTime(entity.getCounsellingTime())
                 .participantNames(
-                        entity.getParticipants()
-                                .stream()
-                                .map(Participant::getParticipantName)
-                                .collect(Collectors.toList())
+                        Stream.concat(
+                                entity.getParticipants() != null
+                                        ? entity.getParticipants().stream()
+                                        .map(Participant::getParticipantName)
+                                        : Stream.empty(),
+                                entity.getInfluencedParticipants() != null
+                                        ? entity.getInfluencedParticipants().stream()
+                                        .map(InfluencedParticipant::getParticipantName)
+                                        : Stream.empty()
+                        ).toList()
                 )
                 .handHoldingType(entity.getHandholdingSupport().getHandholdingSupportType())
                 .build();

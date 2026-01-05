@@ -11,7 +11,8 @@ import java.util.List;
 public class RequestMapper {
     public static BusinessPlanDetails mapToBusinessPlan(
             BusinessPlanRequest request, HandholdingSupport support,
-            Organization organization, List<Participant> participants
+            Organization organization, List<Participant> participants,
+            List<InfluencedParticipant> influencedParticipants
     ) {
 
         return BusinessPlanDetails.builder()
@@ -24,11 +25,12 @@ public class RequestMapper {
                 .counsellingDate(DateUtil.covertStringToDate(request.getCounsellingDate()))
                 .counsellingTime(request.getCounsellingTime())
                 .counselledBy(request.getCounselledBy())
+                .influencedParticipants(influencedParticipants)
                 .build();
     }
 
 
-    public static Counselling mapToCounselling(CounsellingRequest request, HandholdingSupport support, Organization organization, List<Participant> participants,List<InfluencedParticipant> influencedParticipants) {
+    public static Counselling mapToCounselling(CounsellingRequest request, HandholdingSupport support, Organization organization, List<Participant> participants, List<InfluencedParticipant> influencedParticipants) {
         return Counselling.builder()
                 .handholdingSupport(support)
                 .organization(organization)
@@ -43,7 +45,7 @@ public class RequestMapper {
                 .build();
     }
 
-    public static SectorAdvisory mapToSectorAdvisory(SectorAdvisoryRequest request, HandholdingSupport support, Organization organization, List<Participant> participants) {
+    public static SectorAdvisory mapToSectorAdvisory(SectorAdvisoryRequest request, HandholdingSupport support, Organization organization, List<Participant> participants,List<InfluencedParticipant> influencedParticipants) {
         return SectorAdvisory.builder()
                 .adviseDetails(request.getAdviseDetails())
                 .handholdingSupport(support)
@@ -53,6 +55,7 @@ public class RequestMapper {
                 .counsellingTime(request.getCounsellingTime())
                 .counselledBy(request.getCounselledBy())
                 .adviseDetails(request.getAdviseDetails())
+                .influencedParticipants(influencedParticipants)
                 .build();
     }
 
@@ -138,7 +141,8 @@ public class RequestMapper {
     }
 
     public static MarketStudy mapToMarketStudy(MarketStudyRequest request, HandholdingSupport support,
-                                               Organization organization, List<Participant> participants
+                                               Organization organization, List<Participant> participants,
+                                               List<InfluencedParticipant> influencedParticipants
     ) {
 
         MarketStudy entity = new MarketStudy();
@@ -147,7 +151,7 @@ public class RequestMapper {
         entity.setParticipants(participants);
         entity.setCounselledBy(request.getCounselledBy());
         entity.setCounsellingTime(request.getCounsellingTime());
-
+        entity.setInfluencedParticipants(influencedParticipants);
         if (request.getDateOfStudy() != null) {
             entity.setDateOfStudy(
                     DateUtil.covertStringToDate(request.getDateOfStudy())
@@ -232,7 +236,7 @@ public class RequestMapper {
     }
 
     public static GovtSchemeApplication mapToGovtSchemeApplication(GovtSchemeApplicationRequest request, NonTrainingActivity activity,
-            NonTrainingSubActivity subActivity, Organization organization) {
+                                                                   NonTrainingSubActivity subActivity, Organization organization) {
         return GovtSchemeApplication.builder()
                 .nonTrainingActivity(activity)
                 .nonTrainingSubActivity(subActivity)

@@ -30,4 +30,6 @@ public interface ParticipantService {
     void saveAll(List<Participant> participants);
 
     WorkflowResponse getParticipantsOrInfluencedParticipantByMobileNo(Long mobileNo);
+
+    WorkflowResponse getParticipantsOrInfluencedParticipantByOrganizationId(Long organizationId);
 }

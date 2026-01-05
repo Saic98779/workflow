@@ -1,6 +1,7 @@
 package com.metaverse.workflow.model.aleap_handholding;
 
 import com.metaverse.workflow.model.BaseEntity;
+import com.metaverse.workflow.model.InfluencedParticipant;
 import com.metaverse.workflow.model.Organization;
 import com.metaverse.workflow.model.Participant;
 import jakarta.persistence.*;
@@ -41,6 +42,14 @@ public class MarketStudy  extends BaseEntity {
             inverseJoinColumns = @JoinColumn(name = "participant_id") // FK to Participant.participant_id
     )
     private List<Participant> participants;
+
+    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @JoinTable(
+            name = "market_study_influenced_participants",
+            joinColumns = @JoinColumn(name = "market_study_id"),
+            inverseJoinColumns = @JoinColumn(name = "influenced_participant_id")
+    )
+    private List<InfluencedParticipant> influencedParticipants;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "organization_id")
