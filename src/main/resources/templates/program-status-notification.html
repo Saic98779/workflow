@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Program Status Update Notification</title>
+</head>
+<body style="margin:0; padding:0; font-family: Arial, Helvetica, sans-serif; background-color:#f4f6f8;">
+
+<table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f4f6f8; padding:20px;">
+    <tr>
+        <td align="center">
+
+            <!-- Email Container -->
+            <table width="600" cellpadding="0" cellspacing="0"
+                   style="background-color:#ffffff; border:1px solid #dddddd;">
+
+                <!-- Header -->
+                <tr>
+                    <td style="background-color:#003366; color:#ffffff; padding:15px;">
+                        <h2 style="margin:0; font-size:18px;">
+                            Program Status Update Notification - {{PROGRAM_NAME}}
+                        </h2>
+                    </td>
+                </tr>
+
+                <!-- Body -->
+                <tr>
+                    <td style="padding:20px; color:#333333; font-size:14px; line-height:1.6;">
+
+                        <p>Dear Sir/Madam,</p>
+
+                        <p>
+                            This is to update you about the current status of the program as detailed below:
+                        </p>
+
+                        <!-- Program Details -->
+                        <table width="100%" cellpadding="6" cellspacing="0"
+                               style="border-collapse:collapse; margin-top:10px;">
+
+                            <tr>
+                                <td width="35%" style="border:1px solid #dddddd; font-weight:bold;">
+                                    Program Name
+                                </td>
+                                <td style="border:1px solid #dddddd;">
+                                    {{PROGRAM_NAME}}
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td style="border:1px solid #dddddd; font-weight:bold;">
+                                    Current Status
+                                </td>
+                                <td style="border:1px solid #dddddd;">
+                                    {{CURRENT_STATUS}}
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td style="border:1px solid #dddddd; font-weight:bold;">
+                                    Action Required
+                                </td>
+                                <td style="border:1px solid #dddddd;">
+                                    {{ACTION_REQUIRED}}
+                                </td>
+                            </tr>
+
+                        </table>
+
+                        <p style="margin-top:15px;">
+                            Please review the information at your convenience.
+                        </p>
+
+                        <p style="color:#666666; font-size:12px;">
+                            <em>This email has been generated automatically. Kindly do not respond, as this mailbox is not monitored.</em>
+                        </p>
+
+                    </td>
+                </tr>
+
+            </table>
+            <!-- End Container -->
+
+        </td>
+    </tr>
+</table>
+
+</body>
+</html>

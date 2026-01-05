@@ -6,11 +6,13 @@ import com.metaverse.workflow.aleap_handholding.response_dto.CounsellingResponse
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.common.util.DateUtil;
 import com.metaverse.workflow.exceptions.DataException;
+import com.metaverse.workflow.model.InfluencedParticipant;
 import com.metaverse.workflow.model.Organization;
 import com.metaverse.workflow.model.Participant;
 import com.metaverse.workflow.model.aleap_handholding.Counselling;
 import com.metaverse.workflow.model.aleap_handholding.HandholdingSupport;
 import com.metaverse.workflow.organization.repository.OrganizationRepository;
+import com.metaverse.workflow.participant.repository.InfluencedParticipantRepository;
 import com.metaverse.workflow.participant.repository.ParticipantRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +28,7 @@ public class CounsellingService {
     private final CounsellingRepository repository;
     private final OrganizationRepository organizationRepo;
     private final ParticipantRepository participantRepo;
+    private final InfluencedParticipantRepository influencedParticipantRepository;
 
 
     public WorkflowResponse save(CounsellingRequest request) throws DataException {
@@ -44,13 +47,14 @@ public class CounsellingService {
                         )
                 );
         List<Participant> participants = participantRepo.findAllById(request.getParticipantIds());
-
+        List<InfluencedParticipant> influencedParticipants = influencedParticipantRepository.findAllById(request.getInfluencedParticipantIds());
 
         Counselling entity = RequestMapper.mapToCounselling(
                 request,
                 support,
                 organization,
-                participants
+                participants,
+                influencedParticipants
         );
 
         Counselling saved = repository.save(entity);

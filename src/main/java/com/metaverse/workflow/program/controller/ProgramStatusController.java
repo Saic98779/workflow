@@ -2,9 +2,15 @@ package com.metaverse.workflow.program.controller;
 
 import com.metaverse.workflow.activitylog.ActivityLogService;
 import com.metaverse.workflow.common.constants.ProgramStatusConstants;
+import com.metaverse.workflow.common.enums.NotificationType;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.common.util.DateUtil;
 import com.metaverse.workflow.common.util.RestControllerBase;
+import com.metaverse.workflow.email.EmailNotificationController;
+import com.metaverse.workflow.email.EmailRequest;
+import com.metaverse.workflow.email.entity.EmailConfiguration;
+import com.metaverse.workflow.email.repository.EmailConfigurationRepository;
+import com.metaverse.workflow.email.util.EmailUtil;
 import com.metaverse.workflow.exceptions.DataException;
 import com.metaverse.workflow.model.Program;
 import com.metaverse.workflow.program.repository.ProgramRepository;
@@ -12,17 +18,17 @@ import com.metaverse.workflow.program.service.ProgramRequestDto;
 import com.metaverse.workflow.program.service.ProgramResponse;
 import com.metaverse.workflow.program.service.ProgramResponseMapper;
 import com.metaverse.workflow.program.service.ProgramService;
+import com.metaverse.workflow.notifications.dto.GlobalNotificationRequest;
+import com.metaverse.workflow.notifications.service.NotificationServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.charset.StandardCharsets;
 import java.security.Principal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -35,6 +41,16 @@ public class ProgramStatusController {
     private ProgramService programService;
     @Autowired
     private ActivityLogService logService;
+
+    // Notification/email services
+    @Autowired
+    private NotificationServiceImpl notificationService;
+
+    @Autowired
+    private EmailNotificationController emailNotificationController;
+
+    @Autowired
+    EmailConfigurationRepository emailConfigurationRepository;
 
 
     @PostMapping("/{programId}")
@@ -54,7 +70,51 @@ public class ProgramStatusController {
         }
         program.setStatus(status);
         programRepository.save(program);
-        logService.logs(principal.getName(),"UPDATE","Program status updated successfully with status " + status,"program", servletRequest.getRequestURI());
+
+        EmailConfiguration emailConfiguration = emailConfigurationRepository.findByAgency_AgencyId(program.getAgency().getAgencyId());
+
+        // send notification (async)
+        try {
+            GlobalNotificationRequest req = GlobalNotificationRequest.builder()
+                    .userId("-1")
+                    .agencyId(program.getAgency() != null ? program.getAgency().getAgencyId() : -1)
+                    .programId(programId)
+                    .notificationType(NotificationType.RESCHEDULE_PROGRAMS)
+                    .message("Program " + programId + " status changed to " + status)
+                    .sentBy("ADMIN")
+                    .isRead(false)
+                    .build();
+
+            notificationService.saveNotification(req);
+        } catch (Exception e) {
+            // Don't block success - log and continue
+            logService.logs(principal != null ? principal.getName() : "system", "ERROR", "Failed to queue notification: " + e.getMessage(), "Notification", servletRequest.getRequestURI());
+        }
+
+        if(status.equalsIgnoreCase(ProgramStatusConstants.PROGRAM_SCHEDULED) || status.equalsIgnoreCase(ProgramStatusConstants.PROGRAM_EXPENDITURE_UPDATED)
+                || status.equalsIgnoreCase(ProgramStatusConstants.PROGRAM_EXPENDITURE_APPROVED)) {
+            try {
+                String actionRequired =
+                        status.equalsIgnoreCase(ProgramStatusConstants.PROGRAM_SCHEDULED)
+                                ? "No action required"
+                                : "Please review the updated expenditure details";
+
+                EmailRequest emailRequest = EmailUtil.getEmailRequest(
+                        status,
+                        program,
+                        actionRequired, emailConfiguration
+                );
+
+                emailNotificationController.sendEmail(emailRequest);
+            }
+            catch (Exception e) {
+                // Don't block success - log and continue
+                logService.logs(principal != null ? principal.getName() : "system", "ERROR", "Failed to send email: " + e.getMessage(), "Email", servletRequest.getRequestURI());
+            }
+        }
+
+
+        logService.logs(principal != null ? principal.getName() : "system","UPDATE","Program status updated successfully with status " + status,"program", servletRequest.getRequestURI());
         return WorkflowResponse.builder().message("Program status updated successfully to: " + status).status(HttpStatus.OK.value()).data(programId).build();
     }
 
@@ -111,12 +171,9 @@ public class ProgramStatusController {
 
     }
 
-    @PutMapping("/update/{programId}")
-    public ResponseEntity<?> updateProgram(
-            @PathVariable Long programId,
-            @RequestBody ProgramRequestDto request,
-            Principal principal) {
 
+    @PutMapping("/update/{programId}")
+    public ResponseEntity<?> updateProgram(@PathVariable Long programId, @RequestBody ProgramRequestDto request, Principal principal) {
         try {
             String username = principal.getName();
             String timestamp = java.time.LocalDateTime.now().toString();
@@ -136,11 +193,9 @@ public class ProgramStatusController {
                     "/program/update/" + programId
             );
 
-            return ResponseEntity.ok(programService.updateProgramStatus(programId, request));
-
-        } catch (DataException e) {
+            logService.logs(principal != null ? principal.getName() : "system", "UPDATE", "Program updated successfully | ID: " + programId, "Program", "/program/update/" + programId);
+            return ResponseEntity.ok(programService.updateProgramStatus(programId, request));} catch (DataException e) {
             return RestControllerBase.error(e);
         }
     }
-
 }

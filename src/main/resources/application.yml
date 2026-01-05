@@ -1,0 +1,20 @@
+spring:
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: email-service
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ramp.telangana1@gmail.com
+    password: xuhl zfat mobc effy
+
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true

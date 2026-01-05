@@ -8,8 +8,8 @@ import lombok.Setter;
 @Setter
 public class FormalisationComplianceRequest {
 
-    private Long subActivityId;
-    private Long activityId;
+    private Long nonTrainingSubActivityId;
+    private Long nonTrainingActivityId;
     private Long organizationId;
     private String documentPath;
     private String details;

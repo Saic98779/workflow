@@ -3,12 +3,14 @@ package com.metaverse.workflow.aleap_handholding.service;
 import com.metaverse.workflow.aleap_handholding.response_dto.GovtSchemeFinanceResponse;
 import com.metaverse.workflow.aleap_handholding.response_dto.*;
 import com.metaverse.workflow.common.util.DateUtil;
+import com.metaverse.workflow.model.InfluencedParticipant;
 import com.metaverse.workflow.model.Participant;
 import com.metaverse.workflow.model.aleap_handholding.*;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Component
 public class ResponseMapper {
@@ -65,12 +67,16 @@ public class ResponseMapper {
                 .originalIdea(entity.getOriginalIdea())
                 .finalIdea(entity.getFinalIdea())
                 .participantNames(
-                        entity.getParticipants() != null
-                                ? entity.getParticipants()
-                                .stream()
-                                .map(Participant::getParticipantName)
-                                .toList()
-                                : List.of()
+                        Stream.concat(
+                                entity.getParticipants() != null
+                                        ? entity.getParticipants().stream()
+                                        .map(Participant::getParticipantName)
+                                        : Stream.empty(),
+                                entity.getInfluencedParticipants() != null
+                                        ? entity.getInfluencedParticipants().stream()
+                                        .map(InfluencedParticipant::getParticipantName)
+                                        : Stream.empty()
+                        ).toList()
                 )
                 .nonTrainingActivityId(
                         support != null && support.getNonTrainingActivity() != null

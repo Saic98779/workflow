@@ -33,7 +33,7 @@ public class FormalisationCompliance{
     private Organization organization;
 
 
-    @Column(name = "document_path", length = 500, nullable = false)
+    @Column(name = "document_path", length = 500)
     private String documentPath;
 
     @Column(name = "details", columnDefinition = "TEXT")
