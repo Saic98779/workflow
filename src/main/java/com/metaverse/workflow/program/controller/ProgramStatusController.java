@@ -92,7 +92,7 @@ public class ProgramStatusController {
         }
 
         if(status.equalsIgnoreCase(ProgramStatusConstants.PROGRAM_SCHEDULED) || status.equalsIgnoreCase(ProgramStatusConstants.PROGRAM_EXPENDITURE_UPDATED)
-        || status.equalsIgnoreCase(ProgramStatusConstants.PROGRAM_EXPENDITURE_APPROVED)) {
+                || status.equalsIgnoreCase(ProgramStatusConstants.PROGRAM_EXPENDITURE_APPROVED)) {
             try {
                 String actionRequired =
                         status.equalsIgnoreCase(ProgramStatusConstants.PROGRAM_SCHEDULED)
@@ -171,12 +171,30 @@ public class ProgramStatusController {
 
     }
 
+
     @PutMapping("/update/{programId}")
     public ResponseEntity<?> updateProgram(@PathVariable Long programId, @RequestBody ProgramRequestDto request, Principal principal) {
         try {
+            String username = principal.getName();
+            String timestamp = java.time.LocalDateTime.now().toString();
+
+            String description = String.format(
+                    "Program updated successfully | Program ID: %d | Updated By: %s | Updated At: %s",
+                    programId,
+                    username,
+                    timestamp
+            );
+
+            logService.logs(
+                    username,
+                    "UPDATE",
+                    description,
+                    "Program",
+                    "/program/update/" + programId
+            );
+
             logService.logs(principal != null ? principal.getName() : "system", "UPDATE", "Program updated successfully | ID: " + programId, "Program", "/program/update/" + programId);
-            return ResponseEntity.ok(programService.updateProgramStatus(programId, request));
-        } catch (DataException e) {
+            return ResponseEntity.ok(programService.updateProgramStatus(programId, request));} catch (DataException e) {
             return RestControllerBase.error(e);
         }
     }

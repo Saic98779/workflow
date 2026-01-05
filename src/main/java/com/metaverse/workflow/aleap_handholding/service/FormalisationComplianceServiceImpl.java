@@ -3,7 +3,7 @@ package com.metaverse.workflow.aleap_handholding.service;
 
 import com.metaverse.workflow.aleap_handholding.repository.FormalisationComplianceRepository;
 import com.metaverse.workflow.aleap_handholding.request_dto.FormalisationComplianceRequest;
-import com.metaverse.workflow.aleap_handholding.request_dto.FormalisationComplianceResponse;
+import com.metaverse.workflow.aleap_handholding.response_dto.FormalisationComplianceResponse;
 import com.metaverse.workflow.common.fileservice.StorageService;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.model.NonTrainingActivity;
@@ -35,15 +35,14 @@ public class FormalisationComplianceServiceImpl implements FormalisationComplian
 
 
 
-    // CREATE
     @Override
     public WorkflowResponse create(FormalisationComplianceRequest request, MultipartFile file) {
 
         try {
-            NonTrainingSubActivity subActivity = subActivityRepository.findById(request.getSubActivityId())
+            NonTrainingSubActivity subActivity = subActivityRepository.findById(request.getNonTrainingSubActivityId())
                     .orElseThrow(() -> new RuntimeException("Sub Activity not found"));
 
-            NonTrainingActivity activity = activityRepository.findById(request.getActivityId())
+            NonTrainingActivity activity = activityRepository.findById(request.getNonTrainingActivityId())
                     .orElseThrow(() -> new RuntimeException("Activity not found"));
 
             Organization organization = organizationRepository.findById(request.getOrganizationId())
@@ -71,7 +70,7 @@ public class FormalisationComplianceServiceImpl implements FormalisationComplian
 
 
         } catch (Exception e) {
-               return WorkflowResponse.error(e.getMessage());
+            return WorkflowResponse.error(e.getMessage());
         }
 
     }
@@ -85,12 +84,12 @@ public class FormalisationComplianceServiceImpl implements FormalisationComplian
 
             entity.setDetails(request.getDetails());
 
-            if (request.getSubActivityId() != null) {
-                NonTrainingSubActivity subActivity = subActivityRepository.findById(request.getSubActivityId()).orElseThrow(() -> new RuntimeException("Sub Activity not found with id " + request.getSubActivityId()));
+            if (request.getNonTrainingSubActivityId() != null) {
+                NonTrainingSubActivity subActivity = subActivityRepository.findById(request.getNonTrainingSubActivityId()).orElseThrow(() -> new RuntimeException("Sub Activity not found with id " + request.getNonTrainingSubActivityId()));
             }
 
-            if (request.getActivityId() != null) {
-                NonTrainingActivity activity = activityRepository.findById(request.getActivityId()).orElseThrow(() -> new RuntimeException("Activity not found with id " + request.getActivityId()));
+            if (request.getNonTrainingActivityId() != null) {
+                NonTrainingActivity activity = activityRepository.findById(request.getNonTrainingActivityId()).orElseThrow(() -> new RuntimeException("Activity not found with id " + request.getNonTrainingActivityId()));
             }
 
             if (request.getOrganizationId() != null) {
@@ -177,11 +176,11 @@ public class FormalisationComplianceServiceImpl implements FormalisationComplian
         return FormalisationComplianceResponse.builder()
                 .formalisationComplianceId(entity.getFormalisationComplianceId())
 
-                .subActivityId(entity.getNonTrainingSubActivity().getSubActivityId())
-                .subActivityName(entity.getNonTrainingSubActivity().getSubActivityName())
+                .nonTrainingSubActivityId(entity.getNonTrainingSubActivity().getSubActivityId())
+                .nonTrainingSubActivityName(entity.getNonTrainingSubActivity().getSubActivityName())
 
-                .activityId(entity.getNonTrainingActivity().getActivityId())
-                .activityName(entity.getNonTrainingActivity().getActivityName())
+                .nonTrainingActivityId(entity.getNonTrainingActivity().getActivityId())
+                .nonTrainingActivityName(entity.getNonTrainingActivity().getActivityName())
 
                 .organizationId(entity.getOrganization().getOrganizationId())
                 .organizationName(entity.getOrganization().getOrganizationName())

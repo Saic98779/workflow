@@ -2,10 +2,7 @@ package com.metaverse.workflow.aleap_handholding.service;
 
 import com.metaverse.workflow.aleap_handholding.request_dto.*;
 import com.metaverse.workflow.common.util.DateUtil;
-import com.metaverse.workflow.model.NonTrainingActivity;
-import com.metaverse.workflow.model.NonTrainingSubActivity;
-import com.metaverse.workflow.model.Organization;
-import com.metaverse.workflow.model.Participant;
+import com.metaverse.workflow.model.*;
 import com.metaverse.workflow.model.aleap_handholding.*;
 
 
@@ -31,7 +28,7 @@ public class RequestMapper {
     }
 
 
-    public static Counselling mapToCounselling(CounsellingRequest request, HandholdingSupport support, Organization organization, List<Participant> participants) {
+    public static Counselling mapToCounselling(CounsellingRequest request, HandholdingSupport support, Organization organization, List<Participant> participants,List<InfluencedParticipant> influencedParticipants) {
         return Counselling.builder()
                 .handholdingSupport(support)
                 .organization(organization)
@@ -42,6 +39,7 @@ public class RequestMapper {
                 .counsellingDate(DateUtil.covertStringToDate(request.getCounsellingDate()))
                 .counsellingTime(request.getCounsellingTime())
                 .counselledBy(request.getCounselledBy())
+                .influencedParticipants(influencedParticipants)
                 .build();
     }
 

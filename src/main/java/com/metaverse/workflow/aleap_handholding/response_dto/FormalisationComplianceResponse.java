@@ -1,4 +1,4 @@
-package com.metaverse.workflow.aleap_handholding.request_dto;
+package com.metaverse.workflow.aleap_handholding.response_dto;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -11,11 +11,11 @@ public class FormalisationComplianceResponse {
 
     private Long formalisationComplianceId;
 
-    private Long subActivityId;
-    private String subActivityName;
+    private Long nonTrainingSubActivityId;
+    private String nonTrainingSubActivityName;
 
-    private Long activityId;
-    private String activityName;
+    private Long nonTrainingActivityId;
+    private String nonTrainingActivityName;
 
     private Long organizationId;
     private String organizationName;
