@@ -6,7 +6,7 @@ import lombok.*;
 import java.util.Date;
 
 @Entity
-@Table(name = "TGTPC_NT_Reports")
+@Table(name = "tgtpc_nt_reports")
 @Getter
 @Setter
 @Builder

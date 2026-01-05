@@ -21,7 +21,6 @@ public class TGTPC4NTHandholdingService {
     private final NonTrainingSubActivityRepository subActivityRepo;
 
     public WorkflowResponse save(TGTPC4NTHandholdingRequest request) throws DataException {
-
         NonTrainingSubActivity subActivity = subActivityRepo.findById(
                 request.getNonTrainingSubActivityId()
         ).orElseThrow(() ->
@@ -31,12 +30,8 @@ public class TGTPC4NTHandholdingService {
                         400
                 )
         );
-
-        TGTPC4NTHandholding entity =
-                TGTPC4NTHandholdingMapper.mapToEntity(request, subActivity);
-
+        TGTPC4NTHandholding entity = TGTPC4NTHandholdingMapper.mapToEntity(request, subActivity);
         TGTPC4NTHandholding saved = repository.save(entity);
-
         return WorkflowResponse.builder()
                 .status(200)
                 .message("TGTPC4 NT Handholding saved successfully")
@@ -45,20 +40,15 @@ public class TGTPC4NTHandholdingService {
     }
 
     @Transactional
-    public WorkflowResponse update(Long handholdingId, TGTPC4NTHandholdingRequest request)
-            throws DataException {
-
+    public WorkflowResponse update(Long handholdingId, TGTPC4NTHandholdingRequest request) throws DataException {
         TGTPC4NTHandholding existing = repository.findById(handholdingId)
                 .orElseThrow(() -> new DataException(
                         "TGTPC4 NT Handholding not found with id " + handholdingId,
                         "TGTPC4_HANDHOLDING_NOT_FOUND",
                         404
                 ));
-
         TGTPC4NTHandholdingMapper.updateEntity(existing, request);
-
         TGTPC4NTHandholding updated = repository.save(existing);
-
         return WorkflowResponse.builder()
                 .status(200)
                 .message("TGTPC4 NT Handholding updated successfully")
@@ -67,14 +57,12 @@ public class TGTPC4NTHandholdingService {
     }
 
     public WorkflowResponse getById(Long handholdingId) throws DataException {
-
         TGTPC4NTHandholding entity = repository.findById(handholdingId)
                 .orElseThrow(() -> new DataException(
                         "TGTPC4 NT Handholding not found with id " + handholdingId,
                         "TGTPC4_HANDHOLDING_NOT_FOUND",
                         404
                 ));
-
         return WorkflowResponse.builder()
                 .status(200)
                 .message("Success")
@@ -83,30 +71,26 @@ public class TGTPC4NTHandholdingService {
     }
 
     public WorkflowResponse getBySubActivityId(Long subActivityId) {
-
         List<TGTPC4NTHandholdingResponse> response =
                 repository.findByNonTrainingSubActivity_SubActivityId(subActivityId)
                         .stream()
                         .map(TGTPC4NTHandholdingMapper::mapToResponse)
                         .toList();
-
         return WorkflowResponse.builder()
                 .status(200)
                 .message("Success")
                 .data(response)
                 .build();
     }
-    public WorkflowResponse delete(Long handholdingId) throws DataException {
 
+    public WorkflowResponse delete(Long handholdingId) throws DataException {
         TGTPC4NTHandholding entity = repository.findById(handholdingId)
                 .orElseThrow(() -> new DataException(
                         "TGTPC4 NT Handholding not found with id " + handholdingId,
                         "TGTPC4_HANDHOLDING_NOT_FOUND",
                         404
                 ));
-
         repository.delete(entity);
-
         return WorkflowResponse.builder()
                 .status(200)
                 .message("TGTPC4 NT Handholding deleted successfully")

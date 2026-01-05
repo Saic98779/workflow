@@ -8,7 +8,6 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TGTPCNTReportsRequest {
-
     private String sectorName;
     private String productName;
     private String reportSubmissionDate;

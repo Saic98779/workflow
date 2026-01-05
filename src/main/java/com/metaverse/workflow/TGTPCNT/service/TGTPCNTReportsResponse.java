@@ -7,7 +7,6 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TGTPCNTReportsResponse {
-
     private Long reportId;
     private String sectorName;
     private String productName;
@@ -17,5 +16,4 @@ public class TGTPCNTReportsResponse {
     private String nonTrainingActivityName;
     private Long nonTrainingSubActivityId;
     private String nonTrainingSubActivityName;
-
 }
