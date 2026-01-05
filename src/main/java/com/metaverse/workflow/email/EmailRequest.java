@@ -5,13 +5,19 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 @Builder
 public class EmailRequest {
 
     @Email
     @NotBlank
-    private String to;
+    private List<String> to;
+
+    @Email
+    @NotBlank
+    private List<String> cc;
 
     @NotBlank
     private String subject;

@@ -94,6 +94,7 @@ public class ProgramResponseMapper {
                 .programLocation(program.getLocation().getLocationId())
                 .programLocationName(program.getLocation().getLocationName())
                 .kpi(program.getKpi())
+                .status(program.getStatus())
                 .createdOn(program.getCreatedOn())
                 .updatedOn(program.getUpdatedOn())
                 .programSessionList(program.getProgramSessionList().stream().map(session -> mapSession(session, session.getProgramSessionFileList())).collect(Collectors.toList()))

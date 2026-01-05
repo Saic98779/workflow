@@ -20,7 +20,14 @@ public class EmailSender {
             MimeMessageHelper helper =
                     new MimeMessageHelper(message, true, "UTF-8");
 
-            helper.setTo(event.getTo());
+            if (event.getTo() != null && !event.getTo().isEmpty()) {
+                helper.setTo(event.getTo().toArray(new String[0]));
+            }
+
+            if (event.getCc() != null && !event.getCc().isEmpty()) {
+                helper.setCc(event.getCc().toArray(new String[0]));
+            }
+
             helper.setSubject(event.getSubject());
             helper.setText(event.getBody(), event.isHtml());
 

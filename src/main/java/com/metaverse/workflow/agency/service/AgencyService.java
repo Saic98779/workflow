@@ -1,5 +1,6 @@
 package com.metaverse.workflow.agency.service;
 
+import com.metaverse.workflow.agency.dto.ParticipantsDto;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.model.Agency;
 import com.metaverse.workflow.model.Program;
@@ -24,4 +25,6 @@ public interface AgencyService {
 	WorkflowResponse getProgramByAgencyIdDropDown(Long agencyId);
 
 	WorkflowResponse getProgramsDistrictsAndAgency(Long id, String district);
+
+    List<ParticipantsDto> getParticipantIdAndNameByAgencyId(Long agencyId);
 }

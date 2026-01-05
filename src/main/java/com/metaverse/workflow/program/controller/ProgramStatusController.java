@@ -8,6 +8,9 @@ import com.metaverse.workflow.common.util.DateUtil;
 import com.metaverse.workflow.common.util.RestControllerBase;
 import com.metaverse.workflow.email.EmailNotificationController;
 import com.metaverse.workflow.email.EmailRequest;
+import com.metaverse.workflow.email.entity.EmailConfiguration;
+import com.metaverse.workflow.email.repository.EmailConfigurationRepository;
+import com.metaverse.workflow.email.util.EmailUtil;
 import com.metaverse.workflow.exceptions.DataException;
 import com.metaverse.workflow.model.Program;
 import com.metaverse.workflow.program.repository.ProgramRepository;
@@ -23,11 +26,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.charset.StandardCharsets;
 import java.security.Principal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -48,6 +49,9 @@ public class ProgramStatusController {
     @Autowired
     private EmailNotificationController emailNotificationController;
 
+    @Autowired
+    EmailConfigurationRepository emailConfigurationRepository;
+
 
     @PostMapping("/{programId}")
     public WorkflowResponse updateProgramStatus(Principal principal,
@@ -67,6 +71,8 @@ public class ProgramStatusController {
         program.setStatus(status);
         programRepository.save(program);
 
+        EmailConfiguration emailConfiguration = emailConfigurationRepository.findByAgency_AgencyId(program.getAgency().getAgencyId());
+
         // send notification (async)
         try {
             GlobalNotificationRequest req = GlobalNotificationRequest.builder()
@@ -85,17 +91,20 @@ public class ProgramStatusController {
             logService.logs(principal != null ? principal.getName() : "system", "ERROR", "Failed to queue notification: " + e.getMessage(), "Notification", servletRequest.getRequestURI());
         }
 
-        if(status.equalsIgnoreCase(ProgramStatusConstants.PROGRAM_SCHEDULED) || status.equalsIgnoreCase(ProgramStatusConstants.PROGRAM_EXPENDITURE_UPDATED)) {
-            // No email for these statuses
-        } else {
-            // send email (async)
+        if(status.equalsIgnoreCase(ProgramStatusConstants.PROGRAM_SCHEDULED) || status.equalsIgnoreCase(ProgramStatusConstants.PROGRAM_EXPENDITURE_UPDATED)
+        || status.equalsIgnoreCase(ProgramStatusConstants.PROGRAM_EXPENDITURE_APPROVED)) {
             try {
-                EmailRequest emailRequest = EmailRequest.builder()
-                        .to("saichaitanya550@gmail.com")
-                        .subject("Program Status Updated")
-                        .body("The status of program with ID " + programId + " has been updated to " + status + ".")
-                        .html(false)
-                        .build();
+                String actionRequired =
+                        status.equalsIgnoreCase(ProgramStatusConstants.PROGRAM_SCHEDULED)
+                                ? "No action required"
+                                : "Please review the updated expenditure details";
+
+                EmailRequest emailRequest = EmailUtil.getEmailRequest(
+                        status,
+                        program,
+                        actionRequired, emailConfiguration
+                );
+
                 emailNotificationController.sendEmail(emailRequest);
             }
             catch (Exception e) {

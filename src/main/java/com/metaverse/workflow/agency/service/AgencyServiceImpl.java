@@ -1,5 +1,6 @@
 package com.metaverse.workflow.agency.service;
 
+import com.metaverse.workflow.agency.dto.ParticipantsDto;
 import com.metaverse.workflow.agency.repository.AgencyRepository;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.location.repository.LocationRepository;
@@ -7,6 +8,7 @@ import com.metaverse.workflow.location.service.LocationResponse;
 import com.metaverse.workflow.model.Agency;
 import com.metaverse.workflow.model.Location;
 import com.metaverse.workflow.model.Program;
+import com.metaverse.workflow.participant.repository.ParticipantRepository;
 import com.metaverse.workflow.program.repository.ProgramRepository;
 import com.metaverse.workflow.program.service.ProgramResponse;
 import com.metaverse.workflow.program.service.ProgramResponseMapper;
@@ -33,6 +35,9 @@ public class AgencyServiceImpl implements AgencyService {
 
     @Autowired
     private LocationRepository locationRepository;
+
+    @Autowired
+    private ParticipantRepository participantRepository;
 
     @Override
     public String saveAgency(Agency agency) {
@@ -99,5 +104,15 @@ public class AgencyServiceImpl implements AgencyService {
         if (responses == null)
             return WorkflowResponse.builder().message("Programs Not found for this Agency").status(200).build();
         return WorkflowResponse.builder().message("Success").status(200).data(responses).build();
+    }
+
+    public List<ParticipantsDto> getParticipantIdAndNameByAgencyId(Long agencyId) {
+        return participantRepository.findParticipantsByAgencyId(agencyId)
+                .stream()
+                .map(row -> new ParticipantsDto(
+                        ((Number) row[0]).longValue(),
+                        (String) row[1]
+                ))
+                .collect(Collectors.toList());
     }
 }

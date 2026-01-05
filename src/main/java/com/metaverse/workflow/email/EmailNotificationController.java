@@ -20,6 +20,7 @@ public class EmailNotificationController {
 
         EmailEvent event = new EmailEvent(
                 request.getTo(),
+                request.getCc(),
                 request.getSubject(),
                 request.getBody(),
                 request.isHtml()

@@ -1,5 +1,6 @@
 package com.metaverse.workflow.agency.controller;
 
+import com.metaverse.workflow.agency.dto.ParticipantsDto;
 import com.metaverse.workflow.agency.service.AgencyResponse;
 import com.metaverse.workflow.agency.service.AgencyResponseMapper;
 import com.metaverse.workflow.agency.service.AgencyService;
@@ -192,6 +193,22 @@ public class AgencyController {
         Agency agency = service.getAgencyById(id);
         List<ParticipantResponse> response = AgencyResponseMapper.mapParticipants(agency.getProgramList());
         return ResponseEntity.ok(WorkflowResponse.builder().message("Success").status(200).data(response).build());
+    }
+
+    @GetMapping("/agency/participants-dropdown/{agencyId}")
+    public ResponseEntity<WorkflowResponse> getParticipantsDropdownByAgencyId(
+            @PathVariable Long agencyId) {
+
+        List<ParticipantsDto> response =
+                service.getParticipantIdAndNameByAgencyId(agencyId);
+
+        return ResponseEntity.ok(
+                WorkflowResponse.builder()
+                        .message("Success")
+                        .status(200)
+                        .data(response)
+                        .build()
+        );
     }
 
     @GetMapping("/agency/locationdetails/{id}")
