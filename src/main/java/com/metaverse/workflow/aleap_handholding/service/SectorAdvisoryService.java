@@ -66,30 +66,21 @@ public class SectorAdvisoryService {
                         "SECTOR_ADVISORY_NOT_FOUND",
                         400
                 ));
-
         HandholdingSupport support = service.getOrCreateSupport(
                 request.getHandholdingSupportId(),
                 request.getNonTrainingActivityId(),
                 request.getNonTrainingSubActivityId(),
                 request.getHandHoldingType()
         );
-
         existing.setHandholdingSupport(support);
-        existing.setOrganization(
-                organizationRepo.getReferenceById(request.getOrganizationId())
-        );
-        existing.setParticipants(
-                participantRepo.findAllById(request.getParticipantIds())
-        );
+        existing.setOrganization(organizationRepo.getReferenceById(request.getOrganizationId()));
+        existing.setParticipants(participantRepo.findAllById(request.getParticipantIds()));
+        existing.setInfluencedParticipants(influencedParticipantRepository.findAllById(request.getInfluencedParticipantIds()));
         existing.setAdviseDetails(request.getAdviseDetails());
         existing.setCounselledBy(request.getCounselledBy());
         existing.setCounsellingTime(request.getCounsellingTime());
-        existing.setCounsellingDate(
-                DateUtil.covertStringToDate(request.getCounsellingDate())
-        );
-
+        existing.setCounsellingDate(DateUtil.covertStringToDate(request.getCounsellingDate()));
         SectorAdvisory updated = repository.save(existing);
-
         return WorkflowResponse.builder()
                 .status(200)
                 .message("Sector advisory updated successfully")

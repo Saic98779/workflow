@@ -94,10 +94,12 @@ private final HandholdingSupportService service;
                 );
 
         List<Participant> participants = participantRepo.findAllById(request.getParticipantIds());
+        List<InfluencedParticipant> influencedParticipants = influencedParticipantRepository.findAllById(request.getInfluencedParticipantIds());
 
         existing.setHandholdingSupport(support);
         existing.setOrganization(organization);
         existing.setParticipants(participants);
+        existing.setInfluencedParticipants(influencedParticipants);
         existing.setBankName(request.getBankName());
         existing.setBranchName(request.getBranchName());
         existing.setBankRemarks(request.getBankRemarks());

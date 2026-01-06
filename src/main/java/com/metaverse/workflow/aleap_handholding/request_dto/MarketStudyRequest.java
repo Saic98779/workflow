@@ -18,4 +18,5 @@ public class MarketStudyRequest {
     private String handHoldingType;
     private String counsellingDate;
     private String counsellingTime;
+    private List<FeasibilityInputRequest> feasibilityInputRequests;
 }

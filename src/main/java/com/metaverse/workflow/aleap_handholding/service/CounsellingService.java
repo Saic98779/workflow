@@ -92,6 +92,11 @@ public class CounsellingService {
                     participantRepo.findAllById(request.getParticipantIds())
             );
         }
+        if (request.getInfluencedParticipantIds() != null) {
+            existing.setInfluencedParticipants(
+                    influencedParticipantRepository.findAllById(request.getInfluencedParticipantIds())
+            );
+        }
 
         existing.setSubjectDelivered(request.getSubjectDelivered());
         existing.setOriginalIdea(request.getOriginalIdea());

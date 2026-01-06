@@ -144,11 +144,6 @@ public class ResponseMapper {
         return FeasibilityInputResponse.builder()
                 .feasibilityInputId(entity.getId())
                 .marketStudyId(entity.getMarketStudy().getId())
-                .dateOfStudy(
-                        entity.getMarketStudy().getDateOfStudy() != null
-                                ? entity.getMarketStudy().getDateOfStudy().toString()
-                                : null
-                )
                 .inputDetails(entity.getInputDetails())
                 .source(entity.getSource())
                 .sector(entity.getSector())
@@ -315,6 +310,13 @@ public class ResponseMapper {
                                         .map(InfluencedParticipant::getParticipantName)
                                         : Stream.empty()
                         ).toList()
+                )
+                .feasibilityInputResponses(
+                        entity.getFeasibilityInputs() != null
+                                ? entity.getFeasibilityInputs().stream()
+                                .map(ResponseMapper::mapToFeasibilityInputResponse)
+                                .toList()
+                                : List.of()
                 )
                 .handHoldingType(entity.getHandholdingSupport().getHandholdingSupportType())
                 .build();
