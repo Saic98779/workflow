@@ -1,6 +1,7 @@
 package com.metaverse.workflow.model.aleap_handholding;
 
 import com.metaverse.workflow.model.BaseEntity;
+import com.metaverse.workflow.model.InfluencedParticipant;
 import com.metaverse.workflow.model.Organization;
 import com.metaverse.workflow.model.Participant;
 import jakarta.persistence.*;
@@ -9,6 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -17,7 +19,6 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 public class MarketStudy  extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -32,7 +33,7 @@ public class MarketStudy  extends BaseEntity {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    private List<FeasibilityInput> feasibilityInputs;
+    private List<FeasibilityInput> feasibilityInputs= new ArrayList<>();;
 
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     @JoinTable(
@@ -41,6 +42,14 @@ public class MarketStudy  extends BaseEntity {
             inverseJoinColumns = @JoinColumn(name = "participant_id") // FK to Participant.participant_id
     )
     private List<Participant> participants;
+
+    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @JoinTable(
+            name = "market_study_influenced_participants",
+            joinColumns = @JoinColumn(name = "market_study_id"),
+            inverseJoinColumns = @JoinColumn(name = "influenced_participant_id")
+    )
+    private List<InfluencedParticipant> influencedParticipants;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "organization_id")

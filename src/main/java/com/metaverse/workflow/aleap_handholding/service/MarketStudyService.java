@@ -8,17 +8,20 @@ import com.metaverse.workflow.aleap_handholding.response_dto.MarketStudyResponse
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.common.util.DateUtil;
 import com.metaverse.workflow.exceptions.DataException;
+import com.metaverse.workflow.model.InfluencedParticipant;
 import com.metaverse.workflow.model.Organization;
 import com.metaverse.workflow.model.Participant;
 import com.metaverse.workflow.model.aleap_handholding.FeasibilityInput;
 import com.metaverse.workflow.model.aleap_handholding.HandholdingSupport;
 import com.metaverse.workflow.model.aleap_handholding.MarketStudy;
 import com.metaverse.workflow.organization.repository.OrganizationRepository;
+import com.metaverse.workflow.participant.repository.InfluencedParticipantRepository;
 import com.metaverse.workflow.participant.repository.ParticipantRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -29,6 +32,7 @@ public class MarketStudyService {
     private final ParticipantRepository participantRepo;
     private final MarketStudyRepository marketStudyRepository;
     private final FeasibilityInputRepository inputRepository;
+    private final InfluencedParticipantRepository influencedParticipantRepository;
 
     public WorkflowResponse save(MarketStudyRequest request) throws DataException {
 
@@ -49,12 +53,37 @@ public class MarketStudyService {
         List<Participant> participants =
                 participantRepo.findAllById(request.getParticipantIds());
 
+        List<InfluencedParticipant> influencedParticipants =
+                influencedParticipantRepository.findAllById(request.getInfluencedParticipantIds());
+
         MarketStudy entity = RequestMapper.mapToMarketStudy(
                 request,
                 support,
                 organization,
-                participants
+                participants,
+                influencedParticipants
         );
+
+        if (request.getFeasibilityInputRequests() != null &&
+                !request.getFeasibilityInputRequests().isEmpty()) {
+
+            List<FeasibilityInput> inputs = new ArrayList<>();
+
+            for (FeasibilityInputRequest fiReq : request.getFeasibilityInputRequests()) {
+
+                FeasibilityInput input = new FeasibilityInput();
+                input.setInputDetails(fiReq.getInputDetails());
+                input.setSource(fiReq.getSource());
+                input.setSector(fiReq.getSector());
+                input.setFeasibilityActivity(fiReq.getFeasibilityActivity());
+
+                input.setMarketStudy(entity);
+
+                inputs.add(input);
+            }
+
+            entity.setFeasibilityInputs(inputs);
+        }
 
         MarketStudy saved = marketStudyRepository.save(entity);
 
@@ -83,36 +112,27 @@ public class MarketStudyService {
                 request.getHandHoldingType()
         );
         existing.setHandholdingSupport(support);
-
-        if (request.getOrganizationId() != null) {
-            existing.setOrganization(
-                    organizationRepo.getReferenceById(request.getOrganizationId())
-            );
-        }
-
-        if (request.getParticipantIds() != null) {
-            existing.setParticipants(
-                    participantRepo.findAllById(request.getParticipantIds())
-            );
-        }
-
+        existing.setOrganization(organizationRepo.getReferenceById(request.getOrganizationId()));
+        existing.setParticipants(participantRepo.findAllById(request.getParticipantIds()));
+        existing.setInfluencedParticipants(influencedParticipantRepository.findAllById(request.getInfluencedParticipantIds()));
         existing.setCounselledBy(request.getCounselledBy());
         existing.setCounsellingTime(request.getCounsellingTime());
+        existing.setDateOfStudy(DateUtil.covertStringToDate(request.getDateOfStudy()));
+        existing.setCounsellingDate(DateUtil.covertStringToDate(request.getCounsellingDate()));
 
-        if (request.getDateOfStudy() != null) {
-            existing.setDateOfStudy(
-                    DateUtil.covertStringToDate(request.getDateOfStudy())
-            );
+        existing.getFeasibilityInputs().clear();
+        if (request.getFeasibilityInputRequests() != null && !request.getFeasibilityInputRequests().isEmpty()) {
+            for (FeasibilityInputRequest fiReq : request.getFeasibilityInputRequests()) {
+                FeasibilityInput input = new FeasibilityInput();
+                input.setInputDetails(fiReq.getInputDetails());
+                input.setSource(fiReq.getSource());
+                input.setSector(fiReq.getSector());
+                input.setFeasibilityActivity(fiReq.getFeasibilityActivity());
+                input.setMarketStudy(existing);
+                existing.getFeasibilityInputs().add(input);
+            }
         }
-
-        if (request.getCounsellingDate() != null) {
-            existing.setCounsellingDate(
-                    DateUtil.covertStringToDate(request.getCounsellingDate())
-            );
-        }
-
         MarketStudy updated = marketStudyRepository.save(existing);
-
         return WorkflowResponse.builder()
                 .status(200)
                 .message("Market Study updated successfully")
@@ -169,7 +189,7 @@ public class MarketStudyService {
                 .build();
     }
 
-@Transactional
+    @Transactional
     public WorkflowResponse saveFeasibilityInput(FeasibilityInputRequest request) throws DataException {
 
         MarketStudy study = marketStudyRepository.findById(request.getMarketStudyId())
@@ -190,6 +210,7 @@ public class MarketStudyService {
                 .data(ResponseMapper.mapToFeasibilityInputResponse(saved))
                 .build();
     }
+
     @Transactional
     public WorkflowResponse updateFeasibilityInput(Long id, FeasibilityInputRequest request) throws DataException {
 

@@ -12,7 +12,6 @@ public class FeasibilityInputResponse {
 
     private Long feasibilityInputId;
     private Long marketStudyId;
-    private String dateOfStudy;
     private String inputDetails;
     private FeasibilityInput.SourceType source;
     private String sector;

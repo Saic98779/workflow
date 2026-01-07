@@ -12,9 +12,11 @@ public class MarketStudyRequest {
     private Long organizationId;
     private String counselledBy;
     private List<Long> participantIds;
+    private List<Long> influencedParticipantIds;
     private Long nonTrainingActivityId;
     private Long nonTrainingSubActivityId;
     private String handHoldingType;
     private String counsellingDate;
     private String counsellingTime;
+    private List<FeasibilityInputRequest> feasibilityInputRequests;
 }

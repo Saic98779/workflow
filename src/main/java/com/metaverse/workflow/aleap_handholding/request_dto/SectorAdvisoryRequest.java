@@ -12,6 +12,7 @@ public class SectorAdvisoryRequest {
 
     private Long handholdingSupportId;
     private List<Long> participantIds;
+    private List<Long> influencedParticipantIds;
     private Long nonTrainingActivityId;
     private Long nonTrainingSubActivityId;
     private String handHoldingType;

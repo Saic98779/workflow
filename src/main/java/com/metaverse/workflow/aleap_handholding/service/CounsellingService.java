@@ -30,7 +30,6 @@ public class CounsellingService {
     private final ParticipantRepository participantRepo;
     private final InfluencedParticipantRepository influencedParticipantRepository;
 
-
     public WorkflowResponse save(CounsellingRequest request) throws DataException {
 
         HandholdingSupport support = service.getOrCreateSupport(
@@ -91,6 +90,11 @@ public class CounsellingService {
         if (request.getParticipantIds() != null) {
             existing.setParticipants(
                     participantRepo.findAllById(request.getParticipantIds())
+            );
+        }
+        if (request.getInfluencedParticipantIds() != null) {
+            existing.setInfluencedParticipants(
+                    influencedParticipantRepository.findAllById(request.getInfluencedParticipantIds())
             );
         }
 

@@ -5,11 +5,13 @@ import com.metaverse.workflow.aleap_handholding.repository.SectorAdvisoryReposit
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.common.util.DateUtil;
 import com.metaverse.workflow.exceptions.DataException;
+import com.metaverse.workflow.model.InfluencedParticipant;
 import com.metaverse.workflow.model.Organization;
 import com.metaverse.workflow.model.Participant;
 import com.metaverse.workflow.model.aleap_handholding.HandholdingSupport;
 import com.metaverse.workflow.model.aleap_handholding.SectorAdvisory;
 import com.metaverse.workflow.organization.repository.OrganizationRepository;
+import com.metaverse.workflow.participant.repository.InfluencedParticipantRepository;
 import com.metaverse.workflow.participant.repository.ParticipantRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,6 +27,7 @@ public class SectorAdvisoryService {
     private final SectorAdvisoryRepository repository;
     private final OrganizationRepository organizationRepo;
     private final ParticipantRepository participantRepo;
+    private final InfluencedParticipantRepository influencedParticipantRepository;
 
     @Transactional
     public WorkflowResponse save(SectorAdvisoryRequest request) throws DataException {
@@ -42,9 +45,10 @@ public class SectorAdvisoryService {
                 ));
 
         List<Participant> participants = participantRepo.findAllById(request.getParticipantIds());
+        List<InfluencedParticipant> influencedParticipants = influencedParticipantRepository.findAllById(request.getInfluencedParticipantIds());
         SectorAdvisory entity =
                 RequestMapper.mapToSectorAdvisory(
-                        request, support, organization, participants
+                        request, support, organization, participants,influencedParticipants
                 );
         SectorAdvisory saved = repository.save(entity);
         return WorkflowResponse.builder()
@@ -62,30 +66,21 @@ public class SectorAdvisoryService {
                         "SECTOR_ADVISORY_NOT_FOUND",
                         400
                 ));
-
         HandholdingSupport support = service.getOrCreateSupport(
                 request.getHandholdingSupportId(),
                 request.getNonTrainingActivityId(),
                 request.getNonTrainingSubActivityId(),
                 request.getHandHoldingType()
         );
-
         existing.setHandholdingSupport(support);
-        existing.setOrganization(
-                organizationRepo.getReferenceById(request.getOrganizationId())
-        );
-        existing.setParticipants(
-                participantRepo.findAllById(request.getParticipantIds())
-        );
+        existing.setOrganization(organizationRepo.getReferenceById(request.getOrganizationId()));
+        existing.setParticipants(participantRepo.findAllById(request.getParticipantIds()));
+        existing.setInfluencedParticipants(influencedParticipantRepository.findAllById(request.getInfluencedParticipantIds()));
         existing.setAdviseDetails(request.getAdviseDetails());
         existing.setCounselledBy(request.getCounselledBy());
         existing.setCounsellingTime(request.getCounsellingTime());
-        existing.setCounsellingDate(
-                DateUtil.covertStringToDate(request.getCounsellingDate())
-        );
-
+        existing.setCounsellingDate(DateUtil.covertStringToDate(request.getCounsellingDate()));
         SectorAdvisory updated = repository.save(existing);
-
         return WorkflowResponse.builder()
                 .status(200)
                 .message("Sector advisory updated successfully")

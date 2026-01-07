@@ -205,4 +205,24 @@ public class ParticipantServiceAdapter implements ParticipantService {
                 .build();
     }
 
+    @Override
+    public WorkflowResponse getParticipantsOrInfluencedParticipantByOrganizationId(Long organizationId) {
+        List<Participant> participant = participantRepository.findByOrganization_OrganizationId(organizationId);
+        List<InfluencedParticipant> influencedParticipant = influencedParticipantRepository.findByOrganization_OrganizationId(organizationId);
+
+        if (participant.isEmpty() && influencedParticipant.isEmpty()) {
+            return WorkflowResponse.builder()
+                    .message("No record found for the given mobile number")
+                    .status(404)
+                    .build();
+        }
+        List<ParticipantsOrInfluencedParticipant> participantList =
+                ParticipantResponseMapper.mapParticipantsOrInfluencedParticipant( participant, influencedParticipant);
+        return WorkflowResponse.builder()
+                .message("Success")
+                .status(200)
+                .data(participantList)
+                .build();
+    }
+
 }

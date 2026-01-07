@@ -4,6 +4,8 @@ import com.metaverse.workflow.common.util.CommonUtil;
 import com.metaverse.workflow.common.util.DateUtil;
 import com.metaverse.workflow.model.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.metaverse.workflow.common.util.DateUtil.dateToString;
@@ -154,4 +156,39 @@ public class ParticipantResponseMapper {
 					.build();
 		}
 	}
+	// Single-object overloads for convenience
+	public static ParticipantsOrInfluencedParticipant mapParticipantsOrInfluencedParticipant(Participant participant) {
+		return mapParticipantsOrInfluencedParticipant(participant, null);
+	}
+
+	public static ParticipantsOrInfluencedParticipant mapParticipantsOrInfluencedParticipant(InfluencedParticipant influencedParticipant) {
+		return mapParticipantsOrInfluencedParticipant(null, influencedParticipant);
+	}
+
+	// ---------------------- List mapper ----------------------
+	public static List<ParticipantsOrInfluencedParticipant> mapParticipantsOrInfluencedParticipant(
+			List<Participant> participants,
+			List<InfluencedParticipant> influencedParticipants
+	) {
+		List<ParticipantsOrInfluencedParticipant> result = new ArrayList<>();
+
+		if (participants != null && !participants.isEmpty()) {
+			result.addAll(
+					participants.stream()
+							.map(ParticipantResponseMapper::mapParticipantsOrInfluencedParticipant)
+							.toList()
+			);
+		}
+
+		if (influencedParticipants != null && !influencedParticipants.isEmpty()) {
+			result.addAll(
+					influencedParticipants.stream()
+							.map(ParticipantResponseMapper::mapParticipantsOrInfluencedParticipant)
+							.toList()
+			);
+		}
+
+		return result;
+	}
+
 }
