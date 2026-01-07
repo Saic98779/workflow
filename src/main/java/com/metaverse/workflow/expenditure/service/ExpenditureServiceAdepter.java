@@ -6,6 +6,11 @@ import com.metaverse.workflow.agency.repository.AgencyRepository;
 import com.metaverse.workflow.common.enums.ExpenditureType;
 import com.metaverse.workflow.common.enums.NotificationType;
 import com.metaverse.workflow.common.response.WorkflowResponse;
+import com.metaverse.workflow.email.EmailNotificationController;
+import com.metaverse.workflow.email.EmailRequest;
+import com.metaverse.workflow.email.entity.EmailConfiguration;
+import com.metaverse.workflow.email.repository.EmailConfigurationRepository;
+import com.metaverse.workflow.email.util.EmailUtil;
 import com.metaverse.workflow.enums.BillRemarksStatus;
 import com.metaverse.workflow.enums.RemarkBy;
 import com.metaverse.workflow.exceptions.*;
@@ -26,6 +31,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -39,6 +45,10 @@ public class ExpenditureServiceAdepter implements ExpenditureService {
     BulkExpenditureRepository bulkExpenditureRepository;
     @Autowired
     private BulkExpenditureTransactionRepository transactionRepo;
+
+    @Autowired
+    EmailConfigurationRepository emailConfigurationRepository;
+
     @Autowired
     AgencyRepository agencyRepository;
     @Autowired
@@ -58,6 +68,9 @@ public class ExpenditureServiceAdepter implements ExpenditureService {
 
     @Autowired
     NotificationServiceImpl notificationService;
+
+    @Autowired
+    private EmailNotificationController emailNotificationController;
 
     @Override
     public WorkflowResponse saveBulkExpenditure(BulkExpenditureRequest expenditureRequest, List<MultipartFile> files) throws DataException {
@@ -737,7 +750,7 @@ public class ExpenditureServiceAdepter implements ExpenditureService {
     }
 
     @Override
-    public WorkflowResponse addRemarkOrResponse(ExpenditureRemarksDTO remarks, BillRemarksStatus status) throws DataException {
+    public WorkflowResponse addRemarkOrResponse(ExpenditureRemarksDTO remarks, BillRemarksStatus status) throws DataException, IOException {
 
         // 1. Retrieve user and expenditure
         User user = userRepo.findById(remarks.getUserId())
@@ -803,6 +816,33 @@ public class ExpenditureServiceAdepter implements ExpenditureService {
                     .build();
 
             notificationService.saveNotification(req);
+        }
+
+        if(status != null && (status.equals(BillRemarksStatus.NEED_CLARIFICATION) || status.equals(BillRemarksStatus.REJECTED))){
+            EmailConfiguration emailConfiguration = null;
+            if (expenditure.getProgram() != null && expenditure.getProgram().getAgency() != null) {
+                emailConfiguration = emailConfigurationRepository.findByAgency_AgencyId(expenditure.getProgram().getAgency().getAgencyId());
+            }
+
+            String actionRequired = status.equals(BillRemarksStatus.NEED_CLARIFICATION) ? "Provide the Clarification" : "Update the expenditure";
+
+            String programName = expenditure.getProgram() != null ? expenditure.getProgram().getProgramTitle() : "";
+            String headName = expenditure.getHeadOfExpense() != null ? expenditure.getHeadOfExpense().getExpenseName() : "";
+            String amount = expenditure.getCost() != null ? String.valueOf(expenditure.getCost()) : "";
+            String remarksText = (remarks.getSpiuComments() != null && !remarks.getSpiuComments().isBlank()) ? remarks.getSpiuComments()
+                    : (remarks.getAgencyComments() != null ? remarks.getAgencyComments() : "");
+
+            EmailRequest emailRequest = EmailUtil.getExpenditureEmailRequest(
+                    status.name(),
+                    programName,
+                    headName,
+                    amount,
+                    remarksText,
+                    actionRequired,
+                    emailConfiguration
+            );
+
+            emailNotificationController.sendEmail(emailRequest);
         }
 
         // 6. Set status if provided

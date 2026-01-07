@@ -22,6 +22,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.security.Principal;
 import java.security.PrivateKey;
 import java.util.List;
@@ -240,6 +241,8 @@ public class ExpenditureController {
             return  ResponseEntity.ok(expenditureService.addRemarkOrResponse(remarksDTO, status));
         } catch (DataException e) {
             return RestControllerBase.error(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 

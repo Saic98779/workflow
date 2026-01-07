@@ -92,12 +92,19 @@ public class ProgramStatusController {
         }
 
         if(status.equalsIgnoreCase(ProgramStatusConstants.PROGRAM_SCHEDULED) || status.equalsIgnoreCase(ProgramStatusConstants.PROGRAM_EXPENDITURE_UPDATED)
-                || status.equalsIgnoreCase(ProgramStatusConstants.PROGRAM_EXPENDITURE_APPROVED)) {
+                || status.equalsIgnoreCase(ProgramStatusConstants.PROGRAM_EXPENDITURE_APPROVED)
+        || status.equalsIgnoreCase(ProgramStatusConstants.SESSIONS_CREATED)) {
             try {
-                String actionRequired =
-                        status.equalsIgnoreCase(ProgramStatusConstants.PROGRAM_SCHEDULED)
-                                ? "No action required"
-                                : "Please review the updated expenditure details";
+                String actionRequired = null;
+                if (status.equalsIgnoreCase(ProgramStatusConstants.PROGRAM_SCHEDULED)) {
+                    actionRequired = "Review the Program Schedule";
+                } else if (status.equalsIgnoreCase(ProgramStatusConstants.SESSIONS_CREATED)) {
+                    actionRequired = "Review the Program Sessions & Plan";
+                } else if (status.equalsIgnoreCase(ProgramStatusConstants.PROGRAM_EXPENDITURE_UPDATED)) {
+                    actionRequired = "Review the Expenditure";
+                } else if (status.equalsIgnoreCase(ProgramStatusConstants.PROGRAM_EXPENDITURE_APPROVED)) {
+                    actionRequired = "No Action Required";
+                }
 
                 EmailRequest emailRequest = EmailUtil.getEmailRequest(
                         status,

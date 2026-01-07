@@ -7,6 +7,7 @@ import com.metaverse.workflow.exceptions.*;
 import com.metaverse.workflow.model.HeadOfExpense;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface ExpenditureService {
@@ -32,7 +33,7 @@ public interface ExpenditureService {
     WorkflowResponse deleteTransaction(Long transactionId) throws DataException;
     List<ProgramExpenditureResponse> getAllProgramExpenditure(Long agencyId, Long programId);
     ExpenditureSummaryResponse getExpenditureHeadOfExpenseWise(Long programId) throws DataException;
-    WorkflowResponse addRemarkOrResponse(ExpenditureRemarksDTO remarks, BillRemarksStatus status) throws DataException;
+    WorkflowResponse addRemarkOrResponse(ExpenditureRemarksDTO remarks, BillRemarksStatus status) throws DataException, IOException;
     WorkflowResponse addRemarkOrResponseTransaction(ExpenditureRemarksDTO remarks, BillRemarksStatus status) throws DataException;
 
     WorkflowResponse getAllProgramExpenditureByStatus(BillRemarksStatus status, long agencyId);

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Expenditure Update Notification</title>
+</head>
+
+<!-- 
+    Email body wrapper
+    - Uses table layout for maximum email client compatibility
+    - Light background color for contrast
+-->
+<body style="margin:0; padding:0; font-family: Arial, Helvetica, sans-serif; background-color:#f4f6f8;">
+
+<table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f4f6f8; padding:20px;">
+    <tr>
+        <td align="center">
+
+            <!-- 
+                Main email container
+                - Fixed width (600px) for consistent rendering
+                - White background with border
+            -->
+            <table width="600" cellpadding="0" cellspacing="0"
+                   style="background-color:#ffffff; border:1px solid #dddddd;">
+
+                <!-- Header Section -->
+                <tr>
+                    <td style="background-color:#003366; color:#ffffff; padding:15px;">
+                        <h2 style="margin:0; font-size:18px;">
+                            Expenditure Update Notification - {{PROGRAM_NAME}}
+                        </h2>
+                    </td>
+                </tr>
+
+                <!-- Body Content -->
+                <tr>
+                    <td style="padding:20px; color:#333333; font-size:14px; line-height:1.6;">
+
+                        <!-- Greeting -->
+                        <p>Dear Sir/Madam,</p>
+
+                        <!-- Intro text -->
+                        <p>
+                            Please find below the expenditure details submitted for the program.
+                        </p>
+
+                        <!-- 
+                            Expenditure Details Table
+                            Placeholders are dynamically replaced in backend
+                        -->
+                        <table width="100%" cellpadding="6" cellspacing="0"
+                               style="border-collapse:collapse; margin-top:10px;">
+
+                            <!-- Program Name -->
+                            <tr>
+                                <td width="35%" style="border:1px solid #dddddd; font-weight:bold;">
+                                    Program Name
+                                </td>
+                                <td style="border:1px solid #dddddd;">
+                                    {{PROGRAM_NAME}}
+                                </td>
+                            </tr>
+
+                            <!-- Expenditure Amount -->
+                            <tr>
+                                <td style="border:1px solid #dddddd; font-weight:bold;">
+                                    Head of expense
+                                </td>
+                                <td style="border:1px solid #dddddd;">
+                                    {{HEAD_OF_EXPENSE}}
+                                </td>
+                            </tr>
+
+                            <!-- Expenditure Amount -->
+                            <tr>
+                                <td style="border:1px solid #dddddd; font-weight:bold;">
+                                    Expenditure Amount
+                                </td>
+                                <td style="border:1px solid #dddddd;">
+                                    {{EXPENDITURE_AMOUNT}}
+                                </td>
+                            </tr>
+
+                            <!-- Remarks -->
+                            <tr>
+                                <td style="border:1px solid #dddddd; font-weight:bold;">
+                                    Remarks
+                                </td>
+                                <td style="border:1px solid #dddddd;">
+                                    {{REMARKS}}
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td style="border:1px solid #dddddd; font-weight:bold;">
+                                    Action Required
+                                </td>
+                                <td style="border:1px solid #dddddd;">
+                                    {{ACTION_REQUIRED}}
+                                </td>
+                            </tr>
+
+                        </table>
+
+                        <!-- Closing note -->
+                        <p style="margin-top:15px;">
+                            Kindly review the above details and proceed accordingly.
+                        </p>
+
+                        <!-- Auto-generated email disclaimer -->
+                        <p style="color:#666666; font-size:12px;">
+                            <em>
+                                This email has been generated automatically. Kindly do not respond, as this mailbox is not monitored.
+                            </em>
+                        </p>
+
+                    </td>
+                </tr>
+
+            </table>
+            <!-- End of Email Container -->
+
+        </td>
+    </tr>
+</table>
+
+</body>
+</html>

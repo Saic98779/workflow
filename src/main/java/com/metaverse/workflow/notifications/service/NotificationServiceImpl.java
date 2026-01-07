@@ -91,24 +91,23 @@ public class NotificationServiceImpl {
         // ----------------------------------------------------------
         // 6. DECIDE RECIPIENT TYPE BASED ON SENDER
         // ----------------------------------------------------------
-        String sentBy = req.getSentBy() != null ? req.getSentBy() : "";
-        if ("ADMIN".equalsIgnoreCase(sentBy) || "SPIU".equalsIgnoreCase(sentBy) || "Finance".equalsIgnoreCase(sentBy)) {
-            // Make participantId null-safe to avoid unboxing NPE
-            if (req.getParticipantId() != null && req.getParticipantId() != -1) {
-                notification.setRecipientType(NotificationRecipientType.CALL_CENTER);
-            } else {
-                notification.setRecipientType(NotificationRecipientType.AGENCY);
-            }
-        } else {
-            if (Arrays.stream(NotificationRecipientType.values()).anyMatch(e -> e.name().equalsIgnoreCase(sentBy))) {
-                NotificationRecipientType remarkBy = NotificationRecipientType.valueOf(sentBy.toUpperCase());
-                notification.setRecipientType(remarkBy);
-            }
-        }
+       if(req.getSentBy().equalsIgnoreCase("ADMIN") || req.getSentBy().equalsIgnoreCase("SPIU") || req.getSentBy().equalsIgnoreCase("Finance")){
+           // Make participantId null-safe to avoid unboxing NPE
+           if(req.getParticipantId() != null && req.getParticipantId() != -1 ){
+               notification.setRecipientType(NotificationRecipientType.CALL_CENTER);
+           } else {
+               notification.setRecipientType(NotificationRecipientType.AGENCY);
+           }
+       }else {
+           if (Arrays.stream(NotificationRecipientType.values()).anyMatch(e -> e.name().equals(req.getSentBy()))) {
+               NotificationRecipientType remarkBy = NotificationRecipientType.valueOf(req.getSentBy());
+               notification.setRecipientType(remarkBy);
+           }
+       }
 
-        if (notification.getRecipientType() == null) {
-            notification.setRecipientType(NotificationRecipientType.ADMIN);
-        }
+       if(notification.getRecipientType() == null){
+           notification.setRecipientType(NotificationRecipientType.ADMIN);
+       }
 
         notification.updateLastMessageTime();
         notification.setIsRead(false);
