@@ -1,5 +1,4 @@
-package com.metaverse.workflow.TGTPCNT.service;
-
+package com.metaverse.workflow.tgtpc_handholding.response_dto;
 import lombok.*;
 
 @Getter
@@ -7,7 +6,9 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class TGTPC4NTHandholdingRequest {
+public class TGTPC4NTHandholdingResponse {
+
+    private Long id;
     private Long nonTrainingSubActivityId;
     private String msmeName;
     private String importedComponents;
