@@ -13,6 +13,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -31,6 +34,7 @@ public class TicketController {
 
     private final TicketService ticketService;
     private final ObjectMapper objectMapper = new ObjectMapper();
+    private final static Logger log = LogManager.getLogger(TicketController.class);
 
     // ----------------------------------------------------------------------
     // CREATE TICKET
@@ -58,6 +62,7 @@ public class TicketController {
             TicketDto ticketDtos = objectMapper.readValue(ticketDto, TicketDto.class);
 
             WorkflowResponse response = ticketService.createTicket(ticketDtos, files);
+            log.info("Ticket created successfully | Ticket ID: " + ticketDtos.getTicketId());
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(
@@ -124,6 +129,7 @@ public class TicketController {
             @RequestBody TicketDto ticketDto) {
 
         WorkflowResponse response = ticketService.updateTicket(ticketId, ticketDto);
+        log.info("Ticket updated successfully | Ticket ID: " + ticketDto.getTicketId());
         return ResponseEntity.ok(response);
     }
 

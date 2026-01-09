@@ -6,7 +6,10 @@ import java.util.List;
 import com.metaverse.workflow.activitylog.ActivityLogService;
 import com.metaverse.workflow.common.util.RestControllerBase;
 import com.metaverse.workflow.exceptions.DataException;
+import com.metaverse.workflow.expenditure.controller.ExpenditureController;
 import jakarta.servlet.http.HttpServletRequest;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,12 +26,16 @@ public class LocationController {
 	private LocationService locationSercice;
 	@Autowired
 	private ActivityLogService logService;
-	
+
+	private static final Logger log = LogManager.getLogger(LocationController.class);
+
+
 	@PostMapping("/location/save")
 	public ResponseEntity<WorkflowResponse> saveLocation(@RequestBody LocationRequest location, Principal principal, HttpServletRequest servletRequest)
 	{
 	LocationResponse response = locationSercice.saveLocation(location);
 		if(response==null)return  ResponseEntity.internalServerError().body(WorkflowResponse.builder().message("Invalid Agency Id").status(400).build());
+		log.info("location saved successfully");
 		logService.logs(principal.getName(), "SAVE","location creation","location",servletRequest.getRequestURI());
 		return ResponseEntity.ok(WorkflowResponse.builder().status(200).message("Created").data(response).build());
 	}
@@ -53,6 +60,7 @@ public class LocationController {
 		try {
 			LocationResponse response =locationSercice.updateLocation(locationId, locationRequest);
 			logService.logs(principal.getName(), "UPDATE","location update","location", servletRequest.getRequestURI());
+			log.info("location updated successfully");
 			return ResponseEntity.ok(response);
 		} catch (DataException e) {
 			return RestControllerBase.error(e);
@@ -71,12 +79,15 @@ public class LocationController {
 					"Location deleted successfully with ID " + locationId,
 					"location",
 					servletRequest.getRequestURI());
+			log.info("location deleted successfully");
 			return ResponseEntity.status(response.getStatus()).body(response);
 
 		} catch (DataException e) {
+			log.error(e.getMessage());
 			return ResponseEntity.status(400)
 					.body(WorkflowResponse.error("Failed to delete location: " + e.getMessage()));
 		} catch (Exception e) {
+			log.error(e.getMessage());
 			e.printStackTrace();
 			return ResponseEntity.internalServerError()
 					.body(WorkflowResponse.error("Unexpected error: " + e.getMessage()));

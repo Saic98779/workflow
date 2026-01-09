@@ -16,6 +16,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -34,6 +36,8 @@ public class ExpenditureController {
     @Autowired
     private ActivityLogService logService;
 
+    private static final Logger log = LogManager.getLogger(ExpenditureController.class);
+
     @PostMapping("/bulk/expenditure/save")
     public ResponseEntity<?> saveBulkExpenditure(Principal principal, @RequestPart String request, @RequestPart(required = false) List<MultipartFile> files,
     HttpServletRequest servletRequest) throws JsonProcessingException {
@@ -41,10 +45,12 @@ public class ExpenditureController {
             ObjectMapper objectMapper = new ObjectMapper();
             BulkExpenditureRequest bulkExpenditureRequest = objectMapper.readValue(request, BulkExpenditureRequest.class);
             logService.logs(principal.getName(),"SAVE","adding bulk expenditure for "+ CommonUtil.agencyMap.get(bulkExpenditureRequest.getAgencyId()),"bulk expenditure", servletRequest.getRequestURI());
+            log.info("Saved BulkExpenditure");
             return ResponseEntity.ok(expenditureService.saveBulkExpenditure(bulkExpenditureRequest, files));
         }
         catch(DataException exception)
         {
+            log.error("DataException in saveBulkExpenditure(): {}", exception.getMessage(), exception);
             return RestControllerBase.error(exception);
         } 
     }
@@ -55,6 +61,7 @@ public class ExpenditureController {
             ObjectMapper objectMapper = new ObjectMapper();
             BulkExpenditureRequest bulkExpenditureRequest = objectMapper.readValue(request, BulkExpenditureRequest.class);
             logService.logs(principal.getName(),"UPDATE","update bulk expenditure ","bulk expenditure", servletRequest.getRequestURI());
+            log.info("Updated BulkExpenditure id={}", expenditureId);
             return ResponseEntity.ok(expenditureService.updateBulkExpenditure(expenditureId, bulkExpenditureRequest, files));
         } catch (DataException exception) {
             return RestControllerBase.error(exception);
@@ -67,6 +74,7 @@ public class ExpenditureController {
             logService.logs(principal.getName(),"DELETE","delete bulk expenditure ","bulk expenditure",servletRequest.getRequestURI());
             return ResponseEntity.ok(response);
         } catch (DataException e) {
+            log.error("DataException in updateBulkExpenditure(): {}", e.getMessage(), e);
             return RestControllerBase.error(e);
         }
     }
@@ -217,8 +225,10 @@ public class ExpenditureController {
         try {
             WorkflowResponse response = expenditureService.deleteProgramExpenditure(expenditureId);
             logService.logs(principal.getName(), "DELETE", "Deleting program expenditure with ID: " + expenditureId, "Program Expenditure", servletRequest.getRequestURI());
+            log.info("delete program expenditure with ID: " + expenditureId);
             return ResponseEntity.ok(response);
         } catch (DataException e) {
+            log.error("DataException in delete(): {}", e.getMessage(), e);
             return RestControllerBase.error(e);
         }
     }
@@ -238,10 +248,13 @@ public class ExpenditureController {
                                            HttpServletRequest servletRequest) {
         try {
             logService.logs(principal.getName(), "UPDATE", "Adding/updating remarks for expenditure with status: " + status, "Program Expenditure", servletRequest.getRequestURI());
+            log.info("adding remarks for expenditure with status: " + status);
             return  ResponseEntity.ok(expenditureService.addRemarkOrResponse(remarksDTO, status));
         } catch (DataException e) {
+            log.error("DataException in delete(): {}", e.getMessage(), e);
             return RestControllerBase.error(e);
         } catch (IOException e) {
+            log.error("IOException in delete(): {}", e.getMessage(), e);
             throw new RuntimeException(e);
         }
     }
@@ -252,8 +265,10 @@ public class ExpenditureController {
     {
         try {
             logService.logs(principal.getName(), "UPDATE", "Adding/updating remarks for transaction with status: " + status, "Bulk Transaction", servletRequest.getRequestURI());
+            log.info("adding remarks for transaction with status: " + status);
             return  ResponseEntity.ok(expenditureService.addRemarkOrResponseTransaction(remarksDTO, status));
         } catch (DataException e) {
+            log.error("DataException in delete(): {}", e.getMessage(), e);
             return RestControllerBase.error(e);
         }
     }

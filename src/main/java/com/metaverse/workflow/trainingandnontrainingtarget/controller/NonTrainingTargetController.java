@@ -11,6 +11,8 @@ import com.metaverse.workflow.trainingandnontrainingtarget.service.TargetRequest
 import com.metaverse.workflow.trainingandnontrainingtarget.service.TargetResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,10 +28,12 @@ public class NonTrainingTargetController {
 
     private final NonTrainingTargetsAndAchievementsService nonTrainingTargetsAndAchievementsService;
     private final ActivityLogService logService;
+    private static final Logger log = LogManager.getLogger(NonTrainingTargetController.class);
 
     @GetMapping("/targets-and-achievements/agency/{agencyId}")
     public ResponseEntity<?> getAllTrainingTargets(@RequestParam String year, @PathVariable("agencyId") Long agencyId) {
         List<NonTrainingTargetsAndAchievementsResponse> response = nonTrainingTargetsAndAchievementsService.getTargetsAndAchievements(year, agencyId);
+        log.info("Returning all targets for agency: " + agencyId);
         return ResponseEntity.ok(response);
     }
     @PostMapping("/target/save")
@@ -41,6 +45,7 @@ public class NonTrainingTargetController {
                     "NonTraining Target created successfully | Agency ID: " + request.getAgencyId(),
                     "NonTrainingTarget",
                     servletRequest.getRequestURI());
+            log.info("NonTraining Target created successfully | Agency ID: " + request.getAgencyId());
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (DataException e) {
             return RestControllerBase.error(e);

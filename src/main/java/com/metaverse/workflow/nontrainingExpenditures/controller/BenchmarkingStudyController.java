@@ -9,6 +9,7 @@ import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.common.util.RestControllerBase;
 import com.metaverse.workflow.enums.BillRemarksStatus;
 import com.metaverse.workflow.exceptions.DataException;
+import com.metaverse.workflow.nontraining.controller.ProgressMonitoringController;
 import com.metaverse.workflow.nontrainingExpenditures.Dto.BenchmarkingStudyRequest;
 import com.metaverse.workflow.nontrainingExpenditures.service.BenchmarkingStudyService;
 import com.metaverse.workflow.nontrainingExpenditures.service.NonTrainingExpenditureRemarksDTO;
@@ -16,6 +17,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.websocket.server.PathParam;
 import lombok.RequiredArgsConstructor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,6 +34,8 @@ public class BenchmarkingStudyController {
 
     private final BenchmarkingStudyService service;
     private final ActivityLogService logService;
+    private static final Logger log = LogManager.getLogger(BenchmarkingStudyController.class);
+
 
     @PostMapping(path="/save",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> create(Principal principal, @RequestPart String benchmarkingStudy , @RequestPart(value = "file", required = false) MultipartFile file) {
@@ -39,12 +44,15 @@ public class BenchmarkingStudyController {
             BenchmarkingStudyRequest benchmarkingStudyRequest = objectMapper.readValue(benchmarkingStudy, BenchmarkingStudyRequest.class);
             WorkflowResponse response = service.createBenchmarkingStudy(benchmarkingStudyRequest,file);
             logService.logs(principal.getName(), "SAVE","Benchmarking study created successfully","Benchmarking","/benchmarking-study/save");
+            log.info("SAVE","Benchmarking study created successfully");
             return ResponseEntity.ok(response);
         } catch (DataException e) {
+            log.info("Benchmarking study failed "+e.getMessage());
             return RestControllerBase.error(e);
         } catch (JsonMappingException e) {
             throw new RuntimeException(e);
         } catch (JsonProcessingException e) {
+
             throw new RuntimeException(e);
         }
     }
@@ -56,6 +64,7 @@ public class BenchmarkingStudyController {
         try {
             WorkflowResponse response = service.updateBenchmarkingStudy(benchmarkingStudyId, request);
             logService.logs(principal.getName(), "UPDATE", "Benchmarking study updated successfully | ID: " + benchmarkingStudyId, "Benchmarking", "/benchmarking-study/" + benchmarkingStudyId);
+            log.info("benchmarkingStudy updated Successfully | ID: " + benchmarkingStudyId);
             return ResponseEntity.ok(response);
         } catch (DataException e) {
             return RestControllerBase.error(e);
@@ -66,6 +75,7 @@ public class BenchmarkingStudyController {
     public ResponseEntity<?> getBySubActivityId(@PathParam("subActivityId") Long subActivityId) {
         try {
             WorkflowResponse response = service.getBenchmarkingStudyBySubActivityId(subActivityId);
+            log.info("getBenchmarkingStudyBySubActivityId Successfully | ID: " + subActivityId);
             return ResponseEntity.ok(response);
         } catch (DataException e) {
             return RestControllerBase.error(e);
@@ -76,6 +86,7 @@ public class BenchmarkingStudyController {
     public ResponseEntity<?> getById(@PathVariable Long benchmarkingStudyId) {
         try {
             WorkflowResponse response = service.getBenchmarkingStudyById(benchmarkingStudyId);
+            log.info("getBenchmarkingStudyById Successfully | ID: " + benchmarkingStudyId);
             return ResponseEntity.ok(response);
         } catch (DataException e) {
             return RestControllerBase.error(e);
@@ -87,8 +98,10 @@ public class BenchmarkingStudyController {
         try {
             WorkflowResponse response = service.deleteBenchmarkingStudy(benchmarkingStudyId);
             logService.logs(principal.getName(), "DELETE", "Benchmarking study deleted successfully | ID: " + benchmarkingStudyId, "Benchmarking", "/benchmarking-study"+benchmarkingStudyId);
+            log.info("Benchmarking study deleted successfully | ID: " + benchmarkingStudyId);
             return ResponseEntity.ok(response);
         } catch (DataException e) {
+            log.info("Benchmarking study failed "+e.getMessage());
             return RestControllerBase.error(e);
         }
     }
@@ -98,6 +111,7 @@ public class BenchmarkingStudyController {
                                                                 @RequestParam(value = "status", required = false) BillRemarksStatus status,
                                                                 HttpServletRequest servletRequest) {
         try {
+            log.info("save RemarksToResourceExpenditure Successfully | ID: " + principal.getName());
             return  ResponseEntity.ok(service.addRemarkOrResponse(remarksDTO, status));
         } catch (DataException e) {
             return RestControllerBase.error(e);

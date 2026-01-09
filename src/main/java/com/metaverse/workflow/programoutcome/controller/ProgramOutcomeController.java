@@ -20,6 +20,9 @@ import jakarta.websocket.server.PathParam;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.parser.ParseException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -43,11 +46,14 @@ public class ProgramOutcomeController {
     @Autowired
     private UdyamService udyamService;
 
+    private final static Logger log = LogManager.getLogger(ProgramOutcomeController.class);
+
     @GetMapping(value = "/program/outcome/tables")
     public ResponseEntity<WorkflowResponse> getProgramOutcomeTables() {
         List<ProgramOutcomeTable> outcomeTableList = programOutcomeService.getProgramOutcomeTables();
         //Map<String, String> outcomeTableMap = outcomeTableList.stream().collect(Collectors.toMap(table -> table.getOutcomeTableDisplayName(), table -> table.getOutcomeTableName()));
         List<ProgramOutcomeTableResponse> response = outcomeTableList.stream().map(table -> ProgramOutcomeTableResponse.builder().outcomeTableId(table.getOutcomeTableId()).outcomeTableDisplayName(table.getOutcomeTableDisplayName()).outcomeTableName(table.getOutcomeTableName()).build()).collect(Collectors.toList());
+        log.info("getProgramOutcomeTables response from program outcome table service");
         return ResponseEntity.ok(WorkflowResponse.builder().status(200).message("Success").data(response).build());
     }
 
@@ -68,6 +74,7 @@ public class ProgramOutcomeController {
         WorkflowResponse response = null;
         try {
             response = programOutcomeService.saveOutCome(outcomeName, data);
+            log.info("saveOutcome response from program outcome service");
         } catch (DataException exception) {
             return RestControllerBase.error(exception);
         }
@@ -81,16 +88,19 @@ public class ProgramOutcomeController {
     @GetMapping(value = "/program/getOutcomeByName/{outcomeName}")
     public ResponseEntity<WorkflowResponse> getProgramOutcomes(@PathVariable("outcome") String outcomeName) {
         WorkflowResponse response = programOutcomeService.getOutcomeDetailsByName(outcomeName);
+        log.info("getOutcomeByName response from program outcome service");
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/udyam/data/upload")
     public ResponseEntity<?> uploadExcel(@RequestParam("file") MultipartFile file,Principal principal,HttpServletRequest servletRequest) {
         if (file.isEmpty()) {
+            log.info("file is empty");
             return ResponseEntity.badRequest().body("File is empty");
         }
         try {
             udyamService.saveUdyamDataFromExcel(file);
+            log.info("saveUdyamDataFromExcel response from program outcome service");
         } catch (DataException e) {
             return RestControllerBase.error(e);
         }
@@ -98,6 +108,7 @@ public class ProgramOutcomeController {
                 "Udyam Excel data uploaded successfully",
                 "UdyamData",
                 servletRequest.getRequestURI());
+        log.info("saveUdyamDataFromExcel response from program outcome service");
         return ResponseEntity.ok("Excel data saved successfully!");
     }
 

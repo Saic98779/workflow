@@ -17,6 +17,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.websocket.server.PathParam;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -36,6 +38,7 @@ public class NonTrainingExpenditureController extends RestControllerBase {
     private final NonTrainingActivityService nonTrainingActivityService;
     private final ActivityLogService logService;
     private final NonTrainingResourceExpenditureService nonTrainingResourceExpenditureService;
+    private final static Logger log =  LogManager.getLogger(NonTrainingExpenditureController.class);
 
     @PostMapping(path = "/save",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> create(Principal principal, @RequestPart("dto") String dto, @RequestPart(value = "file", required = false) MultipartFile file) {
@@ -44,6 +47,7 @@ public class NonTrainingExpenditureController extends RestControllerBase {
             NonTrainingExpenditureDTO nonTrainingExpenditureDTO = objectMapper.readValue(dto, NonTrainingExpenditureDTO.class);
             WorkflowResponse response = service.create(nonTrainingExpenditureDTO,file);
             logService.logs(principal.getName(), "SAVE", "Non-Training Expenditure created successfully", "NonTrainingExpenditure", "/non-training/save");
+            log.info("NonTrainingExpenditure created successfully");
             return ResponseEntity.ok(response);
         } catch (DataException e) {
             return error(e);
@@ -57,6 +61,7 @@ public class NonTrainingExpenditureController extends RestControllerBase {
     @GetMapping("/all")
     public ResponseEntity<?> getAll() {
         List<NonTrainingExpenditureDTO> expenditures = service.getAll();
+        log.info("Successfully fetched all Non Training Expenditures");
         return ResponseEntity.ok(
                 WorkflowResponse.builder()
                         .status(200)
@@ -70,6 +75,7 @@ public class NonTrainingExpenditureController extends RestControllerBase {
     public ResponseEntity<?> getById(@PathVariable Long id) {
         try {
             NonTrainingExpenditureDTO dto = service.getById(id);
+            log.info("Successfully fetched Non Training Expenditure with id: {}", id);
             return ResponseEntity.ok(
                     WorkflowResponse.builder()
                             .status(200)
@@ -89,7 +95,7 @@ public class NonTrainingExpenditureController extends RestControllerBase {
             NonTrainingExpenditureDTO nonTrainingExpenditureDTO =    objectMapper.readValue(dto,NonTrainingExpenditureDTO.class);
             NonTrainingExpenditureDTO updated = service.update(id, nonTrainingExpenditureDTO,file);
             logService.logs(principal.getName(), "UPDATE", "Non-Training Expenditure updated successfully | ID: " + id, "NonTrainingExpenditure", "/non-training/update/" + id);
-
+            log.info("NonTrainingExpenditure updated successfully");
             return ResponseEntity.ok(
                     WorkflowResponse.builder()
                             .status(200)
@@ -111,6 +117,7 @@ public class NonTrainingExpenditureController extends RestControllerBase {
         try {
             service.delete(id);
             logService.logs(principal.getName(), "DELETE", "Non-Training Expenditure deleted successfully | ID: " + id, "NonTrainingExpenditure", "/non-training-expenditure/delete/" + id);
+            log.info("NonTrainingExpenditure deleted successfully");
             return ResponseEntity.ok(
                     WorkflowResponse.builder()
                             .status(200)
@@ -127,6 +134,7 @@ public class NonTrainingExpenditureController extends RestControllerBase {
         try {
             WorkflowResponse response = service.saveResource(resourceDto);
             logService.logs(principal.getName(), "SAVE", "Non-Training Resource created successfully", "NonTrainingResource", "/non-training/resource");
+            log.info("NonTrainingResource created successfully");
             return ResponseEntity.ok(response);
         } catch (DataException e) {
             return error(e);
@@ -139,6 +147,7 @@ public class NonTrainingExpenditureController extends RestControllerBase {
                                             @RequestBody NonTrainingResourceDTO resourceDto) {
         WorkflowResponse response = service.updateResource(id, resourceDto);
         logService.logs(principal.getName(), "UPDATE", "Non-Training Resource updated successfully | ID: " + id, "NonTrainingResource", "/non-training/resource/update/" + id);
+        log.info("NonTrainingResource updated successfully");
         return ResponseEntity.ok(response);
     }
 
@@ -147,6 +156,7 @@ public class NonTrainingExpenditureController extends RestControllerBase {
         try {
             WorkflowResponse response = service.deleteResource(id);
             logService.logs(principal.getName(), "DELETE", "Non-Training Resource deleted successfully | ID: " + id, "NonTrainingResource", "/non-training/resource/delete/" + id);
+            log.info("NonTrainingResource deleted successfully");
             return ResponseEntity.ok(response);
         } catch (DataException e) {
             return error(e);
@@ -163,6 +173,7 @@ public class NonTrainingExpenditureController extends RestControllerBase {
                     "Non-Training Resource Expenditure created successfully",
                     "NonTrainingResourceExpenditure",
                     "/non-training/expenditure/resource");
+            log.info("Non-Training Resource Expenditure created successfully");
             return ResponseEntity.ok(response);
         } catch (DataException e) {
             return error(e);
@@ -184,6 +195,7 @@ public class NonTrainingExpenditureController extends RestControllerBase {
                     "Non-Training Resource Expenditure updated successfully | ID: " + expenditureId,
                     "NonTrainingResourceExpenditure",
                     "/non-training/expenditure/resource/update/" + expenditureId);
+            log.info("Non-Training Resource Expenditure updated successfully");
             return ResponseEntity.ok(response);
         } catch (JsonProcessingException e) {
             return ResponseEntity.badRequest().body(
@@ -215,6 +227,7 @@ public class NonTrainingExpenditureController extends RestControllerBase {
                     "Non-Training Resource Expenditure deleted successfully | ID: " + expenditureId,
                     "NonTrainingResourceExpenditure",
                     "/non-training/expenditure/resource/delete/" + expenditureId);
+            log.info("Non-Training Resource Expenditure deleted successfully");
             return ResponseEntity.ok(response);
         } catch (DataException e) {
             return RestControllerBase.error(e);
@@ -278,6 +291,7 @@ public class NonTrainingExpenditureController extends RestControllerBase {
                                            HttpServletRequest servletRequest) {
         try {
             logService.logs(principal.getName(), "UPDATE", "Adding/updating remarks for non expenditure with status: " + status, "Program Expenditure", servletRequest.getRequestURI());
+            log.info("Adding remarks for non expenditure with status: " + status);
             return  ResponseEntity.ok(service.addRemarkOrResponse(remarksDTO, status));
         } catch (DataException e) {
             return RestControllerBase.error(e);
@@ -291,6 +305,7 @@ public class NonTrainingExpenditureController extends RestControllerBase {
                                            HttpServletRequest servletRequest) {
         try {
             logService.logs(principal.getName(), "UPDATE", "Adding/updating remarks for non expenditure with status: " + status, "Non-Training Expenditure", servletRequest.getRequestURI());
+            log.info("Adding remarks for non expenditure with status: " + status);
             return  ResponseEntity.ok(nonTrainingResourceExpenditureService.addRemarkOrResponse(remarksDTO, status));
         } catch (DataException e) {
             return RestControllerBase.error(e);

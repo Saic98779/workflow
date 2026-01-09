@@ -8,6 +8,8 @@ import com.metaverse.workflow.common.util.RestControllerBase;
 import com.metaverse.workflow.exceptions.DataException;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +24,7 @@ public class BankNbfcFinanceController {
 
     private final BankNbfcFinanceService service;
     private final ActivityLogService logService;
+    private static final Logger log = LogManager.getLogger(BankNbfcFinanceController.class);
 
     @PostMapping(path = "/save", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> save(
@@ -31,6 +34,7 @@ public class BankNbfcFinanceController {
         try {
             WorkflowResponse response = service.save(request);
 
+            log.info("Save successful for BankNbfcFinance");
             logService.logs(
                     principal.getName(),
                     "SAVE",
@@ -42,6 +46,7 @@ public class BankNbfcFinanceController {
             return ResponseEntity.ok(response);
 
         } catch (DataException e) {
+            log.error("DataException in save(): {}", e.getMessage());
             return RestControllerBase.error(e);
         }
     }
@@ -55,6 +60,7 @@ public class BankNbfcFinanceController {
         try {
             WorkflowResponse response = service.update(id, request);
 
+            log.info("Update successful for id={}", id);
             logService.logs(
                     principal.getName(),
                     "UPDATE",
@@ -66,6 +72,7 @@ public class BankNbfcFinanceController {
             return ResponseEntity.ok(response);
 
         } catch (DataException e) {
+            log.error("DataException in update(): {}", e.getMessage(), e);
             return RestControllerBase.error(e);
         }
     }
@@ -78,6 +85,7 @@ public class BankNbfcFinanceController {
         try {
             WorkflowResponse response = service.getById(id);
 
+            log.info("getById successful for id={}", id);
             logService.logs(
                     principal.getName(),
                     "VIEW",
@@ -89,6 +97,7 @@ public class BankNbfcFinanceController {
             return ResponseEntity.ok(response);
 
         } catch (DataException e) {
+            log.error("DataException in getById(): {}", e.getMessage(), e);
             return RestControllerBase.error(e);
         }
     }
@@ -100,6 +109,7 @@ public class BankNbfcFinanceController {
 
         WorkflowResponse response = service.getByNonTrainingSubActivityId(subActivityId);
 
+        log.info("getBySubActivity successful for subActivityId={}", subActivityId);
         logService.logs(
                 principal.getName(),
                 "VIEW",
@@ -109,28 +119,5 @@ public class BankNbfcFinanceController {
         );
 
         return ResponseEntity.ok(response);
-    }
-
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> delete(
-            Principal principal,
-            @PathVariable Long id) {
-
-        try {
-            WorkflowResponse response = service.delete(id);
-
-            logService.logs(
-                    principal.getName(),
-                    "DELETE",
-                    "Bank / NBFC Finance deleted successfully",
-                    "BankNbfcFinance",
-                    "/bank-nbfc-finance/delete/" + id
-            );
-
-            return ResponseEntity.ok(response);
-
-        } catch (DataException e) {
-            return RestControllerBase.error(e);
-        }
     }
 }

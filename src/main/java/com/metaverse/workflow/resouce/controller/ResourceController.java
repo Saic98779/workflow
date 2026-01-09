@@ -4,6 +4,8 @@ import com.metaverse.workflow.activitylog.ActivityLogService;
 import com.metaverse.workflow.common.util.RestControllerBase;
 import com.metaverse.workflow.exceptions.DataException;
 import jakarta.servlet.http.HttpServletRequest;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,10 +25,13 @@ public class ResourceController {
     @Autowired
     private ActivityLogService logService;
 
+    private static final Logger log = LogManager.getLogger(ResourceController.class);
+
     @PostMapping("/resource/save")
     public ResponseEntity<WorkflowResponse> saveResource(@RequestBody ResourceRequest resourceRequest, Principal principal, HttpServletRequest servletRequest) {
         ResourceResponse saveResource = service.saveResource(resourceRequest);
         logService.logs(principal.getName(), "SAVE", "Saving new resource", "Resource", servletRequest.getRequestURI());
+        log.info("Saving new resource: " + saveResource);
         return ResponseEntity.ok(WorkflowResponse.builder().status(200).message("Created").data(saveResource).build());
     }
 
@@ -40,6 +45,7 @@ public class ResourceController {
     public ResponseEntity<?> updateResource(@PathVariable Long resourceId, @RequestBody ResourceRequest resourceRequest,Principal principal,HttpServletRequest servletRequest) {
         try {
             logService.logs(principal.getName(), "UPDATE", "Updating resource with ID: " + resourceId, "Resource", servletRequest.getRequestURI());
+            log.info("Updating resource with ID: " + resourceId);
             return ResponseEntity.ok(service.updateResources(resourceRequest, resourceId));
         } catch (DataException e) {
             return RestControllerBase.error(e);
@@ -49,6 +55,7 @@ public class ResourceController {
     public ResponseEntity<?> deleteResource(@PathVariable Long resourceId,Principal principal,HttpServletRequest servletRequest) {
         try {
             logService.logs(principal.getName(), "DELETE", "Deleting resource with ID: " + resourceId, "Resource", servletRequest.getRequestURI());
+            log.info("Deleting resource with ID: " + resourceId);
             return ResponseEntity.ok(service.deleteResources(resourceId));
         } catch (DataException e) {
             return RestControllerBase.error(e);

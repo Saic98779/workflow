@@ -15,6 +15,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.mail.Header;
 import jakarta.websocket.server.PathParam;
 import lombok.RequiredArgsConstructor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.hibernate.event.spi.PreInsertEvent;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -32,6 +34,7 @@ import java.util.Map;
 public class WeHubController {
     private final WeHubService service;
     private  final ActivityLogService logService;
+    private final static Logger log =  LogManager.getLogger(WeHubController.class);
 
     @PostMapping("/save")
     public ResponseEntity<?> create(@RequestBody WeHubSelectedCompaniesRequest request, Principal principal) {
@@ -41,6 +44,7 @@ public class WeHubController {
                     "WeHub Selected Companies created successfully",
                     "WeHubSelectedCompanies",
                     "/save");
+            log.info("WeHub Selected Companies created successfully");
             return ResponseEntity.ok(response);
         } catch (DataException e) {
             return RestControllerBase.error(e);
@@ -56,6 +60,7 @@ public class WeHubController {
                     "WeHub Selected Companies updated successfully | ID: " + candidateId,
                     "WeHubSelectedCompanies",
                     "" + candidateId);
+            log.info("WeHub Selected Companies updated successfully");
             return ResponseEntity.ok(response);
         } catch (DataException e) {
             return RestControllerBase.error(e);
@@ -67,6 +72,7 @@ public class WeHubController {
     public ResponseEntity<?> getBySubActivityId(@PathParam("subActivityId") Long subActivityId) {
         try {
             WorkflowResponse response = service.getBySubActivityId(subActivityId);
+            log.info("WeHub Selected Companies retrieved successfully");
             return ResponseEntity.ok(response);
         } catch (DataException e) {
             return RestControllerBase.error(e);
@@ -81,6 +87,7 @@ public class WeHubController {
                     "WeHub Selected Companies deleted successfully | ID: " + candidateId,
                     "WeHubSelectedCompanies",
                     "" + candidateId);
+            log.info("WeHub Selected Companies deleted successfully");
             return ResponseEntity.ok(response);
         } catch (DataException e) {
             return RestControllerBase.error(e);
@@ -91,6 +98,7 @@ public class WeHubController {
     public ResponseEntity<?> GetById(@PathVariable Long candidateId) {
         try {
             WorkflowResponse response = service.getById(candidateId);
+            log.info("WeHub Selected Companies retrieved successfully");
             return ResponseEntity.ok(response);
         } catch (DataException e) {
             return RestControllerBase.error(e);
@@ -105,6 +113,7 @@ public class WeHubController {
                     "WeHub Handholding created successfully",
                     "WeHubHandholding",
                     "/handholding/save");
+            log.info("WeHub Handholding created successfully");
             return ResponseEntity.ok(service.createHandholding(request));
 
         } catch (DataException e) {
@@ -120,6 +129,7 @@ public class WeHubController {
                     "WeHub Handholding updated successfully | ID: " + handholdingId,
                     "WeHubHandholding",
                     "/handholding/update/" + handholdingId);
+            log.info("WeHub Handholding updated successfully");
             return ResponseEntity.ok(service.updateHandholding(handholdingId, request));
         } catch (DataException e) {
             return RestControllerBase.error(e);
@@ -151,6 +161,7 @@ public class WeHubController {
                     "WeHub Handholding deleted successfully | ID: " + handholdingId,
                     "WeHubHandholding",
                     "/handholding/" + handholdingId);
+            log.info("WeHub Handholding deleted successfully");
             return ResponseEntity.ok(service.deleteHandholding(handholdingId));
         } catch (DataException e) {
             return RestControllerBase.error(e);
@@ -165,6 +176,7 @@ public class WeHubController {
                     "WeHub SDG created successfully",
                     "WeHubSDG",
                     "/wehub_sdg/save");
+            log.info("WeHub SDG created successfully");
             return ResponseEntity.ok(response);
         } catch (DataException e) {
             return ResponseEntity.status(400).body(
@@ -184,6 +196,7 @@ public class WeHubController {
                     "WeHub SDG updated successfully | ID: " + weHubSDGId,
                     "WeHubSDG",
                     "/wehub_sdg/update/" + weHubSDGId);
+            log.info("WeHub SDG updated successfully");
             return ResponseEntity.ok(response);
         } catch (DataException e) {
             return ResponseEntity.status(400).body(
@@ -199,6 +212,7 @@ public class WeHubController {
     public ResponseEntity<?> getByActivityId(@PathVariable Long nonTrainingSubActivityId,Principal principal) {
         try {
             WorkflowResponse response = service.getWeHubSDGByActivityId(nonTrainingSubActivityId);
+            log.info("WeHub SDG retrieved successfully"+principal.getName());
             return ResponseEntity.ok(response);
         } catch (DataException e) {
             return ResponseEntity.status(400).body(
@@ -214,6 +228,7 @@ public class WeHubController {
     public ResponseEntity<?> getWeHubSDGById(@PathVariable Long weHubSDGId,Principal principal) {
         try {
             WorkflowResponse response = service.getWeHubSDGById(weHubSDGId);
+            log.info("getWeHubSDGById WeHub SDG retrieved successfully"+principal.getName());
             return ResponseEntity.ok(response);
         } catch (DataException e) {
             return ResponseEntity.status(400).body(
@@ -233,6 +248,7 @@ public class WeHubController {
                     "WeHub SDG deleted successfully | ID: " + weHubSDGId,
                     "WeHubSDG",
                     "/wehub_sdg/" + weHubSDGId);
+            log.info("WeHub SDG deleted successfully");
             return ResponseEntity.ok(response);
         } catch (DataException e) {
             return ResponseEntity.status(400).body(
@@ -253,6 +269,7 @@ public class WeHubController {
     @GetMapping(value = "/corpusDebitFinancing", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> corpusDebitFinancing() {
         try {
+            log.info("Corpus Debit Financing successfully");
             return ResponseEntity.ok(
                     WorkflowResponse.builder()
                             .status(200)

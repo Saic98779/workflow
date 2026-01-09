@@ -8,6 +8,8 @@ import com.metaverse.workflow.common.util.RestControllerBase;
 import com.metaverse.workflow.exceptions.DataException;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,27 +24,19 @@ public class SectorAdvisoryController {
 
     private final SectorAdvisoryService service;
     private final ActivityLogService logService;
+    private static final Logger log = LogManager.getLogger(SectorAdvisoryController.class);
 
     /* ========================= SAVE ========================= */
 
     @PostMapping(path = "/save", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> save(
-            Principal principal,
-            @RequestBody SectorAdvisoryRequest request) {
-
+    public ResponseEntity<?> save(Principal principal, @RequestBody SectorAdvisoryRequest request) {
         try {
             WorkflowResponse response = service.save(request);
-
-            logService.logs(
-                    principal.getName(),
-                    "SAVE",
-                    "Sector advisory saved successfully",
-                    "SectorAdvisory",
-                    "/sector-advisory/save"
-            );
-
+            log.info("Save successful for SectorAdvisory");
+            logService.logs(principal.getName(), "SAVE", "Sector advisory saved successfully", "SectorAdvisory", "/sector-advisory/save");
             return ResponseEntity.ok(response);
         } catch (DataException e) {
+            log.error("DataException in save(): {}", e.getMessage(), e);
             return RestControllerBase.error(e);
         }
     }
@@ -50,25 +44,17 @@ public class SectorAdvisoryController {
     /* ========================= UPDATE ========================= */
 
     @PutMapping(path = "/update/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> update(
-            Principal principal,
-            @PathVariable Long id,
-            @RequestBody SectorAdvisoryRequest request) {
-
+    public ResponseEntity<?> update(Principal principal, @PathVariable Long id, @RequestBody SectorAdvisoryRequest request) {
         try {
             WorkflowResponse response = service.update(id, request);
-
-            logService.logs(
-                    principal.getName(),
-                    "UPDATE",
-                    "Sector advisory updated successfully",
-                    "SectorAdvisory",
-                    "/sector-advisory/update/" + id
-            );
-
+            log.info("Update successful for id={}", id);
+            logService.logs(principal.getName(), "UPDATE", "Sector advisory updated successfully", "SectorAdvisory", "/sector-advisory/update/" + id);
             return ResponseEntity.ok(response);
         } catch (DataException e) {
+            log.error("DataException in update(): {}", e.getMessage(), e);
             return RestControllerBase.error(e);
+        } finally {
+            log.info("Exiting update()");
         }
     }
 
@@ -81,17 +67,11 @@ public class SectorAdvisoryController {
 
         try {
             WorkflowResponse response = service.getById(id);
-
-            logService.logs(
-                    principal.getName(),
-                    "VIEW",
-                    "Sector advisory viewed",
-                    "SectorAdvisory",
-                    "/sector-advisory/get/" + id
-            );
-
+            log.info("getById successful for id={}", id);
+            logService.logs(principal.getName(), "VIEW", "Sector advisory viewed", "SectorAdvisory", "/sector-advisory/get/" + id);
             return ResponseEntity.ok(response);
         } catch (DataException e) {
+            log.error("DataException in getById(): {}", e.getMessage(), e);
             return RestControllerBase.error(e);
         }
     }
@@ -99,44 +79,24 @@ public class SectorAdvisoryController {
     /* ================= GET BY NON TRAINING SUB ACTIVITY ================= */
 
     @GetMapping("/get-by-sub-activity/{subActivityId}")
-    public ResponseEntity<?> getBySubActivity(
-            Principal principal,
-            @PathVariable Long subActivityId) {
-
-        WorkflowResponse response =
-                service.getByNonTrainingSubActivityId(subActivityId);
-
-        logService.logs(
-                principal.getName(),
-                "VIEW",
-                "Sector advisory viewed by sub activity",
-                "SectorAdvisory",
-                "/sector-advisory/get-by-sub-activity/" + subActivityId
-        );
-
+    public ResponseEntity<?> getBySubActivity(Principal principal, @PathVariable Long subActivityId) {
+        WorkflowResponse response = service.getByNonTrainingSubActivityId(subActivityId);
+        log.info("getBySubActivity successful for subActivityId={}, response={}", subActivityId, response);
+        logService.logs(principal.getName(), "VIEW", "Sector advisory viewed by sub activity", "SectorAdvisory", "/sector-advisory/get-by-sub-activity/" + subActivityId);
         return ResponseEntity.ok(response);
     }
 
     /* ========================= DELETE ========================= */
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> delete(
-            Principal principal,
-            @PathVariable Long id) {
-
+    public ResponseEntity<?> delete(Principal principal, @PathVariable Long id) {
         try {
             WorkflowResponse response = service.delete(id);
-
-            logService.logs(
-                    principal.getName(),
-                    "DELETE",
-                    "Sector advisory deleted successfully",
-                    "SectorAdvisory",
-                    "/sector-advisory/delete/" + id
-            );
-
+            log.info("Delete successful for id={}", id);
+            logService.logs(principal.getName(), "DELETE", "Sector advisory deleted successfully", "SectorAdvisory", "/sector-advisory/delete/" + id);
             return ResponseEntity.ok(response);
         } catch (DataException e) {
+            log.error("DataException in delete(): {}", e.getMessage(), e);
             return RestControllerBase.error(e);
         }
     }
