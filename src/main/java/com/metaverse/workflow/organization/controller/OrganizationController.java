@@ -2,8 +2,11 @@ package com.metaverse.workflow.organization.controller;
 
 import com.metaverse.workflow.activitylog.ActivityLogService;
 import com.metaverse.workflow.common.response.WorkflowResponse;
+import com.metaverse.workflow.nontrainingExpenditures.controller.WeHubController;
 import com.metaverse.workflow.organization.service.OrganizationRequest;
 import com.metaverse.workflow.organization.service.OrganizationService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,11 +20,14 @@ public class OrganizationController {
     private OrganizationService organizationService;
     @Autowired
     private ActivityLogService logService;
+    private final static Logger log =  LogManager.getLogger(OrganizationController.class);
+
 
     @PostMapping("/organization/save")
     public ResponseEntity<WorkflowResponse> saveOrganization(@RequestBody OrganizationRequest request, Principal principal) {
         WorkflowResponse response = organizationService.saveOrganization(request);
         logService.logs(principal.getName(), "SAVE","organization creation","organization","/organization/save");
+        log.info(principal.getName(), "SAVE","organization update","organization","/organization/save");
         return ResponseEntity.ok(response);
     }
 
@@ -55,6 +61,7 @@ public class OrganizationController {
     public ResponseEntity<WorkflowResponse> patchOrganization(@PathVariable Long organizationId, @RequestBody OrganizationRequest request
     ) {
         WorkflowResponse updated = organizationService.updateOrganization(organizationId, request);
+        log.info("Organization updated successfully");
         return ResponseEntity.ok(updated);
     }
 }

@@ -5,6 +5,8 @@ import com.metaverse.workflow.common.util.ApplicationAPIResponse;
 import com.metaverse.workflow.program.service.ProgramRescheduleResponse;
 import com.metaverse.workflow.program.service.ProgramRescheduleService;
 import lombok.RequiredArgsConstructor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +19,7 @@ import java.util.List;
 public class ProgramRescheduleController {
 
     private final ProgramRescheduleService programRescheduleService;
-
+    private static final Logger log = LogManager.getLogger(ProgramRescheduleController.class);
     @GetMapping("/{programId}")
     public ResponseEntity<ApplicationAPIResponse<List<ProgramRescheduleResponse>>> getReschedules(@PathVariable Long programId) {
         List<ProgramRescheduleResponse> response = programRescheduleService.getReschedulesByProgramId(programId);
@@ -27,7 +29,7 @@ public class ProgramRescheduleController {
                 .message("Success")
                 .data(response)
                 .build();
-
+        log.info("successfully get by program id {}", programId);
         return ResponseEntity.ok(applicationAPIResponse);
     }
 

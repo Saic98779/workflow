@@ -21,6 +21,8 @@ import com.metaverse.workflow.program.service.ProgramService;
 import com.metaverse.workflow.notifications.dto.GlobalNotificationRequest;
 import com.metaverse.workflow.notifications.service.NotificationServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -52,6 +54,9 @@ public class ProgramStatusController {
     @Autowired
     EmailConfigurationRepository emailConfigurationRepository;
 
+    private static final Logger log = LogManager.getLogger(ProgramStatusController.class);
+
+
 
     @PostMapping("/{programId}")
     public WorkflowResponse updateProgramStatus(Principal principal,
@@ -62,13 +67,16 @@ public class ProgramStatusController {
         Optional<Program> programOptional = programRepository.findById(programId);
 
         if (programOptional.isEmpty()) {
+            log.error("Program with id " + programId + " not found");
             return WorkflowResponse.builder().message("Program not found").status(HttpStatus.BAD_REQUEST.value()).data(programId).build();
         }
         Program program = programOptional.get();
         if (isValidStatus(status)) {
+            log.info("Program with id " + programId + " is valid");
             return WorkflowResponse.builder().message("Invalid status value." + status).status(HttpStatus.INTERNAL_SERVER_ERROR.value()).data(programId).build();
         }
         program.setStatus(status);
+        log.info("Program with id " + programId + " is updated");
         programRepository.save(program);
 
         EmailConfiguration emailConfiguration = emailConfigurationRepository.findByAgency_AgencyId(program.getAgency().getAgencyId());
@@ -87,6 +95,7 @@ public class ProgramStatusController {
 
             notificationService.saveNotification(req);
         } catch (Exception e) {
+            log.error("Exception : "+e.getMessage());
             // Don't block success - log and continue
             logService.logs(principal != null ? principal.getName() : "system", "ERROR", "Failed to queue notification: " + e.getMessage(), "Notification", servletRequest.getRequestURI());
         }
@@ -122,6 +131,7 @@ public class ProgramStatusController {
 
 
         logService.logs(principal != null ? principal.getName() : "system","UPDATE","Program status updated successfully with status " + status,"program", servletRequest.getRequestURI());
+        log.info("Program status updated successfully with status " + status);
         return WorkflowResponse.builder().message("Program status updated successfully to: " + status).status(HttpStatus.OK.value()).data(programId).build();
     }
 
@@ -142,6 +152,7 @@ public class ProgramStatusController {
                                                 @RequestParam String status) {
         List<Program> programs = new ArrayList<>();
         if (isValidStatus(status)) {
+            log.info("Program with id " + agencyId + " is valid");
             return WorkflowResponse.builder().message("Invalid status value." + status).status(HttpStatus.INTERNAL_SERVER_ERROR.value()).data(status).build();
         } else {
             if (ProgramStatusConstants.PROGRAM_EXECUTION.equalsIgnoreCase(status)) {
@@ -191,6 +202,7 @@ public class ProgramStatusController {
                     username,
                     timestamp
             );
+            log.info("updated program with id " + programId + " " + description);
 
             logService.logs(
                     username,

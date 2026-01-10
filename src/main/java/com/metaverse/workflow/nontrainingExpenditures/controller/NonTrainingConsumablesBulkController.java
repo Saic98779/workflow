@@ -10,6 +10,8 @@ import com.metaverse.workflow.nontrainingExpenditures.service.NonTrainingConsuma
 import com.metaverse.workflow.nontrainingExpenditures.service.NonTrainingConsumablesTransactionsDTO;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,6 +29,7 @@ public class NonTrainingConsumablesBulkController {
 
     private final NonTrainingConsumablesBulkService service;
     private final ActivityLogService logService;
+    private final static Logger log = LogManager.getLogger(NonTrainingConsumablesBulkController.class);
 
     @PostMapping(path = "/consumables/bulk/save", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> create(
@@ -40,7 +43,7 @@ public class NonTrainingConsumablesBulkController {
                     objectMapper.readValue(NonTrainingConsumablesBulkDto, NonTrainingConsumablesBulkDto.class);
 
             WorkflowResponse response = service.saveBulkConsumable(bulkDto, file);
-
+            log.info("Non-Training Consumables Bulk created successfully");
             logService.logs(principal.getName(),
                     "SAVE", "Non-Training Consumables Bulk created successfully",
                     "NonTrainingConsumablesBulk", "/non-training/consumables/bulk/save"
@@ -48,8 +51,10 @@ public class NonTrainingConsumablesBulkController {
             return ResponseEntity.ok(response);
 
         } catch (DataException e) {
+            log.error("DataException in addingRemarksToResourceExpenditure(): {}", e.getMessage(), e);
             return error(e);
         } catch (Exception e) {
+            log.error("Exception in addingRemarksToResourceExpenditure(): {}", e.getMessage(), e);
             throw new RuntimeException(e);
         }
     }
@@ -68,7 +73,7 @@ public class NonTrainingConsumablesBulkController {
 
             NonTrainingConsumablesBulkDto updated =
                     service.updateBulkConsumable(id, bulkDto, file);
-
+            log.info("Non-Training Consumables Bulk updated successfully");
             logService.logs(principal.getName(),
                     "UPDATE",
                     "Non-Training Consumables Bulk updated successfully | ID: " + id,
@@ -85,8 +90,10 @@ public class NonTrainingConsumablesBulkController {
             );
 
         } catch (DataException e) {
+            log.error("DataException in addingRemarksToResourceExpenditure(): {}", e.getMessage(), e);
             return error(e);
         } catch (Exception e) {
+            log.error("Exception in addingRemarksToResourceExpenditure(): {}", e.getMessage(), e);
             throw new RuntimeException(e);
         }
     }
@@ -100,8 +107,10 @@ public class NonTrainingConsumablesBulkController {
                     "DELETE", "Non-Training Consumables Bulk deleted successfully | ID: " + id,
                     "NonTrainingConsumablesBulk", "/non-training/consumables/bulk/delete/" + id
             );
+            log.info("Non-Training Consumables Bulk deleted successfully");
             return ResponseEntity.ok(WorkflowResponse.builder().status(200).message("Deleted Successfully").build());
         } catch (DataException e) {
+            log.error("DataException in addingRemarksToResourceExpenditure(): {}", e.getMessage(), e);
             return RestControllerBase.error(e);
         }
 
@@ -110,11 +119,13 @@ public class NonTrainingConsumablesBulkController {
     @GetMapping("/consumables/bulk/sub-activity/{subActivityId}")
     public ResponseEntity<?> getBySubActivity(@PathVariable Long subActivityId) {
         try {
+            log.info("Non-Training Consumables Bulk retrieved successfully");
             return ResponseEntity.ok(WorkflowResponse.builder()
                     .message("success").status(200)
                     .data(service.getBySubActivity(subActivityId))
                     .build());
         } catch (Exception ex) {
+            log.error("Exception in addingRemarksToResourceExpenditure(): {}", ex.getMessage(), ex);
             return error(new DataException("Failed to fetch records", "FETCH_ERROR", 500));
         }
     }
@@ -123,8 +134,10 @@ public class NonTrainingConsumablesBulkController {
     public ResponseEntity<?> getNonTrainingBulkById(@PathVariable Long id) {
         try {
             NonTrainingConsumablesBulkDto dto = service.getNonTrainingConsumablesBulk(id);
+            log.info("Non-Training Consumables Bulk retrieved successfully");
             return ResponseEntity.ok(dto);
         } catch (DataException ex) {
+            log.error("DataException in addingRemarksToResourceExpenditure(): {}", ex.getMessage(), ex);
             return error(ex);   // from RestControllerBase
         }
     }
@@ -145,12 +158,15 @@ public class NonTrainingConsumablesBulkController {
                     "NonTrainingConsumablesTransactions",
                     "/non-training/consumables/transactions/save"
             );
+            log.info("Non-Training Consumables Transaction created successfully");
 
             return ResponseEntity.ok(response);
 
         } catch (DataException e) {
+            log.error("DataException in addingRemarksToResourceExpenditure(): {}", e.getMessage(), e);
             return error(e);
         } catch (Exception e) {
+            log.error("Exception in addingRemarksToResourceExpenditure(): {}", e.getMessage(), e);
             throw new RuntimeException(e);
         }
     }
@@ -174,8 +190,10 @@ public class NonTrainingConsumablesBulkController {
             );
 
         } catch (DataException e) {
+            log.info("DataException in updateTransaction(): {}", e.getMessage(), e);
             return error(e);
         } catch (Exception e) {
+            log.info("Exception in updateTransaction(): {}", e.getMessage(), e);
             throw new RuntimeException(e);
         }
     }
@@ -203,9 +221,11 @@ public class NonTrainingConsumablesBulkController {
     public ResponseEntity<?> getTransactionById(@PathVariable Long id) {
         try {
             NonTrainingConsumablesTransactionsDTO dto = service.getTransaction(id);
+            log.info("Non-Training Consumables Transactions retrieved successfully");
             return ResponseEntity.ok(dto);
 
         } catch (DataException e) {
+            log.error("DataException in addingRemarksToResourceExpenditure(): {}", e.getMessage(), e);
             return error(e);
         }
     }
@@ -213,6 +233,7 @@ public class NonTrainingConsumablesBulkController {
     @GetMapping("/consumables/transactions/sub-activity/{subActivityId}")
     public ResponseEntity<?> getTransactionBySubActivity(@PathVariable Long subActivityId) {
         try {
+            log.info("Getting transactions by sub-activity id {}", subActivityId);
             return ResponseEntity.ok(
                     WorkflowResponse.builder()
                             .status(200).message("Success")
@@ -221,6 +242,7 @@ public class NonTrainingConsumablesBulkController {
             );
 
         } catch (Exception e) {
+            log.error("DataException in addingRemarksToResourceExpenditure(): {}", e.getMessage(), e);
             return error(new DataException("Failed to fetch records", "FETCH_ERROR", 500));
         }
     }

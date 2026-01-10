@@ -8,6 +8,8 @@ import com.metaverse.workflow.nontrainingExpenditures.Dto.ListingOnNSERequest;
 import com.metaverse.workflow.nontrainingExpenditures.service.ListingOnNSEService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,14 +23,17 @@ public class ListingOnNSEController {
 
     private final ListingOnNSEService listingOnNSEService;
     private final ActivityLogService logService;
+    private static final Logger log = LogManager.getLogger(ListingOnNSEController.class);
 
     @PostMapping("/save")
     public ResponseEntity<?> createListingOnNSE(@RequestBody ListingOnNSERequest request, Principal principal) {
         try {
             WorkflowResponse response = listingOnNSEService.createListingOnNSE(request);
             logService.logs(principal.getName(), "SAVE", "Listing on NSE created successfully", "ListingOnNSE", "/listing-on-nse/save");
+            log.info("created Listing on NSE created successfully");
             return ResponseEntity.ok(response);
         } catch (DataException e) {
+            log.info("failed to create Listing on NSE created");
             return RestControllerBase.error(e);
         }
     }
@@ -56,8 +61,10 @@ public class ListingOnNSEController {
         try {
             WorkflowResponse response =listingOnNSEService.deleteListingOnNSE(listingOnNSEId);
             logService.logs(principal.getName(), "DELETE", "Listing on NSE deleted successfully | ID: " + listingOnNSEId, "ListingOnNSE", "/listing-on-nse/delete/"+listingOnNSEId);
+            log.info("deleted Listing on NSE deleted successfully");
             return ResponseEntity.ok(response);
         } catch (DataException e) {
+            log.info("failed to delete Listing on NSE deleted");
             return RestControllerBase.error(e);
         }
     }

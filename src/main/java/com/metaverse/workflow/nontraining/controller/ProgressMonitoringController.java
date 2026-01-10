@@ -2,6 +2,7 @@ package com.metaverse.workflow.nontraining.controller;
 
 import com.metaverse.workflow.activitylog.ActivityLogService;
 import com.metaverse.workflow.common.response.WorkflowResponse;
+import com.metaverse.workflow.exceptions.DataException;
 import com.metaverse.workflow.model.NonTrainingAchievement;
 import com.metaverse.workflow.nontraining.dto.NonTrainingActivityDto;
 import com.metaverse.workflow.nontraining.dto.PhysicalFinancialDto;
@@ -10,6 +11,8 @@ import com.metaverse.workflow.nontraining.service.NonTrainingAchievementService;
 import com.metaverse.workflow.nontraining.service.NonTrainingActivityService;
 import com.metaverse.workflow.nontraining.service.ProgressMonitoringService;
 import jakarta.persistence.EntityNotFoundException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +34,8 @@ public class ProgressMonitoringController {
 
     @Autowired
     private NonTrainingActivityService nonTrainingActivityService;
+
+    private static final Logger log = LogManager.getLogger(ProgressMonitoringController.class);
 
     @Autowired
     private ActivityLogService logService;
@@ -93,6 +98,7 @@ public class ProgressMonitoringController {
                         "NON_TRAINING",
                         "/non-training-achievement/{nonTrainingAchievementId}"
                 );
+                log.info("Non-Training Achievement updated Successfully");
                 return ResponseEntity.ok(
                         WorkflowResponse.builder()
                                 .data("")

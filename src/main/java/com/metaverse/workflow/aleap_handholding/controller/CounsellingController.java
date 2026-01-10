@@ -8,6 +8,8 @@ import com.metaverse.workflow.common.util.RestControllerBase;
 import com.metaverse.workflow.exceptions.DataException;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +24,7 @@ public class CounsellingController {
 
     private final CounsellingService service;
     private final ActivityLogService logService;
+    private static final Logger log = LogManager.getLogger(CounsellingController.class);
 
     /* ========================= SAVE ========================= */
 
@@ -33,6 +36,7 @@ public class CounsellingController {
         try {
             WorkflowResponse response = service.save(request);
 
+            log.info("Save successful for Counselling");
             logService.logs(
                     principal.getName(),
                     "SAVE",
@@ -44,6 +48,7 @@ public class CounsellingController {
             return ResponseEntity.ok(response);
 
         } catch (DataException e) {
+            log.error("DataException in save(): {}", e.getMessage(), e);
             return RestControllerBase.error(e);
         }
     }
@@ -59,6 +64,7 @@ public class CounsellingController {
         try {
             WorkflowResponse response = service.update(id, request);
 
+            log.info("Update successful for id={}", id);
             logService.logs(
                     principal.getName(),
                     "UPDATE",
@@ -70,6 +76,7 @@ public class CounsellingController {
             return ResponseEntity.ok(response);
 
         } catch (DataException e) {
+            log.error("DataException in update(): {}", e.getMessage(), e);
             return RestControllerBase.error(e);
         }
     }
@@ -84,6 +91,7 @@ public class CounsellingController {
         try {
             WorkflowResponse response = service.getById(id);
 
+            log.info("getById successful for id={}", id);
             logService.logs(
                     principal.getName(),
                     "VIEW",
@@ -95,6 +103,7 @@ public class CounsellingController {
             return ResponseEntity.ok(response);
 
         } catch (DataException e) {
+            log.error("DataException in getById(): {}", e.getMessage(), e);
             return RestControllerBase.error(e);
         }
     }
@@ -103,8 +112,8 @@ public class CounsellingController {
 
     @GetMapping("/get-all")
     public ResponseEntity<?> getAll(Principal principal) {
-
         WorkflowResponse response = service.getAll();
+        log.info("getAll successful");
 
         logService.logs(
                 principal.getName(),
@@ -127,6 +136,7 @@ public class CounsellingController {
         WorkflowResponse response =
                 service.getByNonTrainingSubActivityId(subActivityId);
 
+        log.info("getBySubActivity successful for subActivityId={}", subActivityId);
         logService.logs(
                 principal.getName(),
                 "VIEW",
@@ -148,6 +158,7 @@ public class CounsellingController {
         try {
             WorkflowResponse response = service.delete(id);
 
+            log.info("Delete successful for id={}", id);
             logService.logs(
                     principal.getName(),
                     "DELETE",
@@ -159,6 +170,7 @@ public class CounsellingController {
             return ResponseEntity.ok(response);
 
         } catch (DataException e) {
+            log.error("DataException in delete(): {}", e.getMessage(), e);
             return RestControllerBase.error(e);
         }
     }

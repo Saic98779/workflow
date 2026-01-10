@@ -10,6 +10,8 @@ import com.metaverse.workflow.programoutcometargets.service.FinancialTargetReque
 import com.metaverse.workflow.programoutcometargets.service.PhysicalTargetRequest;
 import com.metaverse.workflow.programoutcometargets.service.TargetService;
 import jakarta.servlet.http.HttpServletRequest;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +28,8 @@ public class TargetController {
     @Autowired
     private ActivityLogService logService;
 
+    private final static Logger log = LogManager.getLogger(TargetController.class);
+
     @PostMapping("/financial/save")
     public ResponseEntity<?> createFinancialTarget(@RequestBody FinancialTargetRequest request, Principal principal,
                                                    HttpServletRequest servletRequest) {
@@ -35,7 +39,7 @@ public class TargetController {
                     "Financial target created successfully | Agency ID: " + request.getAgencyId(),
                     "FinancialTarget",
                     servletRequest.getRequestURI());
-
+            log.info("Financial target created successfully | Agency ID: ");
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (DataException e) {
             return RestControllerBase.error(e);
@@ -53,6 +57,7 @@ public class TargetController {
                     "Financial target updated successfully | Target ID: " + id,
                     "FinancialTarget",
                     servletRequest.getRequestURI());
+            log.info("Financial target updated successfully | Target ID: " + id);
             return ResponseEntity.ok(response);
         } catch (DataException e) {
             return RestControllerBase.error(e);
@@ -63,6 +68,7 @@ public class TargetController {
     public ResponseEntity<?> getAllFinancialTargets(@PathVariable("agencyId") Long agencyId) {
         try {
             WorkflowResponse response = targetService.getFinancialTargetsByAgencyId(agencyId);
+            log.info("Financial targets found successfully | Agency ID: " + agencyId);
             return ResponseEntity.ok(response);
         } catch (DataException e) {
             return RestControllerBase.error(e);
@@ -74,6 +80,7 @@ public class TargetController {
     public ResponseEntity<?> getFinancialTargetById(@PathVariable("id") Long id) {
         try {
             WorkflowResponse response = targetService.getFinancialTargetsById(id);
+            log.info("Financial target found successfully | Target ID: " + id);
             return ResponseEntity.ok(response);
         } catch (DataException e) {
             return RestControllerBase.error(e);
@@ -88,6 +95,7 @@ public class TargetController {
                     "Financial target deleted successfully | Target ID: " + id,
                     "FinancialTarget",
                     servletRequest.getRequestURI());
+            log.info("Financial target deleted successfully | Target ID: " + id);
             return ResponseEntity.ok(response);
         } catch (DataException e) {
             return RestControllerBase.error(e);
@@ -102,6 +110,7 @@ public class TargetController {
                     "Physical target created successfully | Agency ID: " + request.getAgencyId(),
                     "PhysicalTarget",
                     servletRequest.getRequestURI());
+            log.info("PhysicalTarget created successfully | Agency ID: " + request.getAgencyId());
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (DataException e) {
             return RestControllerBase.error(e);
@@ -118,6 +127,7 @@ public class TargetController {
                     "Physical target updated successfully | Target ID: " + id,
                     "PhysicalTarget",
                     servletRequest.getRequestURI());
+            log.info("PhysicalTarget updated successfully | Target ID: " + id);
             return ResponseEntity.ok(response);
         } catch (DataException e) {
             return RestControllerBase.error(e);
@@ -127,6 +137,7 @@ public class TargetController {
     public ResponseEntity<?> getAllPhysicalTargets(@PathVariable("agencyId") Long agencyId) {
         try {
             WorkflowResponse response = targetService.getPhysicalTargetsByAgencyId(agencyId);
+            log.info("PhysicalTargets found successfully | Agency ID: " + agencyId);
             return ResponseEntity.ok(response);
         } catch (DataException e) {
             return RestControllerBase.error(e);
@@ -150,6 +161,7 @@ public class TargetController {
                     "Physical target deleted successfully | Target ID: " + id,
                     "PhysicalTarget",
                     servletRequest.getRequestURI());
+            log.info("Physical target deleted successfully | Target ID: " + id);
             return ResponseEntity.ok(response);
         } catch (DataException e) {
             return RestControllerBase.error(e);

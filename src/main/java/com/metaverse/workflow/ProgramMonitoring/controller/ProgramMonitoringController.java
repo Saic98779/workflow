@@ -9,6 +9,8 @@ import com.metaverse.workflow.common.util.RestControllerBase;
 import com.metaverse.workflow.exceptions.DataException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,10 +23,12 @@ public class ProgramMonitoringController {
     private final ProgramMonitoringService programService;
     private final ProgramMonitoringRepo feedbackRepository;
     private final ActivityLogService logService;
+    private final static Logger log = LogManager.getLogger(ProgramMonitoringController.class);
     @PostMapping("/program/feedback/save")
     public ResponseEntity<?> saveFeedback(Principal principal, @RequestBody ProgramMonitoringRequest request, HttpServletRequest servletRequest) throws DataException {
         WorkflowResponse response = programService.saveFeedback(request);
         logService.logs(principal.getName(), "SAVE","saving program monitoring","Program Monitoring", servletRequest.getRequestURI());
+        log.info("saved program monitoring");
         return ResponseEntity.ok(response);
     }
     @PostMapping("/program/feedback/update/{monitorId}")
@@ -34,6 +38,7 @@ public class ProgramMonitoringController {
         WorkflowResponse response;
         try {
             response = programService.updateFeedback(monitorId, request);
+            log.info("updated program monitoring");
         } catch (DataException exception) {
             return RestControllerBase.error(exception);
         }
@@ -46,6 +51,7 @@ public class ProgramMonitoringController {
         WorkflowResponse response;
         try {
             response = programService.getFeedBackByProgramId(programId);
+            log.info("get program monitoring");
         } catch (DataException exception) {
             return RestControllerBase.error(exception);
         }
@@ -64,6 +70,7 @@ public class ProgramMonitoringController {
         return feedbackRepository.findById(id).map(feedback -> {
             feedbackRepository.delete(feedback);
             logService.logs(principal.getName(), "DELETE","delete program monitoring","Program Monitoring", servletRequest.getRequestURI());
+            log.info("deleted program monitoring"+principal.getName());
             return ResponseEntity.ok("Program Monitoring FeedBack deleted successfully.");
         }).orElse(ResponseEntity.notFound().build());
 
@@ -73,6 +80,7 @@ public class ProgramMonitoringController {
         WorkflowResponse response;
         try {
             response = programService.getFeedBackByProgramIdDropDown(programId);
+            log.info("get program monitoring");
         } catch (DataException exception) {
             return RestControllerBase.error(exception);
         }

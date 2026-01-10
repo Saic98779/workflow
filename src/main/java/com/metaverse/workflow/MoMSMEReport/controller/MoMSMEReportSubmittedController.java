@@ -9,10 +9,13 @@ import com.metaverse.workflow.common.util.RestControllerBase;
 import com.metaverse.workflow.dto.CentralRampRequestDto;
 import com.metaverse.workflow.encryption.EncryptService;
 import com.metaverse.workflow.exceptions.DataException;
+import com.metaverse.workflow.expenditure.controller.ExpenditureController;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
@@ -26,14 +29,18 @@ public class MoMSMEReportSubmittedController {
     private final MoMSMEReportSubmittedService service;
     private final EncryptService encryptService;
     private final ObjectMapper objectMapper = new ObjectMapper();
+    private static final Logger log = LogManager.getLogger(ExpenditureController.class);
+
 
 
     @PostMapping("/submitted-save")
     public ResponseEntity<?> save(@RequestBody MoMSMEReportSubmittedDto dto) {
         try {
             WorkflowResponse response = service.saveReport(dto);
+            log.debug("saved momsme report Successfully");
             return ResponseEntity.ok(response);
         } catch (DataException e) {
+            log.error("DataException :" +e);
             return RestControllerBase.error(e);
         }
     }
