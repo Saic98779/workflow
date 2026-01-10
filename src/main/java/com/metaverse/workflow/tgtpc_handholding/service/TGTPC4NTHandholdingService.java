@@ -1,12 +1,14 @@
-package com.metaverse.workflow.TGTPCNT.service;
+package com.metaverse.workflow.tgtpc_handholding.service;
 
 
-import com.metaverse.workflow.TGTPCNT.repository.TGTPC4NTHandholdingRepository;
+import com.metaverse.workflow.tgtpc_handholding.repository.TGTPC4NTHandholdingRepository;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.exceptions.DataException;
 import com.metaverse.workflow.model.NonTrainingSubActivity;
-import com.metaverse.workflow.model.TGTPC4NTHandholding;
+import com.metaverse.workflow.model.tgtpc_handholding.TGTPC4NTHandholding;
 import com.metaverse.workflow.nontrainingExpenditures.repository.NonTrainingSubActivityRepository;
+import com.metaverse.workflow.tgtpc_handholding.request_dto.TGTPC4NTHandholdingRequest;
+import com.metaverse.workflow.tgtpc_handholding.response_dto.TGTPC4NTHandholdingResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -30,12 +32,12 @@ public class TGTPC4NTHandholdingService {
                         400
                 )
         );
-        TGTPC4NTHandholding entity = TGTPC4NTHandholdingMapper.mapToEntity(request, subActivity);
+        TGTPC4NTHandholding entity = HandholdingRequestMapper.mapToEntity(request, subActivity);
         TGTPC4NTHandholding saved = repository.save(entity);
         return WorkflowResponse.builder()
                 .status(200)
                 .message("TGTPC4 NT Handholding saved successfully")
-                .data(TGTPC4NTHandholdingMapper.mapToResponse(saved))
+                .data(HandholdingResponseMapper.mapToResponse(saved))
                 .build();
     }
 
@@ -47,12 +49,12 @@ public class TGTPC4NTHandholdingService {
                         "TGTPC4_HANDHOLDING_NOT_FOUND",
                         404
                 ));
-        TGTPC4NTHandholdingMapper.updateEntity(existing, request);
+        HandholdingRequestMapper.updateEntity(existing, request);
         TGTPC4NTHandholding updated = repository.save(existing);
         return WorkflowResponse.builder()
                 .status(200)
                 .message("TGTPC4 NT Handholding updated successfully")
-                .data(TGTPC4NTHandholdingMapper.mapToResponse(updated))
+                .data(HandholdingResponseMapper.mapToResponse(updated))
                 .build();
     }
 
@@ -66,7 +68,7 @@ public class TGTPC4NTHandholdingService {
         return WorkflowResponse.builder()
                 .status(200)
                 .message("Success")
-                .data(TGTPC4NTHandholdingMapper.mapToResponse(entity))
+                .data(HandholdingResponseMapper.mapToResponse(entity))
                 .build();
     }
 
@@ -74,7 +76,7 @@ public class TGTPC4NTHandholdingService {
         List<TGTPC4NTHandholdingResponse> response =
                 repository.findByNonTrainingSubActivity_SubActivityId(subActivityId)
                         .stream()
-                        .map(TGTPC4NTHandholdingMapper::mapToResponse)
+                        .map(HandholdingResponseMapper::mapToResponse)
                         .toList();
         return WorkflowResponse.builder()
                 .status(200)

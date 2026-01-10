@@ -3,6 +3,7 @@ package com.metaverse.workflow.model;
 import com.metaverse.workflow.model.aleap_handholding.AleapDesignStudio;
 import com.metaverse.workflow.model.aleap_handholding.BusinessPlanDetails;
 import com.metaverse.workflow.model.aleap_handholding.FormalisationCompliance;
+import com.metaverse.workflow.model.tgtpc_handholding.TestingQualityCertificationSupport;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -79,6 +80,10 @@ public class ProgramSessionFile {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "aleap_design_studio_id")
     private AleapDesignStudio aleapDesignStudio;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "testing_id")
+    private TestingQualityCertificationSupport testingQualityCertificationSupport;
 
 
 }

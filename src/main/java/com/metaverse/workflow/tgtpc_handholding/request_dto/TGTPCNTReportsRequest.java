@@ -1,4 +1,4 @@
-package com.metaverse.workflow.TGTPCNT.service;
+package com.metaverse.workflow.tgtpc_handholding.request_dto;
 
 import lombok.*;
 

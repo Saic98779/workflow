@@ -1,8 +1,8 @@
-package com.metaverse.workflow.TGTPCNT.controller;
+package com.metaverse.workflow.tgtpc_handholding.controller;
 
 
-import com.metaverse.workflow.TGTPCNT.service.TGTPC4NTHandholdingRequest;
-import com.metaverse.workflow.TGTPCNT.service.TGTPC4NTHandholdingService;
+import com.metaverse.workflow.tgtpc_handholding.request_dto.TGTPC4NTHandholdingRequest;
+import com.metaverse.workflow.tgtpc_handholding.service.TGTPC4NTHandholdingService;
 import com.metaverse.workflow.activitylog.ActivityLogService;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.common.util.RestControllerBase;

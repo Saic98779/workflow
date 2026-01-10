@@ -1,12 +1,14 @@
-package com.metaverse.workflow.TGTPCNT.service;
+package com.metaverse.workflow.tgtpc_handholding.service;
 
 
-import com.metaverse.workflow.TGTPCNT.repository.TGTPCNTReportsRepository;
+import com.metaverse.workflow.tgtpc_handholding.repository.TGTPCNTReportsRepository;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.exceptions.DataException;
 import com.metaverse.workflow.model.NonTrainingSubActivity;
-import com.metaverse.workflow.model.TGTPCNTReports;
+import com.metaverse.workflow.model.tgtpc_handholding.TGTPCNTReports;
 import com.metaverse.workflow.nontrainingExpenditures.repository.NonTrainingSubActivityRepository;
+import com.metaverse.workflow.tgtpc_handholding.request_dto.TGTPCNTReportsRequest;
+import com.metaverse.workflow.tgtpc_handholding.response_dto.TGTPCNTReportsResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,12 +31,12 @@ public class TGTPCNTReportsService {
                                 "SUB_ACTIVITY_NOT_FOUND",
                                 400
                         ));
-        TGTPCNTReports entity = TGTPCNTReportsMapper.mapToEntity(request,subActivity);
+        TGTPCNTReports entity = HandholdingRequestMapper.mapToEntity(request,subActivity);
         TGTPCNTReports saved = repository.save(entity);
         return WorkflowResponse.builder()
                 .status(200)
                 .message("TGTPC NT Report saved successfully")
-                .data(TGTPCNTReportsMapper.mapToResponse(saved))
+                .data(HandholdingResponseMapper.mapToResponse(saved))
                 .build();
     }
 
@@ -48,13 +50,13 @@ public class TGTPCNTReportsService {
                         404
                 ));
 
-        TGTPCNTReportsMapper.updateEntity(existing, request);
+        HandholdingRequestMapper.updateEntity(existing, request);
         TGTPCNTReports updated = repository.save(existing);
 
         return WorkflowResponse.builder()
                 .status(200)
                 .message("TGTPC NT Report updated successfully")
-                .data(TGTPCNTReportsMapper.mapToResponse(updated))
+                .data(HandholdingResponseMapper.mapToResponse(updated))
                 .build();
     }
 
@@ -70,7 +72,7 @@ public class TGTPCNTReportsService {
         return WorkflowResponse.builder()
                 .status(200)
                 .message("Success")
-                .data(TGTPCNTReportsMapper.mapToResponse(entity))
+                .data(HandholdingResponseMapper.mapToResponse(entity))
                 .build();
     }
 
@@ -78,7 +80,7 @@ public class TGTPCNTReportsService {
 
         List<TGTPCNTReportsResponse> response = repository.findByNonTrainingSubActivity_SubActivityId(subActivityId)
                 .stream()
-                .map(TGTPCNTReportsMapper::mapToResponse)
+                .map(HandholdingResponseMapper::mapToResponse)
                 .toList();
 
         return WorkflowResponse.builder()

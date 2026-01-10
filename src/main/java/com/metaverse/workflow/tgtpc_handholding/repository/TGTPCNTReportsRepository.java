@@ -1,6 +1,6 @@
-package com.metaverse.workflow.TGTPCNT.repository;
+package com.metaverse.workflow.tgtpc_handholding.repository;
 
-import com.metaverse.workflow.model.TGTPCNTReports;
+import com.metaverse.workflow.model.tgtpc_handholding.TGTPCNTReports;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
