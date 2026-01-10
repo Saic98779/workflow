@@ -1,5 +1,7 @@
-package com.metaverse.workflow.model;
+package com.metaverse.workflow.model.tgtpc_handholding;
 
+import com.metaverse.workflow.model.BaseEntity;
+import com.metaverse.workflow.model.NonTrainingSubActivity;
 import jakarta.persistence.*;
 import lombok.*;
 

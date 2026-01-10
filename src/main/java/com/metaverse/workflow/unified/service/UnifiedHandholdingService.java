@@ -33,6 +33,7 @@ public class UnifiedHandholdingService {
     private final TradeFairParticipationService tradeFairParticipationService;
     private final VendorConnectionService vendorConnectionService;
     private final FormalisationComplianceService formalisationComplianceService;
+    private final AccessToTechnologyAndInfrastructureService  infrastructureService;
 
     private final ObjectMapper mapper = new ObjectMapper();
 
@@ -288,6 +289,10 @@ public class UnifiedHandholdingService {
                 } else {
                     throw new DataException("Missing id or subActivityId for formalisationcompliance", "MISSING_PARAM", 400);
                 }
+                break;
+            case "accesstotechnology&infrastructure":
+            case "access to technology & infrastructure":
+                response = infrastructureService.getAccessToTechnologyAndInfrastructure(subActivityId);
                 break;
             default:
                 throw new DataException("Unknown type: " + type, "UNKNOWN_TYPE", 400);
