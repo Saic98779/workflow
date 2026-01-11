@@ -255,6 +255,62 @@ public class RequestMapper {
                 .details(request.getDetails())
                 .build();
     }
+    public static AccessToFinance mapToAccessToFinance(AccessToFinanceRequest request, HandholdingSupport support, Organization organization) {
+        return AccessToFinance.builder()
+                .handholdingSupport(support)
+                .organization(organization)
+                .accessToFinanceType(request.getAccessToFinanceType())
+                .schemeName(request.getSchemeName())
+                .govtApplicationStatus(
+                        request.getGovtApplicationStatus() != null
+                                ? AccessToFinance.ApplicationStatus.valueOf(request.getGovtApplicationStatus())
+                                : null
+                )
+                .govtSanctionDate(
+                        DateUtil.covertStringToDate(request.getGovtSanctionDate())
+                )
+                .govtSanctionedAmount(request.getGovtSanctionedAmount())
+                .govtDetails(request.getGovtDetails())
+                .institutionName(request.getInstitutionName())
+                .branchName(request.getBranchName())
+                .dprSubmissionDate(DateUtil.covertStringToDate(request.getDprSubmissionDate()))
+                .bankApplicationStatus(
+                        request.getBankApplicationStatus() != null
+                                ? AccessToFinance.ApplicationStatus.valueOf(request.getBankApplicationStatus())
+                                : null
+                )
+                .bankSanctionDate(DateUtil.covertStringToDate(request.getBankSanctionDate()))
+                .bankSanctionedAmount(request.getBankSanctionedAmount())
+                .bankDetails(request.getBankDetails())
+                .counselledBy(request.getCounselledBy())
+                .counsellingDate(DateUtil.covertStringToDate(request.getCounsellingDate()))
+                .subjectDelivered(request.getSubjectDelivered())
+                .build();
+    }
+    public static AccessToTechnologyAndInfrastructure mapToAccessToTechnologyAndInfrastructure(AccessToTechnologyAndInfrastructureRequest request, HandholdingSupport support, Organization organization) {
+        return AccessToTechnologyAndInfrastructure.builder()
+                .handholdingSupport(support)
+                .organization(organization)
+                .vendorSuggested(request.getVendorSuggested())
+                .quotationDate(DateUtil.covertStringToDate(request.getQuotationDate()))
+                .details(request.getDetails())
+                .cost(request.getCost())
+                .accessToTechnologyType(request.getAccessToTechnologyType())
+                .requirement(request.getRequirement())
+                .existingMachinery(request.getExistingMachinery())
+                .suggestedMachinery(request.getSuggestedMachinery())
+                .manufacturer(request.getManufacturer())
+                .groundingDate(DateUtil.covertStringToDate(request.getGroundingDate()))
+                .placeOfInstallation(request.getPlaceOfInstallation())
+                .costOfMachinery(request.getCostOfMachinery())
+                .technologyDetails(request.getTechnologyDetails())
+                .vendorName(request.getVendorName())
+                .vendorContactNo(request.getVendorContactNo())
+                .vendorEmail(request.getVendorEmail())
+                .approxCost(request.getApproxCost())
+
+                .build();
+    }
 }
 
 

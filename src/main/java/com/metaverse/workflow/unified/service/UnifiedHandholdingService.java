@@ -33,7 +33,8 @@ public class UnifiedHandholdingService {
     private final TradeFairParticipationService tradeFairParticipationService;
     private final VendorConnectionService vendorConnectionService;
     private final FormalisationComplianceService formalisationComplianceService;
-    private final AccessToTechnologyAndInfrastructureService  infrastructureService;
+    private final AccessToTechnologyAndInfrastructureService infrastructureService;
+    private final AccessToFinanceService accessToFinanceService;
 
     private final ObjectMapper mapper = new ObjectMapper();
 
@@ -120,6 +121,19 @@ public class UnifiedHandholdingService {
                     FormalisationComplianceRequest request = mapper.readValue(data, FormalisationComplianceRequest.class);
                     response = formalisationComplianceService.create(request, file);
                     break;
+
+                case "accesstofinance":
+                case "access-to-finance":
+                    AccessToFinanceRequest accessToFinanceRequest = mapper.readValue(data, AccessToFinanceRequest.class);
+                    response = accessToFinanceService.save(accessToFinanceRequest);
+                    break;
+                case "accesstotechnology":
+                case "access-to-technology":
+                    AccessToTechnologyAndInfrastructureRequest infrastructureRequest = mapper.readValue(data, AccessToTechnologyAndInfrastructureRequest.class);
+                    response = infrastructureService.save(infrastructureRequest);
+                    break;
+
+
                 default:
                     throw new DataException("Missing id or subActivityId for formalisationcompliance", "MISSING_PARAM", 400);
             }
@@ -293,6 +307,26 @@ public class UnifiedHandholdingService {
             case "accesstotechnology&infrastructure":
             case "access to technology & infrastructure":
                 response = infrastructureService.getAccessToTechnologyAndInfrastructure(subActivityId);
+                break;
+            case "accesstofinance":
+            case "access-to-finance":
+                if (hasId) {
+                    response = accessToFinanceService.getById(id);
+                } else if (hasSub) {
+                    response = accessToFinanceService.getByNonTrainingSubActivityId(subActivityId);
+                } else {
+                    throw new DataException("Missing id or subActivityId for formalisationcompliance", "MISSING_PARAM", 400);
+                }
+                break;
+            case "accesstotechnology":
+            case "access-to-technology":
+                if (hasId) {
+                    response = infrastructureService.getById(id);
+                } else if (hasSub) {
+                    response = infrastructureService.getByNonTrainingSubActivityId(subActivityId);
+                } else {
+                    throw new DataException("Missing id or subActivityId for formalisationcompliance", "MISSING_PARAM", 400);
+                }
                 break;
             default:
                 throw new DataException("Unknown type: " + type, "UNKNOWN_TYPE", 400);
