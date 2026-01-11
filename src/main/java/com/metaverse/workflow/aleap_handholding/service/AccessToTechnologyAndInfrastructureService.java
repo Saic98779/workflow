@@ -39,7 +39,7 @@ public class AccessToTechnologyAndInfrastructureService {
                 .findByHandholdingSupport_NonTrainingSubActivity_SubActivityId(subActivityId)
                 .forEach(v -> responses.add(
                         AccessToTechnologyAndInfrastructureResponse.builder()
-                                .vendorConnectionId(v.getId())
+                                .accessToTechnologyId(v.getId())
                                 .handholdingSupportId(v.getHandholdingSupport() != null ? v.getHandholdingSupport().getId() : null)
                                 .nonTrainingActivityId(v.getHandholdingSupport() != null &&
                                         v.getHandholdingSupport().getNonTrainingSubActivity() != null
@@ -69,7 +69,6 @@ public class AccessToTechnologyAndInfrastructureService {
                 .findByHandholdingSupport_NonTrainingSubActivity_SubActivityId(subActivityId)
                 .forEach(m -> responses.add(
                         AccessToTechnologyAndInfrastructureResponse.builder()
-                                .machineryIdentificationId(m.getId())
                                 .handholdingSupportId(m.getHandholdingSupport() != null ? m.getHandholdingSupport().getId() : null)
                                 .nonTrainingActivityId(m.getHandholdingSupport() != null &&
                                         m.getHandholdingSupport().getNonTrainingSubActivity() != null
@@ -102,7 +101,6 @@ public class AccessToTechnologyAndInfrastructureService {
                 .findByHandholdingSupport_NonTrainingSubActivity_SubActivityId(subActivityId)
                 .forEach(c -> responses.add(
                         AccessToTechnologyAndInfrastructureResponse.builder()
-                                .cfsSupportId(c.getId())
                                 .handholdingSupportId(c.getHandholdingSupport() != null ? c.getHandholdingSupport().getId() : null)
                                 .nonTrainingActivityId(c.getHandholdingSupport() != null &&
                                         c.getHandholdingSupport().getNonTrainingSubActivity() != null
