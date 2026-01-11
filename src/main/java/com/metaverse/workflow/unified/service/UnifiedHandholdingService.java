@@ -305,7 +305,7 @@ public class UnifiedHandholdingService {
                 }
                 break;
             case "accesstotechnology&infrastructure":
-            case "access to technology & infrastructure":
+            case "access to technology and infrastructure":
                 response = infrastructureService.getAccessToTechnologyAndInfrastructure(subActivityId);
                 break;
             case "accesstofinance":
