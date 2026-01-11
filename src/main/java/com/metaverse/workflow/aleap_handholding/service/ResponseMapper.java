@@ -573,6 +573,7 @@ public class ResponseMapper {
         Organization org = entity.getOrganization();
 
         return AccessToTechnologyAndInfrastructureResponse.builder()
+                .accessToTechnologyId(entity.getId())
                 .handholdingSupportId(support != null ? support.getId() : null)
                 .nonTrainingActivityId(
                         support != null && support.getNonTrainingActivity() != null

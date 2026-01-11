@@ -8,9 +8,7 @@ import lombok.Setter;
 @Setter
 @Builder
 public class AccessToTechnologyAndInfrastructureResponse {
-    private Long vendorConnectionId;
-    private Long machineryIdentificationId;
-    private Long cfsSupportId;
+    private Long accessToTechnologyId;
 
     private Long handholdingSupportId;
     private Long nonTrainingActivityId;
