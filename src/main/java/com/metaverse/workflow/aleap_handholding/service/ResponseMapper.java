@@ -4,6 +4,7 @@ import com.metaverse.workflow.aleap_handholding.response_dto.GovtSchemeFinanceRe
 import com.metaverse.workflow.aleap_handholding.response_dto.*;
 import com.metaverse.workflow.common.util.DateUtil;
 import com.metaverse.workflow.model.InfluencedParticipant;
+import com.metaverse.workflow.model.Organization;
 import com.metaverse.workflow.model.Participant;
 import com.metaverse.workflow.model.aleap_handholding.*;
 import org.springframework.stereotype.Component;
@@ -508,4 +509,112 @@ public class ResponseMapper {
                 .details(entity.getDetails())
                 .build();
     }
+    public static AccessToFinanceResponse mapToAccessToFinanceResponse(AccessToFinance entity) {
+        HandholdingSupport support = entity.getHandholdingSupport();
+        Organization org = entity.getOrganization();
+        return AccessToFinanceResponse.builder()
+                .accessToFinanceId(entity.getId())
+
+                .handholdingSupportId(support != null ? support.getId() : null)
+
+                .nonTrainingActivityId(
+                        support != null && support.getNonTrainingActivity() != null
+                                ? support.getNonTrainingActivity().getActivityId()
+                                : null
+                )
+                .nonTrainingActivityName(
+                        support != null && support.getNonTrainingActivity() != null
+                                ? support.getNonTrainingActivity().getActivityName()
+                                : null
+                )
+                .nonTrainingSubActivityId(
+                        support != null && support.getNonTrainingSubActivity() != null
+                                ? support.getNonTrainingSubActivity().getSubActivityId()
+                                : null
+                )
+                .nonTrainingSubActivityName(
+                        support != null && support.getNonTrainingSubActivity() != null
+                                ? support.getNonTrainingSubActivity().getSubActivityName()
+                                : null
+                )
+                .organizationId(org != null ? org.getOrganizationId() : null)
+                .organizationName(org != null ? org.getOrganizationName() : null)
+                .accessToFinanceType(entity.getAccessToFinanceType())
+                .schemeName(entity.getSchemeName())
+                .govtApplicationStatus(
+                        entity.getGovtApplicationStatus() != null
+                                ? entity.getGovtApplicationStatus().name()
+                                : null
+                )
+                .govtSanctionDate(DateUtil.dateToString(entity.getGovtSanctionDate(), "dd-MM-yyyy"))
+                .govtSanctionedAmount(entity.getGovtSanctionedAmount())
+                .govtDetails(entity.getGovtDetails())
+                .institutionName(entity.getInstitutionName())
+                .branchName(entity.getBranchName())
+                .dprSubmissionDate(DateUtil.dateToString(entity.getDprSubmissionDate(), "dd-MM-yyyy"))
+                .bankApplicationStatus(
+                        entity.getBankApplicationStatus() != null
+                                ? entity.getBankApplicationStatus().name()
+                                : null
+                )
+                .bankSanctionDate(DateUtil.dateToString(entity.getBankSanctionDate(), "dd-MM-yyyy"))
+                .bankSanctionedAmount(entity.getBankSanctionedAmount())
+                .bankDetails(entity.getBankDetails())
+                .counselledBy(entity.getCounselledBy())
+                .counsellingDate(DateUtil.dateToString(entity.getCounsellingDate(), "dd-MM-yyyy"))
+                .subjectDelivered(entity.getSubjectDelivered())
+                .build();
+    }
+    public static AccessToTechnologyAndInfrastructureResponse mapToAccessToTechnologyAndInfrastructureResponse(
+            AccessToTechnologyAndInfrastructure entity
+    ) {
+
+        HandholdingSupport support = entity.getHandholdingSupport();
+        Organization org = entity.getOrganization();
+
+        return AccessToTechnologyAndInfrastructureResponse.builder()
+                .handholdingSupportId(support != null ? support.getId() : null)
+                .nonTrainingActivityId(
+                        support != null && support.getNonTrainingActivity() != null
+                                ? support.getNonTrainingActivity().getActivityId()
+                                : null
+                )
+                .nonTrainingActivityName(
+                        support != null && support.getNonTrainingActivity() != null
+                                ? support.getNonTrainingActivity().getActivityName()
+                                : null
+                )
+
+                .nonTrainingSubActivityId(
+                        support != null && support.getNonTrainingSubActivity() != null
+                                ? support.getNonTrainingSubActivity().getSubActivityId()
+                                : null
+                )
+                .nonTrainingSubActivityName(
+                        support != null && support.getNonTrainingSubActivity() != null
+                                ? support.getNonTrainingSubActivity().getSubActivityName()
+                                : null
+                )
+
+                .vendorSuggested(entity.getVendorSuggested())
+                .quotationDate(DateUtil.dateToString(entity.getQuotationDate(), "dd-MM-yyyy"))
+                .details(entity.getDetails())
+                .cost(entity.getCost())
+                .requirement(entity.getRequirement())
+                .existingMachinery(entity.getExistingMachinery())
+                .suggestedMachinery(entity.getSuggestedMachinery())
+                .manufacturer(entity.getManufacturer())
+                .groundingDate(DateUtil.dateToString(entity.getGroundingDate(), "dd-MM-yyyy"))
+                .placeOfInstallation(entity.getPlaceOfInstallation())
+                .costOfMachinery(entity.getCostOfMachinery())
+                .technologyDetails(entity.getTechnologyDetails())
+                .vendorName(entity.getVendorName())
+                .vendorContactNo(entity.getVendorContactNo())
+                .vendorEmail(entity.getVendorEmail())
+                .approxCost(entity.getApproxCost())
+
+                .build();
+    }
+
+
 }

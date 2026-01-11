@@ -44,7 +44,8 @@ public class UnifiedHandHoldingController extends RestControllerBase {
     private final VendorConnectionService vendorConnectionService;
     private final ActivityLogService logService;
     private final FormalisationComplianceService formalisationComplianceService;
-
+    private final AccessToFinanceService accessToFinanceService;
+    private final AccessToTechnologyAndInfrastructureService infrastructureService;
     private final UnifiedHandholdingService unifiedHandholdingService;
 
     @PostMapping(value = "/save", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -178,7 +179,16 @@ public class UnifiedHandHoldingController extends RestControllerBase {
                     FormalisationComplianceRequest request = mapper.readValue(data, FormalisationComplianceRequest.class);
                     response = formalisationComplianceService.update(id, request, file);
                     break;
-
+                case "accesstofinance":
+                case "access-to-finance":
+                    AccessToFinanceRequest accessToFinanceRequest = mapper.readValue(data, AccessToFinanceRequest.class);
+                    response = accessToFinanceService.update(id, accessToFinanceRequest);
+                    break;
+                case "accesstotechnology":
+                case "access-to-technology":
+                    AccessToTechnologyAndInfrastructureRequest infrastructureRequest = mapper.readValue(data, AccessToTechnologyAndInfrastructureRequest.class);
+                    response = infrastructureService.update(id, infrastructureRequest);
+                    break;
                 default:
                     return RestControllerBase.error(
                             new DataException("Unknown type: " + type, "UNKNOWN_TYPE", 400)
@@ -311,7 +321,14 @@ public class UnifiedHandHoldingController extends RestControllerBase {
                 case "formalisation-compliance":
                     response = formalisationComplianceService.delete(id);
                     break;
-
+                case "accesstofinance":
+                case "access-to-finance":
+                    response = accessToFinanceService.delete(id);
+                    break;
+                case "accesstotechnology":
+                case "access-to-technology":
+                    response = infrastructureService.delete(id);
+                    break;
                 default:
                     return RestControllerBase.error(
                             new DataException("Unknown type: " + type, "UNKNOWN_TYPE", 400)
