@@ -40,7 +40,7 @@ public class AccessToFinance extends BaseEntity {
     @Column(name = "govt_sanctioned_amount")
     private Double govtSanctionedAmount;
 
-    @Column(name = "govt_details", length = 1000)
+    @Column(name = "govt_details", columnDefinition = "TEXT")
     private String govtDetails;
 
     @Column(name = "institution_name")
@@ -80,4 +80,7 @@ public class AccessToFinance extends BaseEntity {
         APPROVED,
         REJECTED
     }
+
+    @Column(name = "loan_document_details", columnDefinition = "TEXT")
+    private String loanDocumentDetails;
 }

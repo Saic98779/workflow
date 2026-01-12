@@ -8,7 +8,6 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class AccessToFinanceResponse {
-
     private Long accessToFinanceId;
     private Long handholdingSupportId;
     private Long nonTrainingActivityId;
@@ -33,9 +32,6 @@ public class AccessToFinanceResponse {
     private String counselledBy;
     private String counsellingDate;
     private String subjectDelivered;
-    private String createdDate;
-    private String modifiedDate;
-    private String createdBy;
-    private String modifiedBy;
+    private String loanDocumentDetails;
 }
 

@@ -17,24 +17,15 @@ import org.springframework.web.multipart.MultipartFile;
 public class UnifiedHandholdingService {
 
     private static final Logger log = LoggerFactory.getLogger(UnifiedHandholdingService.class);
-
-    private final AleapDesignStudioService aleapService;
     private final BusinessPlanDetailsService businessPlanService;
-    private final BankNbfcFinanceService bankService;
-    private final CFCSupportService cfcSupportService;
     private final CounsellingService counsellingService;
-    private final CreditCounsellingService creditCounsellingService;
     private final GovtSchemeApplicationService govtSchemeApplicationService;
-    private final GovtSchemeFinanceService govtSchemeFinanceService;
-    private final LoanDocumentPreparationService loanDocumentPreparationService;
-    private final MachineryIdentificationService machineryIdentificationService;
     private final MarketStudyService marketStudyService;
     private final SectorAdvisoryService sectorAdvisoryService;
-    private final TradeFairParticipationService tradeFairParticipationService;
-    private final VendorConnectionService vendorConnectionService;
     private final FormalisationComplianceService formalisationComplianceService;
     private final AccessToTechnologyAndInfrastructureService infrastructureService;
     private final AccessToFinanceService accessToFinanceService;
+    private final AccessToPackagingLabellingAndBrandingService accessToPackagingLabellingAndBrandingService;
 
     private final ObjectMapper mapper = new ObjectMapper();
 
@@ -46,55 +37,20 @@ public class UnifiedHandholdingService {
             String lower = type == null ? "" : type.trim().toLowerCase();
 
             switch (lower) {
-                case "aleapdesignstudio":
-                case "aleap-design-studio":
-                    AleapDesignStudioRequest aleapReq = mapper.readValue(data, AleapDesignStudioRequest.class);
-                    response = aleapService.save(aleapReq, image1, image2, image3);
-                    break;
                 case "businessplan":
                 case "business-plan":
                 case "businessplandetails":
                     BusinessPlanRequest bpReq = mapper.readValue(data, BusinessPlanRequest.class);
                     response = businessPlanService.save(bpReq, file);
                     break;
-                case "banknbfcfinance":
-                case "bank-nbfc-finance":
-                    BankNbfcFinanceRequest bankReq = mapper.readValue(data, BankNbfcFinanceRequest.class);
-                    response = bankService.save(bankReq);
-                    break;
-                case "cfc-support":
-                case "cfcsupport":
-                    CFCSupportRequest cfcReq = mapper.readValue(data, CFCSupportRequest.class);
-                    response = cfcSupportService.save(cfcReq);
-                    break;
                 case "counselling":
                     CounsellingRequest counsellingReq = mapper.readValue(data, CounsellingRequest.class);
                     response = counsellingService.save(counsellingReq);
-                    break;
-                case "creditcounselling":
-                case "credit-counselling":
-                    CreditCounsellingRequest creditReq = mapper.readValue(data, CreditCounsellingRequest.class);
-                    response = creditCounsellingService.save(creditReq);
                     break;
                 case "govtschemeapplication":
                 case "govt-scheme-application":
                     GovtSchemeApplicationRequest govAppReq = mapper.readValue(data, GovtSchemeApplicationRequest.class);
                     response = govtSchemeApplicationService.save(govAppReq);
-                    break;
-                case "govtschemefinance":
-                case "govt-scheme-finance":
-                    GovtSchemeFinanceRequest govFinReq = mapper.readValue(data, GovtSchemeFinanceRequest.class);
-                    response = govtSchemeFinanceService.save(govFinReq);
-                    break;
-                case "loandocumentpreparation":
-                case "loan-document-preparation":
-                    LoanDocumentPreparationRequest loanReq = mapper.readValue(data, LoanDocumentPreparationRequest.class);
-                    response = loanDocumentPreparationService.save(loanReq);
-                    break;
-                case "machineryidentification":
-                case "machinery-identification":
-                    MachineryIdentificationRequest machReq = mapper.readValue(data, MachineryIdentificationRequest.class);
-                    response = machineryIdentificationService.save(machReq);
                     break;
                 case "marketstudy":
                 case "market-study":
@@ -105,16 +61,6 @@ public class UnifiedHandholdingService {
                 case "sector-advisory":
                     SectorAdvisoryRequest sectorReq = mapper.readValue(data, SectorAdvisoryRequest.class);
                     response = sectorAdvisoryService.save(sectorReq);
-                    break;
-                case "tradefairparticipation":
-                case "trade-fair-participation":
-                    TradeFairParticipationRequest tradeReq = mapper.readValue(data, TradeFairParticipationRequest.class);
-                    response = tradeFairParticipationService.save(tradeReq);
-                    break;
-                case "vendorconnection":
-                case "vendor-connection":
-                    VendorConnectionRequest vendorReq = mapper.readValue(data, VendorConnectionRequest.class);
-                    response = vendorConnectionService.save(vendorReq);
                     break;
                 case "formalisationcompliance":
                 case "formalisation-compliance":
@@ -132,8 +78,11 @@ public class UnifiedHandholdingService {
                     AccessToTechnologyAndInfrastructureRequest infrastructureRequest = mapper.readValue(data, AccessToTechnologyAndInfrastructureRequest.class);
                     response = infrastructureService.save(infrastructureRequest);
                     break;
-
-
+                case "accesstopackaginglabellingandbranding":
+                case "access-to-packaging-labelling-and-branding":
+                    AccessToPackagingLabellingAndBrandingRequest packagingLabellingAndBrandingRequest = mapper.readValue(data, AccessToPackagingLabellingAndBrandingRequest.class);
+                    response = accessToPackagingLabellingAndBrandingService.save(packagingLabellingAndBrandingRequest,image1,image2,image3);
+                    break;
                 default:
                     throw new DataException("Missing id or subActivityId for formalisationcompliance", "MISSING_PARAM", 400);
             }
@@ -141,7 +90,7 @@ public class UnifiedHandholdingService {
             return response;
 
         } catch (Exception e) {
-            throw new DataException("Missing id or subActivityId for formalisationcompliance", "MISSING_PARAM", 400);
+            throw new DataException(e.getMessage(), "MISSING_PARAM", 400);
         }
     }
 
@@ -154,16 +103,6 @@ public class UnifiedHandholdingService {
         boolean hasSub = subActivityId != null;
 
         switch (lower) {
-            case "aleapdesignstudio":
-            case "aleap-design-studio":
-                if (hasId) {
-                    response = aleapService.getById(id);
-                } else if (hasSub) {
-                    response = aleapService.getByNonTrainingSubActivityId(subActivityId);
-                } else {
-                    throw new DataException("Missing id or subActivityId for aleap-design-studio", "MISSING_PARAM", 400);
-                }
-                break;
             case "businessplan":
             case "business-plan":
             case "businessplandetails":
@@ -175,26 +114,6 @@ public class UnifiedHandholdingService {
                     throw new DataException("Missing id or subActivityId for business-plan", "MISSING_PARAM", 400);
                 }
                 break;
-            case "banknbfcfinance":
-            case "bank-nbfc-finance":
-                if (hasId) {
-                    response = bankService.getById(id);
-                } else if (hasSub) {
-                    response = bankService.getByNonTrainingSubActivityId(subActivityId);
-                } else {
-                    throw new DataException("Missing id or subActivityId for bank-nbfc-finance", "MISSING_PARAM", 400);
-                }
-                break;
-            case "cfc-support":
-            case "cfcsupport":
-                if (hasId) {
-                    response = cfcSupportService.getById(id);
-                } else if (hasSub) {
-                    response = cfcSupportService.getByNonTrainingSubActivityId(subActivityId);
-                } else {
-                    throw new DataException("Missing id or subActivityId for cfcsupport", "MISSING_PARAM", 400);
-                }
-                break;
             case "counselling":
                 if (hasId) {
                     response = counsellingService.getById(id);
@@ -202,16 +121,6 @@ public class UnifiedHandholdingService {
                     response = counsellingService.getByNonTrainingSubActivityId(subActivityId);
                 } else {
                     throw new DataException("Missing id or subActivityId for counselling", "MISSING_PARAM", 400);
-                }
-                break;
-            case "creditcounselling":
-            case "credit-counselling":
-                if (hasId) {
-                    response = creditCounsellingService.getById(id);
-                } else if (hasSub) {
-                    response = creditCounsellingService.getByNonTrainingSubActivityId(subActivityId);
-                } else {
-                    throw new DataException("Missing id or subActivityId for credit-counselling", "MISSING_PARAM", 400);
                 }
                 break;
             case "govtschemeapplication":
@@ -222,36 +131,6 @@ public class UnifiedHandholdingService {
                     response = govtSchemeApplicationService.getBySubActivityId(subActivityId);
                 } else {
                     throw new DataException("Missing id or subActivityId for govt-scheme-application", "MISSING_PARAM", 400);
-                }
-                break;
-            case "govtschemefinance":
-            case "govt-scheme-finance":
-                if (hasId) {
-                    response = govtSchemeFinanceService.getById(id);
-                } else if (hasSub) {
-                    response = govtSchemeFinanceService.getByNonTrainingSubActivityId(subActivityId);
-                } else {
-                    throw new DataException("Missing id or subActivityId for govt-scheme-finance", "MISSING_PARAM", 400);
-                }
-                break;
-            case "loandocumentpreparation":
-            case "loan-document-preparation":
-                if (hasId) {
-                    response = loanDocumentPreparationService.getById(id);
-                } else if (hasSub) {
-                    response = loanDocumentPreparationService.getByNonTrainingSubActivityId(subActivityId);
-                } else {
-                    throw new DataException("Missing id or subActivityId for loan-document-preparation", "MISSING_PARAM", 400);
-                }
-                break;
-            case "machineryidentification":
-            case "machinery-identification":
-                if (hasId) {
-                    response = machineryIdentificationService.getById(id);
-                } else if (hasSub) {
-                    response = machineryIdentificationService.getByNonTrainingSubActivityId(subActivityId);
-                } else {
-                    throw new DataException("Missing id or subActivityId for machinery-identification", "MISSING_PARAM", 400);
                 }
                 break;
             case "marketstudy":
@@ -274,26 +153,6 @@ public class UnifiedHandholdingService {
                     throw new DataException("Missing id or subActivityId for sector-advisory", "MISSING_PARAM", 400);
                 }
                 break;
-            case "tradefairparticipation":
-            case "trade-fair-participation":
-                if (hasId) {
-                    response = tradeFairParticipationService.getById(id);
-                } else if (hasSub) {
-                    response = tradeFairParticipationService.getByNonTrainingSubActivityId(subActivityId);
-                } else {
-                    throw new DataException("Missing id or subActivityId for trade-fair-participation", "MISSING_PARAM", 400);
-                }
-                break;
-            case "vendorconnection":
-            case "vendor-connection":
-                if (hasId) {
-                    response = vendorConnectionService.getById(id);
-                } else if (hasSub) {
-                    response = vendorConnectionService.getByNonTrainingSubActivityId(subActivityId);
-                } else {
-                    throw new DataException("Missing id or subActivityId for vendor-connection", "MISSING_PARAM", 400);
-                }
-                break;
             case "formalisationcompliance":
             case "formalisation-compliance":
                 if (hasId) {
@@ -303,10 +162,6 @@ public class UnifiedHandholdingService {
                 } else {
                     throw new DataException("Missing id or subActivityId for formalisationcompliance", "MISSING_PARAM", 400);
                 }
-                break;
-            case "accesstotechnology&infrastructure":
-            case "access to technology & infrastructure":
-                response = infrastructureService.getAccessToTechnologyAndInfrastructure(subActivityId);
                 break;
             case "accesstofinance":
             case "access-to-finance":
@@ -318,12 +173,12 @@ public class UnifiedHandholdingService {
                     throw new DataException("Missing id or subActivityId for formalisationcompliance", "MISSING_PARAM", 400);
                 }
                 break;
-            case "accesstotechnology":
-            case "access-to-technology":
+            case "accesstopackaginglabellingandbranding":
+            case "access-to-packaging-labelling-and-branding":
                 if (hasId) {
-                    response = infrastructureService.getById(id);
+                    response = accessToPackagingLabellingAndBrandingService.getById(id);
                 } else if (hasSub) {
-                    response = infrastructureService.getByNonTrainingSubActivityId(subActivityId);
+                    response = accessToPackagingLabellingAndBrandingService.getByNonTrainingSubActivityId(subActivityId);
                 } else {
                     throw new DataException("Missing id or subActivityId for formalisationcompliance", "MISSING_PARAM", 400);
                 }

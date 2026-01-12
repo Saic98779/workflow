@@ -11,17 +11,14 @@ public class AccessToTechnologyAndInfrastructureRequest {
 
     private Long handholdingSupportId;
     private Long organizationId;
-
     private Long nonTrainingActivityId;
     private Long nonTrainingSubActivityId;
     private String handHoldingType;
     private String accessToTechnologyType;
-
     private String vendorSuggested;
     private String quotationDate;
     private String details;
     private Double cost;
-
     private String requirement;
     private String existingMachinery;
     private String suggestedMachinery;
@@ -29,7 +26,6 @@ public class AccessToTechnologyAndInfrastructureRequest {
     private String groundingDate;
     private String placeOfInstallation;
     private Double costOfMachinery;
-
     private String technologyDetails;
     private String vendorName;
     private String vendorContactNo;

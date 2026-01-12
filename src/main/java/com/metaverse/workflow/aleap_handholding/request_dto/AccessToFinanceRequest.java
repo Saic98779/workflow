@@ -15,13 +15,11 @@ public class AccessToFinanceRequest {
     private String handHoldingType;
     private Long organizationId;
     private String accessToFinanceType;
-
     private String schemeName;
     private String govtApplicationStatus;
     private String govtSanctionDate;
     private Double govtSanctionedAmount;
     private String govtDetails;
-
     private String institutionName;
     private String branchName;
     private String dprSubmissionDate;
@@ -29,8 +27,8 @@ public class AccessToFinanceRequest {
     private String bankSanctionDate;
     private Double bankSanctionedAmount;
     private String bankDetails;
-
     private String counselledBy;
     private String counsellingDate;
     private String subjectDelivered;
+    private String loanDocumentDetails;
 }

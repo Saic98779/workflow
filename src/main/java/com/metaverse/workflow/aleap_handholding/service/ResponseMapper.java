@@ -1,6 +1,5 @@
 package com.metaverse.workflow.aleap_handholding.service;
 
-import com.metaverse.workflow.aleap_handholding.response_dto.GovtSchemeFinanceResponse;
 import com.metaverse.workflow.aleap_handholding.response_dto.*;
 import com.metaverse.workflow.common.util.DateUtil;
 import com.metaverse.workflow.model.InfluencedParticipant;
@@ -10,14 +9,11 @@ import com.metaverse.workflow.model.aleap_handholding.*;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Component
 public class ResponseMapper {
-
         public static BusinessPlanResponse mapToBusinessPlanResponse(BusinessPlanDetails entity) {
-
             return BusinessPlanResponse.builder()
                     .businessPlanId(entity.getBusinessPlanDetailsId())
                     .handholdingSupportId(entity.getHandholdingSupport().getId())
@@ -51,9 +47,7 @@ public class ResponseMapper {
         }
 
     public static CounsellingResponse mapToCounsellingResponse(Counselling entity) {
-
         HandholdingSupport support = entity.getHandholdingSupport();
-
         return CounsellingResponse.builder()
                 .counselletingId(entity.getId())
                 .handholdingSupportId(support != null ? support.getId() : null)
@@ -111,7 +105,6 @@ public class ResponseMapper {
                 .build();
     }
     public static SectorAdvisoryResponse mapToSectorAdvisoryResponse(SectorAdvisory entity) {
-
         return SectorAdvisoryResponse.builder()
                 .adviseDetails(entity.getAdviseDetails())
                 .sectorAdvisoryId(entity.getId())
@@ -141,7 +134,6 @@ public class ResponseMapper {
                 .build();
     }
     public static FeasibilityInputResponse mapToFeasibilityInputResponse(FeasibilityInput entity) {
-
         return FeasibilityInputResponse.builder()
                 .feasibilityInputId(entity.getId())
                 .marketStudyId(entity.getMarketStudy().getId())
@@ -152,121 +144,7 @@ public class ResponseMapper {
                 .build();
     }
 
-    public static BankNbfcFinanceResponse mapToBankNbfcFinanceResponse(
-            BankNbfcFinance entity) {
-
-        return BankNbfcFinanceResponse.builder()
-                .bankNbfcId(entity.getId())
-                .institutionName(entity.getInstitutionName())
-                .branchName(entity.getBranchName())
-                .dprSubmissionDate(DateUtil.dateToString(entity.getDprSubmissionDate(),"dd-MM-yyyy"))
-                .status(entity.getStatus())
-                .sanctionDate(DateUtil.dateToString(entity.getSanctionDate(),"dd-MM-yyyy"))
-                .sanctionedAmount(entity.getSanctionedAmount())
-                .details(entity.getDetails())
-                .handHoldingType(
-                        entity.getHandholdingSupport().getHandholdingSupportType())
-                .nonTrainingActivityId(
-                        entity.getHandholdingSupport().getNonTrainingActivity().getActivityId())
-                .nonTrainingSubActivityId(
-                        entity.getHandholdingSupport().getNonTrainingSubActivity().getSubActivityId())
-                .nonTrainingActivityName(
-                        entity.getHandholdingSupport().getNonTrainingActivity().getActivityName())
-                .nonTrainingSubActivityName(
-                        entity.getHandholdingSupport().getNonTrainingSubActivity().getSubActivityName())
-                .build();
-    }
-
-    public static GovtSchemeFinanceResponse mapToGovtSchemeFinanceResponse(GovtSchemeFinance entity) {
-
-        return GovtSchemeFinanceResponse.builder()
-                .govtSchemeFinanceId(entity.getId())
-                .handholdingSupportId(entity.getHandholdingSupport().getId())
-                .nonTrainingActivityId(
-                        entity.getHandholdingSupport()
-                                .getNonTrainingActivity()
-                                .getActivityId()
-                )
-                .nonTrainingSubActivityId(
-                        entity.getHandholdingSupport()
-                                .getNonTrainingSubActivity()
-                                .getSubActivityId()
-                )
-                .schemeName(entity.getSchemeName())
-                .status(entity.getStatus())
-                .sanctionDate(
-                        DateUtil.dateToString(entity.getSanctionDate(),"dd-MM-yyyy")
-                )
-                .sanctionedAmount(entity.getSanctionedAmount())
-                .details(entity.getDetails())
-                .build();
-    }
-
-    public static CreditCounsellingResponse mapToCreditCounsellingResponse(
-            CreditCounselling entity
-    ) {
-
-        return CreditCounsellingResponse.builder()
-                .creditCounselingId(entity.getId())
-                .handholdingSupportId(entity.getHandholdingSupport().getId())
-                .nonTrainingActivityId(
-                        entity.getHandholdingSupport()
-                                .getNonTrainingActivity()
-                                .getActivityId()
-                )
-                .nonTrainingSubActivityId(
-                        entity.getHandholdingSupport()
-                                .getNonTrainingSubActivity()
-                                .getSubActivityId()
-                )
-                .nonTrainingActivityName(
-                        entity.getHandholdingSupport()
-                                .getNonTrainingActivity()
-                                .getActivityName()
-                )
-                .nonTrainingSubActivityName(
-                        entity.getHandholdingSupport()
-                                .getNonTrainingSubActivity()
-                                .getSubActivityName()
-                )
-                .counselledBy(entity.getCounselledBy())
-                .counsellingDate(DateUtil.dateToString(entity.getCounsellingDate(),"dd-MM-yyyy"))
-                .subjectDelivered(entity.getSubjectDelivered())
-                .build();
-    }
-    public static LoanDocumentPreparationResponse
-    mapToLoanDocumentPreparationResponse(LoanDocumentPreparation entity) {
-
-        return LoanDocumentPreparationResponse.builder()
-                .loanDocumentPreparationId(entity.getId())
-                .handholdingSupportId(entity.getHandholdingSupport().getId())
-                .nonTrainingActivityId(
-                        entity.getHandholdingSupport()
-                                .getNonTrainingActivity()
-                                .getActivityId()
-                )
-                .nonTrainingSubActivityId(
-                        entity.getHandholdingSupport()
-                                .getNonTrainingSubActivity()
-                                .getSubActivityId()
-                )
-                .nonTrainingActivityName(
-                        entity.getHandholdingSupport()
-                                .getNonTrainingActivity()
-                                .getActivityName()
-                )
-                .nonTrainingSubActivityName(
-                        entity.getHandholdingSupport()
-                                .getNonTrainingSubActivity()
-                                .getSubActivityName()
-                )
-                .details(entity.getDetails())
-                .build();
-    }
-    public static MarketStudyResponse mapToMarketStudyResponse(
-            MarketStudy entity
-    ) {
-
+    public static MarketStudyResponse mapToMarketStudyResponse(MarketStudy entity) {
         return MarketStudyResponse.builder()
                 .marketStudyId(entity.getId())
                 .handholdingSupportId(entity.getHandholdingSupport().getId())
@@ -322,176 +200,7 @@ public class ResponseMapper {
                 .handHoldingType(entity.getHandholdingSupport().getHandholdingSupportType())
                 .build();
     }
-    public static VendorConnectionResponse mapToVendorConnectionResponse(
-            VendorConnection entity
-    ) {
 
-        return VendorConnectionResponse.builder()
-                .vendorConnectionId(entity.getId())
-                .handholdingSupportId(entity.getHandholdingSupport().getId())
-                .nonTrainingActivityId(
-                        entity.getHandholdingSupport()
-                                .getNonTrainingActivity()
-                                .getActivityId()
-                )
-                .nonTrainingSubActivityId(
-                        entity.getHandholdingSupport()
-                                .getNonTrainingSubActivity()
-                                .getSubActivityId()
-                )
-                .nonTrainingActivityName(
-                        entity.getHandholdingSupport()
-                                .getNonTrainingActivity()
-                                .getActivityName()
-                )
-                .nonTrainingSubActivityName(
-                        entity.getHandholdingSupport()
-                                .getNonTrainingSubActivity()
-                                .getSubActivityName()
-                )
-                .vendorSuggested(entity.getVendorSuggested())
-                .quotationDate(DateUtil.dateToString(entity.getQuotationDate(),"dd-MM-yyyy"))
-                .details(entity.getDetails())
-                .cost(entity.getCost())
-                .build();
-    }
-
-    public static MachineryIdentificationResponse mapToMachineryIdentificationResponse(
-            MachineryIdentification entity
-    ) {
-
-        return MachineryIdentificationResponse.builder()
-                .machineryIdentificationId(entity.getId())
-                .handholdingSupportId(entity.getHandholdingSupport().getId())
-                .nonTrainingActivityId(
-                        entity.getHandholdingSupport()
-                                .getNonTrainingActivity()
-                                .getActivityId()
-                )
-                .nonTrainingSubActivityId(
-                        entity.getHandholdingSupport()
-                                .getNonTrainingSubActivity()
-                                .getSubActivityId()
-                )
-                .nonTrainingActivityName(
-                        entity.getHandholdingSupport()
-                                .getNonTrainingActivity()
-                                .getActivityName()
-                )
-                .nonTrainingSubActivityName(
-                        entity.getHandholdingSupport()
-                                .getNonTrainingSubActivity()
-                                .getSubActivityName()
-                )
-                .requirement(entity.getRequirement())
-                .existingMachinery(entity.getExistingMachinery())
-                .suggestedMachinery(entity.getSuggestedMachinery())
-                .manufacturer(entity.getManufacturer())
-                .groundingDate(
-                        entity.getGroundingDate() != null
-                                ? DateUtil.dateToString(entity.getGroundingDate(),"dd-MM-yyyy")
-                                : null
-                )
-                .placeOfInstallation(entity.getPlaceOfInstallation())
-                .costOfMachinery(entity.getCostOfMachinery())
-                .build();
-    }
-    public static CFCSupportResponse mapToCFCSupportResponse(CFCSupport entity
-    ) {
-
-        return CFCSupportResponse.builder()
-                .cfsSupportId(entity.getId())
-                .handholdingSupportId(entity.getHandholdingSupport().getId())
-                .nonTrainingActivityId(
-                        entity.getHandholdingSupport()
-                                .getNonTrainingActivity()
-                                .getActivityId()
-                )
-                .nonTrainingSubActivityId(
-                        entity.getHandholdingSupport()
-                                .getNonTrainingSubActivity()
-                                .getSubActivityId()
-                )
-                .nonTrainingActivityName(
-                        entity.getHandholdingSupport()
-                                .getNonTrainingActivity()
-                                .getActivityName()
-                )
-                .nonTrainingSubActivityName(
-                        entity.getHandholdingSupport()
-                                .getNonTrainingSubActivity()
-                                .getSubActivityName()
-                )
-                .technologyDetails(entity.getTechnologyDetails())
-                .vendorName(entity.getVendorName())
-                .vendorContactNo(entity.getVendorContactNo())
-                .vendorEmail(entity.getVendorEmail())
-                .approxCost(entity.getApproxCost())
-                .build();
-    }
-
-    public static TradeFairParticipationResponse mapToTradeFairParticipationResponse(TradeFairParticipation entity) {
-
-        return TradeFairParticipationResponse.builder()
-                .tradeFairParticipationId(entity.getId())
-                .handholdingSupportId(entity.getHandholdingSupport().getId())
-                .nonTrainingActivityId(
-                        entity.getHandholdingSupport()
-                                .getNonTrainingActivity()
-                                .getActivityId()
-                )
-                .nonTrainingSubActivityId(
-                        entity.getHandholdingSupport()
-                                .getNonTrainingSubActivity()
-                                .getSubActivityId()
-                )
-                .nonTrainingActivityName(
-                        entity.getHandholdingSupport()
-                                .getNonTrainingActivity()
-                                .getActivityName()
-                )
-                .nonTrainingSubActivityName(
-                        entity.getHandholdingSupport()
-                                .getNonTrainingSubActivity()
-                                .getSubActivityName()
-                )
-                .eventType(entity.getEventType().name())
-                .eventDate(DateUtil.dateToString(entity.getEventDate(), "dd-MM-yyyy"))
-                .eventLocation(entity.getEventLocation())
-                .organizedBy(entity.getOrganizedBy())
-                .build();
-    }
-    public static AleapDesignStudioResponse mapToAleapDesignStudioResponse(AleapDesignStudio entity) {
-        return AleapDesignStudioResponse.builder()
-                .aleapDesignStudioId(entity.getAleapDesignStudioId())
-                .handholdingSupportId(entity.getHandholdingSupport().getId())
-                .nonTrainingActivityId(
-                        entity.getHandholdingSupport()
-                                .getNonTrainingActivity()
-                                .getActivityId()
-                )
-                .nonTrainingSubActivityId(
-                        entity.getHandholdingSupport()
-                                .getNonTrainingSubActivity()
-                                .getSubActivityId()
-                )
-                .nonTrainingActivityName(
-                        entity.getHandholdingSupport()
-                                .getNonTrainingActivity()
-                                .getActivityName()
-                )
-                .nonTrainingSubActivityName(
-                        entity.getHandholdingSupport()
-                                .getNonTrainingSubActivity()
-                                .getSubActivityName()
-                )
-                .studioAccessDate(DateUtil.dateToString(entity.getStudioAccessDate(),"dd-MM-yyyy"))
-                .details(entity.getDetails())
-                .aleapDesignStudioImage1(entity.getAleapDesignStudioImage1())
-                .aleapDesignStudioImage2(entity.getAleapDesignStudioImage2())
-                .aleapDesignStudioImage3(entity.getAleapDesignStudioImage3())
-                .build();
-    }
     public static GovtSchemeApplicationResponse mapToGovtSchemeApplicationResponse(GovtSchemeApplication entity) {
         return GovtSchemeApplicationResponse.builder()
                 .govtSchemeApplicationId(entity.getId())
@@ -514,9 +223,7 @@ public class ResponseMapper {
         Organization org = entity.getOrganization();
         return AccessToFinanceResponse.builder()
                 .accessToFinanceId(entity.getId())
-
                 .handholdingSupportId(support != null ? support.getId() : null)
-
                 .nonTrainingActivityId(
                         support != null && support.getNonTrainingActivity() != null
                                 ? support.getNonTrainingActivity().getActivityId()
@@ -563,15 +270,12 @@ public class ResponseMapper {
                 .counselledBy(entity.getCounselledBy())
                 .counsellingDate(DateUtil.dateToString(entity.getCounsellingDate(), "dd-MM-yyyy"))
                 .subjectDelivered(entity.getSubjectDelivered())
+                .loanDocumentDetails(entity.getLoanDocumentDetails())
                 .build();
     }
-    public static AccessToTechnologyAndInfrastructureResponse mapToAccessToTechnologyAndInfrastructureResponse(
-            AccessToTechnologyAndInfrastructure entity
-    ) {
-
+    public static AccessToTechnologyAndInfrastructureResponse mapToAccessToTechnologyAndInfrastructureResponse(AccessToTechnologyAndInfrastructure entity) {
         HandholdingSupport support = entity.getHandholdingSupport();
         Organization org = entity.getOrganization();
-
         return AccessToTechnologyAndInfrastructureResponse.builder()
                 .accessToTechnologyId(entity.getId())
                 .handholdingSupportId(support != null ? support.getId() : null)
@@ -585,7 +289,6 @@ public class ResponseMapper {
                                 ? support.getNonTrainingActivity().getActivityName()
                                 : null
                 )
-
                 .nonTrainingSubActivityId(
                         support != null && support.getNonTrainingSubActivity() != null
                                 ? support.getNonTrainingSubActivity().getSubActivityId()
@@ -596,7 +299,8 @@ public class ResponseMapper {
                                 ? support.getNonTrainingSubActivity().getSubActivityName()
                                 : null
                 )
-
+                .organizationId(entity.getOrganization().getOrganizationId())
+                .organizationName(entity.getOrganization().getOrganizationName())
                 .vendorSuggested(entity.getVendorSuggested())
                 .quotationDate(DateUtil.dateToString(entity.getQuotationDate(), "dd-MM-yyyy"))
                 .details(entity.getDetails())
@@ -613,9 +317,44 @@ public class ResponseMapper {
                 .vendorContactNo(entity.getVendorContactNo())
                 .vendorEmail(entity.getVendorEmail())
                 .approxCost(entity.getApproxCost())
-
                 .build();
     }
-
-
+    public static AccessToPackagingLabellingAndBrandingResponse mapToAccessToPackagingLabellingAndBrandingResponse(AccessToPackagingLabellingAndBranding entity) {
+        return AccessToPackagingLabellingAndBrandingResponse.builder()
+                .accessToPackagingId(entity.getAccessToPackagingId())
+                .handholdingSupportId(entity.getHandholdingSupport().getId())
+                .nonTrainingActivityId(
+                        entity.getHandholdingSupport()
+                                .getNonTrainingActivity()
+                                .getActivityId()
+                )
+                .nonTrainingSubActivityId(
+                        entity.getHandholdingSupport()
+                                .getNonTrainingSubActivity()
+                                .getSubActivityId()
+                )
+                .nonTrainingActivityName(
+                        entity.getHandholdingSupport()
+                                .getNonTrainingActivity()
+                                .getActivityName()
+                )
+                .nonTrainingSubActivityName(
+                        entity.getHandholdingSupport()
+                                .getNonTrainingSubActivity()
+                                .getSubActivityName()
+                )
+                .accessToPackagingType(entity.getAccessToPackagingType())
+                .organizationId(entity.getOrganization().getOrganizationId())
+                .organizationName(entity.getOrganization().getOrganizationName())
+                .studioAccessDate(DateUtil.dateToString(entity.getStudioAccessDate(),"dd-MM-yyyy"))
+                .details(entity.getDetails())
+                .aleapDesignStudioImage1(entity.getAleapDesignStudioImage1())
+                .aleapDesignStudioImage2(entity.getAleapDesignStudioImage2())
+                .aleapDesignStudioImage3(entity.getAleapDesignStudioImage3())
+                .eventType(entity.getEventType() != null ? entity.getEventType().name() : null)
+                .eventDate(DateUtil.dateToString(entity.getEventDate(), "dd-MM-yyyy"))
+                .eventLocation(entity.getEventLocation())
+                .organizedBy(entity.getOrganizedBy())
+                .build();
+    }
 }
