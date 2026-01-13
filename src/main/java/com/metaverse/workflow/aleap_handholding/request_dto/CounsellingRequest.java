@@ -10,7 +10,6 @@ public class CounsellingRequest {
     private String subjectDelivered;
     private String originalIdea;
     private String finalIdea;
-
     private Long handholdingSupportId;
     private Long organizationId;
     private String counselledBy;

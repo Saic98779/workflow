@@ -5,7 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface SectorAdvisoryRepository
-        extends JpaRepository<SectorAdvisory, Long> {
+public interface SectorAdvisoryRepository extends JpaRepository<SectorAdvisory, Long> {
     List<SectorAdvisory> findByHandholdingSupport_NonTrainingSubActivity_SubActivityId(Long subActivityId);
 }

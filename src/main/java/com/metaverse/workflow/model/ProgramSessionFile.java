@@ -1,6 +1,6 @@
 package com.metaverse.workflow.model;
 
-import com.metaverse.workflow.model.aleap_handholding.AleapDesignStudio;
+import com.metaverse.workflow.model.aleap_handholding.AccessToPackagingLabellingAndBranding;
 import com.metaverse.workflow.model.aleap_handholding.BusinessPlanDetails;
 import com.metaverse.workflow.model.aleap_handholding.FormalisationCompliance;
 import com.metaverse.workflow.model.tgtpc_handholding.TestingQualityCertificationSupport;
@@ -78,8 +78,8 @@ public class ProgramSessionFile {
     private BusinessPlanDetails businessPlanDetails;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "aleap_design_studio_id")
-    private AleapDesignStudio aleapDesignStudio;
+    @JoinColumn(name = "access_to_packaging_id")
+    private AccessToPackagingLabellingAndBranding accessToPackagingLabellingAndBranding;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "testing_id")

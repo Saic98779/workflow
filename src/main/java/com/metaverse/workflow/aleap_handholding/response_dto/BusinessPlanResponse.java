@@ -10,7 +10,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BusinessPlanResponse {
-
     private Long businessPlanId;
     private Long handholdingSupportId;
     private Long organizationId;
@@ -28,7 +27,5 @@ public class BusinessPlanResponse {
     private String nonTrainingSubActivityName;
     private String handHoldingType;
     private List<String> participantNames;
-
-
 }
 
