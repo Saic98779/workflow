@@ -2,6 +2,8 @@ package com.metaverse.workflow.aleap_handholding.request_dto;
 
 import lombok.*;
 
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -31,4 +33,6 @@ public class AccessToFinanceRequest {
     private String counsellingDate;
     private String subjectDelivered;
     private String loanDocumentDetails;
+    private List<Long> participantIds;
+    private List<Long> influencedParticipantIds;
 }
