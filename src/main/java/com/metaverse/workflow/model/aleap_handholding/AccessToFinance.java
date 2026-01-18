@@ -1,11 +1,14 @@
 package com.metaverse.workflow.model.aleap_handholding;
 
 import com.metaverse.workflow.model.BaseEntity;
+import com.metaverse.workflow.model.InfluencedParticipant;
 import com.metaverse.workflow.model.Organization;
+import com.metaverse.workflow.model.Participant;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "access_to_finance")
@@ -83,4 +86,21 @@ public class AccessToFinance extends BaseEntity {
 
     @Column(name = "loan_document_details", columnDefinition = "TEXT")
     private String loanDocumentDetails;
+
+    @ManyToMany
+    @JoinTable(
+            name = "access_to_finance_participants",
+            joinColumns = @JoinColumn(name = "access_to_finance_id"),
+            inverseJoinColumns = @JoinColumn(name = "participant_id")
+    )
+    private List<Participant> participants;
+
+    @ManyToMany
+    @JoinTable(
+            name = "access_to_finance_influenced_participants",
+            joinColumns = @JoinColumn(name = "access_to_finance_id"),
+            inverseJoinColumns = @JoinColumn(name = "influenced_participant_id")
+    )
+    private List<InfluencedParticipant> influencedParticipants;
+
 }

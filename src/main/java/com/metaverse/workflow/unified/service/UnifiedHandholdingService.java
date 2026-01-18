@@ -163,10 +163,6 @@ public class UnifiedHandholdingService {
                     throw new DataException("Missing id or subActivityId for formalisationcompliance", "MISSING_PARAM", 400);
                 }
                 break;
-            case "accesstotechnology&infrastructure":
-            case "access to technology and infrastructure":
-                response = infrastructureService.getAccessToTechnologyAndInfrastructure(subActivityId);
-                break;
             case "accesstofinance":
             case "access-to-finance":
                 if (hasId) {

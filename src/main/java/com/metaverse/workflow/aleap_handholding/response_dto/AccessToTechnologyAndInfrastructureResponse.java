@@ -32,4 +32,5 @@ public class AccessToTechnologyAndInfrastructureResponse {
     private String vendorContactNo;
     private String vendorEmail;
     private Double approxCost;
+    private String accessToTechnologyType;
 }

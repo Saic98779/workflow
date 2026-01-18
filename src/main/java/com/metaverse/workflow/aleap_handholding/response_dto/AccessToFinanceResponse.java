@@ -1,6 +1,9 @@
 package com.metaverse.workflow.aleap_handholding.response_dto;
 
+import com.metaverse.workflow.aleap_handholding.service.Participants;
 import lombok.*;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -33,5 +36,6 @@ public class AccessToFinanceResponse {
     private String counsellingDate;
     private String subjectDelivered;
     private String loanDocumentDetails;
+    private List<Participants> participants;
 }
 

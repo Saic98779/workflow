@@ -122,7 +122,7 @@ public class RequestMapper {
                 .details(request.getDetails())
                 .build();
     }
-    public static AccessToFinance mapToAccessToFinance(AccessToFinanceRequest request, HandholdingSupport support, Organization organization) {
+    public static AccessToFinance mapToAccessToFinance(AccessToFinanceRequest request, HandholdingSupport support, Organization organization,List<Participant> participants,List<InfluencedParticipant> influencedParticipants) {
         return AccessToFinance.builder()
                 .handholdingSupport(support)
                 .organization(organization)
@@ -153,6 +153,8 @@ public class RequestMapper {
                 .counsellingDate(DateUtil.covertStringToDate(request.getCounsellingDate()))
                 .subjectDelivered(request.getSubjectDelivered())
                 .loanDocumentDetails(request.getLoanDocumentDetails())
+                .participants(participants)
+                .influencedParticipants(influencedParticipants)
                 .build();
     }
     public static AccessToTechnologyAndInfrastructure mapToAccessToTechnologyAndInfrastructure(AccessToTechnologyAndInfrastructureRequest request, HandholdingSupport support, Organization organization) {

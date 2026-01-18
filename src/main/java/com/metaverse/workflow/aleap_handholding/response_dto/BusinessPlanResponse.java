@@ -1,5 +1,6 @@
 package com.metaverse.workflow.aleap_handholding.response_dto;
 
+import com.metaverse.workflow.aleap_handholding.service.Participants;
 import lombok.*;
 
 import java.util.List;
@@ -26,6 +27,6 @@ public class BusinessPlanResponse {
     private Long nonTrainingSubActivityId;
     private String nonTrainingSubActivityName;
     private String handHoldingType;
-    private List<String> participantNames;
+    private List<Participants> participants;
 }
 

@@ -1,5 +1,6 @@
 package com.metaverse.workflow.aleap_handholding.response_dto;
 
+import com.metaverse.workflow.aleap_handholding.service.Participants;
 import lombok.*;
 
 import java.util.List;
@@ -19,7 +20,7 @@ public class CounsellingResponse {
     private String subjectDelivered;
     private String originalIdea;
     private String finalIdea;
-    private List<String> participantNames;
+    private List<Participants> participants;
     private Long nonTrainingActivityId;
     private String nonTrainingActivityName;
     private Long nonTrainingSubActivityId;

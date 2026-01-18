@@ -31,16 +31,26 @@ public class ResponseMapper {
                     .nonTrainingSubActivityId(entity.getHandholdingSupport().getNonTrainingSubActivity().getSubActivityId())
                     .nonTrainingSubActivityName(entity.getHandholdingSupport().getNonTrainingSubActivity().getSubActivityName())
                     .handHoldingType(entity.getHandholdingSupport().getHandholdingSupportType())
-                    .participantNames(
+                    .participants(
                             Stream.concat(
                                     entity.getParticipants() != null
                                             ? entity.getParticipants().stream()
-                                            .map(Participant::getParticipantName)
-                                            : Stream.empty(),
+                                            .map(p -> Participants.builder()
+                                                    .participantId(p.getParticipantId())
+                                                    .influencedParticipantId(null)
+                                                    .participantName(p.getParticipantName())
+                                                    .build()
+                                            )
+                                            : Stream.<Participants>empty(),
                                     entity.getInfluencedParticipants() != null
                                             ? entity.getInfluencedParticipants().stream()
-                                            .map(InfluencedParticipant::getParticipantName)
-                                            : Stream.empty()
+                                            .map(ip -> Participants.builder()
+                                                    .participantId(null)
+                                                    .influencedParticipantId(ip.getInfluencedId())
+                                                    .participantName(ip.getParticipantName())
+                                                    .build()
+                                            )
+                                            : Stream.<Participants>empty()
                             ).toList()
                     )
                     .build();
@@ -67,16 +77,26 @@ public class ResponseMapper {
                 .subjectDelivered(entity.getSubjectDelivered())
                 .originalIdea(entity.getOriginalIdea())
                 .finalIdea(entity.getFinalIdea())
-                .participantNames(
+                .participants(
                         Stream.concat(
                                 entity.getParticipants() != null
                                         ? entity.getParticipants().stream()
-                                        .map(Participant::getParticipantName)
-                                        : Stream.empty(),
+                                        .map(p -> Participants.builder()
+                                                .participantId(p.getParticipantId())
+                                                .influencedParticipantId(null)
+                                                .participantName(p.getParticipantName())
+                                                .build()
+                                        )
+                                        : Stream.<Participants>empty(),
                                 entity.getInfluencedParticipants() != null
                                         ? entity.getInfluencedParticipants().stream()
-                                        .map(InfluencedParticipant::getParticipantName)
-                                        : Stream.empty()
+                                        .map(ip -> Participants.builder()
+                                                .participantId(null)
+                                                .influencedParticipantId(ip.getInfluencedId())
+                                                .participantName(ip.getParticipantName())
+                                                .build()
+                                        )
+                                        : Stream.<Participants>empty()
                         ).toList()
                 )
                 .nonTrainingActivityId(
@@ -119,16 +139,26 @@ public class ResponseMapper {
                 .nonTrainingSubActivityId(entity.getHandholdingSupport().getNonTrainingSubActivity().getSubActivityId())
                 .nonTrainingSubActivityName(entity.getHandholdingSupport().getNonTrainingSubActivity().getSubActivityName())
                 .handHoldingType(entity.getHandholdingSupport().getHandholdingSupportType())
-                .participantNames(
+                .participants(
                         Stream.concat(
                                 entity.getParticipants() != null
                                         ? entity.getParticipants().stream()
-                                        .map(Participant::getParticipantName)
-                                        : Stream.empty(),
+                                        .map(p -> Participants.builder()
+                                                .participantId(p.getParticipantId())
+                                                .influencedParticipantId(null)
+                                                .participantName(p.getParticipantName())
+                                                .build()
+                                        )
+                                        : Stream.<Participants>empty(),
                                 entity.getInfluencedParticipants() != null
                                         ? entity.getInfluencedParticipants().stream()
-                                        .map(InfluencedParticipant::getParticipantName)
-                                        : Stream.empty()
+                                        .map(ip -> Participants.builder()
+                                                .participantId(null)
+                                                .influencedParticipantId(ip.getInfluencedId())
+                                                .participantName(ip.getParticipantName())
+                                                .build()
+                                        )
+                                        : Stream.<Participants>empty()
                         ).toList()
                 )
                 .build();
@@ -178,16 +208,26 @@ public class ResponseMapper {
                         DateUtil.dateToString(entity.getCounsellingDate(),"dd-MM-yyyy")
                 )
                 .counsellingTime(entity.getCounsellingTime())
-                .participantNames(
+                .participants(
                         Stream.concat(
                                 entity.getParticipants() != null
                                         ? entity.getParticipants().stream()
-                                        .map(Participant::getParticipantName)
-                                        : Stream.empty(),
+                                        .map(p -> Participants.builder()
+                                                .participantId(p.getParticipantId())
+                                                .influencedParticipantId(null)
+                                                .participantName(p.getParticipantName())
+                                                .build()
+                                        )
+                                        : Stream.<Participants>empty(),
                                 entity.getInfluencedParticipants() != null
                                         ? entity.getInfluencedParticipants().stream()
-                                        .map(InfluencedParticipant::getParticipantName)
-                                        : Stream.empty()
+                                        .map(ip -> Participants.builder()
+                                                .participantId(null)
+                                                .influencedParticipantId(ip.getInfluencedId())
+                                                .participantName(ip.getParticipantName())
+                                                .build()
+                                        )
+                                        : Stream.<Participants>empty()
                         ).toList()
                 )
                 .feasibilityInputResponses(
@@ -271,6 +311,28 @@ public class ResponseMapper {
                 .counsellingDate(DateUtil.dateToString(entity.getCounsellingDate(), "dd-MM-yyyy"))
                 .subjectDelivered(entity.getSubjectDelivered())
                 .loanDocumentDetails(entity.getLoanDocumentDetails())
+                .participants(
+                        Stream.concat(
+                                entity.getParticipants() != null
+                                        ? entity.getParticipants().stream()
+                                        .map(p -> Participants.builder()
+                                                .participantId(p.getParticipantId())
+                                                .influencedParticipantId(null)
+                                                .participantName(p.getParticipantName())
+                                                .build()
+                                        )
+                                        : Stream.<Participants>empty(),
+                                entity.getInfluencedParticipants() != null
+                                        ? entity.getInfluencedParticipants().stream()
+                                        .map(ip -> Participants.builder()
+                                                .participantId(null)
+                                                .influencedParticipantId(ip.getInfluencedId())
+                                                .participantName(ip.getParticipantName())
+                                                .build()
+                                        )
+                                        : Stream.<Participants>empty()
+                        ).toList()
+                )
                 .build();
     }
     public static AccessToTechnologyAndInfrastructureResponse mapToAccessToTechnologyAndInfrastructureResponse(AccessToTechnologyAndInfrastructure entity) {
@@ -317,6 +379,7 @@ public class ResponseMapper {
                 .vendorContactNo(entity.getVendorContactNo())
                 .vendorEmail(entity.getVendorEmail())
                 .approxCost(entity.getApproxCost())
+                .accessToTechnologyType(entity.getAccessToTechnologyType())
                 .build();
     }
     public static AccessToPackagingLabellingAndBrandingResponse mapToAccessToPackagingLabellingAndBrandingResponse(AccessToPackagingLabellingAndBranding entity) {

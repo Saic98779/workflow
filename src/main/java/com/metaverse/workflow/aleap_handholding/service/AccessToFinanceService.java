@@ -6,10 +6,14 @@ import com.metaverse.workflow.aleap_handholding.response_dto.AccessToFinanceResp
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.common.util.DateUtil;
 import com.metaverse.workflow.exceptions.DataException;
+import com.metaverse.workflow.model.InfluencedParticipant;
 import com.metaverse.workflow.model.Organization;
+import com.metaverse.workflow.model.Participant;
 import com.metaverse.workflow.model.aleap_handholding.AccessToFinance;
 import com.metaverse.workflow.model.aleap_handholding.HandholdingSupport;
 import com.metaverse.workflow.organization.repository.OrganizationRepository;
+import com.metaverse.workflow.participant.repository.InfluencedParticipantRepository;
+import com.metaverse.workflow.participant.repository.ParticipantRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,6 +27,8 @@ public class AccessToFinanceService {
     private final HandholdingSupportService supportService;
     private final AccessToFinanceRepository repository;
     private final OrganizationRepository organizationRepo;
+    private final ParticipantRepository participantRepo;
+    private final InfluencedParticipantRepository influencedParticipantRepository;
 
     public WorkflowResponse save(AccessToFinanceRequest request) throws DataException {
 
@@ -34,11 +40,15 @@ public class AccessToFinanceService {
         );
 
         Organization organization = organizationRepo.getReferenceById(request.getOrganizationId());
+        List<Participant> participants = participantRepo.findAllById(request.getParticipantIds());
+        List<InfluencedParticipant> influencedParticipants = influencedParticipantRepository.findAllById(request.getInfluencedParticipantIds());
 
         AccessToFinance entity = RequestMapper.mapToAccessToFinance(
                 request,
                 support,
-                organization
+                organization,
+                participants,
+                influencedParticipants
         );
 
         AccessToFinance saved = repository.save(entity);

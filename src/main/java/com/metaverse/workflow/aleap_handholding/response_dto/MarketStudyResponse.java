@@ -1,5 +1,6 @@
 package com.metaverse.workflow.aleap_handholding.response_dto;
 
+import com.metaverse.workflow.aleap_handholding.service.Participants;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,7 +19,7 @@ public class MarketStudyResponse {
     private String counselledBy;
     private String counsellingDate;
     private String counsellingTime;
-    private List<String> participantNames;
+    private List<Participants> participants;
     private Long nonTrainingActivityId;
     private String nonTrainingActivityName;
     private Long nonTrainingSubActivityId;
