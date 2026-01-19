@@ -183,6 +183,16 @@ public class UnifiedHandholdingService {
                     throw new DataException("Missing id or subActivityId for formalisationcompliance", "MISSING_PARAM", 400);
                 }
                 break;
+            case "accesstotechnology":
+            case "access-to-technology":
+                if (hasId) {
+                    response = infrastructureService.getById(id);
+                } else if (hasSub) {
+                    response = infrastructureService.getByNonTrainingSubActivityId(subActivityId);
+                } else {
+                    throw new DataException("Missing id or subActivityId for formalisationcompliance", "MISSING_PARAM", 400);
+                }
+                break;
             default:
                 throw new DataException("Unknown type: " + type, "UNKNOWN_TYPE", 400);
         }
