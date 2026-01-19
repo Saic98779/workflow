@@ -69,11 +69,11 @@ public class HandholdingRequestMapper {
         entity.setApprovalDate(DateUtil.covertStringToDate(request.getApprovalDate()));
     }
 
-    public static TGTPC4NTHandholding mapToEntity(TGTPC4NTHandholdingRequest request, NonTrainingSubActivity subActivity) {
+    public static TGTPC4NTHandholding mapToEntity(TGTPC4NTHandholdingRequest request, NonTrainingSubActivity subActivity,Organization organization) {
 
         return TGTPC4NTHandholding.builder()
                 .nonTrainingSubActivity(subActivity)
-                .msmeName(request.getMsmeName())
+                .nameOfTheSector(request.getNameOfSector())
                 .importedComponents(request.getImportedComponents())
                 .designDeveloped(request.getDesignDeveloped())
                 .adoptionDate(DateUtil.covertStringToDate(request.getAdoptionDate()))
@@ -99,12 +99,13 @@ public class HandholdingRequestMapper {
                 .technicalInstitution(request.getTechnicalInstitution())
                 .iprName(request.getIprName())
                 .iprRegistrationDate(DateUtil.covertStringToDate(request.getIprRegistrationDate()))
+                .organization(organization)
                 .build();
     }
 
     public static void updateEntity(TGTPC4NTHandholding entity, TGTPC4NTHandholdingRequest request) {
 
-        entity.setMsmeName(request.getMsmeName());
+        entity.setNameOfTheSector(request.getNameOfSector());
         entity.setImportedComponents(request.getImportedComponents());
         entity.setDesignDeveloped(request.getDesignDeveloped());
         entity.setAdoptionDate(DateUtil.covertStringToDate(request.getAdoptionDate()));

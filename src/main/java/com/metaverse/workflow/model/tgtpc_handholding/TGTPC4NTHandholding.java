@@ -2,6 +2,7 @@ package com.metaverse.workflow.model.tgtpc_handholding;
 
 import com.metaverse.workflow.model.BaseEntity;
 import com.metaverse.workflow.model.NonTrainingSubActivity;
+import com.metaverse.workflow.model.Organization;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -20,9 +21,13 @@ public class TGTPC4NTHandholding extends BaseEntity {
     @JoinColumn(name = "sub_activity_id", nullable = false)
     private NonTrainingSubActivity nonTrainingSubActivity;
 
-    // Name of the MSME
-    @Column(name = "msme_name")
-    private String msmeName;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "organization_id")
+    private Organization organization;
+
+    // Name of the sector
+    @Column(name = "name_of_the_sector")
+    private String nameOfTheSector;
 
     // Imported components analysed for substitution
     @Column(name = "imported_components", columnDefinition = "TEXT")

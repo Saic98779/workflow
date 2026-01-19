@@ -60,7 +60,7 @@ public class HandholdingResponseMapper {
         return TGTPC4NTHandholdingResponse.builder()
                 .id(entity.getId())
                 .nonTrainingSubActivityId(entity.getNonTrainingSubActivity().getSubActivityId())
-                .msmeName(entity.getMsmeName())
+                .nameOfSector(entity.getNameOfSector())
                 .importedComponents(entity.getImportedComponents())
                 .designDeveloped(entity.getDesignDeveloped())
                 .adoptionDate(DateUtil.dateToString(entity.getAdoptionDate(), DATE_FORMAT))

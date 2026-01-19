@@ -9,7 +9,8 @@ import lombok.*;
 @AllArgsConstructor
 public class TGTPC4NTHandholdingRequest {
     private Long nonTrainingSubActivityId;
-    private String msmeName;
+    private Long organizationId;
+    private String nameOfSector;
     private String importedComponents;
     private Boolean designDeveloped;
     private String adoptionDate;
