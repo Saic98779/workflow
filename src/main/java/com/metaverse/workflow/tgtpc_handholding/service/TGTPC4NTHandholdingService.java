@@ -87,6 +87,7 @@ public class TGTPC4NTHandholdingService {
                         .stream()
                         .map(HandholdingResponseMapper::mapToResponse)
                         .toList();
+
         return WorkflowResponse.builder()
                 .status(200)
                 .message("Success")

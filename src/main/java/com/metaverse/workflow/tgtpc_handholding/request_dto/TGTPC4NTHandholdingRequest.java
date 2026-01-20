@@ -10,11 +10,9 @@ import lombok.*;
 public class TGTPC4NTHandholdingRequest {
     private Long nonTrainingSubActivityId;
     private Long organizationId;
-<<<<<<< HEAD
-    private String nameOfSector;
-=======
     private String nameOfTheSector;
->>>>>>> 71d4bac (adding organization in tgtpc handholding)
+    private String nameOfTheDomesticSupplier;
+    private String nameOfTheRawMaterial;
     private String importedComponents;
     private Boolean designDeveloped;
     private String adoptionDate;

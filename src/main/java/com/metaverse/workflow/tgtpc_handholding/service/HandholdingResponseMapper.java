@@ -59,14 +59,12 @@ public class HandholdingResponseMapper {
 
         return TGTPC4NTHandholdingResponse.builder()
                 .id(entity.getId())
+                .nameOfTheRawMaterial(entity.getNameOfTheRawMaterial())
+                .nameOfTheDomesticSupplier(entity.getNameOfTheDomesticSupplier())
                 .organizationId(entity.getOrganization().getOrganizationId())
                 .organizationName(entity.getOrganization().getOrganizationName())
                 .nonTrainingSubActivityId(entity.getNonTrainingSubActivity().getSubActivityId())
-<<<<<<< HEAD
-                .nameOfSector(entity.getNameOfSector())
-=======
                 .nameOfTheSector(entity.getNameOfTheSector())
->>>>>>> 71d4bac (adding organization in tgtpc handholding)
                 .importedComponents(entity.getImportedComponents())
                 .designDeveloped(entity.getDesignDeveloped())
                 .adoptionDate(DateUtil.dateToString(entity.getAdoptionDate(), DATE_FORMAT))

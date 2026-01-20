@@ -29,15 +29,23 @@ public class TGTPC4NTHandholding extends BaseEntity {
     @Column(name = "name_of_the_sector")
     private String nameOfTheSector;
 
+    //Name of the Domestic supplier connected
+    @Column(name = "name_of_the_domestic_supplier")
+    private String nameOfTheDomesticSupplier;
+
+    //Name of the raw material linkage
+    @Column(name = "name_of_the_raw_material")
+    private String nameOfTheRawMaterial;
+
     // Imported components analysed for substitution
     @Column(name = "imported_components", columnDefinition = "TEXT")
     private String importedComponents;
 
-    // Domesti substitute design developled (Yes/No)
+    // Domestic substitute design developed (Yes/No)
     @Column(name = "design_developed")
     private Boolean designDeveloped;
 
-    // Date of adoption
+    // Date of adoption ,Date of establishment,	Date of grounding,	Date of procurement,Date Of Linkage
     @Temporal(TemporalType.DATE)
     @Column(name = "adoption_date")
     private Date adoptionDate;

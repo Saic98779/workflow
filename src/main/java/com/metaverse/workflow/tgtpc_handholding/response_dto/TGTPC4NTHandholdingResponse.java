@@ -12,11 +12,9 @@ public class TGTPC4NTHandholdingResponse {
     private Long nonTrainingSubActivityId;
     private Long organizationId;
     private String organizationName;
-<<<<<<< HEAD
-    private String nameOfSector;
-=======
     private String nameOfTheSector;
->>>>>>> 71d4bac (adding organization in tgtpc handholding)
+    private String nameOfTheDomesticSupplier;
+    private String nameOfTheRawMaterial;
     private String importedComponents;
     private Boolean designDeveloped;
     private String adoptionDate;

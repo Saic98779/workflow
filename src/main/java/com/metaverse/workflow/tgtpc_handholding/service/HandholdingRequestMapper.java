@@ -72,12 +72,10 @@ public class HandholdingRequestMapper {
     public static TGTPC4NTHandholding mapToEntity(TGTPC4NTHandholdingRequest request, NonTrainingSubActivity subActivity,Organization organization) {
 
         return TGTPC4NTHandholding.builder()
+                .nameOfTheRawMaterial(request.getNameOfTheRawMaterial())
+                .nameOfTheDomesticSupplier(request.getNameOfTheDomesticSupplier())
                 .nonTrainingSubActivity(subActivity)
-<<<<<<< HEAD
-                .nameOfTheSector(request.getNameOfSector())
-=======
                 .nameOfTheSector(request.getNameOfTheSector())
->>>>>>> 71d4bac (adding organization in tgtpc handholding)
                 .importedComponents(request.getImportedComponents())
                 .designDeveloped(request.getDesignDeveloped())
                 .adoptionDate(DateUtil.covertStringToDate(request.getAdoptionDate()))
@@ -109,11 +107,9 @@ public class HandholdingRequestMapper {
 
     public static void updateEntity(TGTPC4NTHandholding entity, TGTPC4NTHandholdingRequest request) {
 
-<<<<<<< HEAD
-        entity.setNameOfTheSector(request.getNameOfSector());
-=======
         entity.setNameOfTheSector(request.getNameOfTheSector());
->>>>>>> 71d4bac (adding organization in tgtpc handholding)
+        entity.setNameOfTheRawMaterial(request.getNameOfTheRawMaterial());
+        entity.setNameOfTheDomesticSupplier(request.getNameOfTheDomesticSupplier());
         entity.setImportedComponents(request.getImportedComponents());
         entity.setDesignDeveloped(request.getDesignDeveloped());
         entity.setAdoptionDate(DateUtil.covertStringToDate(request.getAdoptionDate()));
