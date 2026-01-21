@@ -16,6 +16,7 @@ public class HandholdingResponseMapper {
     public static TGTPCHandholdingSupportResponse mapToTGTPCHandholdingSupportResponse(TGTPCHandholdingSupport support)
     {
         return TGTPCHandholdingSupportResponse.builder()
+                .id(support.getTgtpcHandholdingSupportId())
                 .participants(
                         Stream.concat(
                                 support.getParticipants() != null

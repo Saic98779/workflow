@@ -181,7 +181,7 @@ public class UnifiedTgtpcHandholdingService {
                     TGTPCHandholdingSupportRequest handReq =
                             mapper.readValue(data, TGTPCHandholdingSupportRequest.class);
                     response = WorkflowResponse.builder()
-                            .data(tgtpcHandholdingMasterService.update(id, handReq))
+                            .data(HandholdingResponseMapper.mapToTGTPCHandholdingSupportResponse(tgtpcHandholdingMasterService.update(id, handReq)))
                             .build();
                     break;
 

@@ -11,6 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TGTPCHandholdingSupportResponse {
+    private Long id;
     private Long nonTrainingActivityId;
     private Long nonTrainingSubActivityId;
     private String nonTrainingActivityName;

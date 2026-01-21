@@ -18,7 +18,7 @@ public class TGTPCHandholdingSupport extends AuditEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name="tgtpc_handholding_support_id")
-    protected Long tgtpcHandholdingSupportId;
+    private Long tgtpcHandholdingSupportId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sub_activity_id", nullable = false)
