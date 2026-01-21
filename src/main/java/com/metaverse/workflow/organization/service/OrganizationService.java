@@ -19,6 +19,9 @@ public interface OrganizationService {
 
     WorkflowResponse  getAllOrganizations();
 
+	WorkflowResponse getAllOrganizations(Integer page, Integer size, String search);
+
+
 	WorkflowResponse updateOrganization(Long organizationId, OrganizationRequest request);
 
 	WorkflowResponse getOrganizationbyId(Long organizationId);

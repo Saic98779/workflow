@@ -1,6 +1,7 @@
 package com.metaverse.workflow.tgtpc_handholding.service;
 
 
+import com.metaverse.workflow.aleap_handholding.service.Participants;
 import com.metaverse.workflow.common.util.DateUtil;
 import com.metaverse.workflow.model.InfluencedParticipant;
 import com.metaverse.workflow.model.Participant;
@@ -15,16 +16,26 @@ public class HandholdingResponseMapper {
     public static TGTPCHandholdingSupportResponse mapToTGTPCHandholdingSupportResponse(TGTPCHandholdingSupport support)
     {
         return TGTPCHandholdingSupportResponse.builder()
-                .participantNames(
+                .participants(
                         Stream.concat(
                                 support.getParticipants() != null
                                         ? support.getParticipants().stream()
-                                        .map(Participant::getParticipantName)
-                                        : Stream.empty(),
+                                        .map(p -> Participants.builder()
+                                                .participantId(p.getParticipantId())
+                                                .influencedParticipantId(null)
+                                                .participantName(p.getParticipantName())
+                                                .build()
+                                        )
+                                        : Stream.<Participants>empty(),
                                 support.getInfluencedParticipants() != null
                                         ? support.getInfluencedParticipants().stream()
-                                        .map(InfluencedParticipant::getParticipantName)
-                                        : Stream.empty()
+                                        .map(ip -> Participants.builder()
+                                                .participantId(null)
+                                                .influencedParticipantId(ip.getInfluencedId())
+                                                .participantName(ip.getParticipantName())
+                                                .build()
+                                        )
+                                        : Stream.<Participants>empty()
                         ).toList()
                 )
                 .nonTrainingActivityId(support.getNonTrainingSubActivity().getNonTrainingActivity().getActivityId())
@@ -59,8 +70,12 @@ public class HandholdingResponseMapper {
 
         return TGTPC4NTHandholdingResponse.builder()
                 .id(entity.getId())
+                .nameOfTheRawMaterial(entity.getNameOfTheRawMaterial())
+                .nameOfTheDomesticSupplier(entity.getNameOfTheDomesticSupplier())
+                .organizationId(entity.getOrganization().getOrganizationId())
+                .organizationName(entity.getOrganization().getOrganizationName())
                 .nonTrainingSubActivityId(entity.getNonTrainingSubActivity().getSubActivityId())
-                .msmeName(entity.getMsmeName())
+                .nameOfTheSector(entity.getNameOfTheSector())
                 .importedComponents(entity.getImportedComponents())
                 .designDeveloped(entity.getDesignDeveloped())
                 .adoptionDate(DateUtil.dateToString(entity.getAdoptionDate(), DATE_FORMAT))
@@ -99,16 +114,26 @@ public class HandholdingResponseMapper {
                 .certificationName(entity.getCertificationName())
                 .certificateNumber(entity.getCertificateNumber())
                 .certificateDate(DateUtil.dateToString(entity.getCertificateDate(),DATE_FORMAT))
-                .participantNames(
+                .participants(
                         Stream.concat(
                                 support.getParticipants() != null
                                         ? support.getParticipants().stream()
-                                        .map(Participant::getParticipantName)
-                                        : Stream.empty(),
+                                        .map(p -> Participants.builder()
+                                                .participantId(p.getParticipantId())
+                                                .influencedParticipantId(null)
+                                                .participantName(p.getParticipantName())
+                                                .build()
+                                        )
+                                        : Stream.<Participants>empty(),
                                 support.getInfluencedParticipants() != null
                                         ? support.getInfluencedParticipants().stream()
-                                        .map(InfluencedParticipant::getParticipantName)
-                                        : Stream.empty()
+                                        .map(ip -> Participants.builder()
+                                                .participantId(null)
+                                                .influencedParticipantId(ip.getInfluencedId())
+                                                .participantName(ip.getParticipantName())
+                                                .build()
+                                        )
+                                        : Stream.<Participants>empty()
                         ).toList()
                 )
                 .nonTrainingActivityId(support.getNonTrainingSubActivity().getNonTrainingActivity().getActivityId())
@@ -126,17 +151,30 @@ public class HandholdingResponseMapper {
     public static LocalTestingLabAttachmentResponse mapToLocalTestingLabAttachmentRes(LocalTestingLabAttachment entity) {
         TGTPCHandholdingSupport support = entity.getTgtpcHandholdingSupport();
         return LocalTestingLabAttachmentResponse.builder()
+                .id(entity.getId())
                 .labOrCfcName(entity.getLabOrCfcName())
                 .purposeOfAttachment(entity.getPurposeOfAttachment())
                 .dateOfAttachment(DateUtil.dateToString(entity.getDateOfAttachment(), DATE_FORMAT))
-                .participantNames(
+                .participants(
                         Stream.concat(
                                 support.getParticipants() != null
-                                        ? support.getParticipants().stream().map(Participant::getParticipantName)
-                                        : Stream.empty(),
+                                        ? support.getParticipants().stream()
+                                        .map(p -> Participants.builder()
+                                                .participantId(p.getParticipantId())
+                                                .influencedParticipantId(null)
+                                                .participantName(p.getParticipantName())
+                                                .build()
+                                        )
+                                        : Stream.<Participants>empty(),
                                 support.getInfluencedParticipants() != null
-                                        ? support.getInfluencedParticipants().stream().map(InfluencedParticipant::getParticipantName)
-                                        : Stream.empty()
+                                        ? support.getInfluencedParticipants().stream()
+                                        .map(ip -> Participants.builder()
+                                                .participantId(null)
+                                                .influencedParticipantId(ip.getInfluencedId())
+                                                .participantName(ip.getParticipantName())
+                                                .build()
+                                        )
+                                        : Stream.<Participants>empty()
                         ).toList()
                 )
                 .nonTrainingActivityId(support.getNonTrainingSubActivity().getNonTrainingActivity().getActivityId())
@@ -153,17 +191,30 @@ public class HandholdingResponseMapper {
     public static RawMaterialSupportResponse mapToRawMaterialSupportRes(RawMaterialSupport entity) {
         TGTPCHandholdingSupport support = entity.getTgtpcHandholdingSupport();
         return RawMaterialSupportResponse.builder()
+                .id(entity.getId())
                 .rawMaterialDetails(entity.getRawMaterialDetails())
                 .firstDateOfSupply(DateUtil.dateToString(entity.getFirstDateOfSupply(), DATE_FORMAT))
                 .cost(entity.getCost())
-                .participantNames(
+                .participants(
                         Stream.concat(
                                 support.getParticipants() != null
-                                        ? support.getParticipants().stream().map(Participant::getParticipantName)
-                                        : Stream.empty(),
+                                        ? support.getParticipants().stream()
+                                        .map(p -> Participants.builder()
+                                                .participantId(p.getParticipantId())
+                                                .influencedParticipantId(null)
+                                                .participantName(p.getParticipantName())
+                                                .build()
+                                        )
+                                        : Stream.<Participants>empty(),
                                 support.getInfluencedParticipants() != null
-                                        ? support.getInfluencedParticipants().stream().map(InfluencedParticipant::getParticipantName)
-                                        : Stream.empty()
+                                        ? support.getInfluencedParticipants().stream()
+                                        .map(ip -> Participants.builder()
+                                                .participantId(null)
+                                                .influencedParticipantId(ip.getInfluencedId())
+                                                .participantName(ip.getParticipantName())
+                                                .build()
+                                        )
+                                        : Stream.<Participants>empty()
                         ).toList()
                 )
                 .nonTrainingActivityId(support.getNonTrainingSubActivity().getNonTrainingActivity().getActivityId())
@@ -184,20 +235,33 @@ public class HandholdingResponseMapper {
         TGTPCHandholdingSupport support = entity.getTgtpcHandholdingSupport();
 
         return TestingQualityCertificationSupportResponse.builder()
+                .id(entity.getTestingId())
                 .testingAgencyName(entity.getTestingAgencyName())
                 .dateOfTest(DateUtil.dateToString(entity.getDateOfTest(), DATE_FORMAT))
                 .productTested(entity.getProductTested())
                 .testResultsDate(DateUtil.dateToString(entity.getTestResultsDate(), DATE_FORMAT))
                 .certificationOrTestFindings(entity.getCertificationOrTestFindings())
                 .testResultFilePath(entity.getTestResultFilePath())
-                .participantNames(
+                .participants(
                         Stream.concat(
                                 support.getParticipants() != null
-                                        ? support.getParticipants().stream().map(Participant::getParticipantName)
-                                        : Stream.empty(),
+                                        ? support.getParticipants().stream()
+                                        .map(p -> Participants.builder()
+                                                .participantId(p.getParticipantId())
+                                                .influencedParticipantId(null)
+                                                .participantName(p.getParticipantName())
+                                                .build()
+                                        )
+                                        : Stream.<Participants>empty(),
                                 support.getInfluencedParticipants() != null
-                                        ? support.getInfluencedParticipants().stream().map(InfluencedParticipant::getParticipantName)
-                                        : Stream.empty()
+                                        ? support.getInfluencedParticipants().stream()
+                                        .map(ip -> Participants.builder()
+                                                .participantId(null)
+                                                .influencedParticipantId(ip.getInfluencedId())
+                                                .participantName(ip.getParticipantName())
+                                                .build()
+                                        )
+                                        : Stream.<Participants>empty()
                         ).toList()
                 )
                 .nonTrainingActivityId(support.getNonTrainingSubActivity().getNonTrainingActivity().getActivityId())

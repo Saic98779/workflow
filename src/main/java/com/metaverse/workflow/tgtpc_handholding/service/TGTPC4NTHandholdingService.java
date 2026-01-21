@@ -1,6 +1,8 @@
 package com.metaverse.workflow.tgtpc_handholding.service;
 
 
+import com.metaverse.workflow.model.Organization;
+import com.metaverse.workflow.organization.repository.OrganizationRepository;
 import com.metaverse.workflow.tgtpc_handholding.repository.TGTPC4NTHandholdingRepository;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.exceptions.DataException;
@@ -21,6 +23,7 @@ public class TGTPC4NTHandholdingService {
 
     private final TGTPC4NTHandholdingRepository repository;
     private final NonTrainingSubActivityRepository subActivityRepo;
+    private final OrganizationRepository organizationRepo;
 
     public WorkflowResponse save(TGTPC4NTHandholdingRequest request) throws DataException {
         NonTrainingSubActivity subActivity = subActivityRepo.findById(
@@ -32,7 +35,13 @@ public class TGTPC4NTHandholdingService {
                         400
                 )
         );
-        TGTPC4NTHandholding entity = HandholdingRequestMapper.mapToEntity(request, subActivity);
+        Organization organization = organizationRepo.findById(request.getOrganizationId())
+                .orElseThrow(() -> new DataException(
+                        "Organization not found with id " + request.getOrganizationId(),
+                        "ORG_NOT_FOUND",
+                        400
+                ));
+        TGTPC4NTHandholding entity = HandholdingRequestMapper.mapToEntity(request, subActivity,organization);
         TGTPC4NTHandholding saved = repository.save(entity);
         return WorkflowResponse.builder()
                 .status(200)
@@ -78,6 +87,7 @@ public class TGTPC4NTHandholdingService {
                         .stream()
                         .map(HandholdingResponseMapper::mapToResponse)
                         .toList();
+
         return WorkflowResponse.builder()
                 .status(200)
                 .message("Success")

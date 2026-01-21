@@ -10,7 +10,11 @@ public class TGTPC4NTHandholdingResponse {
 
     private Long id;
     private Long nonTrainingSubActivityId;
-    private String msmeName;
+    private Long organizationId;
+    private String organizationName;
+    private String nameOfTheSector;
+    private String nameOfTheDomesticSupplier;
+    private String nameOfTheRawMaterial;
     private String importedComponents;
     private Boolean designDeveloped;
     private String adoptionDate;
