@@ -1,5 +1,6 @@
 package com.metaverse.workflow.tgtpc_handholding.response_dto;
 
+import com.metaverse.workflow.aleap_handholding.service.Participants;
 import lombok.*;
 
 import java.util.List;
@@ -9,6 +10,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LocalTestingLabAttachmentResponse {
+    private Long id;
     private String labOrCfcName;
     private String purposeOfAttachment;
     private String dateOfAttachment;
@@ -20,7 +22,7 @@ public class LocalTestingLabAttachmentResponse {
     private String handholdingSupportBy;
     private Long organizationId;
     private String organizationName;
-    private List<String> participantNames;
+    private List<Participants> participants;
     private String handholdingDate;
     private String handholdingTime;
 }

@@ -1,5 +1,6 @@
 package com.metaverse.workflow.tgtpc_handholding.response_dto;
 
+import com.metaverse.workflow.aleap_handholding.service.Participants;
 import jakarta.persistence.Column;
 import lombok.*;
 
@@ -17,8 +18,7 @@ public class TGTPCHandholdingSupportResponse {
     private String handholdingSupportBy;
     private Long organizationId;
     private String organizationName;
-    private List<String> participantNames;
-    private List<String> influencedParticipantNames;
+    private List<Participants> participants;
     private String handholdingDate;
     private String handholdingTime;
     private String packagingStandardsSupportDetails;
