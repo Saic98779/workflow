@@ -40,8 +40,8 @@ public class ParticipantDetailsExcel {
         headerStyle.setFont(headerFont);
 
         String[] headers = {
-                "SNo", "Agency Name", "Program Name", "District", "IsAspirant",
-                "Organization Name", "Participant Name", "Gender", "Category",
+                "SNo", "Agency Name", "Program Name","Start Date","End Date", "District", "IsAspirant",
+                "Organization Name","Organization Type", "Participant Name", "Gender", "Category",
                 "Disability", "AadharNo", "MobileNo", "Email", "Designation"
         };
 
@@ -84,17 +84,20 @@ public class ParticipantDetailsExcel {
                 dataRow.createCell(0).setCellValue(serialNo++); // SNo
                 dataRow.createCell(1).setCellValue(program.getAgency() != null ? program.getAgency().getAgencyName() : "");
                 dataRow.createCell(2).setCellValue(program.getProgramTitle());
-                dataRow.createCell(3).setCellValue(program.getLocation() != null ? program.getLocation().getDistrict() : "");
-                dataRow.createCell(4).setCellValue(participant.getOrganization() == null ? "YES" : "NO");
-                dataRow.createCell(5).setCellValue(participant.getOrganization() != null ? participant.getOrganization().getOrganizationName() : "");
-                dataRow.createCell(6).setCellValue(participant.getParticipantName());
-                dataRow.createCell(7).setCellValue(participant.getGender() != null ? participant.getGender().toString() : "");
-                dataRow.createCell(8).setCellValue(participant.getCategory() != null ? participant.getCategory() : "");
-                dataRow.createCell(9).setCellValue(participant.getDisability() != null ? participant.getDisability().toString() : "");
-                dataRow.createCell(10).setCellValue(participant.getAadharNo() != null ? participant.getAadharNo().toString() : "");
-                dataRow.createCell(11).setCellValue(participant.getMobileNo() != null ? participant.getMobileNo().toString() : "");
-                dataRow.createCell(12).setCellValue(participant.getEmail() != null ? participant.getEmail() : "");
-                dataRow.createCell(13).setCellValue(participant.getDesignation() != null ? participant.getDesignation() : "");
+                dataRow.createCell(3).setCellValue(program.getStartDate().toString());
+                dataRow.createCell(4).setCellValue(program.getEndDate().toString());
+                dataRow.createCell(5).setCellValue(program.getLocation() != null ? program.getLocation().getDistrict() : "");
+                dataRow.createCell(6).setCellValue(participant.getOrganization() == null ? "YES" : "NO");
+                dataRow.createCell(7).setCellValue(participant.getOrganization() != null ? participant.getOrganization().getOrganizationName() : "");
+                dataRow.createCell(8).setCellValue(participant.getOrganization() != null ? participant.getOrganization().getOrganizationType() : "");
+                dataRow.createCell(9).setCellValue(participant.getParticipantName());
+                dataRow.createCell(10).setCellValue(participant.getGender() != null ? participant.getGender().toString() : "");
+                dataRow.createCell(11).setCellValue(participant.getCategory() != null ? participant.getCategory() : "");
+                dataRow.createCell(12).setCellValue(participant.getDisability() != null ? participant.getDisability().toString() : "");
+                dataRow.createCell(13).setCellValue(participant.getAadharNo() != null ? participant.getAadharNo().toString() : "");
+                dataRow.createCell(14).setCellValue(participant.getMobileNo() != null ? participant.getMobileNo().toString() : "");
+                dataRow.createCell(15).setCellValue(participant.getEmail() != null ? participant.getEmail() : "");
+                dataRow.createCell(16).setCellValue(participant.getDesignation() != null ? participant.getDesignation() : "");
             }
         }
 
