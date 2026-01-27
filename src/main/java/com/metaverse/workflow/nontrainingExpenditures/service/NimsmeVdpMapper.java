@@ -16,7 +16,7 @@ public class NimsmeVdpMapper {
                 .productService(request.getProductService())
                 .productCategory(request.getProductCategory())
                 .specificationsFeatures(request.getSpecificationsFeatures())
-                .availableVolumeCapacity(request.getAvailableVolumeCapacity())
+                .unit(request.getUnit())
                 .priceQuotation(request.getPriceQuotation())
                 .buyerName(request.getBuyerName())
                 .buyerOrganization(buyerOrg)
@@ -25,6 +25,7 @@ public class NimsmeVdpMapper {
                 .followUpRequired(request.getFollowUpRequired())
                 .responsibleOfficer(request.getResponsibleOfficer())
                 .remarksNotes(request.getRemarksNotes())
+                .availableVolume(request.getAvailableVolume())
                 .build();
     }
 
@@ -41,7 +42,7 @@ public class NimsmeVdpMapper {
                 .productService(entity.getProductService())
                 .productCategory(entity.getProductCategory())
                 .specificationsFeatures(entity.getSpecificationsFeatures())
-                .availableVolumeCapacity(entity.getAvailableVolumeCapacity())
+                .availableVolumeCapacity(entity.getUnit())
                 .priceQuotation(entity.getPriceQuotation())
                 .buyerName(entity.getBuyerName())
                 .buyerOrganizationId(
@@ -54,6 +55,7 @@ public class NimsmeVdpMapper {
                 .responsibleOfficer(entity.getResponsibleOfficer())
                 .remarksNotes(entity.getRemarksNotes())
                 .uploadParticipantDetails(entity.getUploadParticipantDetails())
+                .availableVolume(entity.getAvailableVolume())
                 .build();
     }
     public static void mapToUpdateNimsmeVdp(NimsmeVDP entity, NimsmeVdpRequest request, Organization sellerOrg, Organization buyerOrg) {
@@ -61,7 +63,7 @@ public class NimsmeVdpMapper {
         entity.setProductService(request.getProductService());
         entity.setProductCategory(request.getProductCategory());
         entity.setSpecificationsFeatures(request.getSpecificationsFeatures());
-        entity.setAvailableVolumeCapacity(request.getAvailableVolumeCapacity());
+        entity.setUnit(request.getUnit());
         entity.setPriceQuotation(request.getPriceQuotation());
         entity.setBuyerName(request.getBuyerName());
         entity.setBuyerComments(request.getBuyerComments());
@@ -69,6 +71,7 @@ public class NimsmeVdpMapper {
         entity.setFollowUpRequired(request.getFollowUpRequired());
         entity.setResponsibleOfficer(request.getResponsibleOfficer());
         entity.setRemarksNotes(request.getRemarksNotes());
+        entity.setAvailableVolume(request.getAvailableVolume());
         if (sellerOrg != null) {entity.setSellerOrganization(sellerOrg);}
         if (buyerOrg != null) {entity.setBuyerOrganization(buyerOrg);}
     }

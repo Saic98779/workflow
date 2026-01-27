@@ -19,7 +19,8 @@ public class NimsmeVdpResponse {
     private String productCategory;
     private String specificationsFeatures;
     private String availableVolumeCapacity;
-    private String priceQuotation;
+    private Double priceQuotation;
+    private Double availableVolume;
     private String buyerName;
     private Long buyerOrganizationId;
     private String buyerOrganizationName;

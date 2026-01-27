@@ -38,11 +38,14 @@ public class NimsmeVDP extends AuditEntity {
     @Column(name = "specifications_features", columnDefinition = "TEXT")
     private String specificationsFeatures;
 
-    @Column(name = "available_volume_capacity")
-    private String availableVolumeCapacity;
+    @Column(name = "available_volume")
+    private Double availableVolume;
+
+    @Column(name = "unit")
+    private String unit;
 
     @Column(name = "price_quotation")
-    private String priceQuotation;
+    private Double priceQuotation;
 
     // Buyer Details
     @Column(name = "buyer_name")

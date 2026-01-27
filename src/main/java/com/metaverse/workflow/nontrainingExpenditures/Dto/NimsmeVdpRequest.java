@@ -17,8 +17,9 @@ public class NimsmeVdpRequest {
     private String productService;
     private String productCategory;
     private String specificationsFeatures;
-    private String availableVolumeCapacity;
-    private String priceQuotation;
+    private String unit;
+    private Double priceQuotation;
+    private Double availableVolume;
     private String buyerName;
     private Long buyerOrganizationId;
     private String buyerComments;
