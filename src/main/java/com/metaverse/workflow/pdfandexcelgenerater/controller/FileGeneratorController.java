@@ -52,6 +52,7 @@ public class FileGeneratorController {
     private final ProgramMonitoringPDF programMonitoringPDF;
     private final ProgramStatusPdfGenerator programStatusPdfGenerator;
     private final TrainingTargetPreview trainingTargetPreview;
+    private final FinancialTrackerExcelGenerator financialTrackerExcelGenerator;
 
     @GetMapping(value = "/program/pdf/{agencyId}", produces = MediaType.APPLICATION_PDF_VALUE)
     public ResponseEntity<InputStreamResource> generatePdfReport(HttpServletResponse response, @PathVariable Long agencyId) throws IOException {
@@ -468,5 +469,17 @@ public class FileGeneratorController {
         outputStream.flush();
         response.flushBuffer();
 
+    }
+
+    @GetMapping("/export/financial-tracker/excel")
+    public void exportFinancialTrackerExcel(HttpServletResponse response) throws IOException {
+
+        response.setContentType("application/vnd.ms-excel");
+        response.setHeader(
+                "Content-Disposition",
+                "attachment; filename=Financial_Tracker_Report.xls"
+        );
+        financialTrackerExcelGenerator.financialTrackerExportToExcel(response);
+        response.flushBuffer();
     }
 }
