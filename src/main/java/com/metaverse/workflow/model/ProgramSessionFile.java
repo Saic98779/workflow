@@ -85,5 +85,9 @@ public class ProgramSessionFile {
     @JoinColumn(name = "testing_id")
     private TestingQualityCertificationSupport testingQualityCertificationSupport;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "nimsme_vdp_id")
+    private  NimsmeVDP nimsmeVDP;
+
 
 }
