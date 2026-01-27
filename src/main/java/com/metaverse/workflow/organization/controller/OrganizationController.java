@@ -46,14 +46,16 @@ public class OrganizationController {
 //    }
     @GetMapping("/organization-names")
     public ResponseEntity<WorkflowResponse> getAllOrganizations(
-            @RequestParam(required = false, defaultValue = "0") Integer page,
-            @RequestParam(required = false, defaultValue = "500") Integer size,
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer size,
             @RequestParam(required = false) String search
     ) {
-        return ResponseEntity.ok(
-                organizationService.getAllOrganizations(page, size, search)
-        );
+        if (page == null && size == null && search == null) {
+            return ResponseEntity.ok(organizationService.getAllOrganizations());
+        }
+        return ResponseEntity.ok(organizationService.getAllOrganizations(page, size, search));
     }
+
 
 
     @GetMapping("/organization/mobileno/exist/{mobileNo}")

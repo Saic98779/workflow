@@ -1,8 +1,11 @@
 package com.metaverse.workflow.program.controller;
 
 import com.metaverse.workflow.activitylog.ActivityLogService;
+import com.metaverse.workflow.common.constants.ProgramStatusConstants;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.common.util.RestControllerBase;
+import com.metaverse.workflow.email.EmailRequest;
+import com.metaverse.workflow.email.util.EmailUtil;
 import com.metaverse.workflow.exceptions.DataException;
 
 import java.io.*;
@@ -80,7 +83,7 @@ public class ProgramController {
     })
     @PostMapping(value = "/program/create", produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<WorkflowResponse> createProgram(@RequestBody ProgramRequest request, Principal principal, HttpServletRequest servletRequest
-    ) {
+    ) throws IOException {
         log.info("Called createProgram by=" + (principal != null ? principal.getName() : "anonymous") + " programTitle=" + request.getProgramTitle());
         WorkflowResponse response = programService.createProgram(request);
         logService.logs(principal.getName(), "SAVE", "program created successfully", "program", servletRequest.getRequestURL().toString());
