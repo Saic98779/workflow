@@ -4,13 +4,11 @@ import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.common.util.DateUtil;
 import com.metaverse.workflow.model.Participant;
 import com.metaverse.workflow.model.ProgramAttendance;
-import com.metaverse.workflow.model.ProgramAttendanceId;
 import com.metaverse.workflow.model.Program;
 import com.metaverse.workflow.participant.repository.ParticipantRepository;
 import com.metaverse.workflow.program.repository.ProgramRepository;
 import com.metaverse.workflow.programattendance.repository.ProgramAttendanceRepository;
 import com.metaverse.workflow.programattendance.util.AttendanceUtil;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -74,7 +72,7 @@ public class ProgramAttendanceServiceAdapter implements ProgramAttendanceService
 
         List<ProgramAttendance> attendanceList = programAttendanceRepository.findByProgramAttendances(programId);
         if (attendanceList != null && !attendanceList.isEmpty()) {
-            response = updateParticipantAttendances(attendanceList, response);
+            response = updateParticipantAttendances(attendanceList, response,dateSet.size());
         }
 
         return WorkflowResponse.builder()
@@ -147,6 +145,33 @@ public class ProgramAttendanceServiceAdapter implements ProgramAttendanceService
         }
         return response;
     }
+    private ProgramAttendanceResponse updateParticipantAttendances(
+            List<ProgramAttendance> list,
+            ProgramAttendanceResponse response, int totalDays) {
+        Map<Long, Character[]> existingDetailsMap = list.stream()
+                .collect(Collectors.toMap(
+                        d -> d.getProgramAttendanceId().getParticipantId(),
+                        d -> AttendanceUtil.stringToCharacterArray(
+                                d.getProgramAttendanceData()
+                        )
+                ));
+        for (ProgramAttendanceResponse.ParticipantAttendance attendance : response.getParticipantAttendanceList()) {
+            Character[] dbAttendance = existingDetailsMap.get(attendance.getParticipantId());
+            if (dbAttendance != null) {
+                Character[] normalizedAttendance = new Character[totalDays];
+                for (int i = 0; i < totalDays; i++) {
+                    if (i < dbAttendance.length) {
+                        normalizedAttendance[i] = dbAttendance[i];
+                    } else {
+                        normalizedAttendance[i] = 'A';
+                    }
+                }
+                attendance.setAttendanceData(normalizedAttendance);
+            }
+        }
+        return response;
+    }
+
 
     /**
      * Validates that the program and participant exist and that the participant is enrolled in the program
