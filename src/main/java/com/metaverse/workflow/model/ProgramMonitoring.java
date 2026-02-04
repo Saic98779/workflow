@@ -14,7 +14,7 @@ import java.util.List;
 @Setter
 @Entity
 @Table(name = "program_monitoring")
-public class ProgramMonitoring {
+public class ProgramMonitoring extends AuditEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "program_monitoring_id")

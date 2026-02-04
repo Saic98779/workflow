@@ -1,5 +1,6 @@
 package com.metaverse.workflow.nontrainingExpenditures.service;
 
+import jakarta.persistence.Column;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -30,4 +31,6 @@ public class NonTrainingConsumablesBulkDto {
     private String checkDate;
 
     private String uploadBillUrl;
+    private String purchaseOrderNo;
+    private String nameOfTheVendor;
 }

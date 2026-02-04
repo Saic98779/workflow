@@ -14,6 +14,10 @@ import java.util.Date;
 @Table(name = "non_training_consumables_transactions")
 public class NonTrainingConsumablesTransactions extends BaseEntity {
 
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    @JoinColumn(name = "program_id", nullable = true)
+    private Program program;
+
     @Column(name = "date_of_utilisation")
     private Date dateOfUtilisation;
 

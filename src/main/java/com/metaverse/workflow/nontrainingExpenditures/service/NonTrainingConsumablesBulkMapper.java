@@ -23,6 +23,8 @@ public class NonTrainingConsumablesBulkMapper {
         e.setTransactionId(dto.getTransactionId());
         e.setCheckNo(dto.getCheckNo());
         e.setCheckDate(DateUtil.covertStringToDate(dto.getCheckDate()));
+        e.setPurchaseOrderNo(dto.getPurchaseOrderNo());
+        e.setNameOfTheVendor(dto.getNameOfTheVendor());
         return e;
     }
 
@@ -48,6 +50,8 @@ public class NonTrainingConsumablesBulkMapper {
         dto.setUploadBillUrl(e.getUploadBillUrl());
         dto.setAgencyId(e.getAgency().getAgencyId());
         dto.setSubActivityId(e.getNonTrainingSubActivity().getSubActivityId());
+        dto.setPurchaseOrderNo(e.getPurchaseOrderNo());
+        dto.setNameOfTheVendor(e.getNameOfTheVendor());
         return dto;
     }
 
@@ -68,6 +72,9 @@ public class NonTrainingConsumablesBulkMapper {
         existing.setTransactionId(dto.getTransactionId() != null ? dto.getTransactionId() : existing.getTransactionId());
         existing.setCheckNo(dto.getCheckNo() != null ? dto.getCheckNo() : existing.getCheckNo());
         existing.setCheckDate(dto.getCheckDate() != null ? DateUtil.covertStringToDate(dto.getCheckDate()) : existing.getCheckDate());
+        existing.setNameOfTheVendor(dto.getNameOfTheVendor() != null ?dto.getNameOfTheVendor() : existing.getNameOfTheVendor());
+        existing.setPurchaseOrderNo(dto.getPurchaseOrderNo() != null ?dto.getPurchaseOrderNo() : existing.getPurchaseOrderNo());
+
         return existing;
     }
 

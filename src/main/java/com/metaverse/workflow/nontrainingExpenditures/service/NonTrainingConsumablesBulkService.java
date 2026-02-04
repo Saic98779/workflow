@@ -9,6 +9,7 @@ import com.metaverse.workflow.model.*;
 import com.metaverse.workflow.nontrainingExpenditures.repository.NonTrainingConsumablesBulkRepo;
 import com.metaverse.workflow.nontrainingExpenditures.repository.NonTrainingConsumablesTransactionsRepository;
 import com.metaverse.workflow.nontrainingExpenditures.repository.NonTrainingSubActivityRepository;
+import com.metaverse.workflow.program.repository.ProgramRepository;
 import com.metaverse.workflow.program.repository.ProgramSessionFileRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,7 @@ public class NonTrainingConsumablesBulkService {
     private final ProgramSessionFileRepository programSessionFileRepository;
     private final StorageService storageService;
     private final NonTrainingConsumablesTransactionsRepository transactionsRepository;
+    private final ProgramRepository programRepository;
 
     public WorkflowResponse saveBulkConsumable(NonTrainingConsumablesBulkDto dto, MultipartFile file) throws DataException {
         Agency agency = agencyRepo.findById(dto.getAgencyId())
@@ -128,8 +130,12 @@ public class NonTrainingConsumablesBulkService {
 
         NonTrainingConsumablesBulk bulk = bulkRepo.findById(dto.getBulkId())
                 .orElseThrow(() -> new DataException("Bulk record not found", "BULK_NOT_FOUND", 400));
-
         NonTrainingConsumablesTransactions entity = NonTrainingConsumablesTransactionsMapper.mapToTransaction(dto);
+        if (dto.getProgramId() != null) {
+            Program program = programRepository.findById(dto.getProgramId())
+                    .orElseThrow(() -> new DataException("Program data not found", "PROGRAM-DATA-NOT-FOUND", 400));
+            entity.setProgram(program);
+        }
         bulk.setAvailableQuantity(bulk.getAvailableQuantity() - dto.getQuantityOfUtilisation());
         bulk.setConsumedQuantity(bulk.getConsumedQuantity() + dto.getQuantityOfUtilisation());
         entity.setNonTrainingConsumablesBulk(bulk);
@@ -165,13 +171,16 @@ public class NonTrainingConsumablesBulkService {
         // Update main transaction entity
         NonTrainingConsumablesTransactions updated =
                 NonTrainingConsumablesTransactionsMapper.updateTransaction(existing, dto);
-
+        if (dto.getProgramId() != null) {
+            Program program = programRepository.findById(dto.getProgramId())
+                    .orElseThrow(() -> new DataException("Program data not found", "PROGRAM-DATA-NOT-FOUND", 400));
+            updated.setProgram(program);
+        }
         updated.setNonTrainingConsumablesBulk(bulk);
 
         return NonTrainingConsumablesTransactionsMapper
                 .mapToTransactionDto(transactionsRepository.save(updated));
     }
-
 
 
     @Transactional
@@ -190,7 +199,6 @@ public class NonTrainingConsumablesBulkService {
 
         transactionsRepository.delete(existing);
     }
-
 
 
     public NonTrainingConsumablesTransactionsDTO getTransaction(Long id) throws DataException {
