@@ -2,7 +2,6 @@ package com.metaverse.workflow.nontrainingExpenditures.service;
 
 import com.metaverse.workflow.common.util.DateUtil;
 import com.metaverse.workflow.model.NonTrainingConsumablesTransactions;
-import org.springframework.util.unit.DataUnit;
 
 public class NonTrainingConsumablesTransactionsMapper {
 
@@ -29,6 +28,8 @@ public class NonTrainingConsumablesTransactionsMapper {
 
         return NonTrainingConsumablesTransactionsDTO.builder()
                 .id(entity.getId())
+                .programId(entity.getProgram() != null ?entity.getProgram().getProgramId():null)
+                .programName(entity.getProgram() != null ?entity.getProgram().getProgramTitle():null)
                 .dateOfUtilisation(entity.getDateOfUtilisation().toString())
                 .quantityOfUtilisation(entity.getQuantityOfUtilisation())
                 .noOfTraineesUtilised(entity.getNoOfTraineesUtilised())

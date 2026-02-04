@@ -86,4 +86,10 @@ public class NonTrainingConsumablesBulk extends BaseEntity {
 
     @OneToMany(cascade = CascadeType.ALL,mappedBy = "nonTrainingConsumablesBulk")
     private List<NonTrainingAgencyComments> agencyComments;
+
+    @Column(name = "purchase_order_no")
+    private String purchaseOrderNo;
+
+    @Column(name = "name_of_the_vendor")
+    private String nameOfTheVendor;
 }

@@ -8,6 +8,8 @@ import lombok.Data;
 public class NonTrainingConsumablesTransactionsDTO {
 
     private Long id;
+    private Long programId;
+    private String programName;
     private String dateOfUtilisation;
     private Integer quantityOfUtilisation;
     private Integer noOfTraineesUtilised;
