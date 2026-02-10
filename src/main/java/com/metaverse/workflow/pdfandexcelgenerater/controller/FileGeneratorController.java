@@ -177,12 +177,12 @@ public class FileGeneratorController {
     }
 
     @GetMapping(value = "/program/summary/pdf/{programId}", produces = MediaType.APPLICATION_PDF_VALUE)
-    public ResponseEntity<?> generateProgramSummeryPDF(@PathVariable Long programId, HttpServletResponse response) {
+    public ResponseEntity<?> generateProgramSummeryPDF(@PathVariable Long programId) {
         try {
 
             ByteArrayInputStream bis;
             try {
-                bis = programSummeryPdfGenerator.generateProgramsSummeryPdf(response, programId);
+                bis = programSummeryPdfGenerator.generateProgramSummaryPdf(programId);
             } catch (DataException e) {
                 return ResponseEntity.status(400).body(e.getMessage());
             }

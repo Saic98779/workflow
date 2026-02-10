@@ -2,6 +2,7 @@ package com.metaverse.workflow.pdfandexcelgenerater.service;
 
 import com.metaverse.workflow.model.Participant;
 import com.metaverse.workflow.model.Program;
+import com.metaverse.workflow.model.Sector;
 import com.metaverse.workflow.participant.repository.ParticipantRepository;
 import com.metaverse.workflow.program.repository.ProgramRepository;
 import jakarta.servlet.ServletOutputStream;
@@ -12,7 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class ParticipantDetailsExcel {
@@ -21,7 +25,7 @@ public class ParticipantDetailsExcel {
     public void generateParticipantDetailsExcel(HttpServletResponse response, Long programId, Long agencyId) throws IOException {
 
         List<Participant> participantList;
-
+        System.out.println("Hi " + LocalDateTime.now());
         if (programId != null) {
             participantList = participantRepository.findByProgramId(programId);
         } else if (agencyId != -1) {
@@ -30,6 +34,7 @@ public class ParticipantDetailsExcel {
             participantList = participantRepository.findAll();
         }
 
+        System.out.println("Hello " + LocalDateTime.now());
         HSSFWorkbook workbook = new HSSFWorkbook();
         HSSFSheet sheet = workbook.createSheet("Participant Details");
 
@@ -42,7 +47,9 @@ public class ParticipantDetailsExcel {
         String[] headers = {
                 "SNo", "Agency Name", "Program Name","Start Date","End Date", "District", "IsAspirant",
                 "Organization Name","Organization Type", "Participant Name", "Gender", "Category",
-                "Disability", "AadharNo", "MobileNo", "Email", "Designation"
+                "Disability", "Aadhar No", "Participant MobileNo", "Participant Email", "Participant Designation",
+                "Udyam Registration No","Sector's","Organization MobileNo","Organization Email","Owner Name","Owner MobileNo",
+                "Owner Email"
         };
 
         HSSFRow headerRow = sheet.createRow(0);
@@ -98,6 +105,14 @@ public class ParticipantDetailsExcel {
                 dataRow.createCell(14).setCellValue(participant.getMobileNo() != null ? participant.getMobileNo().toString() : "");
                 dataRow.createCell(15).setCellValue(participant.getEmail() != null ? participant.getEmail() : "");
                 dataRow.createCell(16).setCellValue(participant.getDesignation() != null ? participant.getDesignation() : "");
+                dataRow.createCell(17).setCellValue(participant.getOrganization() != null ? participant.getOrganization().getUdyamregistrationNo() : "");
+                dataRow.createCell(18).setCellValue(participant.getOrganization() != null ? participant.getOrganization().getSectors().stream().map(Sector::getSectorName).collect(Collectors.joining(", ")) : "");
+                dataRow.createCell(19).setCellValue(String.valueOf(participant.getOrganization() != null ? participant.getOrganization().getContactNo() : ""));
+                dataRow.createCell(20).setCellValue(participant.getOrganization() != null ? participant.getOrganization().getEmail() : "");
+                dataRow.createCell(21).setCellValue(participant.getOrganization() != null ? participant.getOrganization().getOwnerName() : "");
+                dataRow.createCell(22).setCellValue(String.valueOf(participant.getOrganization() != null ? participant.getOrganization().getOwnerContactNo() : ""));
+                dataRow.createCell(23).setCellValue(String.valueOf(participant.getOrganization() != null ? participant.getOrganization().getOwnerEmail() : ""));
+
             }
         }
 
