@@ -10,10 +10,9 @@ import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
 import com.metaverse.workflow.common.util.CommonUtil;
 import com.metaverse.workflow.exceptions.DataException;
-import com.metaverse.workflow.login.repository.LoginRepository;
-import com.metaverse.workflow.model.*;
+import com.metaverse.workflow.model.Participant;
+import com.metaverse.workflow.model.Program;
 import com.metaverse.workflow.program.repository.ProgramRepository;
-import com.metaverse.workflow.program.repository.ProgramSessionFileRepository;
 import com.metaverse.workflow.program.service.ProgramService;
 import com.metaverse.workflow.program.service.ProgramSummary;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +24,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -33,7 +31,6 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class ProgramSummeryPdfGenerator {
-
 
     private final ProgramService programService;
     private final ProgramRepository programRepository;
@@ -48,8 +45,9 @@ public class ProgramSummeryPdfGenerator {
         Program program = programRepository.findByProgramId(programId).orElseThrow(() -> new RuntimeException("Program not found"));
         List<ParticipantDetailsDto> participantDetails = mapParticipantDetails(program.getParticipants());
 
-        Document document = new Document(PageSize.A4.rotate(), 20, 20, 20, 20);
+        Document document = new Document(PageSize.A4, 20, 20, 20, 20);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
+        Font bodyFont1 = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 9);
         Font bodyFont = FontFactory.getFont(FontFactory.HELVETICA, 9);
         try {
             PdfWriter.getInstance(document, out);
@@ -70,8 +68,9 @@ public class ProgramSummeryPdfGenerator {
             // ===== TITLE =====
             Paragraph title = new Paragraph("Program Summary", titleFont);
             title.setAlignment(Element.ALIGN_CENTER);
+            title.setSpacingAfter(8f);
             document.add(title);
-            document.add(Chunk.NEWLINE);
+            //document.add(Chunk.NEWLINE);//for large space
 
             double ratingPercentage = ps.getMonitoringRating() != null
                     ? ps.getMonitoringRating()
@@ -91,13 +90,13 @@ public class ProgramSummeryPdfGenerator {
             headerTable.setSpacingAfter(10);
             headerTable.setWidths(new float[]{1, 1});
 
-            PdfPCell programNameCell = kvCell("Program Name", ps.getProgramName(), bodyFont);
+            PdfPCell programNameCell = kvCell("Program Name", ps.getProgramName(), bodyFont1);
             programNameCell.setColspan(2);
             headerTable.addCell(programNameCell);
-            headerTable.addCell(kvCell("Program Rating", star,bodyFont));
-            headerTable.addCell(kvCell("Agency Name", ps.getAgencyName(), bodyFont));
-            headerTable.addCell(kvCell("Start Date", ps.getStartDate(), bodyFont));
-            headerTable.addCell(kvCell("End Date", ps.getEndDate(), bodyFont));
+            headerTable.addCell(kvCell("Program Rating", star,bodyFont1));
+            headerTable.addCell(kvCell("Agency Name", ps.getAgencyName(), bodyFont1));
+            headerTable.addCell(kvCell("Start Date", ps.getStartDate(), bodyFont1));
+            headerTable.addCell(kvCell("End Date", ps.getEndDate(), bodyFont1));
 
             document.add(headerTable);
 
@@ -105,7 +104,7 @@ public class ProgramSummeryPdfGenerator {
             // ===== SOCIAL CATEGORY =====
             document.add(sectionTitle("Social Category", sectionFont));
             document.add(threeColumnTable(
-                    headerFont, bodyFont, headerBg,
+                    headerFont, bodyFont1, headerBg,
                     new String[]{"Category", "Number", "%"},
                     new String[][]{
                             {"SC", val(ps.getSc()), percent(ps.getSc(), totalParticipants)},
@@ -119,7 +118,7 @@ public class ProgramSummeryPdfGenerator {
             // ===== GENDER =====
             document.add(sectionTitle("Gender", sectionFont));
             document.add(threeColumnTable(
-                    headerFont, bodyFont, headerBg,
+                    headerFont, bodyFont1, headerBg,
                     new String[]{"Gender", "Number", "%"},
                     new String[][]{
                             {"Male", val(ps.getMale()), percent(ps.getMale(), totalParticipants)},
@@ -130,7 +129,7 @@ public class ProgramSummeryPdfGenerator {
 
 
             // ===== Collage =====
-            document.add(sectionTitle("Program Collage Picture", sectionFont));
+            document.add(sectionTitle("Program Collage", sectionFont));
 
             PdfPTable imageTable = new PdfPTable(2);
             imageTable.setWidthPercentage(50);
@@ -138,7 +137,8 @@ public class ProgramSummeryPdfGenerator {
             imageTable.setWidths(new float[]{1, 1});
 
             try {
-                String imageUrl = "https://metaverseedu.in/workflowfiles/2096/Collage/program-collage.png";
+                String programName= program.getProgramTitle().replace(" ","%20");
+                String imageUrl = "https://metaverseedu.in/workflowfiles/"+programId+"/Collage/"+programName+".png";
                 PdfPCell cell;
 
                 try {
@@ -222,7 +222,7 @@ public class ProgramSummeryPdfGenerator {
 
         Image telanganaLogo = loadImage("images/telengana-logo.jpeg", 80, 80);
         Image rampLogo = loadImage("images/ramp-logo.png", 80, 80);
-        Image grantThorntonLogo = loadImage("images/grantThornton_logo.png", 160, 80);
+        Image grantThorntonLogo = loadImage("images/grantThornton_logo.png", 140, 100);
 
         // LEFT – TELANGANA
         PdfPCell left = new PdfPCell(telanganaLogo);
@@ -270,11 +270,11 @@ public class ProgramSummeryPdfGenerator {
 
         PdfPTable table = new PdfPTable(7);
         table.setWidthPercentage(100);
-        table.setWidths(new float[]{1, 3, 3, 3, 3, 3, 3});
+        table.setWidths(new float[]{1, 3, 3, 1, 2, 5, 2});
 
         String[] headers = {
-                "Sl No", "Participant Name", "District",
-                "Category", "Mobile", "Organization", "Org Type"
+                "SNo", "Participant Name", "District Name",
+                "Cat.", "Mobile No", "Organization Name", "Org Type"
         };
 
         for (String h : headers) {
@@ -321,25 +321,28 @@ public class ProgramSummeryPdfGenerator {
         return cell;
     }
 
+    private PdfPCell bodyCell1(String text, Font font) {
+        PdfPCell cell = new PdfPCell(new Phrase(text, font));
+        cell.setPadding(6);
+        cell.setHorizontalAlignment(Element.ALIGN_CENTER);  // ✅ Center horizontally
+        cell.setVerticalAlignment(Element.ALIGN_MIDDLE);    // ✅ Center vertically
+        return cell;
+    }
+
     private PdfPCell bodyCell(String text, Font font) {
         PdfPCell cell = new PdfPCell(new Phrase(text, font));
         cell.setPadding(6);
         return cell;
     }
 
-//    private PdfPCell kvCell(String key, Object value, Font font) {
-//        PdfPCell cell = new PdfPCell(new Phrase(key + " : " + val(value), font));
-//        cell.setPadding(6);
-//        return cell;
-//    }
     private PdfPCell kvCell(String key, Object value, Font font) {
         PdfPCell cell = new PdfPCell();
         cell.setPadding(6f);
 
-        Paragraph p = new Paragraph(key + " : ", font);
+        Paragraph p = new Paragraph(key + " :     ", font);
 
         if (value instanceof Paragraph) {
-            p.add((Paragraph) value); // ⭐ do NOT override font
+            p.add((Paragraph) value);
         } else {
             p.add(new Chunk(String.valueOf(value), font));
         }
@@ -369,9 +372,9 @@ public class ProgramSummeryPdfGenerator {
         }
 
         for (String[] r : rows) {
-            table.addCell(bodyCell(r[0], bodyFont));
-            table.addCell(bodyCell(r[1], bodyFont));
-            table.addCell(bodyCell(r[2], bodyFont));
+            table.addCell(bodyCell1(r[0], bodyFont));
+            table.addCell(bodyCell1(r[1], bodyFont));
+            table.addCell(bodyCell1(r[2], bodyFont));
         }
         return table;
     }
