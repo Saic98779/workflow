@@ -57,7 +57,7 @@ public class ProgramSessionFileService {
         }
         for (ProgramSessionFile f : files) {
             if (f != null && f.getFilePath() != null && !f.getFilePath().isEmpty()) {
-                return Optional.of("https://metaverseedu.in/workflowfiles-temp" + f.getFilePath());
+                return Optional.of("https://metaverseedu.in/workflowfiles" + f.getFilePath());
             }
         }
         return Optional.empty();
