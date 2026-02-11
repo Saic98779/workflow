@@ -1,7 +1,6 @@
 package com.metaverse.workflow.program.repository;
 
 import com.metaverse.workflow.model.ProgramSessionFile;
-import com.metaverse.workflow.model.TravelAndTransport;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -31,6 +30,22 @@ public interface ProgramSessionFileRepository extends JpaRepository<ProgramSessi
     void deleteByProgramExpenditureProgramProgramId(Long programId);
 
     List<ProgramSessionFile> findByProgramSession_Program_ProgramId(Long programId);
+
+    @Query("SELECT p FROM ProgramSessionFile p WHERE p.programSession.program.programId = :programId AND LOWER(TRIM(p.fileType)) = LOWER(TRIM(:fileType))")
+    List<ProgramSessionFile> findByProgramSession_Program_ProgramIdAndFileTypeIgnoreCase(@Param("programId") Long programId, @Param("fileType") String fileType);
+
+    @Query("SELECT p FROM ProgramSessionFile p WHERE p.program.programId = :programId AND LOWER(TRIM(p.fileType)) = LOWER(TRIM(:fileType))")
+    List<ProgramSessionFile> findByProgramProgramIdAndFileTypeIgnoreCase(@Param("programId") Long programId, @Param("fileType") String fileType);
+
+    // Relaxed matching: LIKE (case-insensitive) on fileType
+    @Query("SELECT p FROM ProgramSessionFile p WHERE p.programSession.program.programId = :programId AND LOWER(TRIM(p.fileType)) LIKE CONCAT('%', LOWER(TRIM(:fileType)), '%')")
+    List<ProgramSessionFile> findByProgramSession_Program_ProgramIdAndFileTypeLikeIgnoreCase(@Param("programId") Long programId, @Param("fileType") String fileType);
+
+    @Query("SELECT p FROM ProgramSessionFile p WHERE p.program.programId = :programId AND LOWER(TRIM(p.fileType)) LIKE CONCAT('%', LOWER(TRIM(:fileType)), '%')")
+    List<ProgramSessionFile> findByProgramProgramIdAndFileTypeLikeIgnoreCase(@Param("programId") Long programId, @Param("fileType") String fileType);
+
+    // case-sensitive variant if needed
+    List<ProgramSessionFile> findByProgramSession_Program_ProgramIdAndFileType(Long programId, String fileType);
 
     void deleteByProgramProgramId(Long programId);
 
