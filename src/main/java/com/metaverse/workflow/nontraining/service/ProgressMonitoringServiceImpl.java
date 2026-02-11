@@ -367,7 +367,7 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
              ALEAP   ->  72  : Human Resource
 
              */
-            case 26, 14, 15, 16, 17, 74, 125, 6, 62, 82, 84, 72 -> { //
+            case 26, 14, 15, 16, 17, 74, 125, 6, 62, 82, 84, 72, 111 ,94 -> { //
                 List<NonTrainingResource> nonTrainingSubActivity =
                         nonTrainingResourcesRepository.findByNonTrainingSubActivity_subActivityId(subActivityId);
 
@@ -475,7 +475,7 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
                 TGTPC-4 ->  110 : Admin Cost , Logistic
                 TGTPC-10->  124 : Admn Cost including logistics etc.
             */
-            case 27, 28, 73, 90, 12, 38, 39, 40, 64, 37, 110, 124 ,132, 133-> { //
+            case 27, 28, 73, 90, 12, 38, 39, 40, 64, 37, 110, 124 ,132, 133, 112, 113, 114, 115, 95, 96, 97, 98,99, 100, 101, 102, 103, 104, 105, 106, 107, 108,109 -> { //
                 Optional<List<NonTrainingExpenditure>> nonTrainingSubActivity = nonTrainingExpenditureRepository.findByNonTrainingSubActivity_SubActivityId(subActivityId);
                 if (nonTrainingSubActivity.isPresent()) {
                     Map<String, Double> result =
