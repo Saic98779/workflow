@@ -32,7 +32,7 @@ public class ProgramSummeryMapper {
                         .count())
 
                 .minorities(program.getParticipants().stream()
-                        .filter(participant -> "minorities".equalsIgnoreCase(participant.getCategory()))
+                        .filter(participant -> "Minority".equalsIgnoreCase(participant.getCategory()))
                         .count())
                 .male(program.getParticipants().stream()
                         .filter(participant -> participant.getGender() != null && participant.getGender() == 'M')

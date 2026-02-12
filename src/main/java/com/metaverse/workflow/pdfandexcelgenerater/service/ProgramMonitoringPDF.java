@@ -50,7 +50,7 @@ public class ProgramMonitoringPDF {
             Font headerFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12, Color.WHITE);
 
             // Load Unicode-compatible font from resources
-            InputStream fontStream = getClass().getResourceAsStream("/font/DejaVuSans.ttf");
+            InputStream fontStream = getClass().getResourceAsStream("/fonts/DejaVuSans.ttf");
             if (fontStream == null) {
                 throw new RuntimeException("Font file not found in resources/font/DejaVuSans.ttf");
             }

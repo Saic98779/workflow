@@ -11,6 +11,7 @@ import org.apache.poi.hssf.usermodel.*;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -39,6 +40,7 @@ public class ParticipantDetailsExcel {
             return;
         }
 
+        System.out.println("Hello " + LocalDateTime.now());
         HSSFWorkbook workbook = new HSSFWorkbook();
         HSSFSheet sheet = workbook.createSheet("Participant Details");
 
