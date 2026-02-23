@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class RampRegistrationRequest {
+    private Long programId;
     private String firstName;
     private String lastName;
     private Integer age;
@@ -20,4 +21,3 @@ public class RampRegistrationRequest {
     private String sector;
     private String address;
 }
-

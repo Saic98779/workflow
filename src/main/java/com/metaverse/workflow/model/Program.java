@@ -72,4 +72,7 @@ public class Program {
     @ManyToMany(cascade = CascadeType.ALL,targetEntity = Participant.class,mappedBy = "programs")
     private List<Participant> participants = new ArrayList<>();
 
+    @OneToOne(mappedBy = "program", cascade = CascadeType.ALL, orphanRemoval = true)
+    private RampRegistration rampRegistration;
+
 }

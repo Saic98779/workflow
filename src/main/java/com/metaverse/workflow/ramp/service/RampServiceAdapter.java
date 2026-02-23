@@ -1,10 +1,12 @@
 package com.metaverse.workflow.ramp.service;
 
 import com.metaverse.workflow.common.response.WorkflowResponse;
+import com.metaverse.workflow.model.Program;
 import com.metaverse.workflow.model.RampEnrollment;
 import com.metaverse.workflow.model.RampRegistration;
 import com.metaverse.workflow.ramp.repository.RampEnrollmentRepository;
 import com.metaverse.workflow.ramp.repository.RampRegistrationRepository;
+import com.metaverse.workflow.program.repository.ProgramRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +18,9 @@ public class RampServiceAdapter implements RampService {
 
     @Autowired
     private RampRegistrationRepository rampRegistrationRepository;
+
+    @Autowired
+    private ProgramRepository programRepository;
 
     @Override
     public WorkflowResponse saveEnrollment(RampEnrollmentRequest request) {
@@ -79,7 +84,13 @@ public class RampServiceAdapter implements RampService {
         registration.setOrganization(request.getOrganization());
         registration.setSector(request.getSector());
         registration.setAddress(request.getAddress());
+
+        if (request.getProgramId() != null) {
+            Program program = programRepository.findById(request.getProgramId())
+                    .orElseThrow(() -> new IllegalArgumentException("Program not found for id " + request.getProgramId()));
+            registration.setProgram(program);
+            program.setRampRegistration(registration);
+        }
         return registration;
     }
 }
-

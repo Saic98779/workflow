@@ -1,7 +1,10 @@
 package com.metaverse.workflow.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 @Data
 @Entity
@@ -27,4 +30,8 @@ public class RampRegistration {
     private String organization;
     private String sector;
     private String address;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "program_id", referencedColumnName = "program_id", unique = true)
+    private Program program;
 }
