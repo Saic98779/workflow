@@ -29,6 +29,8 @@ public interface ProgramRepository extends JpaRepository<Program, Long> {
     @Query("SELECT p FROM Program p WHERE p.startDate <= :targetDate")
     List<Program> findProgramsWithStartDateEqual(@Param("targetDate") Date targetDate);
 
+    Page<Program> findByStartDateGreaterThanEqual(Date date, Pageable pageable);
+
     List<Program> findByStartDateBefore(Date today);
 
 
@@ -66,6 +68,7 @@ public interface ProgramRepository extends JpaRepository<Program, Long> {
                     case "programsYetToBegin" -> findProgramYetToBegin(today, pageable);
                     case "programExpenditureApproved" -> findProgramExpenditureApproved(pageable);
                     case "programsCompletedAndDataPending" -> findProgramsCompletedAndPending(today, pageable);
+                    case "FuturePrograms" -> findByStartDateGreaterThanEqual(today,pageable);
                     default -> Page.empty(pageable);
                 };
             }
