@@ -10,6 +10,8 @@ import com.metaverse.workflow.program.repository.ProgramRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class RampServiceAdapter implements RampService {
 
@@ -92,5 +94,11 @@ public class RampServiceAdapter implements RampService {
             program.setRampRegistration(registration);
         }
         return registration;
+    }
+
+
+
+    public List<DistrictProgramReport> getDistrictWiseReport() {
+        return rampEnrollmentRepository.getDistrictProgramReport();
     }
 }
