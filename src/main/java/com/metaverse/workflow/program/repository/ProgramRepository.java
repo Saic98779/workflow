@@ -24,6 +24,10 @@ public interface ProgramRepository extends JpaRepository<Program, Long> {
 
     List<Program> findByAgencyAgencyIdAndStatusIn(Long agencyId, List<String> statuses);
 
+    List<Program> findByAgencyAgencyIdAndStatusAndLocationDistrict(Long agencyId, String status, String district);
+
+    List<Program> findByAgencyAgencyIdAndStatusInAndLocationDistrict(Long agencyId, List<String> statuses, String district);
+
     Boolean existsByLocation_LocationId(Long locationId);
 
     @Query("SELECT p FROM Program p WHERE p.startDate <= :targetDate")

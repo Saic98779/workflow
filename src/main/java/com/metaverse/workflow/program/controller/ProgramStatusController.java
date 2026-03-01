@@ -44,6 +44,9 @@ public class ProgramStatusController {
     @Autowired
     private ActivityLogService logService;
 
+    @Autowired
+    private com.metaverse.workflow.login.repository.LoginRepository loginRepository;
+
     // Notification/email services
     @Autowired
     private NotificationServiceImpl notificationService;
@@ -149,23 +152,77 @@ public class ProgramStatusController {
 
     @GetMapping("/{agencyId}")
     public WorkflowResponse getProgramsByStatus(@PathVariable Long agencyId,
-                                                @RequestParam String status) {
+                                                @RequestParam String status,
+                                                Principal principal) {
         List<Program> programs = new ArrayList<>();
         if (isValidStatus(status)) {
             log.info("Program with id " + agencyId + " is valid");
             return WorkflowResponse.builder().message("Invalid status value." + status).status(HttpStatus.INTERNAL_SERVER_ERROR.value()).data(status).build();
         } else {
+            // Get user from principal to check role and district
+            String userDistrict = null;
+            String userRole = null;
+            String userId = null;
+
+            if (principal != null) {
+                try {
+                    Optional<com.metaverse.workflow.model.User> userOptional = loginRepository.findByEmail(principal.getName());
+                    if (userOptional.isPresent()) {
+                        com.metaverse.workflow.model.User user = userOptional.get();
+                        userId = user.getUserId();
+                        userRole = user.getUserRole();
+                        userDistrict = user.getDistrict();
+                        log.info("Fetching programs for user: {} | Role: {} | District: {}", userId, userRole, userDistrict);
+                    }
+                } catch (Exception e) {
+                    log.error("Error fetching user from principal: " + e.getMessage());
+                }
+            }
+
+            boolean applyDistrictFilter = "DATA_ENTRY".equalsIgnoreCase(userRole) && userDistrict != null && !userDistrict.isBlank();
+
             if (ProgramStatusConstants.PROGRAM_EXECUTION.equalsIgnoreCase(status)) {
                 List<String> statuses = Arrays.asList(
                         ProgramStatusConstants.SESSIONS_CREATED,
                         ProgramStatusConstants.PARTICIPANTS_ADDED,
                         ProgramStatusConstants.ATTENDANCE_MARKED
                 );
-                programs = programRepository.findByAgencyAgencyIdAndStatusIn(agencyId, statuses);
+                if (applyDistrictFilter) {
+                    log.info("Applying DISTRICT FILTER for DATA_ENTRY user: {} | AgencyId: {} | Statuses: {} | District: {}",
+                            userId, agencyId, statuses, userDistrict);
+                    programs = programRepository.findByAgencyAgencyIdAndStatusInAndLocationDistrict(agencyId, statuses, userDistrict);
+                    log.info("District-filtered query returned {} programs for user: {}", programs.size(), userId);
+                } else {
+                    if ("DATA_ENTRY".equalsIgnoreCase(userRole)) {
+                        log.info("DATA_ENTRY user: {} has NO DISTRICT assigned - using standard query | AgencyId: {} | Statuses: {}",
+                                userId, agencyId, statuses);
+                    } else {
+                        log.info("User: {} with role: {} - using standard query | AgencyId: {} | Statuses: {}",
+                                userId, userRole, agencyId, statuses);
+                    }
+                    programs = programRepository.findByAgencyAgencyIdAndStatusIn(agencyId, statuses);
+                    log.info("Standard query returned {} programs for user: {}", programs.size(), userId);
+                }
             } else {
-                programs = programRepository.findByAgencyAgencyIdAndStatus(agencyId, status);
+                if (applyDistrictFilter) {
+                    log.info("Applying DISTRICT FILTER for DATA_ENTRY user: {} | AgencyId: {} | Status: {} | District: {}",
+                            userId, agencyId, status, userDistrict);
+                    programs = programRepository.findByAgencyAgencyIdAndStatusAndLocationDistrict(agencyId, status, userDistrict);
+                    log.info("District-filtered query returned {} programs for user: {}", programs.size(), userId);
+                } else {
+                    if ("DATA_ENTRY".equalsIgnoreCase(userRole)) {
+                        log.info("DATA_ENTRY user: {} has NO DISTRICT assigned - using standard query | AgencyId: {} | Status: {}",
+                                userId, agencyId, status);
+                    } else {
+                        log.info("User: {} with role: {} - using standard query | AgencyId: {} | Status: {}",
+                                userId, userRole, agencyId, status);
+                    }
+                    programs = programRepository.findByAgencyAgencyIdAndStatus(agencyId, status);
+                    log.info("Standard query returned {} programs for user: {}", programs.size(), userId);
+                }
             }
             List<ProgramResponse> response = programs != null ? programs.stream().map(ProgramResponseMapper::map).collect(Collectors.toList()) : null;
+            log.info("Returning {} program responses to user: {}", response != null ? response.size() : 0, userId);
             return WorkflowResponse.builder().message("Success").status(200).data(response).build();
         }
     }

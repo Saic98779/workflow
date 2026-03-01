@@ -40,6 +40,8 @@ public class User {
     private Long mobileNo;
     @Column(name="address")
     private String address;
+    @Column(name="district")
+    private String district;
     @Column(name="created_on",insertable = true,updatable = false)
     @CreationTimestamp
     private Date createdOn;
