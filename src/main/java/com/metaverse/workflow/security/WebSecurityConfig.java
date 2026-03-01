@@ -85,6 +85,7 @@ public class WebSecurityConfig {
                         .requestMatchers("/export-program-expenditure").permitAll()
                         .requestMatchers("/programs-status/**").permitAll()
                         .requestMatchers("/programs-participant-status/**").permitAll()
+                        .requestMatchers("/agency/programs/by/status/**").permitAll()
                         .requestMatchers("/trg/calender/agency-wise/**").permitAll()
                         .requestMatchers("/trg/calender/district-wise").permitAll()
                         .requestMatchers("/trg/calender/date-wise").permitAll()
@@ -97,6 +98,9 @@ public class WebSecurityConfig {
                         .requestMatchers("/program-monitoring-report/pdf/**").permitAll()
                         .requestMatchers("/export/training-programs/**").permitAll()
                         .requestMatchers("/export/progress/excel/**").permitAll()
+                        .requestMatchers("/visitor-count/**").permitAll()
+                        .requestMatchers("/ramp/registrations/**").permitAll()
+                        .requestMatchers("/ramp/enrollments/**").permitAll()
                         .requestMatchers(
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
