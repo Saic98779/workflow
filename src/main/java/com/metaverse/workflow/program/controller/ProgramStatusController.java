@@ -148,26 +148,28 @@ public class ProgramStatusController {
     }
 
     @GetMapping("/{agencyId}")
-    public WorkflowResponse getProgramsByStatus(@PathVariable Long agencyId,
-                                                @RequestParam String status) {
-        List<Program> programs = new ArrayList<>();
-        if (isValidStatus(status)) {
-            log.info("Program with id " + agencyId + " is valid");
-            return WorkflowResponse.builder().message("Invalid status value." + status).status(HttpStatus.INTERNAL_SERVER_ERROR.value()).data(status).build();
+    public WorkflowResponse getProgramsByStatus(@PathVariable Long agencyId, @RequestParam String status,
+                                                @RequestParam(required = false) String user_id) {
+
+        List<Program> programs;
+        if (ProgramStatusConstants.PROGRAM_EXECUTION.equalsIgnoreCase(status)) {
+            List<String> statuses = Arrays.asList(
+                    ProgramStatusConstants.SESSIONS_CREATED,
+                    ProgramStatusConstants.PARTICIPANTS_ADDED,
+                    ProgramStatusConstants.ATTENDANCE_MARKED
+            );
+            programs = (user_id != null)
+                    ? programRepository.findByAgencyAgencyIdAndStatusInAndUser_UserId(agencyId, statuses, user_id)
+                    : programRepository.findByAgencyAgencyIdAndStatusIn(agencyId, statuses);
+
         } else {
-            if (ProgramStatusConstants.PROGRAM_EXECUTION.equalsIgnoreCase(status)) {
-                List<String> statuses = Arrays.asList(
-                        ProgramStatusConstants.SESSIONS_CREATED,
-                        ProgramStatusConstants.PARTICIPANTS_ADDED,
-                        ProgramStatusConstants.ATTENDANCE_MARKED
-                );
-                programs = programRepository.findByAgencyAgencyIdAndStatusIn(agencyId, statuses);
-            } else {
-                programs = programRepository.findByAgencyAgencyIdAndStatus(agencyId, status);
-            }
-            List<ProgramResponse> response = programs != null ? programs.stream().map(ProgramResponseMapper::map).collect(Collectors.toList()) : null;
-            return WorkflowResponse.builder().message("Success").status(200).data(response).build();
+            programs = (user_id != null)
+                    ? programRepository.findByAgencyAgencyIdAndStatusAndUser_UserId(agencyId, status, user_id)
+                    : programRepository.findByAgencyAgencyIdAndStatus(agencyId, status);
         }
+
+        List<ProgramResponse> response = programs.stream().map(ProgramResponseMapper::map).collect(Collectors.toList());
+        return WorkflowResponse.builder().message("Success").status(HttpStatus.OK.value()).data(response).build();
     }
 
     @GetMapping("/summary/{agencyId}")

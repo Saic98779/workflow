@@ -756,5 +756,7 @@ public interface ProgramRepository extends JpaRepository<Program, Long> {
             Pageable pageable
     );
 
+    List<Program> findByAgencyAgencyIdAndStatusInAndUser_UserId(Long agencyId, List<String> statuses, String userId);
 
+    List<Program> findByAgencyAgencyIdAndStatusAndUser_UserId(Long agencyId, String status, String userId);
 }

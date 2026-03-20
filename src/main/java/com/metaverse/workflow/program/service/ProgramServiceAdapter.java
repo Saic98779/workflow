@@ -20,6 +20,7 @@ import com.metaverse.workflow.exceptions.DataException;
 import com.metaverse.workflow.expenditure.repository.BulkExpenditureTransactionRepository;
 import com.metaverse.workflow.expenditure.repository.ProgramExpenditureRepository;
 import com.metaverse.workflow.location.repository.LocationRepository;
+import com.metaverse.workflow.login.repository.LoginRepository;
 import com.metaverse.workflow.model.*;
 import com.metaverse.workflow.notifications.repository.NotificationRepository;
 import com.metaverse.workflow.notifications.service.NotificationServiceImpl;
@@ -43,6 +44,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
+import java.security.Principal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -120,15 +122,23 @@ public class ProgramServiceAdapter implements ProgramService {
     @Autowired
     private EmailNotificationController emailNotificationController;
 
+    @Autowired
+    private LoginRepository  loginRepository;
+
+
     @Override
     public WorkflowResponse createProgram(ProgramRequest request) throws IOException {
         Optional<Location> location = null;
         Program program = null;
         Optional<Agency> agency = agencyRepository.findById(request.getAgencyId());
+        System.out.println(request.getUser_id());
+        Optional<User> user = loginRepository.findById(request.getUser_id());
         if (!agency.isPresent()) return WorkflowResponse.builder().status(400).message("Invalid Agency").build();
         if (request.getLocationId() != null) {
             location = locationRepository.findById(request.getLocationId());
-            program = programRepository.save(ProgramRequestMapper.map(request, agency.get(), location.get()));
+            program = ProgramRequestMapper.map(request, agency.get(), location.get());
+            program.setUser(user.get());
+            program = programRepository.save(program);
         }
         EmailConfiguration emailConfiguration = emailConfigurationRepository.findByAgency_AgencyId(program.getAgency().getAgencyId());
         EmailRequest emailRequest = EmailUtil.getEmailRequest(
@@ -137,7 +147,7 @@ public class ProgramServiceAdapter implements ProgramService {
                 "Review the Program Schedule", emailConfiguration
         );
 
-        emailNotificationController.sendEmail(emailRequest);
+       // emailNotificationController.sendEmail(emailRequest);
         updateOverduePrograms();
         return WorkflowResponse.builder().status(200).message("Success").data(ProgramResponseMapper.map(program)).build();
     }

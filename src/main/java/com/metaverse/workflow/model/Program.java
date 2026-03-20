@@ -75,4 +75,7 @@ public class Program {
     @OneToOne(mappedBy = "program", cascade = CascadeType.ALL, orphanRemoval = true)
     private RampRegistration rampRegistration;
 
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 }

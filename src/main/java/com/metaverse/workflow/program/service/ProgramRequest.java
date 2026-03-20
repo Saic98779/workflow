@@ -30,6 +30,7 @@ public class ProgramRequest {
     private Long locationId;
     private String kpi;
     private List<ProgramSession> programSessionList;
+    private String user_id;
 
     @Builder
     @AllArgsConstructor
