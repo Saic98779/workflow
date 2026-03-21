@@ -761,4 +761,11 @@ public interface ProgramRepository extends JpaRepository<Program, Long> {
     );
 
 
+    List<Program> findByAgencyAgencyIdAndStatusInAndUser_UserId(Long agencyId, List<String> statuses, String userId);
+
+    List<Program> findByAgencyAgencyIdAndStatusAndUser_UserId(Long agencyId, String status, String userId);
+
+    List<Program> findByAgencyAgencyIdAndStatusInAndLocationDistrictAndUser_UserId(Long agencyId, List<String> statuses, String userDistrict, String userId);
+
+    List<Program> findByAgencyAgencyIdAndStatusAndLocationDistrictAndUser_UserId(Long agencyId, String status, String userDistrict, String userId);
 }
