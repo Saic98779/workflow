@@ -1,5 +1,16 @@
 package com.metaverse.workflow.common.enums;
 
 public enum UserRole {
-    ADMIN, CALL_CENTER, AGENCY_MANAGER, AGENCY_EXECUTOR, DEPARTMENT, SPIU ,DEVELOPER, DIC, FINANCE, DATA_ENTRY;
+    ADMIN,
+    CALL_CENTER,
+    AGENCY_MANAGER,
+    AGENCY_EXECUTOR,
+    DEPARTMENT,
+    SPIU ,
+    DEVELOPER,
+    DIC,
+    FINANCE,
+    DATA_ENTRY,
+    SERP,
+    MEPMA;
 }

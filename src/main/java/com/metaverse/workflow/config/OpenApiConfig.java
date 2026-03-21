@@ -30,7 +30,7 @@ import io.swagger.v3.oas.models.OpenAPI;
         servers = {
                 @Server(
                         description = "Local ENV",
-                        url = "/workflow1"
+                        url = "/workflow"
                 )
         },
         security = {
