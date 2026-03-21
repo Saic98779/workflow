@@ -180,17 +180,27 @@ public class ProgramStatusController {
             }
 
             boolean applyDistrictFilter = "DATA_ENTRY".equalsIgnoreCase(userRole) && userDistrict != null && !userDistrict.isBlank();
-
+            boolean isAppliedUserFilter = "SERP".equals(userRole) || "MEPMA".equals(userRole);
             if (ProgramStatusConstants.PROGRAM_EXECUTION.equalsIgnoreCase(status)) {
                 List<String> statuses = Arrays.asList(
                         ProgramStatusConstants.SESSIONS_CREATED,
                         ProgramStatusConstants.PARTICIPANTS_ADDED,
                         ProgramStatusConstants.ATTENDANCE_MARKED
                 );
-                if (applyDistrictFilter) {
+                if (isAppliedUserFilter) {
+                    log.info("Applying USER FILTER for role: {} | UserId: {} | AgencyId: {} | Statuses: {}",
+                            userRole, userId, agencyId, statuses);
+
+                    programs = programRepository.findByAgencyAgencyIdAndStatusInAndUser_UserId(agencyId, statuses, userId);
+
+                    log.info("User-filtered query returned {} programs for user: {}", programs.size(), userId);
+                }
+                else if (applyDistrictFilter) {
                     log.info("Applying DISTRICT FILTER for DATA_ENTRY user: {} | AgencyId: {} | Statuses: {} | District: {}",
                             userId, agencyId, statuses, userDistrict);
-                    programs = programRepository.findByAgencyAgencyIdAndStatusInAndLocationDistrict(agencyId, statuses, userDistrict);
+                    //programs = programRepository.findByAgencyAgencyIdAndStatusInAndLocationDistrict(agencyId, statuses, userDistrict);
+                    programs = programRepository.findByAgencyAgencyIdAndStatusInAndLocationDistrictAndUser_UserId(agencyId, statuses, userDistrict,userId);
+
                     log.info("District-filtered query returned {} programs for user: {}", programs.size(), userId);
                 } else {
                     if ("DATA_ENTRY".equalsIgnoreCase(userRole)) {
@@ -204,10 +214,18 @@ public class ProgramStatusController {
                     log.info("Standard query returned {} programs for user: {}", programs.size(), userId);
                 }
             } else {
-                if (applyDistrictFilter) {
+                if (isAppliedUserFilter) {
+                    log.info("Applying USER FILTER for role: {} | UserId: {} | AgencyId: {} | Status: {}",
+                            userRole, userId, agencyId, status);
+
+                    programs = programRepository.findByAgencyAgencyIdAndStatusAndUser_UserId(agencyId, status, userId);
+
+                    log.info("User-filtered query returned {} programs for user: {}", programs.size(), userId);
+                } else if (applyDistrictFilter) {
                     log.info("Applying DISTRICT FILTER for DATA_ENTRY user: {} | AgencyId: {} | Status: {} | District: {}",
                             userId, agencyId, status, userDistrict);
-                    programs = programRepository.findByAgencyAgencyIdAndStatusAndLocationDistrict(agencyId, status, userDistrict);
+                    //programs = programRepository.findByAgencyAgencyIdAndStatusAndLocationDistrict(agencyId, status, userDistrict);
+                    programs = programRepository.findByAgencyAgencyIdAndStatusAndLocationDistrictAndUser_UserId(agencyId, status, userDistrict,userId);
                     log.info("District-filtered query returned {} programs for user: {}", programs.size(), userId);
                 } else {
                     if ("DATA_ENTRY".equalsIgnoreCase(userRole)) {

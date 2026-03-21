@@ -20,6 +20,7 @@ import com.metaverse.workflow.exceptions.DataException;
 import com.metaverse.workflow.expenditure.repository.BulkExpenditureTransactionRepository;
 import com.metaverse.workflow.expenditure.repository.ProgramExpenditureRepository;
 import com.metaverse.workflow.location.repository.LocationRepository;
+import com.metaverse.workflow.login.repository.LoginRepository;
 import com.metaverse.workflow.model.*;
 import com.metaverse.workflow.notifications.repository.NotificationRepository;
 import com.metaverse.workflow.notifications.service.NotificationServiceImpl;
@@ -30,7 +31,6 @@ import com.metaverse.workflow.program.repository.*;
 import com.metaverse.workflow.resouce.repository.ResourceRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -120,16 +120,21 @@ public class ProgramServiceAdapter implements ProgramService {
     @Autowired
     private EmailNotificationController emailNotificationController;
 
+    @Autowired
+    private LoginRepository loginRepository;
+
     @Override
     public WorkflowResponse createProgram(ProgramRequest request) throws IOException {
         Optional<Location> location = null;
         Program program = null;
         Optional<Agency> agency = agencyRepository.findById(request.getAgencyId());
+        Optional<User> user = loginRepository.findById(request.getUserId());
         if (!agency.isPresent()) return WorkflowResponse.builder().status(400).message("Invalid Agency").build();
         if (request.getLocationId() != null) {
             location = locationRepository.findById(request.getLocationId());
-            program = programRepository.save(ProgramRequestMapper.map(request, agency.get(), location.get()));
-        }
+            program = ProgramRequestMapper.map(request, agency.get(), location.get());
+            program.setUser(user.get());
+            program = programRepository.save(program);      }
         EmailConfiguration emailConfiguration = emailConfigurationRepository.findByAgency_AgencyId(program.getAgency().getAgencyId());
         EmailRequest emailRequest = EmailUtil.getEmailRequest(
                 ProgramStatusConstants.PROGRAM_SCHEDULED,
