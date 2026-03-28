@@ -18,7 +18,7 @@ import java.util.Date;
 public class User {
 
     @Id
-    @Column(name="user_id")
+    @Column(name="user_id", length = 36, columnDefinition = "VARCHAR(36)")
     private String userId;
     @Column(name="email", unique=true)
     private String email;

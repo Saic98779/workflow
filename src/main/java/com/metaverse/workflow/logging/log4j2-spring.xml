@@ -6,20 +6,16 @@
             <PatternLayout pattern="%d{ISO8601} %-5level %logger - %msg%n"/>
         </Console>
 
-        <SplunkSdkAppender name="SplunkSdk"/>
-
     </Appenders>
 
     <Loggers>
 
         <Logger name="com.metaverse.workflow" level="info" additivity="false">
             <AppenderRef ref="Console"/>
-            <AppenderRef ref="SplunkSdk"/>
         </Logger>
 
         <Root level="info">
             <AppenderRef ref="Console"/>
-            <AppenderRef ref="SplunkSdk"/>
         </Root>
 
     </Loggers>

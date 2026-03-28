@@ -1,6 +1,11 @@
 spring:
+  application:
+    name: workflow
+
   kafka:
     bootstrap-servers: localhost:9092
+    listener:
+      auto-startup: false
     consumer:
       group-id: email-service
       auto-offset-reset: earliest
@@ -12,9 +17,76 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: ramp.telangana1@gmail.com
-    password: xuhl zfat mobc effy
-
+    username: ${spring.mail.username}
+    password: ${spring.mail.password}
     properties:
       mail.smtp.auth: true
       mail.smtp.starttls.enable: true
+
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        jdbc:
+          fetch_size: 500
+          batch_size: 500
+    hibernate:
+      ddl-auto: validate
+
+  servlet:
+    multipart:
+      max-file-size: 2048KB
+      max-request-size: 2048KB
+
+  jackson:
+    date-format: dd-MM-yyyy
+    time-zone: Asia/Kolkata
+    serialization:
+      write-dates-as-timestamps: false
+
+  security:
+    enabled: true
+
+  config:
+    import: vault://
+
+  cloud:
+    vault:
+      host: 10.3.38.49
+      port: 9090
+      scheme: http
+      authentication: TOKEN
+      token: hvs.1oAHZdday6cvj0dbSjuuI05a
+      config:
+        order: -10
+      kv:
+        enabled: true
+        backend: secret
+        default-context: workflow
+        profile-separator: "-"
+
+  datasource:
+    hikari:
+      maximum-pool-size: 20
+
+  jwt:
+    secret: ${jwt.secret:404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970} # Updated to use vault.jwt.secret as a fallback
+
+server:
+  port: 8081
+  servlet:
+    context-path: /workflow
+    session:
+      timeout: 5m
+
+springdoc:
+  api-docs:
+    path: /api/v3/api-docs
+  swagger-ui:
+    path: /api/swagger-ui
+    url: /api/v3/api-docs
+
+storage:
+  file:
+    directory:
+      location: /home/metaverseedu/public_html/workflowfiles-temp/

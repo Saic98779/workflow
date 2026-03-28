@@ -24,7 +24,8 @@ public class CounsellorTask extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
             name = "counsellor_id",
-            referencedColumnName = "user_id"
+            referencedColumnName = "user_id",
+            columnDefinition = "VARCHAR(36)"
     )
     private User counsellor;
 

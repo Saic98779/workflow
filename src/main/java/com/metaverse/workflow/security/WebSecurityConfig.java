@@ -62,7 +62,9 @@ public class WebSecurityConfig {
                 "https://metaverseedu.in",
                 "http://metaverseedu.in",
                 "https://tg.ramp.metaversedu.in",
-                "http://localhost:*"
+                "http://localhost:*",
+                "http://10.3.38.49", // Added new IP for CORS
+                "http://10.3.38.49:3000" // Added frontend URL for CORS
         ));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         config.setAllowedHeaders(List.of("*"));
@@ -82,7 +84,12 @@ public class WebSecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                        .requestMatchers(
+                                "/swagger-ui/**", "/swagger-ui.html",
+                                "/v3/api-docs/**",
+                                "/api/swagger-ui/**", "/api/swagger-ui.html",
+                                "/api/v3/api-docs/**"
+                        ).permitAll()
                         .requestMatchers("/auth/**", "/workflow/auth/**").permitAll()
                         .requestMatchers("/auth/register/**").permitAll()
                         .requestMatchers("/program/pdf/**").permitAll()
@@ -115,12 +122,6 @@ public class WebSecurityConfig {
                         .requestMatchers("/visitor-count/**").permitAll()
                         .requestMatchers("/ramp/registrations/**").permitAll()
                         .requestMatchers("/ramp/enrollments/**").permitAll()
-                        .requestMatchers(
-                                "/swagger-ui/**",
-                                "/v3/api-docs/**",
-                                "/workflow/swagger-ui/**",
-                                "/workflow/v3/api-docs/**"
-                        ).permitAll()
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(exceptions -> exceptions
@@ -169,4 +170,3 @@ public class WebSecurityConfig {
         return config.getAuthenticationManager();
     }
 }
-

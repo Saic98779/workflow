@@ -25,6 +25,7 @@ public class TicketComment {
     private Ticket ticket;
 
     @ManyToOne
+    @JoinColumn(name = "author_id", referencedColumnName = "user_id")
     private User author;
 
     @Temporal(TemporalType.TIMESTAMP)

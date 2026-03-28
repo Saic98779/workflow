@@ -27,19 +27,10 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @SpringBootApplication(scanBasePackages = "com.metaverse")
 public class WorkflowApplication extends SpringBootServletInitializer {
 
-    // Must set Log4j2 plugin packages before any LogManager.getLogger() call.
-    // This ensures Log4j2 discovers custom appenders (like SplunkSdkAppender) when
-    // running inside servlet containers where plugin scanning can be classloader-sensitive.
-    static {
-        // You can also set this as a JVM arg: -Dlog4j2.plugin.packages=com.metaverse.workflow.logging
-        System.setProperty("log4j2.plugin.packages", "com.metaverse.workflow.logging");
-    }
-
 	private static final Logger LOGGER =
 			LogManager.getLogger(WorkflowApplication.class);
 
 	public static void main(String[] args) {
-		LOGGER.error("SPLUNK-FINAL-TEST-FROM-JAVA");
 		SpringApplication.run(WorkflowApplication.class, args);
 	}
 
@@ -60,7 +51,6 @@ public class WorkflowApplication extends SpringBootServletInitializer {
 
 	/**
 	 * Application initialization.
-	 * Splunk logging validation is done ONLY via Log4j2 SplunkHttp appender.
 	 */
 	@Bean
 	CommandLineRunner init(StorageService storageService,
@@ -69,17 +59,6 @@ public class WorkflowApplication extends SpringBootServletInitializer {
 		return args -> {
 			storageService.init();
 			commonUtil.init();
-
-			// ✅ Single startup log — this is enough to validate Splunk
-			LOGGER.info("WorkflowApplication started successfully – Splunk logging active");
-		};
-	}
-
-	@Bean
-	CommandLineRunner splunkTestLogger() {
-		return args -> {
-			Logger log = LogManager.getLogger("SPLUNK_TEST");
-			log.error("SPLUNK-JAVA-AFTER-STARTUP");
 		};
 	}
 

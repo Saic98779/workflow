@@ -35,11 +35,11 @@ public class Ticket {
     private String type;
 
     @ManyToOne
-    @JoinColumn(name = "assignee_id")   // recommended explicit mapping
+    @JoinColumn(name = "assignee_id", referencedColumnName = "user_id")
     private User assignee;
 
     @ManyToOne
-    @JoinColumn(name = "reporter_id")
+    @JoinColumn(name = "reporter_id", referencedColumnName = "user_id")
     private User reporter;
 
     @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, orphanRemoval = true)
