@@ -1,5 +1,6 @@
 package com.metaverse.workflow.login.service;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.metaverse.workflow.common.enums.UserRole;
 import lombok.*;
@@ -17,6 +18,7 @@ public class LoginUserResponse {
     private String userId;
     private Long agencyId;
     private String email;
+    @JsonIgnore
     private String password;
     private UserRole userRole;
     private Integer attempts;
