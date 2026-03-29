@@ -16,10 +16,10 @@ import java.util.Base64;
 @Service
 public class EncryptService {
 
-    @Value("${private_key}")
+    @Value("${private_key:}")
     private String privateKeyPath;
 
-    @Value("${public_key}")
+    @Value("${public_key:}")
     private String destinationPublicKeyPath;
 
     private static final int GCM_TAG_LENGTH = 128;

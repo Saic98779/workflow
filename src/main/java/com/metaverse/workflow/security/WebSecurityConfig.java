@@ -110,8 +110,16 @@ public class WebSecurityConfig {
         config.setExposedHeaders(List.of("Authorization"));
         config.setMaxAge(3600L);
 
+        // Specific configuration for images
+        CorsConfiguration imageConfig = new CorsConfiguration();
+        imageConfig.addAllowedOrigin("http://localhost:4200");
+        imageConfig.addAllowedMethod("GET");
+        imageConfig.addAllowedHeader("*");
+        imageConfig.setAllowCredentials(true);
+
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
+        source.registerCorsConfiguration("/images/**", imageConfig);
         return source;
     }
 

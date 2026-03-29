@@ -334,45 +334,34 @@ public class ProgramController {
             return ResponseEntity.noContent().build();
         }
 
-        String basePrefix = "/home/metaverseedu/public_html/";
-        String urlPrefix = "https://metaverseedu.in/";
-
         User byUserId = loginRepository.findByUserId(principal.getName())
                 .orElseThrow(() -> new DataException("Admin user not found", "ADMIN_NOT_FOUND", 400));
         System.err.println(byUserId.getUserId());
-            if (byUserId.getAgency() != null && byUserId.getAgency().getAgencyId() != null) {
-                Long agencyId = byUserId.getAgency().getAgencyId();
-                List<Long> byAgencyAgencyId = programRepository.findByAgencyAgencyId(agencyId).stream().map(info -> info.getProgramId()).toList();
+        if (byUserId.getAgency() != null && byUserId.getAgency().getAgencyId() != null) {
+            Long agencyId = byUserId.getAgency().getAgencyId();
+            List<Long> byAgencyAgencyId = programRepository.findByAgencyAgencyId(agencyId).stream().map(info -> info.getProgramId()).toList();
 
-                List<ProgramFileResponse> fileResponses = paths.stream()
-                        .filter(info -> byAgencyAgencyId.contains(info.getProgramId()))
-                        .map(info -> {
-                            String fullPath = info.getFilePath().toAbsolutePath().toString();
-                            String url = fullPath.startsWith(basePrefix)
-                                    ? urlPrefix + fullPath.substring(basePrefix.length())
-                                    : fullPath;
+            List<ProgramFileResponse> fileResponses = paths.stream()
+                    .filter(info -> byAgencyAgencyId.contains(info.getProgramId()))
+                    .map(info -> {
+                        String url = info.getFilePath().toString().replace("/opt/workflow/uploads", "");
+                        return new ProgramFileResponse(
+                                info.getProgramId(),
+                                info.getFileId(),
+                                url
+                        );
+                    })
+                    .toList();
+            return ResponseEntity.ok(fileResponses);
+        }
 
-                            return new ProgramFileResponse(
-                                    info.getProgramId(),
-                                    info.getFileId(),
-                                    url
-                            );
-                        })
-                        .toList();
-                return ResponseEntity.ok(fileResponses);
-            }
-
-                List<ProgramFileResponse> fileResponses = paths.stream()
-                        .map(info -> {
-                            String fullPath = info.getFilePath().toAbsolutePath().toString();
-                            String url = fullPath.startsWith(basePrefix)
-                                    ? urlPrefix + fullPath.substring(basePrefix.length())
-                                    : fullPath;
-                            return new ProgramFileResponse(info.getProgramId(),info.getFileId(), url);
-                        })
-                        .toList();
-                return ResponseEntity.ok(fileResponses);
-
+        List<ProgramFileResponse> fileResponses = paths.stream()
+                .map(info -> {
+                    String url = info.getFilePath().toString().replace("/opt/workflow/uploads", "");
+                    return new ProgramFileResponse(info.getProgramId(), info.getFileId(), url);
+                })
+                .toList();
+        return ResponseEntity.ok(fileResponses);
     }
 
 

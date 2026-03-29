@@ -5,7 +5,7 @@ spring:
   kafka:
     bootstrap-servers: localhost:9092
     listener:
-      auto-startup: false
+      auto-startup: true
     consumer:
       group-id: email-service
       auto-offset-reset: earliest
@@ -80,6 +80,11 @@ server:
     context-path: /workflow
     session:
       timeout: 5m
+  error:
+    include-message: always
+    include-stacktrace: on_param
+    include-exception: true
+    include-binding-errors: always
 
 springdoc:
   api-docs:
@@ -91,4 +96,9 @@ springdoc:
 storage:
   file:
     directory:
-      location: /home/metaverseedu/public_html/workflowfiles-temp/
+      location: ${storage.file.directory.location:/opt/workflow/uploads}
+
+logging:
+  level:
+    org.hibernate.orm.connections.pooling: WARN
+    org.hibernate.orm.deprecation: WARN

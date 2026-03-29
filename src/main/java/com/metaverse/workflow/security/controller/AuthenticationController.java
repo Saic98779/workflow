@@ -14,6 +14,7 @@ import com.metaverse.workflow.security.dto.RegisterRequest;
 import com.metaverse.workflow.security.service.JwtService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +22,9 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,6 +45,7 @@ public class AuthenticationController {
     private final JwtService jwtService;
     private final AgencyRepository agencyRepository;
     private final ActivityLogService logService;
+    private final UserDetailsService userDetailsService;
 
     @PostMapping("/register")
     @Operation(summary = "Register a new user")
@@ -174,6 +178,31 @@ public class AuthenticationController {
                     .build();
             return ResponseEntity.status(403).body(errorResponse);
         }
+    }
+
+    @GetMapping("/validate")
+    public ResponseEntity<Void> validateToken(HttpServletRequest request) {
+
+        String authHeader = request.getHeader("Authorization");
+
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(401).build();
+        }
+
+        String token = authHeader.substring(7);
+
+        try {
+            String username = jwtService.extractUsername(token);
+            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
+            if (jwtService.isTokenValid(token, userDetails)) {
+                return ResponseEntity.ok().build(); // ✅ allow
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(401).build(); // ❌ block
+        }
+
+        return ResponseEntity.status(401).build(); // ❌ block
     }
 
 }
