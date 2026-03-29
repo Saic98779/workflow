@@ -10,8 +10,13 @@ import java.util.Base64;
 import javax.crypto.Cipher;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import static com.metaverse.workflow.encryption.KeyUtilA.loadPrivateKey;
+import static com.metaverse.workflow.encryption.KeyUtilA.loadPublicKey;
 
 @Service
 public class SecureService {
@@ -21,12 +26,19 @@ public class SecureService {
 
     private static final int AES_KEY_SIZE = 32; // 256-bit
 
-    private final PrivateKey appBPrivateKey;
-    private final PublicKey appAPublicKey;
+    @Value("${private_key}")
+    private String privateKeyPem;
 
-    public SecureService() throws Exception {
-        this.appBPrivateKey = KeyUtil.loadPrivateKey("keys/private_key.pem");
-        this.appAPublicKey = KeyUtil.loadPublicKey("keys/public_key.pem");
+    @Value("${public_key}")
+    private String publicKeyPem;
+
+    private PrivateKey appBPrivateKey;
+    private PublicKey appAPublicKey;
+
+    @jakarta.annotation.PostConstruct
+    public void init() throws Exception {
+        this.appBPrivateKey = loadPrivateKey(privateKeyPem);
+        this.appAPublicKey = loadPublicKey(publicKeyPem);
     }
 
     public Employee decryptAndVerify(String base64Combined) throws Exception {

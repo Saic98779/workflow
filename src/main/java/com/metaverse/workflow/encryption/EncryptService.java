@@ -2,6 +2,7 @@ package com.metaverse.workflow.encryption;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.metaverse.workflow.dto.CentralRampRequestDto;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.*;
@@ -15,8 +16,11 @@ import java.util.Base64;
 @Service
 public class EncryptService {
 
-    private final String privateKeyPath = "keys/private_key.pem";
-    private final String destinationPublicKeyPath = "keys/public_key.pem";
+    @Value("${private_key}")
+    private String privateKeyPath;
+
+    @Value("${public_key}")
+    private String destinationPublicKeyPath;
 
     private static final int GCM_TAG_LENGTH = 128;
     private static final int TAG_BYTE_LENGTH = 16;

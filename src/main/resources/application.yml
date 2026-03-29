@@ -17,8 +17,8 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: ${spring.mail.username}
-    password: ${spring.mail.password}
+    username: ${spring.mail.username:#{secrets['spring.mail.username']}}
+    password: ${spring.mail.password:#{secrets['spring.mail.password']}}
     properties:
       mail.smtp.auth: true
       mail.smtp.starttls.enable: true
@@ -48,7 +48,9 @@ spring:
     enabled: true
 
   config:
-    import: vault://
+    import:
+      - vault://
+      - "optional:classpath:secrets.properties"
 
   cloud:
     vault:
@@ -56,7 +58,7 @@ spring:
       port: 9090
       scheme: http
       authentication: TOKEN
-      token: hvs.1oAHZdday6cvj0dbSjuuI05a
+      token: ${VAULT_TOKEN:#{secrets['VAULT_TOKEN']}}
       config:
         order: -10
       kv:
@@ -70,7 +72,7 @@ spring:
       maximum-pool-size: 20
 
   jwt:
-    secret: ${jwt.secret:404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970} # Updated to use vault.jwt.secret as a fallback
+    secret: ${jwt.secret:#{secrets['jwt.secret']}}
 
 server:
   port: 8081

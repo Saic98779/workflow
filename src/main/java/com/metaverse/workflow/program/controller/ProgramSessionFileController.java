@@ -6,6 +6,7 @@ import com.metaverse.workflow.model.FileUrlResponse;
 import com.metaverse.workflow.program.service.ProgramSessionFileService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,10 +21,14 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/program-session-files")
 public class ProgramSessionFileController {
+    private final ProgramSessionFileService fileService;
+    private final ActivityLogService logService;
+
     @Autowired
-    private ProgramSessionFileService fileService;
-    @Autowired
-    private ActivityLogService logService;
+    public ProgramSessionFileController(ProgramSessionFileService fileService, ActivityLogService logService) {
+        this.fileService = fileService;
+        this.logService = logService;
+    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<DeleteFileResponse> deleteProgramSessionFile(@PathVariable("id") Long id, Principal principal, HttpServletRequest servletRequest) {
@@ -43,16 +48,23 @@ public class ProgramSessionFileController {
                                                                         @RequestParam(name = "fileType") String fileType,
                                                                         Principal principal,
                                                                         HttpServletRequest servletRequest) {
-        // log the access
+        // Ensure the user is authenticated
+        if (principal == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        // Log the access
         String path = servletRequest != null ? servletRequest.getRequestURI() + "?fileType=" + fileType : "/program-session-files/program/" + programId + "/file-url?fileType=" + fileType;
-        String username = principal != null ? principal.getName() : "anonymous";
+        String username = principal.getName();
         logService.logs(username, "VIEW", "Viewed file URL for programId " + programId + " and fileType " + fileType, "program", path);
 
-        Optional<String> filePathOpt = fileService.getFirstFilePathByProgramIdAndFileType(programId, fileType);
-        if (filePathOpt.isPresent()) {
-            return ResponseEntity.ok(new FileUrlResponse(programId, fileType, filePathOpt.get()));
-        } else {
-            return ResponseEntity.status(404).body(new FileUrlResponse(programId, fileType, null));
+        // Validate the file type
+        if (!fileType.matches(".*\\.(pdf|jpg|png)$")) {
+            throw new RuntimeException("Invalid file type");
         }
+
+        return fileService.getFirstFilePathByProgramIdAndFileType(programId, fileType)
+                .map(filePath -> ResponseEntity.ok(new FileUrlResponse(programId, fileType, filePath)))
+                .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).body(new FileUrlResponse(programId, fileType, null)));
     }
 }

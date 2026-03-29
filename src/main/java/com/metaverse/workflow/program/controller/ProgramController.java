@@ -27,6 +27,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -264,25 +265,32 @@ public class ProgramController {
     }
 
     @GetMapping("/program/file/download/{fileId}")
-    public ResponseEntity<InputStreamResource> getProgramFile(@PathVariable("fileId") Long fileId) throws FileNotFoundException {
+    public ResponseEntity<InputStreamResource> getProgramFile(@PathVariable("fileId") Long fileId, Principal principal) throws FileNotFoundException {
+        // Ensure the user is authenticated
+        if (principal == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
         log.info("Called getProgramFile fileId=" + fileId);
         Path path = programService.getProgramFile(fileId);
-        if (path == null) {
-            return ResponseEntity.noContent().build();
-        } else {
-            File file = new File(path.toAbsolutePath().toString());
-            HttpHeaders headers = new HttpHeaders();
-            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + path.getFileName().toString());
-            headers.add("Cache-Control", "no-cache, no-store, must-revalidate");
-            headers.add("Pragma", "no-cache");
-            headers.add("Expires", "0");
-            InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
-            return ResponseEntity.ok()
-                    .headers(headers)
-                    .contentLength(file.length())
-                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                    .body(resource);
+
+        // Validate the file name
+        if (path == null || !path.getFileName().toString().matches(".*\\.(pdf|jpg|png)$")) {
+            throw new RuntimeException("Invalid file");
         }
+
+        File file = new File(path.toAbsolutePath().toString());
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + path.getFileName().toString());
+        headers.add("Cache-Control", "no-cache, no-store, must-revalidate");
+        headers.add("Pragma", "no-cache");
+        headers.add("Expires", "0");
+        InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
+        return ResponseEntity.ok()
+                .headers(headers)
+                .contentLength(file.length())
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(resource);
     }
 
     @GetMapping("/program/file/paths/{programId}")
