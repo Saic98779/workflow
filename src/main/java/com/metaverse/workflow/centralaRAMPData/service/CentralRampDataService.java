@@ -1,4 +1,4 @@
-package com.metaverse.workflow.service;
+package com.metaverse.workflow.centralaRAMPData.service;
 
 import com.metaverse.workflow.centralaRAMPData.dto.CentralRampRequestDto;
 import com.metaverse.workflow.centralaRAMPData.dto.StateRAMPDashbrdDataDto;

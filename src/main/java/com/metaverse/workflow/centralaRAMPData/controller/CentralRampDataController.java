@@ -1,7 +1,7 @@
 package com.metaverse.workflow.centralaRAMPData.controller;
 
 import com.metaverse.workflow.centralaRAMPData.encryption.EncryptService;
-import com.metaverse.workflow.service.CentralRampDataService;
+import com.metaverse.workflow.centralaRAMPData.service.CentralRampDataService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
