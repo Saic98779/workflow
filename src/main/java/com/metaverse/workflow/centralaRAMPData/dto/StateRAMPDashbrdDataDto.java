@@ -1,4 +1,4 @@
-package com.metaverse.workflow.dto;
+package com.metaverse.workflow.centralaRAMPData.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;

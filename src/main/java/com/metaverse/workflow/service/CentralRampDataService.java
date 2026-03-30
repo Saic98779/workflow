@@ -1,9 +1,9 @@
 package com.metaverse.workflow.service;
 
-import com.metaverse.workflow.dto.CentralRampRequestDto;
-import com.metaverse.workflow.dto.StateRAMPDashbrdDataDto;
-import com.metaverse.workflow.encryption.CentralRampData;
-import com.metaverse.workflow.repository.CentralRampDataRepository;
+import com.metaverse.workflow.centralaRAMPData.dto.CentralRampRequestDto;
+import com.metaverse.workflow.centralaRAMPData.dto.StateRAMPDashbrdDataDto;
+import com.metaverse.workflow.centralaRAMPData.encryption.CentralRampData;
+import com.metaverse.workflow.centralaRAMPData.repository.CentralRampDataRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

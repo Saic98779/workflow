@@ -1,4 +1,4 @@
-package com.metaverse.workflow.encryption;
+package com.metaverse.workflow.centralaRAMPData.encryption;
 
 import java.nio.charset.StandardCharsets;
 import java.security.PrivateKey;
@@ -15,8 +15,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import static com.metaverse.workflow.encryption.KeyUtilA.loadPrivateKey;
-import static com.metaverse.workflow.encryption.KeyUtilA.loadPublicKey;
+import static com.metaverse.workflow.centralaRAMPData.encryption.KeyUtilA.loadPrivateKey;
+import static com.metaverse.workflow.centralaRAMPData.encryption.KeyUtilA.loadPublicKey;
 
 @Service
 public class SecureService {

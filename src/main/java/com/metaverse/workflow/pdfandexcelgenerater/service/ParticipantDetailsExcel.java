@@ -40,7 +40,6 @@ public class ParticipantDetailsExcel {
             return;
         }
 
-        System.out.println("Hello " + LocalDateTime.now());
         HSSFWorkbook workbook = new HSSFWorkbook();
         HSSFSheet sheet = workbook.createSheet("Participant Details");
 

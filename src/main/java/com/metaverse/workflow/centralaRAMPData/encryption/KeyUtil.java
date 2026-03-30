@@ -1,10 +1,9 @@
-package com.metaverse.workflow.encryption;
+package com.metaverse.workflow.centralaRAMPData.encryption;
 
 import org.springframework.core.io.ClassPathResource;
 
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.security.KeyFactory;
 import java.security.PrivateKey;
 import java.security.PublicKey;
@@ -12,7 +11,7 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 
-public class KeyUtilA {
+public class KeyUtil {
 
     public static PrivateKey loadPrivateKey(String path) throws Exception {
         String key;

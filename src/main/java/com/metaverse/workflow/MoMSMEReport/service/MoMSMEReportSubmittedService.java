@@ -5,8 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.metaverse.workflow.MoMSMEReport.repository.MoMSMEReportRepo;
 import com.metaverse.workflow.MoMSMEReport.repository.MoMSMEReportSubmittedRepository;
 import com.metaverse.workflow.common.response.WorkflowResponse;
-import com.metaverse.workflow.dto.CentralRampRequestDto;
-import com.metaverse.workflow.encryption.EncryptService;
+import com.metaverse.workflow.centralaRAMPData.dto.CentralRampRequestDto;
+import com.metaverse.workflow.centralaRAMPData.encryption.EncryptService;
 import com.metaverse.workflow.exceptions.DataException;
 import com.metaverse.workflow.model.MoMSMEReport;
 import com.metaverse.workflow.model.MoMSMEReportSubmitted;
@@ -22,7 +22,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;

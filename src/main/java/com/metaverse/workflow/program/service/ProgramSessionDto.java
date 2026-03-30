@@ -1,7 +1,6 @@
-package com.metaverse.workflow.dto;
+package com.metaverse.workflow.centralaRAMPData.dto;
 
 import com.metaverse.workflow.model.ProgramSession;
-import com.metaverse.workflow.program.service.ProgramSessionResponse;
 import lombok.*;
 
 import java.util.Date;

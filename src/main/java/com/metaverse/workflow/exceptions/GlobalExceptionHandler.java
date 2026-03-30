@@ -4,7 +4,8 @@ import com.metaverse.workflow.notifications.exceptions.AgencyNotFoundException;
 import com.metaverse.workflow.notifications.exceptions.ParticipantNotFoundException;
 import com.metaverse.workflow.notifications.exceptions.ProgramNotFoundException;
 import com.metaverse.workflow.notifications.exceptions.UserNotFoundException;
-import com.metaverse.workflow.security.ApplicationAPIResponse;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -13,21 +14,22 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import java.net.URI;
 import java.time.LocalDateTime;
 
 @RestControllerAdvice
 @Order
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
+    private static final Logger LOGGER = LogManager.getLogger(GlobalExceptionHandler.class);
+
     @ExceptionHandler(ApplicationAbstractException.class)
     public ResponseEntity<Object> handleApplicationException(ApplicationAbstractException ex, WebRequest request) {
+        LOGGER.warn("Application exception handled: {}", ex.getMessage(), ex);
         HttpStatus status = HttpStatus.valueOf(ex.getStatusCode());
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(status, ex.getMessage());
         problemDetail.setTitle("Application Error");
@@ -40,6 +42,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<Object> handleAccessDeniedException(AccessDeniedException ex, WebRequest request) {
+        LOGGER.warn("Access denied: {}", ex.getMessage(), ex);
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, "Access denied: " + ex.getMessage());
         problemDetail.setTitle("Forbidden");
         problemDetail.setProperty("code", "FORBIDDEN");
@@ -51,6 +54,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<Object> handleBadCredentialsException(BadCredentialsException ex, WebRequest request) {
+        LOGGER.warn("Bad credentials received", ex);
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, "Invalid credentials");
         problemDetail.setTitle("Unauthorized");
         problemDetail.setProperty("code", "UNAUTHORIZED");
@@ -61,6 +65,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<Object> handleAuthenticationException(AuthenticationException ex, WebRequest request) {
+        LOGGER.warn("Authentication failed: {}", ex.getMessage(), ex);
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, "Authentication failed");
         problemDetail.setTitle("Unauthorized");
         problemDetail.setProperty("code", "UNAUTHORIZED");
@@ -71,6 +76,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Object> handleIllegalArgumentException(IllegalArgumentException ex, WebRequest request) {
+        LOGGER.warn("Illegal argument received: {}", ex.getMessage(), ex);
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "Invalid argument: " + ex.getMessage());
         problemDetail.setTitle("Bad Request");
         problemDetail.setProperty("code", "BAD_REQUEST");
@@ -82,6 +88,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(UserNotFoundException.class)
     public ProblemDetail handleUserNotFound(UserNotFoundException ex) {
+        LOGGER.warn("User not found: {}", ex.getMessage());
         ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
         problemDetail.setTitle("User Not Found");
         problemDetail.setDetail(ex.getMessage());
@@ -90,6 +97,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(AgencyNotFoundException.class)
     public ProblemDetail handleAgencyNotFound(AgencyNotFoundException ex) {
+        LOGGER.warn("Agency not found: {}", ex.getMessage());
         ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
         problemDetail.setTitle("Agency Not Found");
         problemDetail.setDetail(ex.getMessage());
@@ -98,6 +106,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleAllUncaughtException(Exception ex, WebRequest request) {
+        LOGGER.error("Unhandled exception caught by global handler", ex);
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred");
         problemDetail.setTitle("Internal Server Error");
         problemDetail.setProperty("code", "INTERNAL_SERVER_ERROR");
@@ -108,6 +117,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(ProgramNotFoundException.class)
     public ProblemDetail handleProgramNotFound(AgencyNotFoundException ex) {
+        LOGGER.warn("Program not found: {}", ex.getMessage());
         ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
         problemDetail.setTitle("Program Not Found");
         problemDetail.setDetail(ex.getMessage());
@@ -116,6 +126,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(ParticipantNotFoundException.class)
     public ProblemDetail handleParticipantNotFound(AgencyNotFoundException ex) {
+        LOGGER.warn("Participant not found: {}", ex.getMessage());
         ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
         problemDetail.setTitle("Participant Not Found");
         problemDetail.setDetail(ex.getMessage());

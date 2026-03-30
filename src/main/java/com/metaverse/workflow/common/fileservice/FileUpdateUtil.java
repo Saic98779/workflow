@@ -64,12 +64,11 @@ public class FileUpdateUtil {
         try {
             Files.delete(path);
         } catch (Exception e) {
-            System.err.println("File delete failed, retrying: " + e.getMessage());
             try {
                 Thread.sleep(300); // wait for OS lock release
                 Files.deleteIfExists(path);
             } catch (Exception ex) {
-                System.err.println("Unable to delete file even after retry: " + ex.getMessage());
+              throw  new RuntimeException("Unable to delete file even after retry: " + ex.getMessage());
             }
         }
     }

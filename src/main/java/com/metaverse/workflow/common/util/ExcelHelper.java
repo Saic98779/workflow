@@ -175,7 +175,6 @@ public class ExcelHelper {
                 {
                     if(m.getMandalName().equalsIgnoreCase(mandal)){
                         org.setMandal(m.getMandalId()+"");
-                        System.out.println(m.getMandalName());
                     }
                 });
                 org.setDistId(s.getDistrictId()+"");

@@ -1,7 +1,7 @@
-package com.metaverse.workflow.encryption;
+package com.metaverse.workflow.centralaRAMPData.encryption;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.metaverse.workflow.dto.CentralRampRequestDto;
+import com.metaverse.workflow.centralaRAMPData.dto.CentralRampRequestDto;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
