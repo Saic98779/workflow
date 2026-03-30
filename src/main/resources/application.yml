@@ -23,6 +23,12 @@ spring:
       mail.smtp.auth: true
       mail.smtp.starttls.enable: true
 
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://10.3.38.49:3306/prod_workflow
+    hikari:
+      maximum-pool-size: 20
+
   jpa:
     properties:
       hibernate:
@@ -67,13 +73,6 @@ spring:
         default-context: workflow
         profile-separator: "-"
 
-  datasource:
-    hikari:
-      maximum-pool-size: 20
-
-  jwt:
-    secret: ${jwt.secret:#{secrets['jwt.secret']}}
-
 server:
   port: 8081
   servlet:
@@ -92,11 +91,22 @@ springdoc:
   swagger-ui:
     path: /api/swagger-ui
     url: /api/v3/api-docs
+    enabled: true
+  swagger:
+    permitted-paths: /api/swagger-ui/**,/api/swagger-ui.html,/api/v3/api-docs/**
+    enabled: true
 
 storage:
   file:
     directory:
       location: ${storage.file.directory.location:/opt/workflow/uploads}
+
+jwt:
+  secret: ${jwt.secret:#{secrets['jwt.secret']}}
+  expiration: 86400000
+
+cors:
+  allowed-origins: https://tg.ramp.metaversedu.in,http://localhost:*,http://127.0.0.1:3000,http://127.0.0.1:4200,http://10.3.38.49,http://10.3.38.49:3000
 
 logging:
   level:

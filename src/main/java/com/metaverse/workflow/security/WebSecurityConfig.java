@@ -5,6 +5,7 @@ import com.metaverse.workflow.security.config.CustomAuthenticationEntryPoint;
 import com.metaverse.workflow.security.config.ExceptionHandlerFilter;
 import com.metaverse.workflow.security.filter.JwtAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -39,6 +40,12 @@ public class WebSecurityConfig {
     private final CustomAccessDeniedHandler accessDeniedHandler;
     private final ExceptionHandlerFilter exceptionHandlerFilter;
 
+    @Value("${cors.allowed-origins}")
+    private List<String> allowedOrigins;
+
+    @Value("${swagger.permitted-paths:/api/swagger-ui/**,/api/swagger-ui.html,/api/v3/api-docs/**}")
+    private List<String> swaggerPermittedPaths;
+
     public WebSecurityConfig(
             JwtAuthenticationFilter jwtAuthFilter,
             @Qualifier("customUserDetailsService") UserDetailsService userDetailsService,
@@ -58,8 +65,8 @@ public class WebSecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOriginPatterns(List.of("http://10.3.38.49:3000", "http://localhost:3000", "http://127.0.0.1:3000", "http://localhost:4200", "http://127.0.0.1:4200")); // Added localhost:4200 and 127.0.0.1:4200
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // Specify allowed methods
+        config.setAllowedOriginPatterns(allowedOrigins);
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
 
@@ -68,27 +75,35 @@ public class WebSecurityConfig {
         return source;
     }
 
+    @Value("${springdoc.swagger-ui.enabled:false}")
+    private boolean swaggerEnabled;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.OPTIONS, "/auth/**", "/workflow/auth/**", "/visitor-count/**", "/ramp/registrations/**", "/ramp/enrollments/**").permitAll()
-                        .requestMatchers(HttpMethod.OPTIONS, "/workflowfiles/**").authenticated()
-                        .requestMatchers("/workflowfiles/**").authenticated()
+                .authorizeHttpRequests(auth -> {
+                    auth
+                            .requestMatchers(HttpMethod.OPTIONS, "/auth/**", "/workflow/auth/**", "/visitor-count/**", "/ramp/registrations/**", "/ramp/enrollments/**").permitAll()
+                            .requestMatchers(HttpMethod.OPTIONS, "/workflowfiles/**").authenticated()
+                            .requestMatchers("/workflowfiles/**").authenticated()
 
-                        // public APIs
-                        .requestMatchers(
-                                "/auth/**",
-                                "/workflow/auth/**",
-                                "/visitor-count/**",
-                                "/ramp/registrations/**",
-                                "/ramp/enrollments/**"
-                        ).permitAll()
+                            // public APIs
+                            .requestMatchers(
+                                    "/auth/**",
+                                    "/workflow/auth/**",
+                                    "/visitor-count/**",
+                                    "/ramp/registrations/**",
+                                    "/ramp/enrollments/**"
+                            ).permitAll();
 
-                        .anyRequest().authenticated()
-                )
+                    if (swaggerEnabled) {
+                        auth.requestMatchers(swaggerPermittedPaths.toArray(new String[0])).permitAll();
+                    }
+
+                    auth.anyRequest().authenticated();
+                })
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint(authenticationEntryPoint)
                         .accessDeniedHandler(accessDeniedHandler)
@@ -102,7 +117,6 @@ public class WebSecurityConfig {
 
         return http.build();
     }
-
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
