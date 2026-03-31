@@ -537,7 +537,7 @@ public class ProgramServiceAdapter implements ProgramService {
                 .map(file -> new ProgramFilePathInfo(
                         file.getProgram().getProgramId(),
                         file.getProgramSessionFileId(),
-                        storageService.load(file.getFilePath())
+                        Path.of(file.getFilePath().toString())
                 ))
                 .collect(Collectors.toList());
     }
