@@ -12,11 +12,11 @@ import com.metaverse.workflow.expenditure.service.ExpenditureRemarksDTO;
 import com.metaverse.workflow.nontraining.dto.NonTrainingSubActivityDto;
 import com.metaverse.workflow.nontraining.service.NonTrainingActivityService;
 import com.metaverse.workflow.nontrainingExpenditures.service.*;
+import com.metaverse.workflow.security.config.GlobalFileValidator;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.websocket.server.PathParam;
 import lombok.RequiredArgsConstructor;
-import lombok.Value;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.MediaType;
@@ -38,11 +38,13 @@ public class NonTrainingExpenditureController extends RestControllerBase {
     private final NonTrainingActivityService nonTrainingActivityService;
     private final ActivityLogService logService;
     private final NonTrainingResourceExpenditureService nonTrainingResourceExpenditureService;
+    private final GlobalFileValidator fileValidator;
     private final static Logger log =  LogManager.getLogger(NonTrainingExpenditureController.class);
 
     @PostMapping(path = "/save",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> create(Principal principal, @RequestPart("dto") String dto, @RequestPart(value = "file", required = false) MultipartFile file) {
         try {
+            fileValidator.validate(file);
             ObjectMapper objectMapper = new ObjectMapper();
             NonTrainingExpenditureDTO nonTrainingExpenditureDTO = objectMapper.readValue(dto, NonTrainingExpenditureDTO.class);
             WorkflowResponse response = service.create(nonTrainingExpenditureDTO,file);
@@ -91,6 +93,7 @@ public class NonTrainingExpenditureController extends RestControllerBase {
     @PutMapping(path = "/update/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> update(@PathVariable Long id, @RequestPart String dto,Principal principal, @RequestPart(value = "files", required = false)MultipartFile file) {
         try { //NonTrainingExpenditureDTO
+            fileValidator.validate(file);
             ObjectMapper objectMapper = new ObjectMapper();
             NonTrainingExpenditureDTO nonTrainingExpenditureDTO =    objectMapper.readValue(dto,NonTrainingExpenditureDTO.class);
             NonTrainingExpenditureDTO updated = service.update(id, nonTrainingExpenditureDTO,file);
@@ -166,6 +169,7 @@ public class NonTrainingExpenditureController extends RestControllerBase {
     @PostMapping(path="/non-training/expenditure/resource",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> saveResourceExpenditure(@RequestPart String expenditureDto,@RequestPart(value = "file", required = false) MultipartFile file,Principal principal) {
         try {
+            fileValidator.validate(file);
             ObjectMapper objectMapper = new ObjectMapper();
             NonTrainingResourceExpenditureDTO resourceExpenditureDTO = objectMapper.readValue(expenditureDto, NonTrainingResourceExpenditureDTO.class);
             WorkflowResponse response = service.saveResourceExpenditure(resourceExpenditureDTO,file);
@@ -188,6 +192,7 @@ public class NonTrainingExpenditureController extends RestControllerBase {
     public ResponseEntity<?> updateResourceExpenditure(@PathVariable Long expenditureId, Principal principal,
                                                        @RequestPart String expenditureDto, @RequestPart(value ="file", required = false)MultipartFile file) {
         try { //NonTrainingResourceExpenditureDTO
+            fileValidator.validate(file);
             ObjectMapper objectMapper = new ObjectMapper();
             NonTrainingResourceExpenditureDTO dto =  objectMapper.readValue(expenditureDto,NonTrainingResourceExpenditureDTO.class);
             WorkflowResponse response = service.updateResourceExpenditure(expenditureId, dto,file);

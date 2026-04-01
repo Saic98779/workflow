@@ -9,6 +9,7 @@ import com.metaverse.workflow.common.util.RestControllerBase;
 import com.metaverse.workflow.exceptions.DataException;
 import com.metaverse.workflow.nontrainingExpenditures.Dto.NimsmeVdpRequest;
 import com.metaverse.workflow.nontrainingExpenditures.service.NimsmeVdpService;
+import com.metaverse.workflow.security.config.GlobalFileValidator;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
@@ -27,6 +28,8 @@ public class NimsmeVdpController {
 
     private final NimsmeVdpService service;
     private final ActivityLogService logService;
+    private final GlobalFileValidator fileValidator;
+
     private static final Logger log = LogManager.getLogger(NimsmeVdpController.class);
 
     @PostMapping(value = "/save", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -36,6 +39,7 @@ public class NimsmeVdpController {
             HttpServletRequest servletRequest) {
 
         try {
+            fileValidator.validate(file);
             ObjectMapper objectMapper = new ObjectMapper();
             NimsmeVdpRequest nimsmeVdpRequest = objectMapper.readValue(request, NimsmeVdpRequest.class);
             WorkflowResponse response = service.save(nimsmeVdpRequest, file);
@@ -70,6 +74,7 @@ public class NimsmeVdpController {
             HttpServletRequest servletRequest) {
 
         try {
+            fileValidator.validate(file);
             ObjectMapper objectMapper = new ObjectMapper();
             NimsmeVdpRequest nimsmeVdpRequest =
                     objectMapper.readValue(request, NimsmeVdpRequest.class);

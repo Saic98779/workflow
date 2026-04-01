@@ -13,6 +13,7 @@ import com.metaverse.workflow.nontraining.controller.ProgressMonitoringControlle
 import com.metaverse.workflow.nontrainingExpenditures.Dto.BenchmarkingStudyRequest;
 import com.metaverse.workflow.nontrainingExpenditures.service.BenchmarkingStudyService;
 import com.metaverse.workflow.nontrainingExpenditures.service.NonTrainingExpenditureRemarksDTO;
+import com.metaverse.workflow.security.config.GlobalFileValidator;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.websocket.server.PathParam;
@@ -34,12 +35,14 @@ public class BenchmarkingStudyController {
 
     private final BenchmarkingStudyService service;
     private final ActivityLogService logService;
+    private final GlobalFileValidator fileValidator;
     private static final Logger log = LogManager.getLogger(BenchmarkingStudyController.class);
 
 
     @PostMapping(path="/save",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> create(Principal principal, @RequestPart String benchmarkingStudy , @RequestPart(value = "file", required = false) MultipartFile file) {
         try {
+            fileValidator.validate(file);
             ObjectMapper objectMapper = new ObjectMapper();
             BenchmarkingStudyRequest benchmarkingStudyRequest = objectMapper.readValue(benchmarkingStudy, BenchmarkingStudyRequest.class);
             WorkflowResponse response = service.createBenchmarkingStudy(benchmarkingStudyRequest,file);

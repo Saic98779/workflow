@@ -9,6 +9,7 @@ import com.metaverse.workflow.aleap_handholding.service.BusinessPlanDetailsServi
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.common.util.RestControllerBase;
 import com.metaverse.workflow.exceptions.DataException;
+import com.metaverse.workflow.security.config.GlobalFileValidator;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -27,8 +28,9 @@ import java.security.Principal;
 @RequiredArgsConstructor
 public class BusinessPlanDetailsController {
 
- private final BusinessPlanDetailsService service;
+    private final BusinessPlanDetailsService service;
     private final ActivityLogService logService;
+    private final GlobalFileValidator fileValidator;
     private static final Logger log = LogManager.getLogger(BusinessPlanDetailsController.class);
 
     @PostMapping(value = "/save", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -39,6 +41,7 @@ public class BusinessPlanDetailsController {
             HttpServletRequest servletRequest) {
 
         try {
+            fileValidator.validate(file);
             ObjectMapper objectMapper = new ObjectMapper();
             BusinessPlanRequest businessPlanRequest =
                     objectMapper.readValue(request, BusinessPlanRequest.class);
@@ -75,6 +78,7 @@ public class BusinessPlanDetailsController {
             HttpServletRequest servletRequest) {
 
         try {
+            fileValidator.validate(file);
             ObjectMapper objectMapper = new ObjectMapper();
             BusinessPlanRequest businessPlanRequest =
                     objectMapper.readValue(request, BusinessPlanRequest.class);
