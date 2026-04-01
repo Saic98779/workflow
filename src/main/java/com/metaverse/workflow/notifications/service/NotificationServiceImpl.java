@@ -140,7 +140,10 @@ public class NotificationServiceImpl {
 
         if (list.isEmpty()) return null;
         // Build DTO manually
-        return list.stream().map(notification ->
+        return list.stream()
+                .sorted(Comparator.comparing(Notifications::getLastMessageAt,
+                        Comparator.nullsLast(Comparator.naturalOrder())).reversed())
+                .map(notification ->
                 GlobalNotificationResponse.builder()
                         .notificationId(notification.getId())
                         .agencyId(notification.getAgency().getAgencyId())
@@ -149,6 +152,7 @@ public class NotificationServiceImpl {
                                 notification.getMessages().stream().filter(sent -> !sent.getSentBy().equalsIgnoreCase("ADMIN") ||
                                                 !sent.getSentBy().equalsIgnoreCase("FINANCE") ||
                                                 !sent.getSentBy().equalsIgnoreCase("SPIU"))
+                                        .sorted(Comparator.comparing(NotificationMessage::getCreatedAt).reversed())
                                         .map(msg -> {
                                             NotificationMessageDto dto = new NotificationMessageDto();
                                             dto.setSentBy(msg.getSentBy());
@@ -195,7 +199,10 @@ public class NotificationServiceImpl {
 
         List<Notifications> unReadNotifications = notificationRepository.findByIsReadAndAgency_agencyId(isRead, agencyId);
 
-        return unReadNotifications.stream().map(notification ->
+        return unReadNotifications.stream()
+                .sorted(Comparator.comparing(Notifications::getLastMessageAt,
+                        Comparator.nullsLast(Comparator.naturalOrder())).reversed())
+                .map(notification ->
                 GlobalNotificationResponse.builder()
                         .notificationId(notification.getId())
                         .agencyId(notification.getAgency().getAgencyId())
@@ -204,6 +211,7 @@ public class NotificationServiceImpl {
                                 notification.getMessages().stream().filter(sent -> sent.getSentBy().equalsIgnoreCase("ADMIN") ||
                                                                                                      sent.getSentBy().equalsIgnoreCase("FINANCE") ||
                                                                                                      sent.getSentBy().equalsIgnoreCase("SPIU"))
+                                        .sorted(Comparator.comparing(NotificationMessage::getCreatedAt).reversed())
                                         .map(msg -> {
                                     NotificationMessageDto dto = new NotificationMessageDto();
                                     dto.setSentBy(msg.getSentBy());
