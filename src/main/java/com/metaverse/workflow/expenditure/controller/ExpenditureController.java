@@ -12,6 +12,7 @@ import com.metaverse.workflow.exceptions.*;
 import com.metaverse.workflow.expenditure.service.*;
 import com.metaverse.workflow.model.Agency;
 import com.metaverse.workflow.model.HeadOfExpense;
+import com.metaverse.workflow.security.config.GlobalFileValidator;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import net.minidev.json.parser.JSONParser;
@@ -35,12 +36,16 @@ public class ExpenditureController {
     ExpenditureService expenditureService;
     @Autowired
     private ActivityLogService logService;
+    @Autowired
+    GlobalFileValidator fileValidator;
+
 
     private static final Logger log = LogManager.getLogger(ExpenditureController.class);
 
     @PostMapping("/bulk/expenditure/save")
     public ResponseEntity<?> saveBulkExpenditure(Principal principal, @RequestPart String request, @RequestPart(required = false) List<MultipartFile> files,
     HttpServletRequest servletRequest) throws JsonProcessingException {
+        fileValidator.validate(files);
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             BulkExpenditureRequest bulkExpenditureRequest = objectMapper.readValue(request, BulkExpenditureRequest.class);
@@ -58,6 +63,7 @@ public class ExpenditureController {
     public ResponseEntity<?> updateBulkExpenditure(Principal principal,@PathVariable("id") Long expenditureId, @RequestPart String request, @RequestPart(required = false) List<MultipartFile> files,
     HttpServletRequest servletRequest) throws JsonProcessingException {
         try {
+            fileValidator.validate(files);
             ObjectMapper objectMapper = new ObjectMapper();
             BulkExpenditureRequest bulkExpenditureRequest = objectMapper.readValue(request, BulkExpenditureRequest.class);
             logService.logs(principal.getName(),"UPDATE","update bulk expenditure ","bulk expenditure", servletRequest.getRequestURI());
@@ -89,6 +95,7 @@ public class ExpenditureController {
             @RequestPart("request") String request,
             @RequestPart(value = "files", required = false) List<MultipartFile> files, HttpServletRequest servletRequest) throws ParseException {
         try {
+            fileValidator.validate(files);
             JSONParser parser = new JSONParser();
             ProgramExpenditureRequest programExpenditureRequest = parser.parse(request, ProgramExpenditureRequest.class);
             var response = expenditureService.saveProgramExpenditure(programExpenditureRequest, files);
@@ -109,6 +116,7 @@ public class ExpenditureController {
             @RequestPart("request") String request,
             @RequestPart(value = "files", required = false) List<MultipartFile> files, HttpServletRequest servletRequest) throws ParseException {
         try {
+            fileValidator.validate(files);
             JSONParser parser = new JSONParser();
             ProgramExpenditureRequest programExpenditureRequest = parser.parse(request, ProgramExpenditureRequest.class);
             var response = expenditureService.updateProgramExpenditure(expenditureId, programExpenditureRequest, files);

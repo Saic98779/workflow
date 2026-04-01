@@ -12,6 +12,7 @@ import com.metaverse.workflow.expenditure.service.BulkExpenditureRequest;
 import com.metaverse.workflow.nontrainingExpenditures.Dto.TravelAndTransportDto;
 import com.metaverse.workflow.nontrainingExpenditures.service.NonTrainingExpenditureRemarksDTO;
 import com.metaverse.workflow.nontrainingExpenditures.service.TravelAndTransportService;
+import com.metaverse.workflow.security.config.GlobalFileValidator;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -34,13 +35,14 @@ public class TravelAndTransportController {
 
     private final TravelAndTransportService travelService;
     private final ActivityLogService logService;
+    private final GlobalFileValidator fileValidator;
     private final static Logger log =  LogManager.getLogger(TravelAndTransportController.class);
 
     @PostMapping(path = "/save", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<WorkflowResponse> saveTravel(
             @RequestPart("dto") String dtoString,Principal principal,
             @RequestPart(value = "file", required = false) MultipartFile file) throws JsonProcessingException {
-
+        fileValidator.validate(file);
         ObjectMapper objectMapper = new ObjectMapper();
         TravelAndTransportDto dto = objectMapper.readValue(dtoString, TravelAndTransportDto.class);
         WorkflowResponse response = travelService.saveTravel(dto, file);
@@ -72,6 +74,7 @@ public class TravelAndTransportController {
                                           @RequestPart(value = "file", required = false) MultipartFile file) throws Exception {
 
         try {
+            fileValidator.validate(file);
             ObjectMapper objectMapper = new ObjectMapper();
             TravelAndTransportDto dto = objectMapper.readValue(travelAndTransportDto, TravelAndTransportDto.class);
 

@@ -1,11 +1,8 @@
 package com.metaverse.workflow.program.controller;
 
 import com.metaverse.workflow.activitylog.ActivityLogService;
-import com.metaverse.workflow.common.constants.ProgramStatusConstants;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.common.util.RestControllerBase;
-import com.metaverse.workflow.email.EmailRequest;
-import com.metaverse.workflow.email.util.EmailUtil;
 import com.metaverse.workflow.exceptions.DataException;
 
 import java.io.*;
@@ -14,6 +11,7 @@ import com.metaverse.workflow.login.repository.LoginRepository;
 import com.metaverse.workflow.model.*;
 import com.metaverse.workflow.program.repository.ProgramRepository;
 import com.metaverse.workflow.program.service.*;
+import com.metaverse.workflow.security.config.GlobalFileValidator;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -25,6 +23,7 @@ import net.minidev.json.parser.ParseException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -35,7 +34,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.file.Path;
 import java.security.Principal;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 @AllArgsConstructor
@@ -53,15 +56,17 @@ public class ProgramController {
     @Autowired
     ProgramRepository programRepository;
 
-    private static final Logger log =
-            LogManager.getLogger(ProgramController.class);
+    @Autowired
+    GlobalFileValidator fileValidator;
+
+    private static final Logger log = LogManager.getLogger(ProgramController.class);
 
     @GetMapping("/programs/by-agency-and-activity")
     public ResponseEntity<?> getProgramByAgencyAndActivity(@RequestParam("agencyId") Long agencyId,
-                                                           @RequestParam("activityId")Long activityId) {
+                                                           @RequestParam("activityId") Long activityId) {
         log.info("Called getProgramByAgencyAndActivity agencyId=" + agencyId + " activityId=" + activityId);
         try {
-            return ResponseEntity.ok(programService.getProgramByAgencyAndActivity(agencyId,activityId));
+            return ResponseEntity.ok(programService.getProgramByAgencyAndActivity(agencyId, activityId));
         } catch (DataException exception) {
             return RestControllerBase.error(exception);
         }
@@ -100,6 +105,7 @@ public class ProgramController {
     public ResponseEntity<WorkflowResponse> createSession(Principal principal, @RequestPart("data") String data, @RequestPart(value = "files", required = false) List<MultipartFile> files, HttpServletRequest servletRequest) throws ParseException {
         log.info("Called createSession by=" + (principal != null ? principal.getName() : "anonymous") + " data=" + (data != null ? (data.length() > 200 ? data.substring(0, 200) + "..." : data) : "null"));
         log.info("Program controller, title : {}", data);
+        fileValidator.validate(files);
         JSONParser parser = new JSONParser();
         ProgramSessionRequest request = parser.parse(data, ProgramSessionRequest.class);
         WorkflowResponse response = programService.createProgramSession(request, files);
@@ -196,6 +202,7 @@ public class ProgramController {
     public ResponseEntity<WorkflowResponse> editProgramSession(Principal principal, @RequestPart("data") String data, @RequestPart(value = "files", required = false) List<MultipartFile> files, HttpServletRequest servletRequest) throws ParseException {
         log.info("Called editProgramSession by=" + (principal != null ? principal.getName() : "anonymous") + " data=" + (data != null ? (data.length() > 200 ? data.substring(0, 200) + "..." : data) : "null"));
         log.info("Program controller, title : {}", data);
+        fileValidator.validate(files);
         JSONParser parser = new JSONParser();
         ProgramSessionRequest request = parser.parse(data, ProgramSessionRequest.class);
         WorkflowResponse response = programService.editProgramSession(request, files);
@@ -214,6 +221,12 @@ public class ProgramController {
                                                               @RequestPart(value = "image5", required = false) MultipartFile image5) throws ParseException, java.text.ParseException {
         log.info("Called saveSessionImages by=" + (principal != null ? principal.getName() : "anonymous") + " data=" + (data != null ? (data.length() > 200 ? data.substring(0, 200) + "..." : data) : "null"));
         log.info("Program controller save session images, data : {}", data);
+
+        List<MultipartFile> files = List.of(image1, image2, image3, image4, image5)
+                .stream()
+                .filter(Objects::nonNull)
+                .toList();
+       fileValidator.validate(files);
         JSONParser parser = new JSONParser();
         ProgramSessionRequest request = parser.parse(data, ProgramSessionRequest.class);
         WorkflowResponse response = programService.saveSessionImages(request, image1, image2, image3, image4, image5);
@@ -226,6 +239,7 @@ public class ProgramController {
                                                               @RequestPart(value = "image", required = false) MultipartFile image,
                                                               HttpServletRequest servletRequest) {
         log.info("Called saveCollageImages by=" + (principal != null ? principal.getName() : "anonymous") + " programId=" + programId);
+        fileValidator.validate(image);
         WorkflowResponse response = programService.saveCollageImages(programId, image);
         logService.logs(principal.getName(), "SAVE", "created collage for reports", "report", servletRequest.getRequestURI());
 
@@ -256,6 +270,11 @@ public class ProgramController {
                                                               HttpServletRequest servletRequest) throws ParseException {
         log.info("Called saveMediaCoverage by=" + (principal != null ? principal.getName() : "anonymous") + " data=" + (data != null ? (data.length() > 200 ? data.substring(0, 200) + "..." : data) : "null"));
         log.info("Program controller save program media, data : {}", data);
+        List<MultipartFile> files = List.of(image1, image2, image3)
+                .stream()
+                .filter(Objects::nonNull)
+                .toList();
+        fileValidator.validate(files);
         JSONParser parser = new JSONParser();
         MediaCoverageRequest request = parser.parse(data, MediaCoverageRequest.class);
         WorkflowResponse response = programService.saveMediaCoverage(request, image1, image2, image3);
@@ -395,7 +414,7 @@ public class ProgramController {
     public ResponseEntity<WorkflowResponse> deleteProgram(Principal principal, @PathVariable Long programId, HttpServletRequest servletRequest) {
         log.info("Called deleteProgram by=" + (principal != null ? principal.getName() : "anonymous") + " programId=" + programId);
         WorkflowResponse response = programService.deleteProgramAndDependencies(programId);
-        logService.logs(principal.getName(), "DELETE", "deleted program successfully with id "+programId, "program temp", servletRequest.getRequestURI());
+        logService.logs(principal.getName(), "DELETE", "deleted program successfully with id " + programId, "program temp", servletRequest.getRequestURI());
         return ResponseEntity.ok(response);
     }
 
@@ -410,9 +429,10 @@ public class ProgramController {
 //    }
 
     @GetMapping("/programs/with-participants/{agencyId}")
-    public ResponseEntity<WorkflowResponse> getProgramsWithParticipantsByAgency(@PathVariable Long agencyId)
-    {
+    public ResponseEntity<WorkflowResponse> getProgramsWithParticipantsByAgency(@PathVariable Long agencyId) {
         log.info("Called getProgramsWithParticipantsByAgency agencyId=" + agencyId);
         return ResponseEntity.ok(programService.getProgramsWithParticipants(agencyId));
     }
+
+
 }

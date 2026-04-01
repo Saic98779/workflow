@@ -9,6 +9,7 @@ import com.metaverse.workflow.exceptions.DataException;
 import com.metaverse.workflow.nontrainingExpenditures.Dto.NIMSMEVendorDetailsDto;
 import com.metaverse.workflow.nontrainingExpenditures.service.NIMSMEVendorDetailsService;
 import com.metaverse.workflow.nontrainingExpenditures.service.NonTrainingExpenditureRemarksDTO;
+import com.metaverse.workflow.security.config.GlobalFileValidator;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.logging.log4j.LogManager;
@@ -31,6 +32,8 @@ public class NIMSMEVendorController {
 
     @Autowired
     private NIMSMEVendorDetailsService service;
+    @Autowired
+    GlobalFileValidator fileValidator;
 
     @GetMapping(path = "/get-all")
     public ResponseEntity getAllVendors() {
@@ -64,6 +67,7 @@ public class NIMSMEVendorController {
     public ResponseEntity<WorkflowResponse> createVendor(@RequestPart("vendorDetailsDto")String vendorDetailsDto,
                                                          @RequestPart(value = "file", required = false) MultipartFile file) {
         try {
+            fileValidator.validate(file);
             ObjectMapper objectMapper = new ObjectMapper();
             NIMSMEVendorDetailsDto dto = objectMapper.readValue(vendorDetailsDto, NIMSMEVendorDetailsDto.class);
             NIMSMEVendorDetailsDto nimsmeVendorDetailsDto = service.saveVendor(dto,file);
@@ -86,6 +90,7 @@ public class NIMSMEVendorController {
     public ResponseEntity<WorkflowResponse> updateVendor(@PathVariable Long vendorId, @RequestPart String vendorDetails,
                                                          @RequestPart(value = "files", required = false) MultipartFile file) {
         try {
+            fileValidator.validate(file);
             ObjectMapper om = new ObjectMapper();
             NIMSMEVendorDetailsDto dto = om.readValue(vendorDetails, NIMSMEVendorDetailsDto.class);
 

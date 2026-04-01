@@ -6,6 +6,7 @@ import com.metaverse.workflow.activitylog.ActivityLogService;
 import com.metaverse.workflow.aleap_handholding.request_dto.FormalisationComplianceRequest;
 import com.metaverse.workflow.aleap_handholding.service.FormalisationComplianceService;
 import com.metaverse.workflow.common.response.WorkflowResponse;
+import com.metaverse.workflow.security.config.GlobalFileValidator;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
@@ -26,12 +27,14 @@ public class FormalisationComplianceController {
 
     private final FormalisationComplianceService service;
     private final ActivityLogService logService;
+    private final GlobalFileValidator fileValidator;
     private static final Logger log = LogManager.getLogger(FormalisationComplianceController.class);
 
     @PostMapping(path = "/save", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> createFormalisationCompliance(Principal principal, @RequestPart("formalisationCompliance") String formalisationCompliance, @RequestPart(value = "file", required = false) MultipartFile file) {
 
         try {
+            fileValidator.validate(file);
             ObjectMapper objectMapper = new ObjectMapper();
             FormalisationComplianceRequest request =
                     objectMapper.readValue(formalisationCompliance, FormalisationComplianceRequest.class);
@@ -59,6 +62,7 @@ public class FormalisationComplianceController {
     public ResponseEntity<?> updateFormalisationCompliance(Principal principal, @PathVariable Long id, @RequestPart("formalisationCompliance") String formalisationCompliance, @RequestPart(value = "file", required = false) MultipartFile file) {
 
         try {
+            fileValidator.validate(file);
             ObjectMapper objectMapper = new ObjectMapper();
             FormalisationComplianceRequest request =
                     objectMapper.readValue(formalisationCompliance, FormalisationComplianceRequest.class);

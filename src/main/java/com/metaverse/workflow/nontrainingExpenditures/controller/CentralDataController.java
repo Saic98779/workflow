@@ -11,6 +11,7 @@ import com.metaverse.workflow.exceptions.DataException;
 import com.metaverse.workflow.nontrainingExpenditures.Dto.CentralDataRequest;
 import com.metaverse.workflow.nontrainingExpenditures.service.NIMSMECentralDataService;
 import com.metaverse.workflow.nontrainingExpenditures.service.NonTrainingExpenditureRemarksDTO;
+import com.metaverse.workflow.security.config.GlobalFileValidator;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.websocket.server.PathParam;
@@ -33,6 +34,7 @@ public class CentralDataController {
 
     private final NIMSMECentralDataService service;
     private final ActivityLogService logService;
+    private final GlobalFileValidator fileValidator;
     private static final Logger log = LogManager.getLogger(CentralDataController.class);
 
 
@@ -40,6 +42,7 @@ public class CentralDataController {
     public ResponseEntity<?> create(@RequestPart String centralData,
                                     @RequestPart(value = "file", required = false) MultipartFile file, Principal principal) {
         try {
+            fileValidator.validate(file);
             ObjectMapper objectMapper = new ObjectMapper();
             CentralDataRequest centralDataRequest = objectMapper.readValue(centralData, CentralDataRequest.class);
             WorkflowResponse response = service.createCentralData(centralDataRequest, file);
@@ -62,6 +65,7 @@ public class CentralDataController {
     public ResponseEntity<?> update(@PathVariable Long centralDataId,
                                     @RequestPart String request,Principal principal,MultipartFile file) {
         try { //CentralDataRequest
+            fileValidator.validate(file);
             ObjectMapper objectMapper = new ObjectMapper();
             CentralDataRequest dto = objectMapper.readValue(request,CentralDataRequest.class);
             WorkflowResponse response = service.updateCentralData(centralDataId, dto,file);

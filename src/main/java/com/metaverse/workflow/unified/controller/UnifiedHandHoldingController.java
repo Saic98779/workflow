@@ -7,6 +7,7 @@ import com.metaverse.workflow.aleap_handholding.service.*;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.common.util.RestControllerBase;
 import com.metaverse.workflow.exceptions.DataException;
+import com.metaverse.workflow.security.config.GlobalFileValidator;
 import com.metaverse.workflow.unified.service.UnifiedHandholdingService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
@@ -38,6 +39,7 @@ public class UnifiedHandHoldingController extends RestControllerBase {
     private final AccessToTechnologyAndInfrastructureService infrastructureService;
     private final UnifiedHandholdingService unifiedHandholdingService;
     private final AccessToPackagingLabellingAndBrandingService accessToPackagingLabellingAndBrandingService;
+    private final GlobalFileValidator fileValidator;
 
 
     @PostMapping(value = "/save", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -51,6 +53,10 @@ public class UnifiedHandHoldingController extends RestControllerBase {
             @RequestPart(value = "image3", required = false) MultipartFile image3,
             HttpServletRequest servletRequest) {
         try {
+            fileValidator.validate(file);
+            fileValidator.validate(image1);
+            fileValidator.validate(image2);
+            fileValidator.validate(image3);
             WorkflowResponse response = unifiedHandholdingService.save(type, data, file, image1, image2, image3);
             String user = principal != null ? principal.getName() : "anonymous";
             logService.logs(user, "FETCH", type + " fetched successfully", type, servletRequest.getRequestURI());
@@ -75,6 +81,10 @@ public class UnifiedHandHoldingController extends RestControllerBase {
             HttpServletRequest servletRequest) {
 
         try {
+            fileValidator.validate(file);
+            fileValidator.validate(image1);
+            fileValidator.validate(image2);
+            fileValidator.validate(image3);
             ObjectMapper mapper = new ObjectMapper();
             WorkflowResponse response;
 

@@ -8,6 +8,7 @@ import com.metaverse.workflow.exceptions.DataException;
 import com.metaverse.workflow.nontrainingExpenditures.service.NonTrainingConsumablesBulkDto;
 import com.metaverse.workflow.nontrainingExpenditures.service.NonTrainingConsumablesBulkService;
 import com.metaverse.workflow.nontrainingExpenditures.service.NonTrainingConsumablesTransactionsDTO;
+import com.metaverse.workflow.security.config.GlobalFileValidator;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
@@ -29,6 +30,7 @@ public class NonTrainingConsumablesBulkController {
 
     private final NonTrainingConsumablesBulkService service;
     private final ActivityLogService logService;
+    private final GlobalFileValidator fileValidator;
     private final static Logger log = LogManager.getLogger(NonTrainingConsumablesBulkController.class);
 
     @PostMapping(path = "/consumables/bulk/save", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -38,6 +40,7 @@ public class NonTrainingConsumablesBulkController {
             @RequestPart(value = "file", required = false) MultipartFile file) {
 
         try {
+            fileValidator.validate(file);
             ObjectMapper objectMapper = new ObjectMapper();
             NonTrainingConsumablesBulkDto bulkDto =
                     objectMapper.readValue(NonTrainingConsumablesBulkDto, NonTrainingConsumablesBulkDto.class);
@@ -67,6 +70,7 @@ public class NonTrainingConsumablesBulkController {
             Principal principal
     ) {
         try {
+            fileValidator.validate(file);
             ObjectMapper mapper = new ObjectMapper();
             NonTrainingConsumablesBulkDto bulkDto =
                     mapper.readValue(bulkDtoString, NonTrainingConsumablesBulkDto.class);
