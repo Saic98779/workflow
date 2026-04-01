@@ -18,5 +18,6 @@ public class LoginUserRequest {
     private Long mobileNo;
     private String address;
     private Long agencyId;
+    private String district;
 
 }

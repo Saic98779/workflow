@@ -1,13 +1,11 @@
 package com.metaverse.workflow.pdfandexcelgenerater.service;
 
+
+import com.lowagie.text.*;
 import com.lowagie.text.Font;
 import com.lowagie.text.Image;
 import com.lowagie.text.Rectangle;
-import com.lowagie.text.*;
-import com.lowagie.text.pdf.BaseFont;
-import com.lowagie.text.pdf.PdfPCell;
-import com.lowagie.text.pdf.PdfPTable;
-import com.lowagie.text.pdf.PdfWriter;
+import com.lowagie.text.pdf.*;
 import com.metaverse.workflow.common.util.CommonUtil;
 import com.metaverse.workflow.exceptions.DataException;
 import com.metaverse.workflow.model.Participant;
@@ -19,27 +17,17 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.awt.*;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-
-import com.lowagie.text.pdf.*;
-
+import java.io.*;
 import java.util.*;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class ProgramSummeryPdfGenerator {
+public class ProgramSummeryPdfGeneratorWithoutParticipants {
 
     private final ProgramService programService;
     private final ProgramRepository programRepository;
 
-    // ================= MAIN METHOD =================
     public ByteArrayInputStream generateMultipleProgramSummaryPdf(List<Long> programIds) throws DataException {
 
         if (programIds == null || programIds.isEmpty()) {
@@ -51,16 +39,12 @@ public class ProgramSummeryPdfGenerator {
 
         try {
             PdfWriter writer = PdfWriter.getInstance(document, out);
-
-            // attach page number event
             writer.setPageEvent(new PageNumberEvent1());
             document.open();
 
-            // ===== FONTS =====
             Font titleFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 18);
             Font sectionFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 13, Color.BLUE);
             Font headerFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 10, Color.WHITE);
-            Font bodyFont = FontFactory.getFont(FontFactory.HELVETICA, 9);
             Font bodyFontBold = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 9);
 
             Color headerBg = new Color(63, 81, 181);
@@ -69,9 +53,7 @@ public class ProgramSummeryPdfGenerator {
 
                 Long programId = programIds.get(index);
 
-                if (!programRepository.existsById(programId)) {
-                    continue; // skip invalid IDs
-                }
+                if (!programRepository.existsById(programId)) continue;
 
                 ProgramSummary ps = (ProgramSummary) programService
                         .getProgramSummaryByProgramId(programId)
@@ -80,75 +62,48 @@ public class ProgramSummeryPdfGenerator {
                 Program program = programRepository.findByProgramId(programId)
                         .orElseThrow(() -> new RuntimeException("Program not found"));
 
-                List<ParticipantDetailsDto> participants =
-                        mapParticipantDetails(program.getParticipants());
+                int totalParticipants = ps.getParticipant() != null ? ps.getParticipant() : 0;
 
-                int totalParticipants = safeInt(ps.getParticipant());
-
-                // ===== LOGO =====
                 document.add(logoHeader());
 
-                // ===== TITLE =====
-              //  Paragraph title = new Paragraph("Program Summary", titleFont);
                 Paragraph title = new Paragraph(program.getProgramTitle(), titleFont);
                 title.setAlignment(Element.ALIGN_CENTER);
                 title.setSpacingAfter(8f);
                 document.add(title);
 
-                // ===== STAR RATING =====
                 Paragraph star = new Paragraph(
                         getStarRating(ps.getMonitoringRating() != null ? ps.getMonitoringRating() : 0.0),
                         getStarFont(14)
                 );
 
-                /*// ===== HEADER TABLE =====
-                PdfPTable headerTable = new PdfPTable(2);
-                headerTable.setWidthPercentage(100);
-                headerTable.setSpacingAfter(10);
-                headerTable.setWidths(new float[]{1, 1});
-
-                PdfPCell programNameCell = kvCell("Program Name", ps.getProgramName(), bodyFontBold);
-                programNameCell.setColspan(2);
-
-                headerTable.addCell(programNameCell);
-                headerTable.addCell(kvCell("Program Rating", star, bodyFontBold));
-                headerTable.addCell(kvCell("Agency Name", ps.getAgencyName(), bodyFontBold));
-                headerTable.addCell(kvCell("Start Date", ps.getStartDate(), bodyFontBold));
-                headerTable.addCell(kvCell("End Date", ps.getEndDate(), bodyFontBold));
-
-                document.add(headerTable);*/
                 PdfPTable headerTable = new PdfPTable(3);
                 headerTable.setWidthPercentage(100);
                 headerTable.setSpacingAfter(10);
                 headerTable.setWidths(new float[]{1, 1, 1});
 
-                // ===== Row: Program Rating | Agency Name =====
                 headerTable.addCell(kvCell("Program Rating", star, bodyFontBold));
 
                 PdfPCell agencyCell = kvCell("Agency Name", ps.getAgencyName(), bodyFontBold);
                 agencyCell.setColspan(2);
                 headerTable.addCell(agencyCell);
 
-                // ===== Row: Start Date | End Date =====
                 headerTable.addCell(kvCell("Start Date", ps.getStartDate(), bodyFontBold));
 
                 PdfPCell endDateCell = kvCell("End Date", ps.getEndDate(), bodyFontBold);
                 endDateCell.setColspan(2);
                 headerTable.addCell(endDateCell);
 
-                // ===== Row: Location (Single Row Full Width) =====
                 String locationRow = "Location : " + ps.getLocation()
                         + ", Mandal : " + ps.getMandal()
                         + ", District : " + ps.getDistrict();
 
                 PdfPCell locationCell = new PdfPCell(new Phrase(locationRow, bodyFontBold));
                 locationCell.setColspan(3);
-                locationCell.setBorder(Rectangle.BOX); // or NO_BORDER if you want clean look
                 locationCell.setPadding(5);
-
                 headerTable.addCell(locationCell);
 
                 document.add(headerTable);
+
                 // ===== SOCIAL CATEGORY =====
                 document.add(sectionTitle("Social Category", sectionFont));
                 document.add(threeColumnTable(
@@ -179,12 +134,6 @@ public class ProgramSummeryPdfGenerator {
                 document.add(sectionTitle("Program Collage", sectionFont));
                 document.add(getCollageTable(program, programId, sectionFont));
 
-                // ===== PARTICIPANTS =====
-                document.add(Chunk.NEWLINE);
-                document.add(sectionTitle("Participant Details", sectionFont));
-                document.add(participantDetailsTable(participants, headerFont, bodyFont, headerBg));
-
-                // 🔥 PAGE BREAK (except last)
                 if (index != programIds.size() - 1) {
                     document.newPage();
                 }
@@ -198,34 +147,6 @@ public class ProgramSummeryPdfGenerator {
 
         return new ByteArrayInputStream(out.toByteArray());
     }
-
-    // ================= COLLAGE =================
-    private PdfPTable getCollageTable(Program program, Long programId, Font font) {
-
-        PdfPTable table = new PdfPTable(1);
-        table.setWidthPercentage(80);
-
-        try {
-            String programName = program.getProgramTitle().replace(" ", "%20");
-            String imageUrl = "https://metaverseedu.in/workflowfiles/" +
-                    programId + "/Collage/" + programName + ".png";
-
-            Image img = loadImageFromUrl(imageUrl, 300, 200);
-
-            PdfPCell cell = new PdfPCell(img, true);
-            cell.setBorder(Rectangle.NO_BORDER);
-            cell.setHorizontalAlignment(Element.ALIGN_CENTER);
-
-            table.addCell(cell);
-
-        } catch (Exception e) {
-            table.addCell(new PdfPCell(new Phrase("Image not available", font)));
-        }
-
-        return table;
-    }
-
-    // ================= HELPERS =================
 
     private PdfPTable logoHeader() throws Exception {
         PdfPTable table = new PdfPTable(3);
@@ -251,34 +172,31 @@ public class ProgramSummeryPdfGenerator {
         return cell;
     }
 
-    private PdfPTable participantDetailsTable(List<ParticipantDetailsDto> list,
-                                              Font headerFont,
-                                              Font bodyFont,
-                                              Color headerBg) throws DocumentException {
+    private PdfPTable getCollageTable(Program program, Long programId, Font font) {
 
-        PdfPTable table = new PdfPTable(7);
-        table.setWidthPercentage(100);
-        table.setWidths(new float[]{1, 3, 3, 1, 2, 5, 2});
+        PdfPTable table = new PdfPTable(1);
+        table.setWidthPercentage(80);
 
-        String[] headers = {"SNo", "Name", "District", "Cat", "Mobile", "Org", "Type"};
+        try {
+            String programName = program.getProgramTitle().replace(" ", "%20");
+            String imageUrl = "https://metaverseedu.in/workflowfiles/" +
+                    programId + "/Collage/" + programName + ".png";
 
-        for (String h : headers) {
-            table.addCell(headerCell(h, headerFont, headerBg));
-        }
+            Image img = loadImageFromUrl(imageUrl, 300, 200);
 
-        int i = 1;
-        for (ParticipantDetailsDto p : list) {
-            table.addCell(bodyCellCenter(String.valueOf(i++), bodyFont));
-            table.addCell(bodyCell(val(p.getParticipantName()), bodyFont));
-            table.addCell(bodyCell(val(p.getDistrictName()), bodyFont));
-            table.addCell(bodyCellCenter(val(p.getCategory()), bodyFont));
-            table.addCell(bodyCellCenter(val(p.getMobileNumber()), bodyFont));
-            table.addCell(bodyCell(val(p.getOrganizationName()), bodyFont));
-            table.addCell(bodyCellCenter(val(p.getOrganizationType()), bodyFont));
+            PdfPCell cell = new PdfPCell(img, true);
+            cell.setBorder(Rectangle.NO_BORDER);
+            cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+
+            table.addCell(cell);
+
+        } catch (Exception e) {
+            table.addCell(new PdfPCell(new Phrase("Image not available", font)));
         }
 
         return table;
     }
+
 
     private PdfPCell headerCell(String text, Font font, Color bg) {
         PdfPCell cell = new PdfPCell(new Phrase(text, font));
@@ -424,7 +342,7 @@ public class ProgramSummeryPdfGenerator {
 
 }
 // ===== PAGE NUMBER EVENT =====
-class PageNumberEvent extends PdfPageEventHelper {
+class PageNumberEvent1 extends PdfPageEventHelper {
 
     Font font = FontFactory.getFont(FontFactory.HELVETICA, 9);
 
@@ -447,4 +365,5 @@ class PageNumberEvent extends PdfPageEventHelper {
                 0
         );
     }
+
 }

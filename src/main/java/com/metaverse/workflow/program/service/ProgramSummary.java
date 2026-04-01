@@ -29,5 +29,9 @@ public class ProgramSummary {
     private  Long noOfDepartment;
     private  Long noOfAspirants;
     private Double monitoringRating;
+    private String location;
+    private String district;
+    private String mandal;
+
 
 }

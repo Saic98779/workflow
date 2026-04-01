@@ -768,4 +768,10 @@ public interface ProgramRepository extends JpaRepository<Program, Long> {
     List<Program> findByAgencyAgencyIdAndStatusInAndLocationDistrictAndUser_UserId(Long agencyId, List<String> statuses, String userDistrict, String userId);
 
     List<Program> findByAgencyAgencyIdAndStatusAndLocationDistrictAndUser_UserId(Long agencyId, String status, String userDistrict, String userId);
+
+    @Query("SELECT p.programId FROM Program p WHERE p.agency.agencyId = :agencyId AND p.status IN :statuses")
+    List<Long> getProgramIdsByAgencyAndStatus(
+            @Param("agencyId") Long agencyId,
+            @Param("statuses") List<String> statuses
+    );
 }

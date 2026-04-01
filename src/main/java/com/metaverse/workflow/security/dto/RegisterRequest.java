@@ -19,4 +19,5 @@ public class RegisterRequest {
     private String gender;
     private Long mobileNo;
     private UserRole userRole;
+    private String district;
 }
