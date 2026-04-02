@@ -82,6 +82,7 @@ public class AuthenticationController {
                 .mobileNo(request.getMobileNo())
                 .userRole(request.getUserRole().name())
                 .attempts(0)
+                .district(request.getDistrict())
                 .status("ACTIVE")
                 .build());
 
@@ -105,6 +106,7 @@ public class AuthenticationController {
                 .mobileNo(savedUser.getMobileNo())
                 .userRole(UserRole.valueOf(savedUser.getUserRole()))
                 .agencyName(agency.map(Agency::getAgencyName).orElse(null))
+                .district(savedUser.getDistrict())
                 .build();
         if (principal != null) { // optional, in case registration is done by an admin
             logService.logs(principal.getName(), "SAVE",
@@ -156,6 +158,7 @@ public class AuthenticationController {
                     .gender(user.getGender())
                     .mobileNo(user.getMobileNo())
                     .userRole(UserRole.valueOf(user.getUserRole()))
+                    .district(user.getDistrict())
                     .build();
 
             ApplicationAPIResponse<AuthenticationResponse> response = ApplicationAPIResponse.<AuthenticationResponse>builder()

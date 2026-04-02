@@ -115,6 +115,7 @@ public class WebSecurityConfig {
                         .requestMatchers("/visitor-count/**").permitAll()
                         .requestMatchers("/ramp/registrations/**").permitAll()
                         .requestMatchers("/ramp/enrollments/**").permitAll()
+                        .requestMatchers("/export/**").permitAll()
                         .requestMatchers(
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",

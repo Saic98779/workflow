@@ -50,6 +50,7 @@ public class LoginServiceAdapter implements LoginService {
         user.setMobileNo(request.getMobileNo());
         user.setGender(request.getGender());
         user.setAddress(request.getAddress());
+        user.setDistrict(request.getDistrict());
 
         return WorkflowResponse.builder().status(200).message("User updated Successfully").data(LoginUserResponseMapper.map(loginRepository.save(user))).build();
     }

@@ -1,5 +1,6 @@
 package com.metaverse.workflow.pdfandexcelgenerater.controller;
 
+import com.metaverse.workflow.common.util.CommonUtil;
 import com.metaverse.workflow.common.util.DateUtil;
 import com.metaverse.workflow.common.util.RestControllerBase;
 import com.metaverse.workflow.exceptions.DataException;
@@ -20,6 +21,9 @@ import org.springframework.web.bind.annotation.*;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -53,6 +57,13 @@ public class FileGeneratorController {
     private final ProgramStatusPdfGenerator programStatusPdfGenerator;
     private final TrainingTargetPreview trainingTargetPreview;
     private final FinancialTrackerExcelGenerator financialTrackerExcelGenerator;
+    private final ProgramMonitoringExcelService excelService;
+    private final ProgramSummeryPdfGeneratorWithoutParticipants programSummeryPdfGeneratorWithoutParticipants;
+
+    @GetMapping("/export/excel")
+    public void exportAllProgramMonitoringExcel(HttpServletResponse response) {
+        excelService.exportAllProgramMonitoringExcel(response);
+    }
 
     @GetMapping(value = "/program/pdf/{agencyId}", produces = MediaType.APPLICATION_PDF_VALUE)
     public ResponseEntity<InputStreamResource> generatePdfReport(HttpServletResponse response, @PathVariable Long agencyId) throws IOException {
@@ -176,27 +187,53 @@ public class FileGeneratorController {
         }
     }
 
-    @GetMapping(value = "/program/summary/pdf/{programId}", produces = MediaType.APPLICATION_PDF_VALUE)
-    public ResponseEntity<?> generateProgramSummeryPDF(@PathVariable Long programId) {
+    @GetMapping(value = "/program/summary/pdf", produces = MediaType.APPLICATION_PDF_VALUE)
+    public ResponseEntity<?> generateProgramSummeryPDF(
+            @RequestParam(required = false) Long programId,
+            @RequestParam(required = false) Long agencyId) {
+
         try {
+            List<Long> programIds = new ArrayList<>();
+            if (programId != null) {
+                programIds.add(programId);
+            }
+
+            if (agencyId != null) {
+                List<String> statuses = Arrays.asList(
+                        "Collage Added",
+                        "Program Execution Updated",
+                        "Program Execution",
+                        "Program Expenditure Updated",
+                        "Program Expenditure Approved"
+                );
+                List<Long> idsFromDb = programRepository.getProgramIdsByAgencyAndStatus(agencyId, statuses);
+                programIds.addAll(idsFromDb);
+            }
+
+            if (programIds.isEmpty()) {
+                return ResponseEntity.badRequest().body("Please provide programId or agencyId");
+            }
 
             ByteArrayInputStream bis;
             try {
-                bis = programSummeryPdfGenerator.generateProgramSummaryPdf(programId);
+                bis = programSummeryPdfGenerator.generateMultipleProgramSummaryPdf(programIds);
             } catch (DataException e) {
                 return ResponseEntity.status(400).body(e.getMessage());
             }
+            String name = CommonUtil.agencyMap.get(agencyId);//opt
             HttpHeaders headers = new HttpHeaders();
-            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=Program_Summary_Details.pdf");
+            headers.add(HttpHeaders.CONTENT_DISPOSITION,
+                    "attachment; filename="+name+"_Program_Summary_Details.pdf");
+
             return ResponseEntity.ok()
                     .headers(headers)
                     .contentType(MediaType.APPLICATION_PDF)
                     .body(new InputStreamResource(bis));
+
         } catch (Exception e) {
             System.err.println(e.getMessage());
             throw new RuntimeException(e);
         }
-
     }
 
     @GetMapping("/program/summery/excel/{programId}")
@@ -481,5 +518,52 @@ public class FileGeneratorController {
         );
         financialTrackerExcelGenerator.financialTrackerExportToExcel(response);
         response.flushBuffer();
+    }
+
+    @GetMapping(value = "/program/summary-without-participant/pdf/", produces = MediaType.APPLICATION_PDF_VALUE)
+    public ResponseEntity<?> generateProgramSummeryPDFWithoutParticipants(
+            @RequestParam(required = false) Long programId,
+            @RequestParam(required = false) Long agencyId) {
+
+        try {
+            List<Long> programIds = new ArrayList<>();
+
+            if (programId != null) {
+                programIds.add(programId);
+            }
+
+            if (agencyId != null) {
+                List<String> statuses = Arrays.asList(
+                        "Collage Added",
+                        "Program Execution Updated",
+                        "Program Execution",
+                        "Program Expenditure Updated",
+                        "Program Expenditure Approved"
+                );
+
+                List<Long> idsFromDb = programRepository.getProgramIdsByAgencyAndStatus(agencyId, statuses);
+
+                programIds.addAll(idsFromDb);
+            }
+
+            if (programIds.isEmpty()) {
+                return ResponseEntity.badRequest().body("Please provide programId or agencyId");
+            }
+
+            ByteArrayInputStream bis = programSummeryPdfGeneratorWithoutParticipants.generateMultipleProgramSummaryPdf(programIds);
+            String name = CommonUtil.agencyMap.get(agencyId);
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.add(HttpHeaders.CONTENT_DISPOSITION,
+                    "attachment; filename=" + name + "_Program_Summary_NoParticipants.pdf");
+
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .contentType(MediaType.APPLICATION_PDF)
+                    .body(new InputStreamResource(bis));
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }
