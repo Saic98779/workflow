@@ -54,6 +54,8 @@ public class FileSystemStorageService implements StorageService {
                 Files.copy(inputStream, destinationFile,
                         StandardCopyOption.REPLACE_EXISTING);
                 path = destinationFile.toAbsolutePath().toString();
+                // Remove hardcoded path prefix from the returned path
+                path = path.replace("C:\\opt\\workflow\\uploads", "").replace("/opt/workflow/uploads", "");
             }
         }
         catch (IOException e) {
@@ -83,6 +85,8 @@ public class FileSystemStorageService implements StorageService {
                 Files.copy(inputStream, destinationFile,
                         StandardCopyOption.REPLACE_EXISTING);
                 path = destinationFile.toAbsolutePath().toString();
+                // Remove hardcoded path prefix from the returned path
+                path = path.replace("C:\\opt\\workflow\\uploads", "").replace("/opt/workflow/uploads", "");
             }
         }
         catch (IOException e) {
@@ -171,6 +175,8 @@ public class FileSystemStorageService implements StorageService {
                 Files.copy(inputStream, destinationFile,
                         StandardCopyOption.REPLACE_EXISTING);
                 path = destinationFile.toAbsolutePath().toString();
+                // Remove hardcoded path prefix from the returned path
+                path = path.replace("C:\\opt\\workflow\\uploads", "").replace("/opt/workflow/uploads", "");
             }
         }
         catch (IOException e) {

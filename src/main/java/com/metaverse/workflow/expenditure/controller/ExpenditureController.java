@@ -98,6 +98,15 @@ public class ExpenditureController {
             fileValidator.validate(files);
             JSONParser parser = new JSONParser();
             ProgramExpenditureRequest programExpenditureRequest = parser.parse(request, ProgramExpenditureRequest.class);
+
+            // Remove both Windows and Unix-style hardcoded path prefixes from uploadBillUrl
+            if (programExpenditureRequest.getUploadBillUrl() != null) {
+                String uploadBillUrl = programExpenditureRequest.getUploadBillUrl();
+                uploadBillUrl = uploadBillUrl.replace("C:\\opt\\workflow\\uploads", "")
+                        .replace("/opt/workflow/uploads", "");
+                programExpenditureRequest.setUploadBillUrl(uploadBillUrl);
+            }
+
             var response = expenditureService.saveProgramExpenditure(programExpenditureRequest, files);
             logService.logs(principal.getName(),"SAVE","save program expenditure ","program expenditure", servletRequest.getRequestURI());
             return ResponseEntity.ok(response);
@@ -282,5 +291,3 @@ public class ExpenditureController {
     }
 
 }
-
-
