@@ -4,8 +4,6 @@ import com.metaverse.workflow.security.config.CustomAccessDeniedHandler;
 import com.metaverse.workflow.security.config.CustomAuthenticationEntryPoint;
 import com.metaverse.workflow.security.config.ExceptionHandlerFilter;
 import com.metaverse.workflow.security.filter.JwtAuthenticationFilter;
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,26 +26,42 @@ import org.springframework.web.cors.CorsConfigurationSource;
 
 import java.util.List;
 
-import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
-@RequiredArgsConstructor
 public class WebSecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthFilter;
-    private final @Qualifier("customUserDetailsService") org.springframework.security.core.userdetails.UserDetailsService userDetailsService;
+    private final org.springframework.security.core.userdetails.UserDetailsService userDetailsService;
     private final org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
     private final CustomAuthenticationEntryPoint authenticationEntryPoint;
     private final CustomAccessDeniedHandler accessDeniedHandler;
     private final ExceptionHandlerFilter exceptionHandlerFilter;
+
+    public WebSecurityConfig(
+            JwtAuthenticationFilter jwtAuthFilter,
+            @Qualifier("customUserDetailsService") org.springframework.security.core.userdetails.UserDetailsService userDetailsService,
+            org.springframework.security.crypto.password.PasswordEncoder passwordEncoder,
+            CustomAuthenticationEntryPoint authenticationEntryPoint,
+            CustomAccessDeniedHandler accessDeniedHandler,
+            ExceptionHandlerFilter exceptionHandlerFilter
+    ) {
+        this.jwtAuthFilter = jwtAuthFilter;
+        this.userDetailsService = userDetailsService;
+        this.passwordEncoder = passwordEncoder;
+        this.authenticationEntryPoint = authenticationEntryPoint;
+        this.accessDeniedHandler = accessDeniedHandler;
+        this.exceptionHandlerFilter = exceptionHandlerFilter;
+    }
 
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOriginPatterns(List.of(
                 "https://metaverseedu.in",
+                "http://metaverseedu.in",
+                "https://tg.ramp.metaversedu.in",
                 "http://localhost:*"
         ));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
