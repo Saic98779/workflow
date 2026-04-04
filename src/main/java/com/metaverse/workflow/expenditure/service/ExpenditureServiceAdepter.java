@@ -385,14 +385,14 @@ public class ExpenditureServiceAdepter implements ExpenditureService {
             sessionFiles = filePaths.stream()
                     .map(filePath -> ProgramSessionFile.builder()
                             .fileType("FILE")
-                            .filePath(filePath)
+                            .filePath(filePath.replace("C:\\opt\\workflow\\uploads", "").replace("/opt/workflow/uploads", ""))
                             .programExpenditure(programExpenditure)
                             .build())
                     .toList();
             programSessionFileRepository.saveAll(sessionFiles);
         }
         if(!sessionFiles.isEmpty()) {
-            programExpenditure.setUploadBillUrl(sessionFiles.get(0).getFilePath());
+            programExpenditure.setUploadBillUrl(sessionFiles.get(0).getFilePath().replace("C:\\opt\\workflow\\uploads", "").replace("/opt/workflow/uploads", "").replace("\\", "/"));
             programExpenditureRepository.save(programExpenditure);
         }
 
@@ -546,14 +546,14 @@ public class ExpenditureServiceAdepter implements ExpenditureService {
             sessionFiles = filePaths.stream()
                     .map(filePath -> ProgramSessionFile.builder()
                             .fileType("FILE")
-                            .filePath(filePath)
+                            .filePath(filePath.replace("C:\\opt\\workflow\\uploads", "").replace("/opt/workflow/uploads", ""))
                             .bulkExpenditure(existingExpenditure)
                             .build())
                     .toList();
             programSessionFileRepository.saveAll(sessionFiles);
         }
         if(!sessionFiles.isEmpty()) {
-            bulkExpenditure.setUploadBillUrl(sessionFiles.get(0).getFilePath());
+            bulkExpenditure.setUploadBillUrl(sessionFiles.get(0).getFilePath().replace("C:\\opt\\workflow\\uploads", "").replace("/opt/workflow/uploads", "").replace("\\", "/"));
             bulkExpenditureRepository.save(bulkExpenditure);
         }
         return WorkflowResponse.builder()
