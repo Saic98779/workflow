@@ -354,7 +354,6 @@ public class WeHubServiceAdepter implements WeHubService {
             );
             return  corpusResponse.getBody();
         } catch (RestClientException e) {
-            System.err.println(e.getMessage());
             return   List.of();
         }
     }

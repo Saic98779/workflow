@@ -300,7 +300,6 @@ public class NonTrainingTargetsAndAchievementsServiceImpl implements NonTraining
 
 
     public Double[] getNonTrainingExpenditureByQuarterlyWise(Long agencyId, Long subActivityId, String financialYear, String activityName, String subActivityName) {
-        System.out.println("Using expenditure from nonTrainingExp map for " + activityName + " - " + subActivityName);
         // Q1: Apr–Jun
         Double finQ1 = nonTrainingExpenditureRepository.sumExpenditureByAgencyAndSubActivityAndDateRange(
                 agencyId, subActivityId,

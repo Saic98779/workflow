@@ -95,7 +95,6 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
                         switch (subActivityKey) {
                             case "staff - ceo", "staff - designers", "staff - project manager",
                                  "interns for certifications", "r&d" -> {
-                                System.out.println("Fetching Staff expenditure (" + subActivityName + ") from resources repository");
                                 Double resourceExp = nonTrainingResourcesRepository
                                         .sumExpenditureByActivityAndSubActivity(
                                                 target.getNonTrainingSubActivity().getNonTrainingActivity().getActivityId(),
@@ -104,14 +103,12 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
                                 expenditure = resourceExp != null ? resourceExp : 0.0;
                             }
                             default -> {
-                                System.out.println("Default Staff handling for: " + subActivityName);
                                 expenditure = nonTrainingExp.getOrDefault(key, 0.0);
                             }
                         }
                     }
 
                     case "contingency fund" -> {
-                        System.out.println("Fetching " + activityName + " expenditure from resources repository");
                         Double resourceExp = nonTrainingResourcesRepository
                                 .sumExpenditureByActivityAndSubActivity(
                                         target.getNonTrainingSubActivity().getNonTrainingActivity().getActivityId(),
@@ -122,7 +119,6 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
 
                     case "project team", "setting up call center services for validation" -> {
                         // All treated as Staff
-                        System.out.println("Fetching Staff expenditure (" + activityName + " - " + subActivityName + ")");
                         switch (subActivityKey) {
                             case "staff", "technology firm" -> {
                                 Double resourceExp = nonTrainingResourcesRepository
@@ -137,7 +133,6 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
 
                     case "hiring of technology platform" -> {
                         // Map to Technology firm
-                        System.out.println("Fetching Technology firm expenditure");
                         Double resourceExp = nonTrainingResourcesRepository
                                 .sumExpenditureByActivityAndSubActivity(
                                         target.getNonTrainingSubActivity().getNonTrainingActivity().getActivityId(),
@@ -148,7 +143,6 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
 
 
                     case "travel & transport" -> {
-                        System.out.println("Fetching Travel & Transport expenditure for " + subActivityName);
                         Double resourceExp = travelAndTransportRepository
                                 .sumTravelAndTransportByActivityAndSubActivity(
                                         target.getNonTrainingSubActivity().getNonTrainingActivity().getActivityId(),
@@ -158,7 +152,6 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
                     }
 
                     default -> {
-                        System.out.println("Using default expenditure from nonTrainingExp map for " + activityName + " - " + subActivityName);
                         expenditure = nonTrainingExp.getOrDefault(key, 0.0);
                     }
                 }

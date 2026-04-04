@@ -193,7 +193,6 @@ public class FileGeneratorController {
                     .contentType(MediaType.APPLICATION_PDF)
                     .body(new InputStreamResource(bis));
         } catch (Exception e) {
-            System.err.println(e.getMessage());
             throw new RuntimeException(e);
         }
 

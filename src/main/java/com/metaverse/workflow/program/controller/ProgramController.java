@@ -355,7 +355,6 @@ public class ProgramController {
 
         User byUserId = loginRepository.findByUserId(principal.getName())
                 .orElseThrow(() -> new DataException("Admin user not found", "ADMIN_NOT_FOUND", 400));
-        System.err.println(byUserId.getUserId());
         if (byUserId.getAgency() != null && byUserId.getAgency().getAgencyId() != null) {
             Long agencyId = byUserId.getAgency().getAgencyId();
             List<Long> byAgencyAgencyId = programRepository.findByAgencyAgencyId(agencyId).stream().map(info -> info.getProgramId()).toList();

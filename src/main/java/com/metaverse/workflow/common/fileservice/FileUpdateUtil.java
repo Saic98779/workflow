@@ -64,7 +64,6 @@ public class FileUpdateUtil {
         try {
             Files.delete(path);
         } catch (Exception e) {
-            System.err.println("File delete failed, retrying: " + e.getMessage());
             try {
                 Thread.sleep(300); // wait for OS lock release
                 Files.deleteIfExists(path);
