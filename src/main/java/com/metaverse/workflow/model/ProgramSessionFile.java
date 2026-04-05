@@ -89,5 +89,11 @@ public class ProgramSessionFile {
     @JoinColumn(name = "nimsme_vdp_id")
     private  NimsmeVDP nimsmeVDP;
 
-
+    @PrePersist
+    @PreUpdate
+    private void preprocessFilePath() {
+        if (filePath != null) {
+            filePath = filePath.replace("C:\\opt\\workflow\\uploads", "").replace("/opt/workflow/uploads", "");
+        }
+    }
 }

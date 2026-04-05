@@ -385,14 +385,14 @@ public class ExpenditureServiceAdepter implements ExpenditureService {
             sessionFiles = filePaths.stream()
                     .map(filePath -> ProgramSessionFile.builder()
                             .fileType("FILE")
-                            .filePath(filePath.replace("C:\\opt\\workflow\\uploads", "").replace("/opt/workflow/uploads", ""))
+                            .filePath(filePath)
                             .programExpenditure(programExpenditure)
                             .build())
                     .toList();
             programSessionFileRepository.saveAll(sessionFiles);
         }
         if(!sessionFiles.isEmpty()) {
-            programExpenditure.setUploadBillUrl(sessionFiles.get(0).getFilePath().replace("C:\\opt\\workflow\\uploads", "").replace("/opt/workflow/uploads", "").replace("\\", "/"));
+            programExpenditure.setUploadBillUrl(sessionFiles.get(0).getFilePath());
             programExpenditureRepository.save(programExpenditure);
         }
 
