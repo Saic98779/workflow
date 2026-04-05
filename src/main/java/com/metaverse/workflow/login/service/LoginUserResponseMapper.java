@@ -43,6 +43,7 @@ public class LoginUserResponseMapper {
                 .userRole(UserRole.valueOf(user.getUserRole()))
                 .agencyId(user.getAgency() != null ? user.getAgency().getAgencyId() : null)
                 .agencyName(user.getAgency() != null ? user.getAgency().getAgencyName() : null)
+                .rampApplicationAllowed(user.getRampApplicationAllowed())
                 .build();
     }
 

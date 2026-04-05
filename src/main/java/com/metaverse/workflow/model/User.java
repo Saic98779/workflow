@@ -53,4 +53,6 @@ public class User {
     @JsonBackReference
     private Agency agency;
 
+    @Column(name="ramp_application_allowed")
+    private Boolean rampApplicationAllowed;
 }

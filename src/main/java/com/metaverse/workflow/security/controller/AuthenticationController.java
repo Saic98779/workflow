@@ -160,6 +160,7 @@ public class AuthenticationController {
                     .gender(user.getGender())
                     .mobileNo(user.getMobileNo())
                     .userRole(UserRole.valueOf(user.getUserRole()))
+                    .rampApplicationAllowed(user.getRampApplicationAllowed())
                     .build();
 
             ApplicationAPIResponse<AuthenticationResponse> response = ApplicationAPIResponse.<AuthenticationResponse>builder()

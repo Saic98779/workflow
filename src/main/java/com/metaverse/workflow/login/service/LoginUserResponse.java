@@ -31,5 +31,6 @@ public class LoginUserResponse {
     private Long mobileNo;
     private String address;
     private String agencyName;
+    private Boolean rampApplicationAllowed;
 
 }

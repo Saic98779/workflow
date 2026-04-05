@@ -23,4 +23,5 @@ public class AuthenticationResponse {
     private Long mobileNo;
     private String message;
     private int status;
+    private Boolean rampApplicationAllowed;
 }
