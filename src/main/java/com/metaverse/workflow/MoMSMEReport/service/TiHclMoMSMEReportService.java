@@ -78,7 +78,6 @@ public class TiHclMoMSMEReportService {
             return reportResponse.getBody();
 
         } catch (RestClientException e) {
-            System.err.println(e.getMessage());
             return new TiHclMoMSMEReportDTO();
         }
     }

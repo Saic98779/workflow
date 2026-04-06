@@ -74,7 +74,6 @@ public class FinancialTrackerExcelGenerator {
     }
     private List<FinancialTracker> buildFinancialTrackerData() {
         try {
-            System.out.print("ndfjv cmndfvdfkjnbvds");
             List<ProgramExpenditure> programExpenditures = programExpenditureRepository.findAll();
             List<BulkExpenditureTransaction> bulkTransactions = transactionRepository.findAll();
 

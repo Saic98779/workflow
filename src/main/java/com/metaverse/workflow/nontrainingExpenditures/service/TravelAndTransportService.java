@@ -89,7 +89,6 @@ public class TravelAndTransportService {
         Optional<TravelAndTransport> byId = travelRepo.findById(travelTransportId);
         if (byId.isPresent()) {
             boolean b = Files.deleteIfExists(Path.of(byId.get().getBillInvoicePath()));
-            System.err.println(b);
         }
         travelRepo.deleteById(travelTransportId);
         return WorkflowResponse.builder()
