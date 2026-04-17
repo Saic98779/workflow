@@ -223,7 +223,7 @@ public class FileGeneratorController {
             String name = CommonUtil.agencyMap.get(agencyId);//opt
             HttpHeaders headers = new HttpHeaders();
             headers.add(HttpHeaders.CONTENT_DISPOSITION,
-                    "attachment; filename="+name+"_Program_Summary_Details.pdf");
+                    "attachment; filename=Program_Summary_Details.pdf");
 
             return ResponseEntity.ok()
                     .headers(headers)
