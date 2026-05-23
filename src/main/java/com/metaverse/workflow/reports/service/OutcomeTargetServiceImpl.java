@@ -53,19 +53,25 @@ public class OutcomeTargetServiceImpl implements OutcomeTargetService {
     private final GreeningOfMSMERepository greeningOfMSMERepository;
     private final ScStHubRepository scStHubRepository;
 
+    // ===================================================================================
+    // ENTRY POINT
+    // ===================================================================================
+
     @Override
     public List<OutcomeTargetDTO> getTargetsByYear(String financialYear, Long agencyId) {
-
         if (financialYear.equals("-1")) {
             return getAllYearsGrouped(agencyId);
         }
-
+        if (financialYear.equals("-2")) {
+            return getCumulativeWithCurrentQuarter(agencyId);
+        }
         return getQuarterly(financialYear, agencyId);
     }
 
     // ===================================================================================
-    // 1) YEAR = -1 → GROUP BY OUTCOME + FINANCIAL YEAR (NO DUPLICATES)
+    // 1) YEAR = -1 → GROUP BY OUTCOME + FINANCIAL YEAR (UNCHANGED)
     // ===================================================================================
+
     private List<OutcomeTargetDTO> getAllYearsGrouped(Long agencyId) {
 
         List<PhysicalTarget> targets = physicalTargetRepository.findByAgency_AgencyId(agencyId);
@@ -81,13 +87,10 @@ public class OutcomeTargetServiceImpl implements OutcomeTargetService {
 
             int targetSum = t.getQ1() + t.getQ2() + t.getQ3() + t.getQ4();
 
-            // If exists, add to previous target
             if (map.containsKey(key)) {
                 OutcomeTargetDTO existing = map.get(key);
                 existing.setTotalTarget(existing.getTotalTarget() + targetSum);
-            }
-            else {
-                // Create fresh dto
+            } else {
                 OutcomeTargetDTO dto = OutcomeTargetDTO.builder()
                         .outcomeName(outcome)
                         .financialYear(year)
@@ -107,7 +110,6 @@ public class OutcomeTargetServiceImpl implements OutcomeTargetService {
             }
         }
 
-        // Set achievements (currently overall achievement)
         for (OutcomeTargetDTO dto : map.values()) {
             long achieved = countTotalAchieved(dto.getOutcomeName(), agencyId);
             dto.setTotalAchieved((int) achieved);
@@ -116,52 +118,190 @@ public class OutcomeTargetServiceImpl implements OutcomeTargetService {
         return new ArrayList<>(map.values());
     }
 
-    // Achievements count (all years combined)
     private long countTotalAchieved(String outcome, Long agencyId) {
         switch (outcome) {
-            case "ONDCRegistration": return ondcRegistrationRepository.countByAgency_AgencyId(agencyId);
-            case "ONDCTransaction": return ondcTransactionRepository.countByAgency_AgencyId(agencyId);
-            case "UdyamRegistration": return udyamRegistrationRepository.countByAgency_AgencyId(agencyId);
-            case "TReDSRegistration": return tredsRegistrationRepository.countByAgency_AgencyId(agencyId);
-            case "TReDSTransaction": return tReDSTransactionRepository.countByAgency_AgencyId(agencyId);
-            case "ZEDCertification": return zedCertificationRepository.countByAgency_AgencyId(agencyId);
-            case "Barcode": return barcodeRepository.countByAgency_AgencyId(agencyId);
-            case "GIProduct": return giProductRepository.countByAgency_AgencyId(agencyId);
-            case "ICScheme": return icSchemeRepository.countByAgency_AgencyId(agencyId);
-            case "Patents": return patentsRepository.countByAgency_AgencyId(agencyId);
-            case "TreadMark": return treadMarkRepository.countByAgency_AgencyId(agencyId);
-            case "GeMRegistration": return geMRegistrationRepository.countByAgency_AgencyId(agencyId);
-            case "GeMTransaction": return geMTransactionRepository.countByAgency_AgencyId(agencyId);
-            case "CGTMSETransaction": return cgtmseTransactionRepository.countByAgency_AgencyId(agencyId);
-            case "ConsortiaTender": return consortiaTenderRepository.countByAgency_AgencyId(agencyId);
-            case "CopyRights": return copyRightsRepository.countByAgency_AgencyId(agencyId);
-            case "DesignRights": return designRightsRepository.countByAgency_AgencyId(agencyId);
-            case "NSIC": return nsicRepository.countByAgency_AgencyId(agencyId);
-            case "OEM": return oemRepository.countByAgency_AgencyId(agencyId);
-            case "PMEGP": return pmegpRepository.countByAgency_AgencyId(agencyId);
-            case "PMFMEScheme": return pmfmeSchemeRepository.countByAgency_AgencyId(agencyId);
-            case "PMMY": return pmmyRepository.countByAgency_AgencyId(agencyId);
-            case "VendorDevelopment": return vendorDevelopmentRepository.countByAgency_AgencyId(agencyId);
-            case "PMS": return pmsRepository.countByAgency_AgencyId(agencyId);
-            case "Lean": return leanRepository.countByAgency_AgencyId(agencyId);
-            case "PMViswakarma": return pmViswakarmaReposiroty.countByAgency_AgencyId(agencyId);
-            case "SIDBIAspire": return sidbiAspireRepository.countByAgency_AgencyId(agencyId);
-            case "ScStHub": return scStHubRepository.countByAgency_AgencyId(agencyId);
+            case "ONDCRegistration":      return ondcRegistrationRepository.countByAgency_AgencyId(agencyId);
+            case "ONDCTransaction":       return ondcTransactionRepository.countByAgency_AgencyId(agencyId);
+            case "UdyamRegistration":     return udyamRegistrationRepository.countByAgency_AgencyId(agencyId);
+            case "TReDSRegistration":     return tredsRegistrationRepository.countByAgency_AgencyId(agencyId);
+            case "TReDSTransaction":      return tReDSTransactionRepository.countByAgency_AgencyId(agencyId);
+            case "ZEDCertification":      return zedCertificationRepository.countByAgency_AgencyId(agencyId);
+            case "Barcode":               return barcodeRepository.countByAgency_AgencyId(agencyId);
+            case "GIProduct":             return giProductRepository.countByAgency_AgencyId(agencyId);
+            case "ICScheme":              return icSchemeRepository.countByAgency_AgencyId(agencyId);
+            case "Patents":               return patentsRepository.countByAgency_AgencyId(agencyId);
+            case "TreadMark":             return treadMarkRepository.countByAgency_AgencyId(agencyId);
+            case "GeMRegistration":       return geMRegistrationRepository.countByAgency_AgencyId(agencyId);
+            case "GeMTransaction":        return geMTransactionRepository.countByAgency_AgencyId(agencyId);
+            case "CGTMSETransaction":     return cgtmseTransactionRepository.countByAgency_AgencyId(agencyId);
+            case "ConsortiaTender":       return consortiaTenderRepository.countByAgency_AgencyId(agencyId);
+            case "CopyRights":            return copyRightsRepository.countByAgency_AgencyId(agencyId);
+            case "DesignRights":          return designRightsRepository.countByAgency_AgencyId(agencyId);
+            case "NSIC":                  return nsicRepository.countByAgency_AgencyId(agencyId);
+            case "OEM":                   return oemRepository.countByAgency_AgencyId(agencyId);
+            case "PMEGP":                 return pmegpRepository.countByAgency_AgencyId(agencyId);
+            case "PMFMEScheme":           return pmfmeSchemeRepository.countByAgency_AgencyId(agencyId);
+            case "PMMY":                  return pmmyRepository.countByAgency_AgencyId(agencyId);
+            case "VendorDevelopment":     return vendorDevelopmentRepository.countByAgency_AgencyId(agencyId);
+            case "PMS":                   return pmsRepository.countByAgency_AgencyId(agencyId);
+            case "Lean":                  return leanRepository.countByAgency_AgencyId(agencyId);
+            case "PMViswakarma":          return pmViswakarmaReposiroty.countByAgency_AgencyId(agencyId);
+            case "SIDBIAspire":           return sidbiAspireRepository.countByAgency_AgencyId(agencyId);
+            case "ScStHub":               return scStHubRepository.countByAgency_AgencyId(agencyId);
             case "ECommerceRegistration": return eCommerceRegistrationRepository.countByAgency_AgencyId(agencyId);
-            case "ECommerceTransaction": return eCommerceTransactionRepository.countByAgency_AgencyId(agencyId);
-            case "ExportPromotion": return exportPromotionRepository.countByAgency_AgencyId(agencyId);
-            case "SkillUpgradation": return skillUpgradationRepository.countByAgency_AgencyId(agencyId);
-            case "ImportSubsititution": return importSubsititutionRepository.countByAgency_AgencyId(agencyId);
-            case "Loan": return loanRepository.countByAgency_AgencyId(agencyId);
-            case "GreeningOfMSME": return greeningOfMSMERepository.countByAgency_AgencyId(agencyId);
-
-            default: return 0;
+            case "ECommerceTransaction":  return eCommerceTransactionRepository.countByAgency_AgencyId(agencyId);
+            case "ExportPromotion":       return exportPromotionRepository.countByAgency_AgencyId(agencyId);
+            case "SkillUpgradation":      return skillUpgradationRepository.countByAgency_AgencyId(agencyId);
+            case "ImportSubsititution":   return importSubsititutionRepository.countByAgency_AgencyId(agencyId);
+            case "Loan":                  return loanRepository.countByAgency_AgencyId(agencyId);
+            case "GreeningOfMSME":        return greeningOfMSMERepository.countByAgency_AgencyId(agencyId);
+            default:                      return 0;
         }
     }
 
     // ===================================================================================
-    // 2) QUARTERLY LOGIC (FINANCIAL YEAR SPECIFIC)
+    // 2) YEAR = -2 → CUMULATIVE GRAND TOTAL + CURRENT QUARTER
     // ===================================================================================
+
+    /**
+     * Returns one row per outcome with:
+     * - Grand Total target  = sum of all quarterly targets across every financial year
+     * - Grand Total achieved = sum of all achieved counts across every financial year
+     * - Current quarter target  = target for the active quarter in the current financial year
+     * - Current quarter achieved = achieved count for the active quarter date range
+     */
+    private List<OutcomeTargetDTO> getCumulativeWithCurrentQuarter(Long agencyId) {
+
+        // ── Resolve current FY and active quarter ─────────────────────────────
+        LocalDate today = LocalDate.now();
+
+        int fyStart = today.getMonthValue() >= 4
+                ? today.getYear()
+                : today.getYear() - 1;
+
+        String currentFY = fyStart + "-" + (fyStart + 1);
+
+        QuarterRange currentQuarter = resolveCurrentQuarter(today, fyStart);
+
+        // ── Fetch all targets ─────────────────────────────────────────────────
+        List<PhysicalTarget> allTargets =
+                physicalTargetRepository.findByAgency_AgencyId(agencyId);
+
+        // outcome → grand total target
+        Map<String, Integer> grandTotalTarget = new LinkedHashMap<>();
+
+        // outcome → current FY target
+        Map<String, PhysicalTarget> currentFYTargetByOutcome =
+                new LinkedHashMap<>();
+
+        for (PhysicalTarget t : allTargets) {
+
+            String outcome =
+                    t.getProgramOutcomeTable().getOutcomeTableName();
+
+            int yearlyTarget =
+                    t.getQ1() + t.getQ2() + t.getQ3() + t.getQ4();
+
+            grandTotalTarget.merge(outcome, yearlyTarget, Integer::sum);
+
+            if (currentFY.equals(t.getFinancialYear())) {
+                currentFYTargetByOutcome.put(outcome, t);
+            }
+        }
+
+        // ── Build response ────────────────────────────────────────────────────
+        List<OutcomeTargetDTO> result = new ArrayList<>();
+
+        for (String outcome : grandTotalTarget.keySet()) {
+
+            // Grand total achieved (all years)
+            long grandAchieved =
+                    countTotalAchieved(outcome, agencyId);
+
+            // Current quarter target
+            int currentQuarterTarget = 0;
+
+            PhysicalTarget currentFYTarget =
+                    currentFYTargetByOutcome.get(outcome);
+
+            if (currentFYTarget != null) {
+
+                switch (currentQuarter.label) {
+
+                    case "Q1":
+                        currentQuarterTarget = currentFYTarget.getQ1();
+                        break;
+
+                    case "Q2":
+                        currentQuarterTarget = currentFYTarget.getQ2();
+                        break;
+
+                    case "Q3":
+                        currentQuarterTarget = currentFYTarget.getQ3();
+                        break;
+
+                    case "Q4":
+                        currentQuarterTarget = currentFYTarget.getQ4();
+                        break;
+                }
+            }
+
+            // Current quarter achieved
+            long currentQuarterAchieved =
+                    countQuarter(
+                            outcome,
+                            agencyId,
+                            currentQuarter.start,
+                            currentQuarter.end
+                    );
+
+            OutcomeTargetDTO.OutcomeTargetDTOBuilder builder =
+                    OutcomeTargetDTO.builder()
+                            .outcomeName(outcome)
+                            .financialYear(currentQuarter.label)
+                            .totalTarget(currentQuarterTarget)
+                            .totalAchieved((int) currentQuarterAchieved)
+                            .grandTotalTarget(grandTotalTarget.get(outcome))
+                            .grandTotalAchieved((int) grandAchieved);
+
+            // Populate only current quarter fields
+            switch (currentQuarter.label) {
+
+                case "Q1":
+                    builder
+                            .physicalTargetQ1(currentQuarterTarget)
+                            .achievedQ1((int) currentQuarterAchieved);
+                    break;
+
+                case "Q2":
+                    builder
+                            .physicalTargetQ2(currentQuarterTarget)
+                            .achievedQ2((int) currentQuarterAchieved);
+                    break;
+
+                case "Q3":
+                    builder
+                            .physicalTargetQ3(currentQuarterTarget)
+                            .achievedQ3((int) currentQuarterAchieved);
+                    break;
+
+                case "Q4":
+                    builder
+                            .physicalTargetQ4(currentQuarterTarget)
+                            .achievedQ4((int) currentQuarterAchieved);
+                    break;
+            }
+
+            result.add(builder.build());
+        }
+
+        return result;
+    }
+
+    // ===================================================================================
+    // 3) QUARTERLY LOGIC (FINANCIAL YEAR SPECIFIC) — UNCHANGED
+    // ===================================================================================
+
     private List<OutcomeTargetDTO> getQuarterly(String financialYear, Long agencyId) {
 
         int fyStart = Integer.parseInt(financialYear.split("-")[0]);
@@ -195,42 +335,42 @@ public class OutcomeTargetServiceImpl implements OutcomeTargetService {
 
     private long countQuarter(String outcome, Long agencyId, Date s, Date e) {
         switch (outcome) {
-            case "ONDCRegistration": return ondcRegistrationRepository.countONDCRegistration(agencyId, s, e);
-            case "ONDCTransaction": return ondcTransactionRepository.countONDCTransaction(agencyId, s, e);
-            case "UdyamRegistration": return udyamRegistrationRepository.countUdyamRegistration(agencyId, s, e);
-            case "TReDSRegistration": return tredsRegistrationRepository.countTReDSRegistration(agencyId, s, e);
-            case "TReDSTransaction": return tReDSTransactionRepository.countTReDSTransaction(agencyId, s, e);
-            case "ZEDCertification": return zedCertificationRepository.countZedCertification(agencyId, null, s, e);
-            case "Barcode": return barcodeRepository.countBarcode(agencyId, s, e);
-            case "GIProduct": return giProductRepository.countGIProduct(agencyId, s, e);
-            case "ICScheme": return icSchemeRepository.countICScheme(agencyId, s, e);
-            case "Patents": return patentsRepository.countPatents(agencyId, s, e);
-            case "TreadMark": return treadMarkRepository.countTreadMark(agencyId, s, e);
-            case "GeMRegistration": return geMRegistrationRepository.countGeMRegistration(agencyId, s, e);
-            case "GeMTransaction": return geMTransactionRepository.countGeMTransaction(agencyId, s, e);
-            case "CGTMSETransaction": return cgtmseTransactionRepository.countCGTMSETransaction(agencyId, s, e);
-            case "ConsortiaTender": return consortiaTenderRepository.countConsortiaTender(agencyId, s, e);
-            case "CopyRights": return copyRightsRepository.countCopyRights(agencyId, s, e);
-            case "DesignRights": return designRightsRepository.countDesignRights(agencyId, s, e);
-            case "NSIC": return nsicRepository.countNSIC(agencyId, s, e);
-            case "OEM": return oemRepository.countOEM(agencyId, s, e);
-            case "PMEGP": return pmegpRepository.countPMEGP(agencyId, s, e);
-            case "PMFMEScheme": return pmfmeSchemeRepository.countPMFMEScheme(agencyId, s, e);
-            case "PMMY": return pmmyRepository.countPMMY(agencyId, s, e);
-            case "VendorDevelopment": return vendorDevelopmentRepository.countVendorDevelopment(agencyId, s, e);
-            case "PMS": return pmsRepository.countPMS(agencyId, s, e);
-            case "Lean": return leanRepository.countLean(agencyId, s, e);
-            case "PMViswakarma": return pmViswakarmaReposiroty.countPMViswakarma(agencyId, s, e);
-            case "SIDBIAspire": return sidbiAspireRepository.countSIDBIAspire(agencyId, s, e);
-            case "ScStHub": return scStHubRepository.countScStHub(agencyId, s, e);
+            case "ONDCRegistration":      return ondcRegistrationRepository.countONDCRegistration(agencyId, s, e);
+            case "ONDCTransaction":       return ondcTransactionRepository.countONDCTransaction(agencyId, s, e);
+            case "UdyamRegistration":     return udyamRegistrationRepository.countUdyamRegistration(agencyId, s, e);
+            case "TReDSRegistration":     return tredsRegistrationRepository.countTReDSRegistration(agencyId, s, e);
+            case "TReDSTransaction":      return tReDSTransactionRepository.countTReDSTransaction(agencyId, s, e);
+            case "ZEDCertification":      return zedCertificationRepository.countZedCertification(agencyId, null, s, e);
+            case "Barcode":               return barcodeRepository.countBarcode(agencyId, s, e);
+            case "GIProduct":             return giProductRepository.countGIProduct(agencyId, s, e);
+            case "ICScheme":              return icSchemeRepository.countICScheme(agencyId, s, e);
+            case "Patents":               return patentsRepository.countPatents(agencyId, s, e);
+            case "TreadMark":             return treadMarkRepository.countTreadMark(agencyId, s, e);
+            case "GeMRegistration":       return geMRegistrationRepository.countGeMRegistration(agencyId, s, e);
+            case "GeMTransaction":        return geMTransactionRepository.countGeMTransaction(agencyId, s, e);
+            case "CGTMSETransaction":     return cgtmseTransactionRepository.countCGTMSETransaction(agencyId, s, e);
+            case "ConsortiaTender":       return consortiaTenderRepository.countConsortiaTender(agencyId, s, e);
+            case "CopyRights":            return copyRightsRepository.countCopyRights(agencyId, s, e);
+            case "DesignRights":          return designRightsRepository.countDesignRights(agencyId, s, e);
+            case "NSIC":                  return nsicRepository.countNSIC(agencyId, s, e);
+            case "OEM":                   return oemRepository.countOEM(agencyId, s, e);
+            case "PMEGP":                 return pmegpRepository.countPMEGP(agencyId, s, e);
+            case "PMFMEScheme":           return pmfmeSchemeRepository.countPMFMEScheme(agencyId, s, e);
+            case "PMMY":                  return pmmyRepository.countPMMY(agencyId, s, e);
+            case "VendorDevelopment":     return vendorDevelopmentRepository.countVendorDevelopment(agencyId, s, e);
+            case "PMS":                   return pmsRepository.countPMS(agencyId, s, e);
+            case "Lean":                  return leanRepository.countLean(agencyId, s, e);
+            case "PMViswakarma":          return pmViswakarmaReposiroty.countPMViswakarma(agencyId, s, e);
+            case "SIDBIAspire":           return sidbiAspireRepository.countSIDBIAspire(agencyId, s, e);
+            case "ScStHub":               return scStHubRepository.countScStHub(agencyId, s, e);
             case "ECommerceRegistration": return eCommerceRegistrationRepository.countECommerceRegistration(agencyId, s, e);
-            case "ECommerceTransaction": return eCommerceTransactionRepository.countECommerceTransaction(agencyId, s, e);
-            case "ExportPromotion": return exportPromotionRepository.countExportPromotion(agencyId, s, e);
-            case "SkillUpgradation": return skillUpgradationRepository.countSkillUpgradation(agencyId, s, e);
-            case "ImportSubsititution": return importSubsititutionRepository.countImportSubsititution(agencyId, s, e);
-            case "Loan": return loanRepository.countLoan(agencyId, s, e);
-            case "GreeningOfMSME": return greeningOfMSMERepository.countGreeningOfMSME(agencyId, s, e);
-            default: return 0;
+            case "ECommerceTransaction":  return eCommerceTransactionRepository.countECommerceTransaction(agencyId, s, e);
+            case "ExportPromotion":       return exportPromotionRepository.countExportPromotion(agencyId, s, e);
+            case "SkillUpgradation":      return skillUpgradationRepository.countSkillUpgradation(agencyId, s, e);
+            case "ImportSubsititution":   return importSubsititutionRepository.countImportSubsititution(agencyId, s, e);
+            case "Loan":                  return loanRepository.countLoan(agencyId, s, e);
+            case "GreeningOfMSME":        return greeningOfMSMERepository.countGreeningOfMSME(agencyId, s, e);
+            default:                      return 0;
         }
     }
 
@@ -240,7 +380,6 @@ public class OutcomeTargetServiceImpl implements OutcomeTargetService {
 
     private OutcomeTargetDTO createOutcomeDto(String name, String year, PhysicalTarget target,
                                               long q1, long q2, long q3, long q4) {
-
         return OutcomeTargetDTO.builder()
                 .outcomeName(name)
                 .financialYear(year)
@@ -256,5 +395,42 @@ public class OutcomeTargetServiceImpl implements OutcomeTargetService {
                 .totalAchieved((int) (q1 + q2 + q3 + q4))
                 .build();
     }
-}
 
+    // ===================================================================================
+    // 4) QUARTER RESOLUTION HELPERS
+    // ===================================================================================
+
+    private QuarterRange resolveCurrentQuarter(LocalDate today, int fyStart) {
+        int m = today.getMonthValue();
+        if (m >= 4 && m <= 6) {
+            return new QuarterRange("Q1",
+                    toDate(LocalDate.of(fyStart,     4,  1)),
+                    toDate(LocalDate.of(fyStart,     6, 30)));
+        }
+        if (m >= 7 && m <= 9) {
+            return new QuarterRange("Q2",
+                    toDate(LocalDate.of(fyStart,     7,  1)),
+                    toDate(LocalDate.of(fyStart,     9, 30)));
+        }
+        if (m >= 10 && m <= 12) {
+            return new QuarterRange("Q3",
+                    toDate(LocalDate.of(fyStart,    10,  1)),
+                    toDate(LocalDate.of(fyStart,    12, 31)));
+        }
+        return new QuarterRange("Q4",
+                toDate(LocalDate.of(fyStart + 1, 1,  1)),
+                toDate(LocalDate.of(fyStart + 1, 3, 31)));
+    }
+
+    private static final class QuarterRange {
+        final String label;
+        final Date   start;
+        final Date   end;
+
+        QuarterRange(String label, Date start, Date end) {
+            this.label = label;
+            this.start = start;
+            this.end   = end;
+        }
+    }
+}

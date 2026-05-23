@@ -10,6 +10,7 @@ import com.metaverse.workflow.exceptions.DataException;
 import com.metaverse.workflow.model.Program;
 import com.metaverse.workflow.model.ProgramSummaryDetails;
 import com.metaverse.workflow.program.repository.ProgramRepository;
+import com.metaverse.workflow.program.repository.ProgramSessionFileRepository;
 import com.metaverse.workflow.program.repository.ProgramSummaryDetailsRepo;
 import com.metaverse.workflow.program.service.ProgramService;
 import com.metaverse.workflow.program.service.ProgramSummary;
@@ -28,6 +29,8 @@ public class ProgramSummeryPdfGeneratorWithoutParticipants {
     private final ProgramService programService;
     private final ProgramRepository programRepository;
     private final ProgramSummaryDetailsRepo summaryDetailsRepo;
+    private  final ProgramRatingTempRepository programRatingTempRepository;
+    private final ProgramSessionFileRepository programSessionFileRepository;
 
     public ByteArrayInputStream generateMultipleProgramSummaryPdf(List<Long> programIds) throws DataException {
 
@@ -78,11 +81,15 @@ public class ProgramSummeryPdfGeneratorWithoutParticipants {
                 title.setSpacingAfter(8f);
                 document.add(title);
 
+                Double score = programRatingTempRepository
+                        .findByProgramId(program.getProgramId())
+                        .map(ProgramRatingTemp::getMonitoringRating)
+                        .orElse(0.0);
+
                 Paragraph star = new Paragraph(
-                        getStarRating(ps.getMonitoringRating() != null ? ps.getMonitoringRating() : 0.0),
+                        getStarRating(score),
                         getStarFont(14)
                 );
-
                 PdfPTable headerTable = new PdfPTable(3);
                 headerTable.setWidthPercentage(100);
                 headerTable.setSpacingAfter(1);
@@ -367,25 +374,54 @@ public class ProgramSummeryPdfGeneratorWithoutParticipants {
     }
 
     private String getStarRating(double percentage) {
-        if (percentage <= 0) return "☆☆☆☆☆";
 
-        int fullStars = (int) (percentage / 20);
-        boolean halfStar = (percentage % 20) >= 10;
+        if (percentage <= 0) {
+            return "☆☆☆☆☆";
+        }
+
+        // Convert percentage to 5-star rating
+        double rating = (percentage / 100.0) * 5.0;
+
+        int fullStars = (int) rating;
+
+        // decimal part
+        double decimal = rating - fullStars;
+
+        boolean halfStar = decimal >= 0.5;
 
         StringBuilder stars = new StringBuilder();
-        for (int i = 0; i < fullStars; i++) stars.append("★");
-        if (halfStar && fullStars < 5) stars.append("☆");
-        while (stars.length() < 5) stars.append("☆");
+
+        // Full stars
+        for (int i = 0; i < fullStars; i++) {
+            stars.append("★");
+        }
+
+        // Half star
+        if (halfStar) {
+            stars.append("⯨ ");
+        }
+
+        // Empty stars count
+        int emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
+
+        for (int i = 0; i < emptyStars; i++) {
+            stars.append("☆");
+        }
 
         return stars.toString();
     }
 
     private Font getStarFont(float size) throws Exception {
+
         BaseFont baseFont = BaseFont.createFont(
-                getClass().getClassLoader().getResource("fonts/DejaVuSans.ttf").toString(),
+                getClass()
+                        .getClassLoader()
+                        .getResource("fonts/NotoSansSymbols2-Regular.ttf")
+                        .toString(),
                 BaseFont.IDENTITY_H,
                 BaseFont.EMBEDDED
         );
+
         return new Font(baseFont, size, Font.BOLD, Color.ORANGE);
     }
 

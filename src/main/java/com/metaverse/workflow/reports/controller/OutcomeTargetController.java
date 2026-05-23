@@ -24,32 +24,40 @@ public class OutcomeTargetController {
     private final OutcomeTargetService outcomeTargetService;
 
     @GetMapping
-    public ResponseEntity<?> getTargetsByYear(@RequestParam String year, @RequestParam Long agencyId) {
+    public ResponseEntity<?> getTargetsByYear(@RequestParam String year,
+                                              @RequestParam Long agencyId) {
 
-        List<OutcomeTargetDTO> targets = outcomeTargetService.getTargetsByYear(year, agencyId);
+        List<OutcomeTargetDTO> targets =
+                outcomeTargetService.getTargetsByYear(year, agencyId);
 
-        // ---------- 1) Compute GRAND TOTAL FOR ALL OUTCOMES ----------
-        int grandTargetTotal = targets.stream().mapToInt(OutcomeTargetDTO::getTotalTarget).sum();
-        int grandAchievedTotal = targets.stream().mapToInt(OutcomeTargetDTO::getTotalAchieved).sum();
+        // Skip recalculation for cumulative API
+        if (!year.equals("-2")) {
 
-        // ---------- 2) COMPUTE PER-OUTCOME GRAND TOTALS ----------
-        Map<String, int[]> outcomeTotals = new HashMap<>();
+            Map<String, int[]> outcomeTotals = new HashMap<>();
 
-        for (OutcomeTargetDTO dto : targets) {
-            outcomeTotals.computeIfAbsent(dto.getOutcomeName(), k -> new int[2]);
-            outcomeTotals.get(dto.getOutcomeName())[0] += dto.getTotalTarget();
-            outcomeTotals.get(dto.getOutcomeName())[1] += dto.getTotalAchieved();
-        }
+            for (OutcomeTargetDTO dto : targets) {
 
-        // ---------- 3) Set per-outcome grand totals in each DTO ----------
-        for (OutcomeTargetDTO dto : targets) {
-            int[] arr = outcomeTotals.get(dto.getOutcomeName());
-            dto.setGrandTotalTarget(arr[0]);
-            dto.setGrandTotalAchieved(arr[1]);
+                outcomeTotals.computeIfAbsent(
+                        dto.getOutcomeName(),
+                        k -> new int[2]
+                );
+
+                outcomeTotals.get(dto.getOutcomeName())[0]
+                        += dto.getTotalTarget();
+
+                outcomeTotals.get(dto.getOutcomeName())[1]
+                        += dto.getTotalAchieved();
+            }
+
+            for (OutcomeTargetDTO dto : targets) {
+
+                int[] arr = outcomeTotals.get(dto.getOutcomeName());
+
+                dto.setGrandTotalTarget(arr[0]);
+                dto.setGrandTotalAchieved(arr[1]);
+            }
         }
 
         return ResponseEntity.ok(targets);
     }
-
-
 }
