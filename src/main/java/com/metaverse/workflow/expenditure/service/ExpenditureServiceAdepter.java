@@ -102,9 +102,10 @@ public class ExpenditureServiceAdepter implements ExpenditureService {
                         .mapBulkExpenditure(expenditureRequest, agency, headOfExpense)
 
         );
+        List<ProgramSessionFile> sessionFiles = new ArrayList<>();;
         if (files != null && !files.isEmpty()) {
             List<String> filePaths = programServiceAdapter.storageProgramFiles(files, expenditureRequest.getAgencyId(), "BulkExpenditure");
-            List<ProgramSessionFile> sessionFiles = filePaths.stream()
+            sessionFiles = filePaths.stream()
                     .map(filePath -> ProgramSessionFile.builder()
                             .fileType("FILE")
                             .filePath(filePath)
@@ -114,7 +115,10 @@ public class ExpenditureServiceAdepter implements ExpenditureService {
             programSessionFileRepository.saveAll(sessionFiles);
 
         }
-
+        if(!sessionFiles.isEmpty()) {
+            bulkExpenditure.setUploadBillUrl(sessionFiles.get(0).getFilePath());
+            bulkExpenditureRepository.save(bulkExpenditure);
+        }
         return WorkflowResponse.builder()
                 .message("BulkExpenditure saved successfully")
                 .data(ExpenditureResponseMapper.mapBulkExpenditure(
