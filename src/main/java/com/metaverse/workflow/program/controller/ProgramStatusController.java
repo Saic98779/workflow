@@ -224,8 +224,8 @@ public class ProgramStatusController {
                 } else if (applyDistrictFilter) {
                     log.info("Applying DISTRICT FILTER for DATA_ENTRY user: {} | AgencyId: {} | Status: {} | District: {}",
                             userId, agencyId, status, userDistrict);
-                    //programs = programRepository.findByAgencyAgencyIdAndStatusAndLocationDistrict(agencyId, status, userDistrict);
-                    programs = programRepository.findByAgencyAgencyIdAndStatusAndLocationDistrictAndUser_UserId(agencyId, status, userDistrict,userId);
+                    programs = programRepository.findByAgencyAgencyIdAndStatusAndLocationDistrict(agencyId, status, userDistrict);
+//                    programs = programRepository.findByAgencyAgencyIdAndStatusAndLocationDistrictAndUser_UserId(agencyId, status, userDistrict,userId);
                     log.info("District-filtered query returned {} programs for user: {}", programs.size(), userId);
                 } else {
                     if ("DATA_ENTRY".equalsIgnoreCase(userRole)) {
