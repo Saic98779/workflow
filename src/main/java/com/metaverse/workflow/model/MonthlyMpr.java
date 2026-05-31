@@ -1,4 +1,4 @@
-package com.metaverse.workflow.model.tgtpc_handholding;
+package com.metaverse.workflow.model;
 
 public class MonthlyMpr {
     private Long agencyName;
@@ -6,6 +6,4 @@ public class MonthlyMpr {
     private String month;
     private Integer noOfProgramsAsPerMpr;
     private Double releasedAmount;
-    private
-
 }

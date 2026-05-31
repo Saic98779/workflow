@@ -36,7 +36,8 @@ public class ExpenditureResponseMapper {
                 .checkDate(DateUtil.dateToString(expenditure.getCheckDate(),"dd-MM-yyyy"))
                 .build();
     }
-    public static BulkExpenditureResponse mapBulkExpenditure(BulkExpenditure expenditure , List<Long> fileIds)
+    public static BulkExpenditureResponse mapBulkExpenditure(BulkExpenditure expenditure , List<Long> fileIds,
+                                                             List<BulkExpenditureTransactionResponse> transactions)
     {
         return BulkExpenditureResponse.builder()
                 .transactionId(expenditure.getTransactionId())
@@ -62,6 +63,7 @@ public class ExpenditureResponseMapper {
                 .checkDate(DateUtil.dateToString(expenditure.getCheckDate(),"dd-MM-yyyy"))
                 .availableQuantity(expenditure.getAvailableQuantity())
                 .consumedQuantity(expenditure.getConsumedQuantity())
+                .transactions(transactions)
                 .build();
     }
     public static BulkTransactions mapBulkExpenditureTransaction(BulkExpenditureTransaction  expenditure)
@@ -207,6 +209,20 @@ public class ExpenditureResponseMapper {
                 .availableQuantity(expenditure.getAvailableQuantity())
                 .build();
 
+    }
+
+    public static BulkExpenditureTransactionResponse mapTransaction(
+            BulkExpenditureTransaction transaction) {
+
+        return BulkExpenditureTransactionResponse.builder()
+                .id(transaction.getBulkExpenditureTransactionId())
+                .programId(transaction.getProgram() != null ?
+                        transaction.getProgram().getProgramId() : null)
+                .programName(transaction.getProgram() != null ?
+                        transaction.getProgram().getProgramTitle() : null)
+                .consumedQuantity(transaction.getConsumedQuantity())
+                .allocatedCost(transaction.getAllocatedCost())
+                .build();
     }
 
 }

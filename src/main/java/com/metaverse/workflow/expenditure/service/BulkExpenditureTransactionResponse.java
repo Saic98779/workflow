@@ -11,5 +11,7 @@ public class BulkExpenditureTransactionResponse {
     private Long id;
     private Integer consumedQuantity;
     private Double allocatedCost;
+    private Long programId;
+    private String programName;
 
 }
