@@ -327,7 +327,6 @@ public class ExpenditureServiceAdepter implements ExpenditureService {
                 .build();
     }
 
-
     @Override
     public BulkExpenditureLookupResponse getBulkExpendituresByExpenseAndItem(BulkExpenditureLookupRequest request) throws DataException {
         HeadOfExpense headOfExpense = headOfExpenseRepository.findById(request.getExpenseId())
