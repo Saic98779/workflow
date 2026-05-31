@@ -265,9 +265,10 @@ public class ExpenditureServiceAdepter implements ExpenditureService {
 
     @Override
     @Transactional
-    public BulkExpenditureTransactionResponse saveTransaction(BulkExpenditureTransactionRequest request) throws DataException {
+    public BulkExpenditureTransactionResponse saveTransaction(
+            BulkExpenditureTransactionRequest request) throws DataException {
 
-        BulkExpenditure bulkExpenditure = bulkExpenditureRepository.findById(request.getBulkExpenditureId())
+        BulkExpenditure bulkExpenditure = bulkExpenditureRepository.findByIdForUpdate(request.getBulkExpenditureId())
                 .orElseThrow(() -> new DataException("Bulk expenditure data not found", "BULK-EXPENDITURE-DATA-NOT-FOUND", 400));
         Activity activity = activityRepository.findById(request.getActivityId())
                 .orElseThrow(() -> new DataException("Activity data not found", "ACTIVITY-DATA-NOT-FOUND", 400));
@@ -280,51 +281,42 @@ public class ExpenditureServiceAdepter implements ExpenditureService {
         HeadOfExpense headOfExpense = headOfExpenseRepository.findById(request.getHeadOfExpenseId())
                 .orElseThrow(() -> new DataException("Head of expense data not found", "HEAD-OF-EXPENSE-DATA-NOT-FOUND", 400));
 
-//        BulkExpenditureTransaction saved = transactionRepo.save(ExpenditureRequestMapper.mapBulkExpenditureTransaction(request, activity, subActivity, program, agency, bulkExpenditure, headOfExpense));
-//
-//        if (bulkExpenditure != null && request.getConsumedQuantity() != null) {
-//            int updatedAvailableQty = 0;
-//            if (bulkExpenditure.getAvailableQuantity() > request.getConsumedQuantity()) {
-//                updatedAvailableQty = bulkExpenditure.getAvailableQuantity() - request.getConsumedQuantity();
-//            }
-//            bulkExpenditure.setAvailableQuantity(updatedAvailableQty);
-//            bulkExpenditure.setConsumedQuantity(bulkExpenditure.getConsumedQuantity() + request.getConsumedQuantity());
-//            bulkExpenditureRepository.save(bulkExpenditure);
-//        }
-        // Validate available quantity
-        int requestedQty = request.getConsumedQuantity() != null ? request.getConsumedQuantity() : 0;
-        if (requestedQty > bulkExpenditure.getAvailableQuantity()) {
-            throw new DataException(
-                    "Consumed quantity exceeds available quantity",
-                    "INSUFFICIENT-QUANTITY",
-                    400
-            );
+        // Null-safe request quantity
+        int requestedQty = request.getConsumedQuantity() == null ? 0
+                : request.getConsumedQuantity();
+
+        // Prevent negative quantity
+        if (requestedQty <= 0) {
+            throw new DataException("Consumed quantity must be greater than zero", "INVALID-CONSUMED-QUANTITY", 400);
         }
+        // Null-safe DB quantities
+        int availableQty = bulkExpenditure.getAvailableQuantity() == null ? 0
+                : bulkExpenditure.getAvailableQuantity();
 
-        // Update available and consumed quantities
-        bulkExpenditure.setAvailableQuantity(bulkExpenditure.getAvailableQuantity() - requestedQty);
-        bulkExpenditure.setConsumedQuantity(
-                (bulkExpenditure.getConsumedQuantity() == null ? 0 : bulkExpenditure.getConsumedQuantity()) + requestedQty
-        );
+        int consumedQty = bulkExpenditure.getConsumedQuantity() == null ? 0
+                : bulkExpenditure.getConsumedQuantity();
+        // Validate stock
+        if (requestedQty > availableQty) {
+            throw new DataException("Consumed quantity exceeds available quantity", "INSUFFICIENT-QUANTITY", 400);
+        }
+        // Update quantities
+        bulkExpenditure.setAvailableQuantity(availableQty - requestedQty);
+        bulkExpenditure.setConsumedQuantity(consumedQty + requestedQty);
+        // Save updated stock
         bulkExpenditureRepository.save(bulkExpenditure);
-
-        // Save transaction record
-        BulkExpenditureTransaction transaction = ExpenditureRequestMapper.mapBulkExpenditureTransaction(
-                request, activity, subActivity, program, agency, bulkExpenditure, headOfExpense
-        );
-
+        // Save transaction
+        BulkExpenditureTransaction transaction =
+                ExpenditureRequestMapper.mapBulkExpenditureTransaction(
+                        request, activity, subActivity, program, agency, bulkExpenditure, headOfExpense
+                );
         BulkExpenditureTransaction saved = transactionRepo.save(transaction);
 
-
-        BulkExpenditureTransactionResponse response = BulkExpenditureTransactionResponse.builder()
+        return BulkExpenditureTransactionResponse.builder()
                 .id(saved.getBulkExpenditureTransactionId())
                 .consumedQuantity(saved.getConsumedQuantity())
                 .allocatedCost(saved.getAllocatedCost())
                 .build();
-
-        return response;
     }
-
 
     @Override
     public BulkExpenditureLookupResponse getBulkExpendituresByExpenseAndItem(BulkExpenditureLookupRequest request) throws DataException {
