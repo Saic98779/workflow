@@ -1,6 +1,7 @@
 package com.metaverse.workflow.nontrainingExpenditures.Dto;
 
 import com.metaverse.workflow.enums.BillRemarksStatus;
+import com.metaverse.workflow.model.RichMilestone;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -36,5 +37,7 @@ public class TravelAndTransportDto {
     private List<String> spiuComments;
     private List<String> agencyComments;
     private BillRemarksStatus status;
+    private List<Long> richMilestoneIds;
+    private List<RichMilestone> milestones;
 
 }

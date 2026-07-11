@@ -19,6 +19,7 @@ import com.metaverse.workflow.nontrainingExpenditures.repository.ResourceRepo;
 import com.metaverse.workflow.notifications.dto.GlobalNotificationRequest;
 import com.metaverse.workflow.notifications.service.NotificationServiceImpl;
 import com.metaverse.workflow.program.repository.ProgramSessionFileRepository;
+import com.metaverse.workflow.richnontraining.repository.RichMilestoneRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,6 +44,7 @@ public class NonTrainingExpenditureService {
     private final StorageService storageService;
     private final ProgramSessionFileRepository programSessionFileRepository;
     private final NonTrainingActivityRepository nonTrainingActivityRepository;
+    private final RichMilestoneRepository richMilestoneRepository;
 
     public WorkflowResponse create(NonTrainingExpenditureDTO dto, MultipartFile file) throws DataException {
         Agency agency = agencyRepository.findById(dto.getAgencyId())
@@ -55,6 +57,15 @@ public class NonTrainingExpenditureService {
 
 
         NonTrainingExpenditure entity = NonTrainingExpenditureMapper.toEntity(dto, agency, activity, subActivity);
+        // Attach milestones (optional)
+        if (dto.getRichMilestoneIds() != null && !dto.getRichMilestoneIds().isEmpty()) {
+
+            List<RichMilestone> milestones = richMilestoneRepository.findAllById(dto.getRichMilestoneIds());
+
+            milestones.forEach(m -> m.setNonTrainingExpenditure(entity));
+
+            entity.setRichMilestones(milestones);
+        }
         NonTrainingExpenditure save = repository.save(entity);
 
         if (file != null && !file.isEmpty()) {
@@ -110,6 +121,22 @@ public class NonTrainingExpenditureService {
                 () -> repository.save(updated)
         );
         updated.setUploadBillUrl(newPath);
+        // Update milestones (optional)
+        if (dto.getRichMilestoneIds() != null) {
+
+            // Remove existing mapping
+            if (existing.getRichMilestones() != null) {
+                existing.getRichMilestones()
+                        .forEach(m -> m.setNonTrainingExpenditure(null));
+            }
+
+            List<RichMilestone> milestones =
+                    richMilestoneRepository.findAllById(dto.getRichMilestoneIds());
+
+            milestones.forEach(m -> m.setNonTrainingExpenditure(updated));
+
+            updated.setRichMilestones(milestones);
+        }
         programSessionFileRepository.updateFilePathByNonTrainingExpenditureId(
                 newPath,
                 updated.getId()

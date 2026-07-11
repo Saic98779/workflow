@@ -20,6 +20,7 @@ import com.metaverse.workflow.notifications.repository.NotificationRepository;
 import com.metaverse.workflow.notifications.service.NotificationServiceImpl;
 import com.metaverse.workflow.program.repository.ProgramSessionFileRepository;
 import com.metaverse.workflow.program.service.ProgramSessionFileService;
+import com.metaverse.workflow.richnontraining.repository.RichMilestoneRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,6 +46,7 @@ public class TravelAndTransportService {
     private final ProgramSessionFileRepository programSessionFileRepository;
     private final LoginRepository userRepo;
     private final NotificationServiceImpl notificationService;
+    private final RichMilestoneRepository richMilestoneRepository;
 
     public WorkflowResponse saveTravel(TravelAndTransportDto dto, MultipartFile file) {
 
@@ -54,6 +56,14 @@ public class TravelAndTransportService {
 
             TravelAndTransport entity = convertToEntity(dto);
             entity.setNonTrainingSubActivity(subActivity);
+            if (dto.getRichMilestoneIds() != null && !dto.getRichMilestoneIds().isEmpty()) {
+
+                List<RichMilestone> milestones = richMilestoneRepository.findAllById(dto.getRichMilestoneIds());
+
+                milestones.forEach(m -> m.setTravelAndTransport(entity));
+
+                entity.setRichMilestones(milestones);
+            }
             TravelAndTransport saved = travelRepo.save(entity);
 
             if (file != null && !file.isEmpty()) {
@@ -125,7 +135,23 @@ public class TravelAndTransportService {
                     .orElseThrow(() -> new RuntimeException("NonTrainingSubActivity not found with id " + dto.getNonTrainingSubActivityId()));
             existing.setNonTrainingSubActivity(subActivity);
         }
+        // Update milestones (optional)
+        if (dto.getRichMilestoneIds() != null) {
 
+            // Remove old mappings
+            if (existing.getRichMilestones() != null) {
+                existing.getRichMilestones()
+                        .forEach(m -> m.setTravelAndTransport(null));
+                existing.getRichMilestones().clear();
+            }
+
+            // Add new mappings
+            List<RichMilestone> milestones = richMilestoneRepository.findAllById(dto.getRichMilestoneIds());
+
+            milestones.forEach(m -> m.setTravelAndTransport(existing));
+
+            existing.setRichMilestones(milestones);
+        }
         String newPath = FileUpdateUtil.replaceFile(
                 file,
                 existing.getBillInvoicePath(),
@@ -182,6 +208,7 @@ public class TravelAndTransportService {
                         .map(NonTrainingSpiuComments::getFormattedRemark)
                         .toList()
         );
+        dto.setMilestones(entity.getRichMilestones());
         dto.setStatus(entity.getStatus());
 
         return dto;

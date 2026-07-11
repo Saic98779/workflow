@@ -62,4 +62,12 @@ public class TravelAndTransport {
 
     @OneToMany(cascade = CascadeType.ALL,mappedBy = "travelAndTransport")
     private List<NonTrainingAgencyComments> agencyComments;
+
+    @OneToMany(
+            mappedBy = "travelAndTransport",
+            cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY,
+            orphanRemoval = true
+    )
+    private List<RichMilestone> richMilestones = new ArrayList<>();
 }
