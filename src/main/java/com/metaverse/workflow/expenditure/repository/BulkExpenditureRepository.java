@@ -29,4 +29,6 @@ public interface BulkExpenditureRepository extends JpaRepository<BulkExpenditure
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT b FROM BulkExpenditure b WHERE b.bulkExpenditureId = :id")
     Optional<BulkExpenditure> findByIdForUpdate(@Param("id") Long id);
+
+
 }

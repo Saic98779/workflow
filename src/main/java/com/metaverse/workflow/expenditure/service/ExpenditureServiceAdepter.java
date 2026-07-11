@@ -102,7 +102,8 @@ public class ExpenditureServiceAdepter implements ExpenditureService {
                         .mapBulkExpenditure(expenditureRequest, agency, headOfExpense)
 
         );
-        List<ProgramSessionFile> sessionFiles = new ArrayList<>();;
+        List<ProgramSessionFile> sessionFiles = new ArrayList<>();
+        ;
         if (files != null && !files.isEmpty()) {
             List<String> filePaths = programServiceAdapter.storageProgramFiles(files, expenditureRequest.getAgencyId(), "BulkExpenditure");
             sessionFiles = filePaths.stream()
@@ -115,7 +116,7 @@ public class ExpenditureServiceAdepter implements ExpenditureService {
             programSessionFileRepository.saveAll(sessionFiles);
 
         }
-        if(!sessionFiles.isEmpty()) {
+        if (!sessionFiles.isEmpty()) {
             bulkExpenditure.setUploadBillUrl(sessionFiles.get(0).getFilePath());
             bulkExpenditureRepository.save(bulkExpenditure);
         }
@@ -139,7 +140,15 @@ public class ExpenditureServiceAdepter implements ExpenditureService {
                             .stream()
                             .map(ProgramSessionFile::getProgramSessionFileId)
                             .toList();
-                    return ExpenditureResponseMapper.mapBulkExpenditure(bulkExpenditure, fileIds);
+                    List<BulkExpenditureTransactionResponse> transactions =
+                            transactionRepo
+                                    .findByExpenditure_BulkExpenditureId(
+                                            bulkExpenditure.getBulkExpenditureId())
+                                    .stream()
+                                    .map(ExpenditureResponseMapper::mapTransaction)
+                                    .toList();
+                    return ExpenditureResponseMapper.mapBulkExpenditure(bulkExpenditure, fileIds,transactions);
+
                 })
                 .toList();
 
@@ -327,8 +336,8 @@ public class ExpenditureServiceAdepter implements ExpenditureService {
     }
 
     @Override
-    public List<String> getItemsByHeadOfExpense(Integer expenseId,Long agencyId) {
-        return bulkExpenditureRepository.findDistinctItemNamesByHeadOfExpenseAndAgencyId(expenseId,agencyId);
+    public List<String> getItemsByHeadOfExpense(Integer expenseId, Long agencyId) {
+        return bulkExpenditureRepository.findDistinctItemNamesByHeadOfExpenseAndAgencyId(expenseId, agencyId);
     }
 
     @Override
@@ -353,7 +362,7 @@ public class ExpenditureServiceAdepter implements ExpenditureService {
     @Override
     public WorkflowResponse saveProgramExpenditure(ProgramExpenditureRequest expenditureRequest, List<MultipartFile> files) throws DataException {
         List<ProgramSessionFile> sessionFiles = new ArrayList<>();
-                Program program = programRepository.findById(expenditureRequest.getProgramId())
+        Program program = programRepository.findById(expenditureRequest.getProgramId())
                 .orElseThrow(() -> new DataException(
                         "Program details for the program id " + expenditureRequest.getAgencyId() + " do not exist.",
                         "PROGRAM-DETAILS-NOT-FOUND",
@@ -398,7 +407,7 @@ public class ExpenditureServiceAdepter implements ExpenditureService {
                     .toList();
             programSessionFileRepository.saveAll(sessionFiles);
         }
-        if(!sessionFiles.isEmpty()) {
+        if (!sessionFiles.isEmpty()) {
             programExpenditure.setUploadBillUrl(sessionFiles.get(0).getFilePath());
             programExpenditureRepository.save(programExpenditure);
         }
@@ -473,7 +482,7 @@ public class ExpenditureServiceAdepter implements ExpenditureService {
                             .build())
                     .toList();
             programSessionFileRepository.saveAll(sessionFiles);
-            if(!sessionFiles.isEmpty()) {
+            if (!sessionFiles.isEmpty()) {
                 updatedExpenditure.setUploadBillUrl(sessionFiles.get(0).getFilePath());
                 programExpenditureRepository.save(existingExpenditure);
             }
@@ -541,7 +550,7 @@ public class ExpenditureServiceAdepter implements ExpenditureService {
         }
         ExpenditureRequestMapper.updateBulkExpenditure(existingExpenditure, expenditureRequest, agency, headOfExpense);
 
-         BulkExpenditure bulkExpenditure = bulkExpenditureRepository.save(existingExpenditure);
+        BulkExpenditure bulkExpenditure = bulkExpenditureRepository.save(existingExpenditure);
 
         List<ProgramSessionFile> oldFiles = programSessionFileRepository.findByBulkExpenditureId(expenditureId);
         if (!oldFiles.isEmpty()) {
@@ -559,7 +568,7 @@ public class ExpenditureServiceAdepter implements ExpenditureService {
                     .toList();
             programSessionFileRepository.saveAll(sessionFiles);
         }
-        if(!sessionFiles.isEmpty()) {
+        if (!sessionFiles.isEmpty()) {
             bulkExpenditure.setUploadBillUrl(sessionFiles.get(0).getFilePath());
             bulkExpenditureRepository.save(bulkExpenditure);
         }
@@ -647,7 +656,14 @@ public class ExpenditureServiceAdepter implements ExpenditureService {
                             .stream()
                             .map(ProgramSessionFile::getProgramSessionFileId)
                             .toList();
-                    return ExpenditureResponseMapper.mapBulkExpenditure(bulkExpenditure, fileIds);
+                    List<BulkExpenditureTransactionResponse> transactions =
+                            transactionRepo
+                                    .findByExpenditure_BulkExpenditureId(
+                                            bulkExpenditure.getBulkExpenditureId())
+                                    .stream()
+                                    .map(ExpenditureResponseMapper::mapTransaction)
+                                    .toList();
+                    return ExpenditureResponseMapper.mapBulkExpenditure(bulkExpenditure, fileIds,transactions);
                 })
                 .toList();
         return WorkflowResponse.builder().message("Success").status(200)
@@ -756,14 +772,12 @@ public class ExpenditureServiceAdepter implements ExpenditureService {
                 .orElseThrow(() -> new DataException("Expenditure not found", "EXPENDITURE_NOT_FOUND", 400));
 
         // 2. Create and associate SpiuComment
-        if(remarks.getAgencyComments() == null) {
+        if (remarks.getAgencyComments() == null) {
 
             SpiuComments spiuComment = ExpenditureRemarksMapper.mapToEntity(remarks, user);
             spiuComment.setExpenditure(expenditure);
             expenditure.getSpiuComments().add(spiuComment);
-        }
-
-        else {
+        } else {
             // 3. Create and associate AgencyComment
             AgencyComments agencyComment = ExpenditureRemarksMapper.mapToEntityAgencyComments(remarks, user);
             agencyComment.setExpenditure(expenditure); // Ensure bidirectional relationship
@@ -777,7 +791,7 @@ public class ExpenditureServiceAdepter implements ExpenditureService {
 
 
         String userRole = user.getUserRole();
-        if (userRole.equalsIgnoreCase("ADMIN")  || userRole.equalsIgnoreCase("FINANCE") || userRole.equalsIgnoreCase("SPIU")) {
+        if (userRole.equalsIgnoreCase("ADMIN") || userRole.equalsIgnoreCase("FINANCE") || userRole.equalsIgnoreCase("SPIU")) {
 
             // ---- ADMIN → AGENCY ADMIN ----
             Agency agency = expenditure.getAgency();
@@ -814,7 +828,7 @@ public class ExpenditureServiceAdepter implements ExpenditureService {
             notificationService.saveNotification(req);
         }
 
-        if(status != null && (status.equals(BillRemarksStatus.NEED_CLARIFICATION) || status.equals(BillRemarksStatus.REJECTED))){
+        if (status != null && (status.equals(BillRemarksStatus.NEED_CLARIFICATION) || status.equals(BillRemarksStatus.REJECTED))) {
             EmailConfiguration emailConfiguration = null;
             if (expenditure.getProgram() != null && expenditure.getProgram().getAgency() != null) {
                 emailConfiguration = emailConfigurationRepository.findByAgency_AgencyId(expenditure.getProgram().getAgency().getAgencyId());
@@ -933,6 +947,7 @@ public class ExpenditureServiceAdepter implements ExpenditureService {
                 .status(200)
                 .build();
     }
+
     private User getAgencyAdminOrFallback(Agency agency) throws DataException {
         if (agency != null && agency.getUsers() != null) {
             Optional<User> agencyAdmin = agency.getUsers()

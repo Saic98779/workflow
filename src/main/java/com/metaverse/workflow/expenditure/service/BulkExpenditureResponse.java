@@ -39,4 +39,5 @@ BulkExpenditureResponse {
     private String checkDate;
     private Integer consumedQuantity;
     private Integer availableQuantity;
+    private List<BulkExpenditureTransactionResponse> transactions;
 }

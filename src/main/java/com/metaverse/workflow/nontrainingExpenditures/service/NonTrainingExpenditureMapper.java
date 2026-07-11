@@ -44,7 +44,7 @@ public class NonTrainingExpenditureMapper {
                         .map(NonTrainingSpiuComments::getFormattedRemark)
                         .toList()
         );
-
+        dto.setMilestones(entity.getRichMilestones());
         dto.setStatus(entity.getStatus());
         return dto;
     }
