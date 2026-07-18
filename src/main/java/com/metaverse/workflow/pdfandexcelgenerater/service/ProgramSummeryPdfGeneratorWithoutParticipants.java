@@ -15,10 +15,13 @@ import com.metaverse.workflow.program.repository.ProgramSummaryDetailsRepo;
 import com.metaverse.workflow.program.service.ProgramService;
 import com.metaverse.workflow.program.service.ProgramSummary;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
 import java.awt.*;
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.List;
 
@@ -413,18 +416,23 @@ public class ProgramSummeryPdfGeneratorWithoutParticipants {
 
     private Font getStarFont(float size) throws Exception {
 
+        ClassPathResource resource =
+                new ClassPathResource("fonts/NotoSansSymbols2-Regular.ttf");
+
+        File tempFile = File.createTempFile("NotoSansSymbols2-Regular", ".ttf");
+
+        try (InputStream in = resource.getInputStream()) {
+            Files.copy(in, tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        }
+
         BaseFont baseFont = BaseFont.createFont(
-                getClass()
-                        .getClassLoader()
-                        .getResource("fonts/NotoSansSymbols2-Regular.ttf")
-                        .toString(),
+                tempFile.getAbsolutePath(),
                 BaseFont.IDENTITY_H,
                 BaseFont.EMBEDDED
         );
 
         return new Font(baseFont, size, Font.BOLD, Color.ORANGE);
     }
-
     private Image loadImageFromUrl(String url, float w, float h) throws Exception {
         Image img = Image.getInstance(url);
         img.scaleToFit(w, h);
