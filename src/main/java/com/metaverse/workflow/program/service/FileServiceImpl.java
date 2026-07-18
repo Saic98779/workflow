@@ -22,6 +22,8 @@ public class FileServiceImpl implements FileService {
 
     private static final String BASE_PREFIX = "/home/metaverseedu/public_html/";
     private static final String URL_PREFIX = "https://metaverseedu.in/";
+    private static final String WORKFLOW_URL_PREFIX = "https://metaverseedu.in/workflowfiles/";
+    private static final String WORKFLOWFILES_DIR = "workflowfiles/";
 
     @Override
     public List<ProgramFileResponse> getAllProgramFilePathsByStatus(FileType fileType, String userId) throws DataException {
@@ -56,9 +58,25 @@ public class FileServiceImpl implements FileService {
     }
 
     private String toUrl(String fullPath) {
-        return fullPath.startsWith(BASE_PREFIX)
-                ? URL_PREFIX + fullPath.substring(BASE_PREFIX.length())
-                : fullPath;
+        // Handle Windows local paths (C:\ drive paths) - use workflowfiles prefix for local only
+        if (fullPath.matches("^[C-Z]:\\\\.*")) {
+            // Convert Windows path separators to forward slashes and extract relative path
+            String relativePath = fullPath.replace("\\", "/");
+            // Remove drive letter (e.g., C:/)
+            relativePath = relativePath.replaceAll("^[C-Z]:/", "");
+            // If path contains workflowfiles, extract everything after it
+            if (relativePath.contains(WORKFLOWFILES_DIR)) {
+                relativePath = relativePath.substring(relativePath.indexOf(WORKFLOWFILES_DIR) + WORKFLOWFILES_DIR.length());
+            }
+            return WORKFLOW_URL_PREFIX + relativePath;
+        }
+
+        // Handle Linux/Unix paths - use original URL prefix
+        if (fullPath.startsWith(BASE_PREFIX)) {
+            return URL_PREFIX + fullPath.substring(BASE_PREFIX.length());
+        }
+
+        return fullPath;
     }
 }
 
