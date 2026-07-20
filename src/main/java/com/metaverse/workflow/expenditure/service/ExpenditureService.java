@@ -8,6 +8,7 @@ import com.metaverse.workflow.model.HeadOfExpense;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.security.Principal;
 import java.util.List;
 
 public interface ExpenditureService {
@@ -20,7 +21,7 @@ public interface ExpenditureService {
     WorkflowResponse getAllProgramExpenditure(ExpenditureType expenditureType);
     WorkflowResponse getAllProgramExpenditureByProgram(ExpenditureType expenditureType,Long programId);
     WorkflowResponse getAllBulkExpenditureTransactionByProgram(Long programId);
-    BulkExpenditureLookupResponse getBulkExpendituresByExpenseAndItem(BulkExpenditureLookupRequest request) throws DataException;
+    BulkExpenditureLookupResponse getBulkExpendituresByExpenseAndItem(BulkExpenditureLookupRequest request, Principal principal) throws DataException;
     List<String> getItemsByHeadOfExpense(Integer expenseId,Long agencyId) throws DataException;
     List<HeadOfExpense> getAllHeadOfExpenses();
     WorkflowResponse updateProgramExpenditure(Long expenditureId, ProgramExpenditureRequest expenditureRequest, List<MultipartFile> files) throws DataException;

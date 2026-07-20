@@ -10,14 +10,12 @@ import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
 import com.metaverse.workflow.common.util.CommonUtil;
 import com.metaverse.workflow.exceptions.DataException;
-import com.metaverse.workflow.model.Participant;
-import com.metaverse.workflow.model.Program;
-import com.metaverse.workflow.model.ProgramSessionFile;
-import com.metaverse.workflow.model.ProgramSummaryDetails;
+import com.metaverse.workflow.model.*;
 import com.metaverse.workflow.program.repository.ProgramRepository;
 import com.metaverse.workflow.program.repository.ProgramSessionFileRepository;
 import com.metaverse.workflow.program.repository.ProgramSessionRepository;
 import com.metaverse.workflow.program.repository.ProgramSummaryDetailsRepo;
+import com.metaverse.workflow.program.service.FileService;
 import com.metaverse.workflow.program.service.ProgramService;
 import com.metaverse.workflow.program.service.ProgramSummary;
 import lombok.RequiredArgsConstructor;
@@ -33,12 +31,14 @@ import java.io.File;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -47,16 +47,23 @@ public class ProgramSummeryPdfGenerator {
     private final ProgramService programService;
     private final ProgramRepository programRepository;
     private final ProgramSummaryDetailsRepo summaryDetailsRepo;
-    private final ProgramSessionFileRepository programSessionFileRepository;
     private  final ProgramRatingTempRepository programRatingTempRepository;
+    private final FileService fileService;
 
 
     // ================= MAIN METHOD =================
-    public ByteArrayInputStream generateMultipleProgramSummaryPdf(List<Long> programIds) throws DataException {
+    public ByteArrayInputStream generateMultipleProgramSummaryPdf(List<Long> programIds, Principal principal) throws DataException {
 
         if (programIds == null || programIds.isEmpty()) {
             throw new DataException("Program list is empty", "EMPTY_LIST", 400);
         }
+
+        List<ProgramFileResponse> fileResponses =
+                fileService.getAllProgramFilePathsByStatus(FileType.COLLAGE, principal.getName());
+
+        List<ProgramFileResponse> responses = fileResponses.stream()
+                .filter(file -> programIds.contains(file.getProgramId()))
+                .collect(Collectors.toList());
 
         Document document = new Document(PageSize.A4, 50, 20, 20, 0);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -240,7 +247,7 @@ public class ProgramSummeryPdfGenerator {
                 document.add(summaryTable);
                 // ===== COLLAGE =====
                 document.add(sectionTitle("Program Collage", sectionFont));
-                document.add(getCollageTable(program, programId, sectionFont));
+                document.add(getCollageTable(program, programId, sectionFont,responses));
 //====== College Details ========
                 document.add(sectionTitle("College Details", sectionFont));
 
@@ -281,23 +288,32 @@ public class ProgramSummeryPdfGenerator {
     }
 
     // ================= COLLAGE =================
-    private PdfPTable getCollageTable(Program program, Long programId, Font font) {
+    private PdfPTable getCollageTable(Program program, Long programId, Font font,List<ProgramFileResponse> fileResponses) {
 
         PdfPTable table = new PdfPTable(1);
         table.setWidthPercentage(60);
 
         try {
-            String programName = program.getProgramTitle().replace(" ", "%20");
-            String imageUrl = "https://metaverseedu.in/workflowfiles/" +
-                    programId + "/Collage/" + programName + ".png";
 
-            Image img = loadImageFromUrl(imageUrl, 220, 140);
+            String imageUrl = fileResponses.stream()
+                    .filter(file -> programId.equals(file.getProgramId()))
+                    .reduce((first, second) -> second) // Get last matching file
+                    .map(ProgramFileResponse::getFileUrl)
+                    .orElse(null);
+            System.out.println(imageUrl);
 
-            PdfPCell cell = new PdfPCell(img, true);
-            cell.setBorder(Rectangle.NO_BORDER);
-            cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+            if (imageUrl != null && !imageUrl.isBlank()) {
+                imageUrl = imageUrl.replace(" ","%20");
+                Image img = loadImageFromUrl(imageUrl, 220, 140);
+                System.out.println(imageUrl);
+                PdfPCell cell = new PdfPCell(img, true);
+                cell.setBorder(Rectangle.NO_BORDER);
+                cell.setHorizontalAlignment(Element.ALIGN_CENTER);
 
-            table.addCell(cell);
+                table.addCell(cell);
+            } else {
+                table.addCell(new PdfPCell(new Phrase("Image not available", font)));
+            }
 
         } catch (Exception e) {
             table.addCell(new PdfPCell(new Phrase("Image not available", font)));
