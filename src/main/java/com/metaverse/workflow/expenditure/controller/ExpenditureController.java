@@ -195,7 +195,7 @@ public class ExpenditureController {
     public ResponseEntity<?> getExpendituresByExpenseAndItem(Principal principal,
             @RequestBody BulkExpenditureLookupRequest request) throws DataException {
         try {
-            BulkExpenditureLookupResponse result = expenditureService.getBulkExpendituresByExpenseAndItem(request);
+            BulkExpenditureLookupResponse result = expenditureService.getBulkExpendituresByExpenseAndItem(request,principal);
             return ResponseEntity.ok(result);
         }
         catch (DataException ex) {

@@ -190,7 +190,7 @@ public class FileGeneratorController {
     @GetMapping(value = "/program/summary/pdf", produces = MediaType.APPLICATION_PDF_VALUE)
     public ResponseEntity<?> generateProgramSummeryPDF(
             @RequestParam(required = false) Long programId,
-            @RequestParam(required = false) Long agencyId) {
+            @RequestParam(required = false) Long agencyId,Principal principal) {
 
         try {
             List<Long> programIds = new ArrayList<>();
@@ -216,7 +216,7 @@ public class FileGeneratorController {
 
             ByteArrayInputStream bis;
             try {
-                bis = programSummeryPdfGenerator.generateMultipleProgramSummaryPdf(programIds);
+                bis = programSummeryPdfGenerator.generateMultipleProgramSummaryPdf(programIds,principal);
             } catch (DataException e) {
                 return ResponseEntity.status(400).body(e.getMessage());
             }
@@ -523,7 +523,8 @@ public class FileGeneratorController {
     @GetMapping(value = "/program/summary-without-participant/pdf/", produces = MediaType.APPLICATION_PDF_VALUE)
     public ResponseEntity<?> generateProgramSummeryPDFWithoutParticipants(
             @RequestParam(required = false) Long programId,
-            @RequestParam(required = false) Long agencyId) {
+            @RequestParam(required = false) Long agencyId,
+            Principal principal) {
 
         try {
             List<Long> programIds = new ArrayList<>();
@@ -550,7 +551,7 @@ public class FileGeneratorController {
                 return ResponseEntity.badRequest().body("Please provide programId or agencyId");
             }
 
-            ByteArrayInputStream bis = programSummeryPdfGeneratorWithoutParticipants.generateMultipleProgramSummaryPdf(programIds);
+            ByteArrayInputStream bis = programSummeryPdfGeneratorWithoutParticipants.generateMultipleProgramSummaryPdf(programIds,principal);
             String name = CommonUtil.agencyMap.get(agencyId);
 
             HttpHeaders headers = new HttpHeaders();

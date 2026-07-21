@@ -7,11 +7,14 @@ import com.lowagie.text.Image;
 import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.*;;
 import com.metaverse.workflow.exceptions.DataException;
+import com.metaverse.workflow.model.FileType;
 import com.metaverse.workflow.model.Program;
+import com.metaverse.workflow.model.ProgramFileResponse;
 import com.metaverse.workflow.model.ProgramSummaryDetails;
 import com.metaverse.workflow.program.repository.ProgramRepository;
 import com.metaverse.workflow.program.repository.ProgramSessionFileRepository;
 import com.metaverse.workflow.program.repository.ProgramSummaryDetailsRepo;
+import com.metaverse.workflow.program.service.FileService;
 import com.metaverse.workflow.program.service.ProgramService;
 import com.metaverse.workflow.program.service.ProgramSummary;
 import lombok.RequiredArgsConstructor;
@@ -22,8 +25,10 @@ import java.awt.*;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.security.Principal;
 import java.util.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -33,13 +38,20 @@ public class ProgramSummeryPdfGeneratorWithoutParticipants {
     private final ProgramRepository programRepository;
     private final ProgramSummaryDetailsRepo summaryDetailsRepo;
     private  final ProgramRatingTempRepository programRatingTempRepository;
-    private final ProgramSessionFileRepository programSessionFileRepository;
+    private final FileService fileService;
 
-    public ByteArrayInputStream generateMultipleProgramSummaryPdf(List<Long> programIds) throws DataException {
+    public ByteArrayInputStream generateMultipleProgramSummaryPdf(List<Long> programIds, Principal principal) throws DataException {
 
         if (programIds == null || programIds.isEmpty()) {
             throw new DataException("Program list is empty", "EMPTY_LIST", 400);
         }
+
+        List<ProgramFileResponse> fileResponses =
+                fileService.getAllProgramFilePathsByStatus(FileType.COLLAGE, principal.getName());
+
+        List<ProgramFileResponse> responses = fileResponses.stream()
+                .filter(file -> programIds.contains(file.getProgramId()))
+                .collect(Collectors.toList());
 
         Document document = new Document(PageSize.A4, 50, 20, 20, 0);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -207,7 +219,7 @@ public class ProgramSummeryPdfGeneratorWithoutParticipants {
                 document.add(summaryTable);
                 // ===== COLLAGE =====
                 document.add(sectionTitle("Program Collage", sectionFont));
-                document.add(getCollageTable(program, programId, sectionFont));
+                document.add(getCollageTable(program, programId, sectionFont,responses));
 
                 //====== College Details ========
                 document.add(sectionTitle("College Details", sectionFont));
@@ -269,7 +281,7 @@ public class ProgramSummeryPdfGeneratorWithoutParticipants {
         return cell;
     }
 
-    private PdfPTable getCollageTable(Program program, Long programId, Font font) {
+    /*private PdfPTable getCollageTable(Program program, Long programId, Font font) {
 
         PdfPTable table = new PdfPTable(1);
         table.setWidthPercentage(60);
@@ -286,6 +298,39 @@ public class ProgramSummeryPdfGeneratorWithoutParticipants {
             cell.setHorizontalAlignment(Element.ALIGN_CENTER);
 
             table.addCell(cell);
+
+        } catch (Exception e) {
+            table.addCell(new PdfPCell(new Phrase("Image not available", font)));
+        }
+
+        return table;
+    }*/
+    private PdfPTable getCollageTable(Program program, Long programId, Font font,List<ProgramFileResponse> fileResponses) {
+
+        PdfPTable table = new PdfPTable(1);
+        table.setWidthPercentage(60);
+
+        try {
+
+            String imageUrl = fileResponses.stream()
+                    .filter(file -> programId.equals(file.getProgramId()))
+                    .reduce((first, second) -> second) // Get last matching file
+                    .map(ProgramFileResponse::getFileUrl)
+                    .orElse(null);
+            System.out.println(imageUrl);
+
+            if (imageUrl != null && !imageUrl.isBlank()) {
+                imageUrl = imageUrl.replace(" ","%20");
+                Image img = loadImageFromUrl(imageUrl, 220, 140);
+                System.out.println(imageUrl);
+                PdfPCell cell = new PdfPCell(img, true);
+                cell.setBorder(Rectangle.NO_BORDER);
+                cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+
+                table.addCell(cell);
+            } else {
+                table.addCell(new PdfPCell(new Phrase("Image not available", font)));
+            }
 
         } catch (Exception e) {
             table.addCell(new PdfPCell(new Phrase("Image not available", font)));

@@ -30,5 +30,6 @@ public interface BulkExpenditureRepository extends JpaRepository<BulkExpenditure
     @Query("SELECT b FROM BulkExpenditure b WHERE b.bulkExpenditureId = :id")
     Optional<BulkExpenditure> findByIdForUpdate(@Param("id") Long id);
 
+    BulkExpenditure findByHeadOfExpenseAndItemNameIgnoreCaseAndAgency_AgencyId(HeadOfExpense headOfExpense, String itemName,Long agencyId);
 
 }

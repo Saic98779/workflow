@@ -32,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.security.Principal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -327,11 +328,37 @@ public class ExpenditureServiceAdepter implements ExpenditureService {
                 .build();
     }
 
-    @Override
+    /*@Override
     public BulkExpenditureLookupResponse getBulkExpendituresByExpenseAndItem(BulkExpenditureLookupRequest request) throws DataException {
         HeadOfExpense headOfExpense = headOfExpenseRepository.findById(request.getExpenseId())
                 .orElseThrow(() -> new DataException("Head of Expense not found", "HEAD-OF-EXPENSE-NOT-FOUND", 400));
         BulkExpenditure bulkExpenditure = bulkExpenditureRepository.findByHeadOfExpenseAndItemNameIgnoreCase(headOfExpense, request.getItemName());
+        return ExpenditureResponseMapper.mapBulkExpenditureDetails(bulkExpenditure);
+    }*/
+    @Override
+    public BulkExpenditureLookupResponse getBulkExpendituresByExpenseAndItem(
+            BulkExpenditureLookupRequest request,
+            Principal principal) throws DataException {
+
+        User user = userRepo.findByUserId(principal.getName())
+                .orElseThrow(() -> new DataException(
+                        "User not found",
+                        "USER_NOT_FOUND",
+                        400));
+
+        HeadOfExpense headOfExpense = headOfExpenseRepository.findById(request.getExpenseId())
+                .orElseThrow(() -> new DataException(
+                        "Head of Expense not found",
+                        "HEAD-OF-EXPENSE-NOT-FOUND",
+                        400));
+
+        BulkExpenditure bulkExpenditure =
+                bulkExpenditureRepository.findByHeadOfExpenseAndItemNameIgnoreCaseAndAgency_AgencyId(
+                        headOfExpense,
+                        request.getItemName(),
+                        user.getAgency().getAgencyId()
+                );
+
         return ExpenditureResponseMapper.mapBulkExpenditureDetails(bulkExpenditure);
     }
 
