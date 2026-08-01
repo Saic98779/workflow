@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.metaverse.workflow.activitylog.ActivityLogService;
+import com.metaverse.workflow.audit.ApiModule;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.common.util.RestControllerBase;
 import com.metaverse.workflow.enums.BillRemarksStatus;
@@ -30,6 +31,7 @@ import java.util.List;
 @RequestMapping("/api/travel")
 @Tag(name = "Non Training", description = "Travel and Transport APIs")
 @RequiredArgsConstructor
+@ApiModule("TravelAndTransport")
 public class TravelAndTransportController {
 
     private final TravelAndTransportService travelService;

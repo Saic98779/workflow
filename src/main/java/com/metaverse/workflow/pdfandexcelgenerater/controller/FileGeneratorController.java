@@ -25,8 +25,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.metaverse.workflow.audit.ApiModule;
+
 @RestController
 @RequiredArgsConstructor
+@ApiModule("FileGenerator")
 public class FileGeneratorController {
     private final MoMSMEExcelGenerator moMSMEExcelGenerator;
     private final TrainingProgramExcelGenerator excelGenerator;

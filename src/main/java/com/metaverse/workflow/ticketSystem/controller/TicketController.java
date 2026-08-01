@@ -1,6 +1,7 @@
 package com.metaverse.workflow.ticketSystem.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.metaverse.workflow.audit.ApiModule;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.enums.TicketStatus;
 import com.metaverse.workflow.model.Ticket;
@@ -30,6 +31,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/tickets")
 @RequiredArgsConstructor
+@ApiModule("Ticket")
 public class TicketController {
 
     private final TicketService ticketService;

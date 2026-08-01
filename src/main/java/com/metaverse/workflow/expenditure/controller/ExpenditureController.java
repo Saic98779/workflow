@@ -3,6 +3,7 @@ package com.metaverse.workflow.expenditure.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.metaverse.workflow.activitylog.ActivityLogService;
+import com.metaverse.workflow.audit.ApiModule;
 import com.metaverse.workflow.common.enums.ExpenditureType;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.common.util.CommonUtil;
@@ -10,9 +11,7 @@ import com.metaverse.workflow.common.util.RestControllerBase;
 import com.metaverse.workflow.enums.BillRemarksStatus;
 import com.metaverse.workflow.exceptions.*;
 import com.metaverse.workflow.expenditure.service.*;
-import com.metaverse.workflow.model.Agency;
 import com.metaverse.workflow.model.HeadOfExpense;
-import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
@@ -29,6 +28,7 @@ import java.security.Principal;
 import java.security.PrivateKey;
 import java.util.List;
 
+@ApiModule("Expenditure")
 @RestController
 public class ExpenditureController {
     @Autowired
@@ -274,5 +274,3 @@ public class ExpenditureController {
     }
 
 }
-
-

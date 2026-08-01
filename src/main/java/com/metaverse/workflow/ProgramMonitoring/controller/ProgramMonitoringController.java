@@ -16,9 +16,12 @@ import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 
+import com.metaverse.workflow.audit.ApiModule;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/new")
+@ApiModule("ProgramMonitoring")
 public class ProgramMonitoringController {
     private final ProgramMonitoringService programService;
     private final ProgramMonitoringRepo feedbackRepository;

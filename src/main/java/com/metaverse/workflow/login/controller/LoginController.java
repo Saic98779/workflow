@@ -9,6 +9,7 @@ import com.metaverse.workflow.login.service.LoginService;
 import com.metaverse.workflow.login.service.LoginUserRequest;
 import com.metaverse.workflow.login.service.LoginUserResponse;
 import com.metaverse.workflow.program.controller.ProgramController;
+import com.metaverse.workflow.audit.ApiModule;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -27,6 +28,7 @@ import java.security.Principal;
 
 @RestController
 @AllArgsConstructor
+@ApiModule("Login")
 public class LoginController {
 
     @Autowired
@@ -116,8 +118,3 @@ public class LoginController {
         return ResponseEntity.ok(response);
     }
 }
-
-
-
-
-

@@ -12,6 +12,7 @@ import com.metaverse.workflow.security.dto.AuthenticationRequest;
 import com.metaverse.workflow.security.dto.AuthenticationResponse;
 import com.metaverse.workflow.security.dto.RegisterRequest;
 import com.metaverse.workflow.security.service.JwtService;
+import com.metaverse.workflow.audit.ApiModule;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +35,7 @@ import java.util.Optional;
 @RequestMapping("/auth")
 @RequiredArgsConstructor
 @Tag(name = "Authentication", description = "Authentication API")
+@ApiModule("Authentication")
 public class AuthenticationController {
 
     private final AuthenticationManager authenticationManager;

@@ -1,6 +1,7 @@
 package com.metaverse.workflow.organization.controller;
 
 import com.metaverse.workflow.activitylog.ActivityLogService;
+import com.metaverse.workflow.audit.ApiModule;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.nontrainingExpenditures.controller.WeHubController;
 import com.metaverse.workflow.organization.service.OrganizationRequest;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
 
 @RestController
+@ApiModule("organization")
 public class OrganizationController {
 
     @Autowired

@@ -1,6 +1,7 @@
 package com.metaverse.workflow.visitorcount.controller;
 
 import com.metaverse.workflow.activitylog.ActivityLogService;
+import com.metaverse.workflow.audit.ApiModule;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.visitorcount.service.VisitorCountRequest;
 import com.metaverse.workflow.visitorcount.service.VisitorCountService;
@@ -12,6 +13,7 @@ import java.security.Principal;
 
 @RestController
 @RequestMapping("/visitor-count")
+@ApiModule("visit-count")
 public class VisitorCountController {
 
     @Autowired

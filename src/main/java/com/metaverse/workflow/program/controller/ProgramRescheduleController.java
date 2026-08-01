@@ -1,5 +1,6 @@
 package com.metaverse.workflow.program.controller;
 
+import com.metaverse.workflow.audit.ApiModule;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.common.util.ApplicationAPIResponse;
 import com.metaverse.workflow.program.service.ProgramRescheduleResponse;
@@ -16,6 +17,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/program-reschedule-data")
 @RequiredArgsConstructor
+@ApiModule("ProgramReschedule")
 public class ProgramRescheduleController {
 
     private final ProgramRescheduleService programRescheduleService;

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.metaverse.workflow.activitylog.ActivityLogService;
 import com.metaverse.workflow.aleap_handholding.request_dto.*;
 import com.metaverse.workflow.aleap_handholding.service.*;
+import com.metaverse.workflow.audit.ApiModule;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.common.util.RestControllerBase;
 import com.metaverse.workflow.exceptions.DataException;
@@ -24,6 +25,7 @@ import java.security.Principal;
 @RequestMapping("/unified-handholding")
 @RequiredArgsConstructor
 @Tag(name = "Unified", description = "Aleap Handholding")
+@ApiModule("UnifiedHandHolding")
 public class UnifiedHandHoldingController extends RestControllerBase {
 
     private static final Logger log = LoggerFactory.getLogger(UnifiedHandHoldingController.class);

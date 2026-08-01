@@ -2,6 +2,7 @@ package com.metaverse.workflow.ProgramMonitoring.controller;
 
 import com.metaverse.workflow.ProgramMonitoring.dto.JDApprovalsDto;
 import com.metaverse.workflow.ProgramMonitoring.service.JDApprovalsService;
+import com.metaverse.workflow.audit.ApiModule;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/jd-approvals")
 @RequiredArgsConstructor
+@ApiModule("jd-approval")
 public class JDApprovalsController {
 
     private final JDApprovalsService service;

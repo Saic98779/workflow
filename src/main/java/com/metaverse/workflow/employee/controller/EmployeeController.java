@@ -2,12 +2,14 @@ package com.metaverse.workflow.employee.controller;
 
 import com.metaverse.workflow.employee.service.EmployeeDTO;
 import com.metaverse.workflow.employee.service.EmployeeService;
+import com.metaverse.workflow.audit.ApiModule;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@ApiModule("Employee")
 @RestController
 @RequestMapping("/api/employees")
 @RequiredArgsConstructor
