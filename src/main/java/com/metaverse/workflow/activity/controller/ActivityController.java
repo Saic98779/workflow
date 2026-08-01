@@ -2,12 +2,14 @@ package com.metaverse.workflow.activity.controller;
 
 import com.metaverse.workflow.activity.sevice.ActivityRequest;
 import com.metaverse.workflow.activity.sevice.ActivityService;
+import com.metaverse.workflow.audit.ApiModule;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@ApiModule("Activity")
 @RestController
 public class ActivityController {
 

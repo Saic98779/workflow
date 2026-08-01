@@ -13,6 +13,7 @@ import com.metaverse.workflow.program.repository.ProgramRepository;
 import com.metaverse.workflow.program.service.ProgramResponse;
 import com.metaverse.workflow.program.service.ProgramResponseMapper;
 import com.metaverse.workflow.resouce.service.ResourceResponse;
+import com.metaverse.workflow.audit.ApiModule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -30,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@ApiModule("Agency")
 @RestController
 public class AgencyController {
 

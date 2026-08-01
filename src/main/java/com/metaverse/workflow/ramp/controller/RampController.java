@@ -1,5 +1,6 @@
 package com.metaverse.workflow.ramp.controller;
 
+import com.metaverse.workflow.audit.ApiModule;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.ramp.service.DistrictProgramReport;
 import com.metaverse.workflow.ramp.service.RampEnrollmentRequest;
@@ -13,6 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/ramp")
+@ApiModule("Ramp")
 public class RampController {
 
     @Autowired
@@ -35,4 +37,3 @@ public class RampController {
         return ResponseEntity.ok(rampService.getDistrictWiseReport());
     }
 }
-

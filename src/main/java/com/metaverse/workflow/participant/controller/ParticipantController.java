@@ -8,6 +8,7 @@ import com.metaverse.workflow.organization.repository.OrganizationRepository;
 import com.metaverse.workflow.participant.repository.ParticipantRepository;
 import com.metaverse.workflow.participant.service.ParticipantRequest;
 import com.metaverse.workflow.participant.service.ParticipantService;
+import com.metaverse.workflow.audit.ApiModule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -19,6 +20,7 @@ import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 
+@ApiModule("Participant")
 @RestController
 public class ParticipantController {
 

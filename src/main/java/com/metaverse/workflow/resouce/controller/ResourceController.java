@@ -17,6 +17,9 @@ import com.metaverse.workflow.resouce.service.ResourceService;
 
 import java.security.Principal;
 
+import com.metaverse.workflow.audit.ApiModule;
+
+@ApiModule("Resource")
 @RestController
 public class ResourceController {
 

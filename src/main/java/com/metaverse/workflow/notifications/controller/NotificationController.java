@@ -1,5 +1,6 @@
 package com.metaverse.workflow.notifications.controller;
 
+import com.metaverse.workflow.audit.ApiModule;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.notifications.dto.GlobalNotificationRequest;
 import com.metaverse.workflow.notifications.dto.GlobalNotificationResponse;
@@ -16,6 +17,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/notifications")
+@ApiModule("Notification")
 public class NotificationController {
 
     private final NotificationServiceImpl notificationService;

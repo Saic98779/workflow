@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.metaverse.workflow.activitylog.ActivityLogService;
+import com.metaverse.workflow.audit.ApiModule;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.common.util.RestControllerBase;
 import com.metaverse.workflow.enums.BillRemarksStatus;
@@ -32,6 +33,7 @@ import java.util.List;
 @RequestMapping("/non-training")
 @Tag(name = "Non Training", description = "Non-Training Expenditure APIs")
 @RequiredArgsConstructor
+@ApiModule("NonTrainingExpenditure")
 public class NonTrainingExpenditureController extends RestControllerBase {
 
     private final NonTrainingExpenditureService service;

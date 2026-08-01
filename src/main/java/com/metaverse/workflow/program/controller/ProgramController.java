@@ -1,6 +1,7 @@
 package com.metaverse.workflow.program.controller;
 
 import com.metaverse.workflow.activitylog.ActivityLogService;
+import com.metaverse.workflow.audit.ApiModule;
 import com.metaverse.workflow.common.constants.ProgramStatusConstants;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.common.util.RestControllerBase;
@@ -38,6 +39,7 @@ import java.util.List;
 
 @RestController
 @AllArgsConstructor
+@ApiModule("Program")
 public class ProgramController {
 
     @Autowired

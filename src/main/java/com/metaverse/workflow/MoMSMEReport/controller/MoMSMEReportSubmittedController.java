@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.metaverse.workflow.MoMSMEReport.service.MoMSMEReportDto;
 import com.metaverse.workflow.MoMSMEReport.service.MoMSMEReportSubmittedDto;
 import com.metaverse.workflow.MoMSMEReport.service.MoMSMEReportSubmittedService;
+import com.metaverse.workflow.audit.ApiModule;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.common.util.RestControllerBase;
 import com.metaverse.workflow.dto.CentralRampRequestDto;
@@ -23,6 +24,7 @@ import org.springframework.web.client.RestTemplate;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/momsme")
+@ApiModule("MOMSME")
 public class MoMSMEReportSubmittedController {
 
     private static final String MOMSME_URL = "https://ramp.msme.gov.in/ramp_staging/api/recieve.php";
