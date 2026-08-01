@@ -636,7 +636,10 @@ public class ExpenditureServiceAdepter implements ExpenditureService {
 
         BulkExpenditureTransaction existingTransaction = transactionRepo.findById(transactionId)
                 .orElseThrow(() -> new DataException("Transaction not found", "TRANSACTION-NOT-FOUND", 404));
-        BulkExpenditure bulkExpenditure = existingTransaction.getExpenditure();
+
+        BulkExpenditure bulkExpenditure = bulkExpenditureRepository.findByIdForUpdate(existingTransaction.getExpenditure().getBulkExpenditureId())
+                .orElseThrow(() -> new DataException("Bulk expenditure data not found", "BULK-EXPENDITURE-DATA-NOT-FOUND", 400));
+
         if (bulkExpenditure == null) {
             throw new DataException("Bulk expenditure data not linked", "BULK-EXPENDITURE-NOT-FOUND", 400);
         }
