@@ -3,6 +3,7 @@ package com.metaverse.workflow.model;
 import com.metaverse.workflow.model.aleap_handholding.AccessToPackagingLabellingAndBranding;
 import com.metaverse.workflow.model.aleap_handholding.BusinessPlanDetails;
 import com.metaverse.workflow.model.aleap_handholding.FormalisationCompliance;
+import com.metaverse.workflow.model.aleap_handholding.SurveyReport;
 import com.metaverse.workflow.model.tgtpc_handholding.TestingQualityCertificationSupport;
 import jakarta.persistence.*;
 import lombok.*;
@@ -88,6 +89,10 @@ public class ProgramSessionFile {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "nimsme_vdp_id")
     private  NimsmeVDP nimsmeVDP;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "survey_report_id")
+    private SurveyReport surveyReport;
 
 
 }
