@@ -104,7 +104,7 @@ public class ExpenditureRequestMapper {
         existingExpenditure.setItemName(expenditureRequest.getItemName());
         existingExpenditure.setPurchaseDate(DateUtil.stringToDate(expenditureRequest.getPurchaseDate(), "dd-MM-yyyy"));
         existingExpenditure.setPurchasedQuantity(expenditureRequest.getPurchasedQuantity());
-        existingExpenditure.setAvailableQuantity(expenditureRequest.getPurchasedQuantity()); // Optional: only if full reset is desired
+        existingExpenditure.setAvailableQuantity(expenditureRequest.getPurchasedQuantity()-existingExpenditure.getConsumedQuantity()); // Optional: only if full reset is desired
         existingExpenditure.setConsumedQuantity(existingExpenditure.getConsumedQuantity()); // Optional: reset logic – change if not desired during update
         existingExpenditure.setUnitCost(expenditureRequest.getUnitCost());
         existingExpenditure.setTotalCost(expenditureRequest.getUnitCost() * expenditureRequest.getPurchasedQuantity());

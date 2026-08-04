@@ -98,4 +98,6 @@ public interface ProgramSessionFileRepository extends JpaRepository<ProgramSessi
 
     void deleteByNimsmeVDP_NimsmeVdpId(Long nimsmeVdpId);
 
+    Optional<ProgramSessionFile> findBySurveyReportId(Long surveyReportId);
+    void deleteBySurveyReport_Id(Long id);
 }
