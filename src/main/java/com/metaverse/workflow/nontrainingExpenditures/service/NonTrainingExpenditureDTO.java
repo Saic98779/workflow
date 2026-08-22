@@ -34,7 +34,7 @@ public class NonTrainingExpenditureDTO {
     private List<Long> richMilestoneIds;
     private List<RichMilestone> milestones;
     private String achievementDetails;
-    private String supportDocument;
+    private String supportDocumentUrl;
 
 
 }
