@@ -7,7 +7,6 @@ import com.metaverse.workflow.common.fileservice.StorageService;
 import com.metaverse.workflow.common.response.WorkflowResponse;
 import com.metaverse.workflow.common.util.DateUtil;
 import com.metaverse.workflow.enums.BillRemarksStatus;
-import com.metaverse.workflow.enums.RemarkBy;
 import com.metaverse.workflow.exceptions.DataException;
 import com.metaverse.workflow.login.repository.LoginRepository;
 import com.metaverse.workflow.model.*;
@@ -81,7 +80,7 @@ public class NonTrainingExpenditureService {
 
         if (supportDocument != null && !supportDocument.isEmpty()) {
             String filePath = this.storageFiles(file, save.getId(), "NonTrainingExpenditure");
-            save.setSupportDocument(filePath);
+            save.setSupportDocumentUrl(filePath);
             repository.save(save);
             programSessionFileRepository.save(ProgramSessionFile.builder()
                     .fileType("File")
@@ -134,11 +133,11 @@ public class NonTrainingExpenditureService {
         updated.setUploadBillUrl(newPath);
         String newPath1 = FileUpdateUtil.replaceFile(
                 supportDocument,
-                updated.getSupportDocument(),
+                updated.getSupportDocumentUrl(),
                 (uploadedFile) -> this.storageFiles(supportDocument, updated.getId(), "NonTrainingExpenditure"),
                 () -> repository.save(updated)
         );
-        updated.setSupportDocument(newPath1);
+        updated.setSupportDocumentUrl(newPath1);
         // Update milestones (optional)
         if (dto.getRichMilestoneIds() != null) {
 
