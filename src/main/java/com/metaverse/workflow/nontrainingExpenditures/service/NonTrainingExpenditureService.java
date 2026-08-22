@@ -46,7 +46,7 @@ public class NonTrainingExpenditureService {
     private final NonTrainingActivityRepository nonTrainingActivityRepository;
     private final RichMilestoneRepository richMilestoneRepository;
 
-    public WorkflowResponse create(NonTrainingExpenditureDTO dto, MultipartFile file) throws DataException {
+    public WorkflowResponse create(NonTrainingExpenditureDTO dto, MultipartFile file,MultipartFile supportDocument) throws DataException {
         Agency agency = agencyRepository.findById(dto.getAgencyId())
                 .orElseThrow(() -> new DataException("Agency not found", "AGENCY_NOT_FOUND", 400));
         NonTrainingSubActivity subActivity = nonTrainingSubActivityRepository.findById(dto.getNonTrainingSubActivityId())
@@ -79,6 +79,17 @@ public class NonTrainingExpenditureService {
                     .build());
         }
 
+        if (supportDocument != null && !supportDocument.isEmpty()) {
+            String filePath = this.storageFiles(file, save.getId(), "NonTrainingExpenditure");
+            save.setSupportDocument(filePath);
+            repository.save(save);
+            programSessionFileRepository.save(ProgramSessionFile.builder()
+                    .fileType("File")
+                    .filePath(filePath)
+                    .nonTrainingExpenditure(save)
+                    .build());
+        }
+
         return WorkflowResponse.builder()
                 .status(200)
                 .message("Success")
@@ -98,7 +109,7 @@ public class NonTrainingExpenditureService {
     }
 
 
-    public NonTrainingExpenditureDTO update(Long id, NonTrainingExpenditureDTO dto, MultipartFile file) throws DataException {
+    public NonTrainingExpenditureDTO update(Long id, NonTrainingExpenditureDTO dto, MultipartFile file,MultipartFile supportDocument) throws DataException {
         NonTrainingExpenditure existing = repository.findById(id)
                 .orElseThrow(() -> new DataException("Expenditure not found", "EXPENDITURE_NOT_FOUND", 400));
 
@@ -121,6 +132,13 @@ public class NonTrainingExpenditureService {
                 () -> repository.save(updated)
         );
         updated.setUploadBillUrl(newPath);
+        String newPath1 = FileUpdateUtil.replaceFile(
+                supportDocument,
+                updated.getSupportDocument(),
+                (uploadedFile) -> this.storageFiles(supportDocument, updated.getId(), "NonTrainingExpenditure"),
+                () -> repository.save(updated)
+        );
+        updated.setSupportDocument(newPath1);
         // Update milestones (optional)
         if (dto.getRichMilestoneIds() != null) {
 

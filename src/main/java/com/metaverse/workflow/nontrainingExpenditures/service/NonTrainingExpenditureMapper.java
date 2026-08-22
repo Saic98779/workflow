@@ -46,6 +46,8 @@ public class NonTrainingExpenditureMapper {
         );
         dto.setMilestones(entity.getRichMilestones());
         dto.setStatus(entity.getStatus());
+        dto.setSupportDocument(entity.getSupportDocument());
+        dto.setAchievementDetails(entity.getAchievementDetails());
         return dto;
     }
 

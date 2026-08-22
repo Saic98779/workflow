@@ -109,4 +109,10 @@ public class NonTrainingExpenditure {
     )
     private List<RichMilestone> richMilestones = new ArrayList<>();
 
+    @Column(name = "support_document")
+    private String supportDocument;
+
+    @Column(name="achievement_details",columnDefinition = "TEXT")
+    private String achievementDetails;
+
 }
