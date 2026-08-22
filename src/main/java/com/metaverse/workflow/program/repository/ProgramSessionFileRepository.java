@@ -74,6 +74,7 @@ public interface ProgramSessionFileRepository extends JpaRepository<ProgramSessi
     @Query("UPDATE ProgramSessionFile p SET p.filePath = :filePath WHERE p.nonTrainingExpenditure.id = :nonTrainingExpenditureId")
     int updateFilePathByNonTrainingExpenditureId(@Param("filePath") String filePath, @Param("nonTrainingExpenditureId") Long nonTrainingExpenditureId);
 
+
     @Transactional
     @Modifying(clearAutomatically = true)
     @Query("UPDATE ProgramSessionFile p SET p.filePath = :filePath WHERE p.nonTrainingResourceExpenditure.nonTrainingResourceExpenditureId = :nonTrainingResourceExpenditureId")

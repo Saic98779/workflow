@@ -43,11 +43,14 @@ public class NonTrainingExpenditureController extends RestControllerBase {
     private final static Logger log =  LogManager.getLogger(NonTrainingExpenditureController.class);
 
     @PostMapping(path = "/save",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> create(Principal principal, @RequestPart("dto") String dto, @RequestPart(value = "file", required = false) MultipartFile file) {
+    public ResponseEntity<?> create(Principal principal, @RequestPart("dto") String dto,
+                                    @RequestPart(value = "file", required = false) MultipartFile file,
+                                    @RequestPart(value = "supportDocument", required = false) MultipartFile supportDocument
+    ) {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             NonTrainingExpenditureDTO nonTrainingExpenditureDTO = objectMapper.readValue(dto, NonTrainingExpenditureDTO.class);
-            WorkflowResponse response = service.create(nonTrainingExpenditureDTO,file);
+            WorkflowResponse response = service.create(nonTrainingExpenditureDTO,file,supportDocument);
             logService.logs(principal.getName(), "SAVE", "Non-Training Expenditure created successfully", "NonTrainingExpenditure", "/non-training/save");
             log.info("NonTrainingExpenditure created successfully");
             return ResponseEntity.ok(response);
@@ -91,11 +94,13 @@ public class NonTrainingExpenditureController extends RestControllerBase {
     }
 
     @PutMapping(path = "/update/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> update(@PathVariable Long id, @RequestPart String dto,Principal principal, @RequestPart(value = "files", required = false)MultipartFile file) {
+    public ResponseEntity<?> update(@PathVariable Long id, @RequestPart String dto,Principal principal,
+                                    @RequestPart(value = "files", required = false)MultipartFile file,
+                                    @RequestPart(value = "supportDocument", required = false) MultipartFile supportDocument) {
         try { //NonTrainingExpenditureDTO
             ObjectMapper objectMapper = new ObjectMapper();
             NonTrainingExpenditureDTO nonTrainingExpenditureDTO =    objectMapper.readValue(dto,NonTrainingExpenditureDTO.class);
-            NonTrainingExpenditureDTO updated = service.update(id, nonTrainingExpenditureDTO,file);
+            NonTrainingExpenditureDTO updated = service.update(id, nonTrainingExpenditureDTO,file,supportDocument);
             logService.logs(principal.getName(), "UPDATE", "Non-Training Expenditure updated successfully | ID: " + id, "NonTrainingExpenditure", "/non-training/update/" + id);
             log.info("NonTrainingExpenditure updated successfully");
             return ResponseEntity.ok(

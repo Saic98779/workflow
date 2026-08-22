@@ -33,6 +33,8 @@ public class NonTrainingExpenditureDTO {
     private BillRemarksStatus status;
     private List<Long> richMilestoneIds;
     private List<RichMilestone> milestones;
+    private String achievementDetails;
+    private String supportDocument;
 
 
 }
