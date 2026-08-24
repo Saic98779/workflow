@@ -74,6 +74,7 @@ public class NonTrainingExpenditureMapper {
         entity.setNonTrainingActivity(activity);
         entity.setCheckNo(dto.getCheckNo());
         entity.setCheckDate(DateUtil.covertStringToDate(dto.getCheckDate()));
+        entity.setAchievementDetails(dto.getAchievementDetails());
         return entity;
     }
 
