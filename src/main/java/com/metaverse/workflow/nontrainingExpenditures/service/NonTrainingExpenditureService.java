@@ -79,7 +79,7 @@ public class NonTrainingExpenditureService {
         }
 
         if (supportDocument != null && !supportDocument.isEmpty()) {
-            String filePath = this.storageFiles(file, save.getId(), "NonTrainingExpenditure");
+            String filePath = this.storageFiles(supportDocument, save.getId(), "NonTrainingExpenditure");
             save.setSupportDocumentUrl(filePath);
             repository.save(save);
             programSessionFileRepository.save(ProgramSessionFile.builder()
