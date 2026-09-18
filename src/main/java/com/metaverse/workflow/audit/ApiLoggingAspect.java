@@ -14,6 +14,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.util.WebUtils;
+import org.springframework.web.util.ContentCachingRequestWrapper;
+import org.springframework.web.util.ContentCachingResponseWrapper;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -72,10 +75,41 @@ public class ApiLoggingAspect {
                         }
 
                         if (httpServletRequest instanceof org.springframework.web.util.ContentCachingRequestWrapper) {
-                            org.springframework.web.util.ContentCachingRequestWrapper wrapper = (org.springframework.web.util.ContentCachingRequestWrapper) httpServletRequest;
-                            byte[] buf = wrapper.getContentAsByteArray();
-                            if (buf.length > 0) {
-                                requestBody = new String(buf, StandardCharsets.UTF_8);
+
+
+                        // ... inside the finally block, replace the request/response body extraction:
+
+                            if (httpServletRequest != null) {
+                                path = httpServletRequest.getRequestURI();
+                                method = httpServletRequest.getMethod();
+                                if (httpServletRequest.getUserPrincipal() != null) {
+                                    username = httpServletRequest.getUserPrincipal().getName();
+                                }
+
+                                ContentCachingRequestWrapper cachingRequest =
+                                        WebUtils.getNativeRequest(httpServletRequest, ContentCachingRequestWrapper.class);
+                                if (cachingRequest != null) {
+                                    byte[] buf = cachingRequest.getContentAsByteArray();
+                                    if (buf.length > 0) {
+                                        requestBody = new String(buf, StandardCharsets.UTF_8);
+                                    }
+                                }
+
+                                ContentCachingResponseWrapper cachingResponse =
+                                        WebUtils.getNativeResponse(httpServletResponse, ContentCachingResponseWrapper.class);
+                                if (cachingResponse != null) {
+                                    byte[] buf = cachingResponse.getContentAsByteArray();
+                                    if (buf.length > 0) {
+                                        responseBody = new String(buf, StandardCharsets.UTF_8);
+                                    }
+                                }
+
+                                try {
+                                    String identifiers = extractIdentifiers(httpServletRequest, requestBody);
+                                    apiLog.setIdentifiers(truncate(identifiers));
+                                } catch (Exception e) {
+                                    log.debug("Failed to extract identifiers", e);
+                                }
                             }
                         }
 

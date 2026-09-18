@@ -545,9 +545,10 @@ public class ExpenditureServiceAdepter implements ExpenditureService {
     }
 
     @Override
+    @Transactional
     public WorkflowResponse updateBulkExpenditure(Long expenditureId, BulkExpenditureRequest expenditureRequest, List<MultipartFile> files) throws DataException {
         List<ProgramSessionFile> sessionFiles = new ArrayList<>();
-        BulkExpenditure existingExpenditure = bulkExpenditureRepository.findById(expenditureId)
+        BulkExpenditure existingExpenditure = bulkExpenditureRepository.findByIdForUpdate(expenditureId)
                 .orElseThrow(() -> new DataException(
                         "BulkExpenditure with ID " + expenditureId + " does not exist.",
                         "BULK-EXPENDITURE-NOT-FOUND",
@@ -632,6 +633,7 @@ public class ExpenditureServiceAdepter implements ExpenditureService {
     }
 
     @Override
+    @Transactional
     public WorkflowResponse updateTransaction(Long transactionId, BulkExpenditureTransactionRequest request) throws DataException {
 
         BulkExpenditureTransaction existingTransaction = transactionRepo.findById(transactionId)
@@ -703,7 +705,7 @@ public class ExpenditureServiceAdepter implements ExpenditureService {
 
     @Override
     public WorkflowResponse deleteTransaction(Long transactionId) throws DataException {
-        BulkExpenditureTransaction transaction = transactionRepo.findById(transactionId)
+        BulkExpenditureTransaction transaction = transactionRepo.findByIdForUpdate(transactionId)
                 .orElseThrow(() -> new DataException("Transaction not found", "TRANSACTION-NOT-FOUND", 400));
 
         BulkExpenditure bulkExpenditure = transaction.getExpenditure();
