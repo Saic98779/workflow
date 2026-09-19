@@ -2,9 +2,8 @@ package com.metaverse.workflow.expenditure.repository;
 
 import com.metaverse.workflow.model.BulkExpenditureTransaction;
 import org.springframework.data.jpa.repository.JpaRepository;
-
 import java.util.List;
-import java.util.stream.Stream;
+import java.util.Optional;
 
 public interface BulkExpenditureTransactionRepository extends JpaRepository<BulkExpenditureTransaction,Long> {
 
@@ -14,4 +13,6 @@ public interface BulkExpenditureTransactionRepository extends JpaRepository<Bulk
 
     List<BulkExpenditureTransaction> findByProgram_ProgramIdIn(List<Long> programId);
     List<BulkExpenditureTransaction> findByExpenditure_BulkExpenditureId(Long bulkExpenditureId);
+
+    Optional<BulkExpenditureTransaction> findByIdForUpdate(Long transactionId);
 }
