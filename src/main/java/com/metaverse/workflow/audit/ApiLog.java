@@ -27,11 +27,11 @@ public class ApiLog {
     private String username;
 
     @Lob
-    @Column(name = "request_body")
+    @Column(name = "request_body", columnDefinition = "LONGTEXT")
     private String requestBody;
 
     @Lob
-    @Column(name = "response_body")
+    @Column(name = "response_body", columnDefinition = "LONGTEXT")
     private String responseBody;
 
     @Column(name = "timestamp")
