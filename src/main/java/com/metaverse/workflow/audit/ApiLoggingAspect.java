@@ -74,48 +74,24 @@ public class ApiLoggingAspect {
                             username = httpServletRequest.getUserPrincipal().getName();
                         }
 
-                        if (httpServletRequest instanceof org.springframework.web.util.ContentCachingRequestWrapper) {
-
-
-                        // ... inside the finally block, replace the request/response body extraction:
-
-                            if (httpServletRequest != null) {
-                                path = httpServletRequest.getRequestURI();
-                                method = httpServletRequest.getMethod();
-                                if (httpServletRequest.getUserPrincipal() != null) {
-                                    username = httpServletRequest.getUserPrincipal().getName();
-                                }
-
-                                ContentCachingRequestWrapper cachingRequest =
-                                        WebUtils.getNativeRequest(httpServletRequest, ContentCachingRequestWrapper.class);
-                                if (cachingRequest != null) {
-                                    byte[] buf = cachingRequest.getContentAsByteArray();
-                                    if (buf.length > 0) {
-                                        requestBody = new String(buf, StandardCharsets.UTF_8);
-                                    }
-                                }
-
-                                ContentCachingResponseWrapper cachingResponse =
-                                        WebUtils.getNativeResponse(httpServletResponse, ContentCachingResponseWrapper.class);
-                                if (cachingResponse != null) {
-                                    byte[] buf = cachingResponse.getContentAsByteArray();
-                                    if (buf.length > 0) {
-                                        responseBody = new String(buf, StandardCharsets.UTF_8);
-                                    }
-                                }
-
-                                try {
-                                    String identifiers = extractIdentifiers(httpServletRequest, requestBody);
-                                    apiLog.setIdentifiers(truncate(identifiers));
-                                } catch (Exception e) {
-                                    log.debug("Failed to extract identifiers", e);
-                                }
+                        // Request body: prefer the exact bytes cached by the wrapping filter, but fall back to
+                        // serializing the actual @RequestBody argument so the payload is never lost.
+                        ContentCachingRequestWrapper cachingRequest =
+                                WebUtils.getNativeRequest(httpServletRequest, ContentCachingRequestWrapper.class);
+                        if (cachingRequest != null) {
+                            byte[] buf = cachingRequest.getContentAsByteArray();
+                            if (buf.length > 0) {
+                                requestBody = new String(buf, StandardCharsets.UTF_8);
                             }
                         }
+                        if (requestBody == null || requestBody.isEmpty()) {
+                            requestBody = serializeRequestBody(pjp);
+                        }
 
-                        if (httpServletResponse != null && httpServletResponse instanceof org.springframework.web.util.ContentCachingResponseWrapper) {
-                            org.springframework.web.util.ContentCachingResponseWrapper respWrapper = (org.springframework.web.util.ContentCachingResponseWrapper) httpServletResponse;
-                            byte[] buf = respWrapper.getContentAsByteArray();
+                        ContentCachingResponseWrapper cachingResponse =
+                                WebUtils.getNativeResponse(httpServletResponse, ContentCachingResponseWrapper.class);
+                        if (cachingResponse != null) {
+                            byte[] buf = cachingResponse.getContentAsByteArray();
                             if (buf.length > 0) {
                                 responseBody = new String(buf, StandardCharsets.UTF_8);
                             }
@@ -191,6 +167,26 @@ public class ApiLoggingAspect {
         int max = 32 * 1024; // 32KB
         if (s.length() > max) return s.substring(0, max) + "...[truncated]";
         return s;
+    }
+
+    private String serializeRequestBody(ProceedingJoinPoint pjp) {
+        try {
+            MethodSignature signature = (MethodSignature) pjp.getSignature();
+            Object[] args = pjp.getArgs();
+            java.lang.annotation.Annotation[][] paramAnnotations = signature.getMethod().getParameterAnnotations();
+            if (paramAnnotations.length != args.length) return null;
+            for (int i = 0; i < args.length; i++) {
+                if (args[i] == null) continue;
+                for (java.lang.annotation.Annotation annotation : paramAnnotations[i]) {
+                    if (annotation instanceof org.springframework.web.bind.annotation.RequestBody) {
+                        return objectMapper.writeValueAsString(args[i]);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            log.debug("Failed to serialize request body", e);
+        }
+        return null;
     }
 
     private String extractIdentifiers(HttpServletRequest request, String requestBody) {
