@@ -44,7 +44,7 @@ public class ExpenditureController {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             BulkExpenditureRequest bulkExpenditureRequest = objectMapper.readValue(request, BulkExpenditureRequest.class);
-            logService.logs(principal.getName(),"SAVE","adding bulk expenditure for "+ CommonUtil.agencyMap.get(bulkExpenditureRequest.getAgencyId()),"bulk expenditure", servletRequest.getRequestURI());
+            logService.logs(principal.getName(),"SAVE","adding bulk expenditure for " /*CommonUtil.agencyMap.get(bulkExpenditureRequest.getAgencyId())*/,"bulk expenditure", servletRequest.getRequestURI());
             log.info("Saved BulkExpenditure");
             return ResponseEntity.ok(expenditureService.saveBulkExpenditure(bulkExpenditureRequest, files));
         }

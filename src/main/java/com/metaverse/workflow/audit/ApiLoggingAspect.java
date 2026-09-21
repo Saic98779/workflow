@@ -2,6 +2,7 @@ package com.metaverse.workflow.audit;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.metaverse.workflow.audit.filter.RequestResponseWrappingFilter;
+import org.springframework.http.ResponseEntity;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -80,7 +81,9 @@ public class ApiLoggingAspect {
                                 WebUtils.getNativeRequest(httpServletRequest, ContentCachingRequestWrapper.class);
                         if (cachingRequest != null) {
                             byte[] buf = cachingRequest.getContentAsByteArray();
-                            if (buf.length > 0) {
+                            // Only treat it as a textual body for non-multipart requests; multipart bodies are
+                            // consumed by the container and rarely cached by the wrapper.
+                            if (buf.length > 0 && isTextualContentType(httpServletRequest.getContentType())) {
                                 requestBody = new String(buf, StandardCharsets.UTF_8);
                             }
                         }
@@ -88,30 +91,30 @@ public class ApiLoggingAspect {
                             requestBody = serializeRequestBody(pjp);
                         }
 
+                        // NOTE: ContentCachingResponseWrapper is only populated AFTER the full filter chain
+                        // (including HTTP message converter writing) completes, so at aspect time its buffer is
+                        // normally empty. It is kept as a fallback for controllers that write directly to the
+                        // response; otherwise the controller return value is serialized below.
                         ContentCachingResponseWrapper cachingResponse =
                                 WebUtils.getNativeResponse(httpServletResponse, ContentCachingResponseWrapper.class);
                         if (cachingResponse != null) {
                             byte[] buf = cachingResponse.getContentAsByteArray();
-                            if (buf.length > 0) {
+                            if (buf.length > 0 && isTextualContentType(httpServletResponse.getContentType())) {
                                 responseBody = new String(buf, StandardCharsets.UTF_8);
                             }
                         }
 
-                        // Extract identifiers and set into apiLog
-                        try {
-                            String identifiers = extractIdentifiers(httpServletRequest, requestBody);
-                            apiLog.setIdentifiers(truncate(identifiers));
-                        } catch (Exception e) {
-                            log.debug("Failed to extract identifiers", e);
-                        }
                     }
                 }
 
                 if (responseBody == null) {
-                    try {
-                        responseBody = objectMapper.writeValueAsString(result);
-                    } catch (Exception e) {
-                        responseBody = String.valueOf(result);
+                    Object payload = unwrapResult(result);
+                    if (payload != null) {
+                        try {
+                            responseBody = objectMapper.writeValueAsString(payload);
+                        } catch (Exception e) {
+                            log.debug("Failed to serialize response body", e);
+                        }
                     }
                 }
 
@@ -127,17 +130,6 @@ public class ApiLoggingAspect {
                     apiLog.setResponseBody(truncate(responseBody));
                     apiLog.setTimestamp(Instant.now());
                     apiLog.setDurationMs(duration);
-
-                    // correlation id from header or MDC
-                    String correlationId = null;
-                    RequestAttributes ra = RequestContextHolder.getRequestAttributes();
-                    if (ra instanceof ServletRequestAttributes) {
-                        HttpServletRequest req = ((ServletRequestAttributes) ra).getRequest();
-                        if (req != null) {
-                            correlationId = req.getHeader(RequestResponseWrappingFilter.CORRELATION_ID_HEADER);
-                        }
-                    }
-                    apiLog.setCorrelationId(correlationId);
 
                     // module name from controller annotation if present
                     MethodSignature signature = (MethodSignature) pjp.getSignature();
@@ -175,6 +167,8 @@ public class ApiLoggingAspect {
             Object[] args = pjp.getArgs();
             java.lang.annotation.Annotation[][] paramAnnotations = signature.getMethod().getParameterAnnotations();
             if (paramAnnotations.length != args.length) return null;
+
+            // Prefer the argument annotated with @RequestBody
             for (int i = 0; i < args.length; i++) {
                 if (args[i] == null) continue;
                 for (java.lang.annotation.Annotation annotation : paramAnnotations[i]) {
@@ -183,10 +177,78 @@ public class ApiLoggingAspect {
                     }
                 }
             }
+
+            // Otherwise serialize the remaining payload-style arguments. This covers endpoints that receive
+            // their payload differently, e.g. a JSON string passed as @RequestParam together with multipart files.
+            List<Object> payloads = new ArrayList<>();
+            for (int i = 0; i < args.length; i++) {
+                Object arg = args[i];
+                if (arg == null || isFrameworkArgument(arg)) continue;
+                if (arg instanceof String) {
+                    String value = ((String) arg).trim();
+                    if (value.startsWith("{") || value.startsWith("[")) {
+                        payloads.add(arg);
+                    }
+                    continue;
+                }
+                if (isScalarArgument(arg)) continue;
+                payloads.add(arg);
+            }
+            if (payloads.isEmpty()) return null;
+            if (payloads.size() == 1) {
+                Object only = payloads.get(0);
+                if (only instanceof String) return (String) only;
+                return objectMapper.writeValueAsString(only);
+            }
+            return objectMapper.writeValueAsString(payloads);
         } catch (Exception e) {
             log.debug("Failed to serialize request body", e);
+            return null;
         }
-        return null;
+    }
+
+    private boolean isFrameworkArgument(Object arg) {
+        return arg instanceof jakarta.servlet.ServletRequest
+                || arg instanceof jakarta.servlet.ServletResponse
+                || arg instanceof jakarta.servlet.http.HttpSession
+                || arg instanceof java.security.Principal
+                || arg instanceof Locale
+                || arg instanceof org.springframework.validation.BindingResult
+                || arg instanceof org.springframework.validation.Errors
+                || arg instanceof org.springframework.web.context.request.WebRequest
+                || arg instanceof org.springframework.web.multipart.MultipartFile
+                || arg instanceof org.springframework.web.multipart.MultipartFile[]
+                || arg instanceof org.springframework.web.bind.support.SessionStatus
+                || arg instanceof org.springframework.ui.Model
+                || arg instanceof org.springframework.ui.ModelMap;
+    }
+
+    private boolean isScalarArgument(Object arg) {
+        return arg instanceof Number
+                || arg instanceof Boolean
+                || arg instanceof Character
+                || arg instanceof Enum<?>
+                || arg instanceof java.time.temporal.Temporal
+                || arg instanceof java.util.Date;
+    }
+
+    private Object unwrapResult(Object result) {
+        if (result instanceof ResponseEntity<?>) {
+            return ((ResponseEntity<?>) result).getBody();
+        }
+        if (result instanceof org.springframework.http.HttpEntity<?>) {
+            return ((org.springframework.http.HttpEntity<?>) result).getBody();
+        }
+        return result;
+    }
+
+    private boolean isTextualContentType(String contentType) {
+        if (contentType == null) return false;
+        String lower = contentType.toLowerCase(Locale.ROOT);
+        return lower.startsWith("application/json")
+                || lower.startsWith("text/")
+                || lower.startsWith("application/xml")
+                || lower.startsWith("application/x-www-form-urlencoded");
     }
 
     private String extractIdentifiers(HttpServletRequest request, String requestBody) {
