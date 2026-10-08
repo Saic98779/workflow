@@ -11,9 +11,6 @@ public class ApiLog {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "correlation_id", length = 128)
-    private String correlationId;
-
     @Column(name = "module_name")
     private String module;
 
@@ -40,10 +37,6 @@ public class ApiLog {
     @Column(name = "duration_ms")
     private Long durationMs;
 
-    // New column to store extracted identifiers (e.g. program_id, program_expenditure_id, bulk_expenditure_id, transactionId, etc.)
-    @Column(name = "identifiers", length = 2000)
-    private String identifiers;
-
     // getters and setters
 
     public Long getId() {
@@ -52,14 +45,6 @@ public class ApiLog {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public String getCorrelationId() {
-        return correlationId;
-    }
-
-    public void setCorrelationId(String correlationId) {
-        this.correlationId = correlationId;
     }
 
     public String getModule() {
@@ -125,13 +110,4 @@ public class ApiLog {
     public void setDurationMs(Long durationMs) {
         this.durationMs = durationMs;
     }
-
-    public String getIdentifiers() {
-        return identifiers;
-    }
-
-    public void setIdentifiers(String identifiers) {
-        this.identifiers = identifiers;
-    }
-
 }
