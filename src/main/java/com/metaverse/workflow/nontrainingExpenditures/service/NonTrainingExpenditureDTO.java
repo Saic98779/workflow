@@ -1,7 +1,7 @@
 package com.metaverse.workflow.nontrainingExpenditures.service;
 
 import com.metaverse.workflow.enums.BillRemarksStatus;
-import com.metaverse.workflow.model.RichMilestone;
+import com.metaverse.workflow.richnontraining.dto.RichMilestoneDTO;
 import lombok.Data;
 
 import java.util.List;
@@ -31,8 +31,8 @@ public class NonTrainingExpenditureDTO {
     private List<String> spiuComments;
     private List<String> agencyComments;
     private BillRemarksStatus status;
-    private List<Long> richMilestoneIds;
-    private List<RichMilestone> milestones;
+    private Long richMilestoneId;
+    private RichMilestoneDTO richMilestone;
     private String achievementDetails;
     private String supportDocumentUrl;
 

@@ -45,6 +45,7 @@ public class NonTrainingExpenditureService {
     private final NonTrainingActivityRepository nonTrainingActivityRepository;
     private final RichMilestoneRepository richMilestoneRepository;
 
+    @Transactional(rollbackFor = DataException.class)
     public WorkflowResponse create(NonTrainingExpenditureDTO dto, MultipartFile file,MultipartFile supportDocument) throws DataException {
         Agency agency = agencyRepository.findById(dto.getAgencyId())
                 .orElseThrow(() -> new DataException("Agency not found", "AGENCY_NOT_FOUND", 400));
@@ -56,15 +57,19 @@ public class NonTrainingExpenditureService {
 
 
         NonTrainingExpenditure entity = NonTrainingExpenditureMapper.toEntity(dto, agency, activity, subActivity);
-        // Attach milestones (optional)
-        if (dto.getRichMilestoneIds() != null && !dto.getRichMilestoneIds().isEmpty()) {
 
-            List<RichMilestone> milestones = richMilestoneRepository.findAllById(dto.getRichMilestoneIds());
-
-            milestones.forEach(m -> m.setNonTrainingExpenditure(entity));
-
-            entity.setRichMilestones(milestones);
+        // Attach milestone (optional)
+        if (dto.getRichMilestoneId() != null) {
+            RichMilestone milestone = loadMilestone(dto.getRichMilestoneId());
+            double expenditureAmount = nullSafe(dto.getExpenditureAmount());
+            if (expenditureAmount > availableAmount(milestone)) {
+                throw new DataException("Expenditure amount exceeds available milestone amount", "INSUFFICIENT_MILESTONE_AMOUNT", 400);
+            }
+            entity.setRichMilestone(milestone);
+            applyMilestoneUsage(milestone, expenditureAmount);
+            richMilestoneRepository.save(milestone);
         }
+
         NonTrainingExpenditure save = repository.save(entity);
 
         if (file != null && !file.isEmpty()) {
@@ -108,6 +113,7 @@ public class NonTrainingExpenditureService {
     }
 
 
+    @Transactional(rollbackFor = DataException.class)
     public NonTrainingExpenditureDTO update(Long id, NonTrainingExpenditureDTO dto, MultipartFile file,MultipartFile supportDocument) throws DataException {
         NonTrainingExpenditure existing = repository.findById(id)
                 .orElseThrow(() -> new DataException("Expenditure not found", "EXPENDITURE_NOT_FOUND", 400));
@@ -120,9 +126,30 @@ public class NonTrainingExpenditureService {
         NonTrainingActivity activity = nonTrainingActivityRepository.findById(dto.getNonTrainingActivityId())
                 .orElseThrow(() -> new DataException("Activity not found", "ACTIVITY_NOT_FOUND", 400));
 
+        // Reverse the effect of the old milestone first (if any)
+        RichMilestone oldMilestone = existing.getRichMilestone();
+        if (oldMilestone != null) {
+            applyMilestoneUsage(oldMilestone, -nullSafe(existing.getExpenditureAmount()));
+            richMilestoneRepository.save(oldMilestone);
+        }
 
         NonTrainingExpenditure updated = NonTrainingExpenditureMapper.toEntity(dto, agency, activity, subActivity);
         updated.setId(existing.getId());
+
+        // Apply the new milestone / amount using the same validation as create
+        if (dto.getRichMilestoneId() != null) {
+            RichMilestone milestone = loadMilestone(dto.getRichMilestoneId());
+            double expenditureAmount = nullSafe(dto.getExpenditureAmount());
+            if (expenditureAmount > availableAmount(milestone)) {
+                throw new DataException("Expenditure amount exceeds available milestone amount", "INSUFFICIENT_MILESTONE_AMOUNT", 400);
+            }
+            updated.setRichMilestone(milestone);
+            applyMilestoneUsage(milestone, expenditureAmount);
+            richMilestoneRepository.save(milestone);
+        } else {
+            // Milestone removed
+            updated.setRichMilestone(null);
+        }
 
         String newPath = FileUpdateUtil.replaceFile(
                 file,
@@ -138,22 +165,6 @@ public class NonTrainingExpenditureService {
                 () -> repository.save(updated)
         );
         updated.setSupportDocumentUrl(newPath1);
-        // Update milestones (optional)
-        if (dto.getRichMilestoneIds() != null) {
-
-            // Remove existing mapping
-            if (existing.getRichMilestones() != null) {
-                existing.getRichMilestones()
-                        .forEach(m -> m.setNonTrainingExpenditure(null));
-            }
-
-            List<RichMilestone> milestones =
-                    richMilestoneRepository.findAllById(dto.getRichMilestoneIds());
-
-            milestones.forEach(m -> m.setNonTrainingExpenditure(updated));
-
-            updated.setRichMilestones(milestones);
-        }
         programSessionFileRepository.updateFilePathByNonTrainingExpenditureId(
                 newPath,
                 updated.getId()
@@ -161,13 +172,42 @@ public class NonTrainingExpenditureService {
         return NonTrainingExpenditureMapper.toDTO(repository.save(updated));
     }
 
-    @Transactional
+    @Transactional(rollbackFor = DataException.class)
     public void delete(Long id) throws DataException {
 
         NonTrainingExpenditure existing = repository.findById(id)
                 .orElseThrow(() -> new DataException("Expenditure not found", "EXPENDITURE_NOT_FOUND", 400));
+
+        // Give the milestone amount back before deleting
+        RichMilestone milestone = existing.getRichMilestone();
+        if (milestone != null) {
+            applyMilestoneUsage(milestone, -nullSafe(existing.getExpenditureAmount()));
+            richMilestoneRepository.save(milestone);
+        }
+
         programSessionFileRepository.deleteByNonTrainingExpenditure_Id(id);
         repository.deleteById(id);
+    }
+
+    private RichMilestone loadMilestone(Long milestoneId) throws DataException {
+        return richMilestoneRepository.findById(milestoneId)
+                .orElseThrow(() -> new DataException("Milestone not found", "MILESTONE_NOT_FOUND", 400));
+    }
+
+    private static double nullSafe(Double value) {
+        return value != null ? value : 0.0;
+    }
+
+    private static double availableAmount(RichMilestone milestone) {
+        return milestone.getAvailableAmount() != null
+                ? milestone.getAvailableAmount()
+                : nullSafe(milestone.getAmount());
+    }
+
+    private static void applyMilestoneUsage(RichMilestone milestone, double delta) {
+        double consumed = nullSafe(milestone.getConsumedAmount()) + delta;
+        milestone.setConsumedAmount(consumed);
+        milestone.setAvailableAmount(nullSafe(milestone.getAmount()) - consumed);
     }
 
     public WorkflowResponse saveResource(NonTrainingResourceDTO resource) throws DataException {

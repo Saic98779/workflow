@@ -2,6 +2,7 @@ package com.metaverse.workflow.nontrainingExpenditures.service;
 
 import com.metaverse.workflow.common.util.DateUtil;
 import com.metaverse.workflow.model.*;
+import com.metaverse.workflow.richnontraining.dto.RichMilestoneDTO;
 
 import java.util.List;
 import java.util.Optional;
@@ -44,11 +45,33 @@ public class NonTrainingExpenditureMapper {
                         .map(NonTrainingSpiuComments::getFormattedRemark)
                         .toList()
         );
-        dto.setMilestones(entity.getRichMilestones());
+        dto.setRichMilestoneId(entity.getRichMilestone() != null
+                ? entity.getRichMilestone().getRichMilestoneId()
+                : null);
+        dto.setRichMilestone(toRichMilestoneDTO(entity.getRichMilestone()));
         dto.setStatus(entity.getStatus());
         dto.setSupportDocumentUrl(entity.getSupportDocumentUrl());
         dto.setAchievementDetails(entity.getAchievementDetails());
         return dto;
+    }
+
+    public static RichMilestoneDTO toRichMilestoneDTO(RichMilestone milestone) {
+        if (milestone == null) return null;
+
+        RichMilestoneDTO milestoneDTO = new RichMilestoneDTO();
+        milestoneDTO.setId(milestone.getRichMilestoneId());
+        milestoneDTO.setPaymentIteration(milestone.getPaymentIteration());
+        milestoneDTO.setPaymentMilestone(milestone.getPaymentMilestone());
+        milestoneDTO.setPaymentPercentage(milestone.getPaymentPercentage());
+        milestoneDTO.setAmount(milestone.getAmount());
+
+        double amount = milestone.getAmount() != null ? milestone.getAmount() : 0.0;
+        double consumed = milestone.getConsumedAmount() != null ? milestone.getConsumedAmount() : 0.0;
+        milestoneDTO.setConsumedAmount(consumed);
+        milestoneDTO.setAvailableAmount(milestone.getAvailableAmount() != null
+                ? milestone.getAvailableAmount()
+                : amount);
+        return milestoneDTO;
     }
 
 

@@ -7,6 +7,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -32,10 +35,16 @@ public class RichMilestone {
     @Column(name = "amount")
     private Double amount;
 
-    @ManyToOne
-    @JoinColumn(name = "nonTrainingExpenditure")
+    @Builder.Default
+    @Column(name = "consumed_amount")
+    private Double consumedAmount = 0.0;
+
+    @Column(name = "available_amount")
+    private Double availableAmount;
+
+    @OneToMany(mappedBy = "richMilestone")
     @JsonIgnore
-    private NonTrainingExpenditure nonTrainingExpenditure;
+    private List<NonTrainingExpenditure> nonTrainingExpenditures = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "travelAndTransport")

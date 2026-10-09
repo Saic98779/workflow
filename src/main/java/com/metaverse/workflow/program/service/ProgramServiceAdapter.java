@@ -881,7 +881,9 @@ public class ProgramServiceAdapter implements ProgramService {
             programs = programRepository.findProgramsWithParticipantsByAgency(agencyId);
         }
         return WorkflowResponse.builder()
-                .data(programs.stream().map(ProgramResponseMapper::map))
+                .data(programs.stream()
+                        .map(ProgramResponseMapper::map)
+                        .collect(Collectors.toList()))
                 .status(200)
                 .message("success")
                 .build();

@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -101,13 +100,9 @@ public class NonTrainingExpenditure {
     @OneToMany(cascade = CascadeType.ALL,mappedBy = "nonTrainingExpenditure")
     private List<NonTrainingAgencyComments> agencyComments;
 
-    @OneToMany(
-            mappedBy = "nonTrainingExpenditure",
-            cascade = CascadeType.ALL,
-            fetch = FetchType.LAZY,
-            orphanRemoval = true
-    )
-    private List<RichMilestone> richMilestones = new ArrayList<>();
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "rich_milestone_id")
+    private RichMilestone richMilestone;
 
     @Column(name = "support_document_url")
     private String supportDocumentUrl;
