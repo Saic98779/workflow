@@ -62,7 +62,8 @@ public class WebSecurityConfig {
                 "https://metaverseedu.in",
                 "http://metaverseedu.in",
                 "https://tg.ramp.metaversedu.in",
-                "http://localhost:*"
+                "http://localhost:*",
+                "https://ramp-tg.metaversedu.in"
         ));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         config.setAllowedHeaders(List.of("*"));
