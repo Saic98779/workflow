@@ -1,0 +1,14 @@
+.git
+.idea
+.mvn
+target
+logs
+local-notifications-service
+src/main/java/com/metaverse/workflow/notifications/.idea
+*.log
+*.iml
+mvnw
+mvnw.cmd
+Dockerfile
+Jenkinsfile
+deploy
