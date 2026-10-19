@@ -21,8 +21,8 @@ public class FileServiceImpl implements FileService {
     private final ProgramRepository programRepository;
 
     private static final String BASE_PREFIX = "/home/metaverseedu/public_html/";
-    private static final String URL_PREFIX = "https://metaverseedu.in/";
-    private static final String WORKFLOW_URL_PREFIX = "https://metaverseedu.in/workflowfiles/";
+    private static final String URL_PREFIX = "https://ramp-tg.metaversedu.in/";
+    private static final String WORKFLOW_URL_PREFIX = "https://ramp-tg.metaversedu.in/workflowfiles/";
     private static final String WORKFLOWFILES_DIR = "workflowfiles/";
 
     @Override
