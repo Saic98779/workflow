@@ -31,6 +31,8 @@ import com.metaverse.workflow.program.repository.*;
 import com.metaverse.workflow.resouce.repository.ResourceRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -123,6 +125,8 @@ public class ProgramServiceAdapter implements ProgramService {
     @Autowired
     private LoginRepository loginRepository;
 
+    private static final Logger log = LogManager.getLogger(ProgramServiceAdapter.class);
+
     @Override
     public WorkflowResponse createProgram(ProgramRequest request) throws IOException {
         Optional<Location> location = null;
@@ -135,15 +139,22 @@ public class ProgramServiceAdapter implements ProgramService {
             program = ProgramRequestMapper.map(request, agency.get(), location.get());
             program.setUser(user.get());
             program = programRepository.save(program);      }
-        EmailConfiguration emailConfiguration = emailConfigurationRepository.findByAgency_AgencyId(program.getAgency().getAgencyId());
-        EmailRequest emailRequest = EmailUtil.getEmailRequest(
-                ProgramStatusConstants.PROGRAM_SCHEDULED,
-                program,
-                "Review the Program Schedule", emailConfiguration
-        );
-
-        emailNotificationController.sendEmail(emailRequest);
-        updateOverduePrograms();
+        try {
+            EmailConfiguration emailConfiguration = emailConfigurationRepository.findByAgency_AgencyId(program.getAgency().getAgencyId());
+            EmailRequest emailRequest = EmailUtil.getEmailRequest(
+                    ProgramStatusConstants.PROGRAM_SCHEDULED,
+                    program,
+                    "Review the Program Schedule", emailConfiguration
+            );
+            emailNotificationController.sendEmailAsync(emailRequest);
+        } catch (Exception e) {
+            log.error("Failed to send program creation email for programId={}: {}", program != null ? program.getProgramId() : null, e.getMessage(), e);
+        }
+        try {
+            updateOverduePrograms();
+        } catch (Exception e) {
+            log.error("Failed to update overdue programs after creating program: {}", e.getMessage(), e);
+        }
         return WorkflowResponse.builder().status(200).message("Success").data(ProgramResponseMapper.map(program)).build();
     }
 
@@ -881,7 +892,9 @@ public class ProgramServiceAdapter implements ProgramService {
             programs = programRepository.findProgramsWithParticipantsByAgency(agencyId);
         }
         return WorkflowResponse.builder()
-                .data(programs.stream().map(ProgramResponseMapper::map))
+                .data(programs.stream()
+                        .map(ProgramResponseMapper::map)
+                        .collect(Collectors.toList()))
                 .status(200)
                 .message("success")
                 .build();
