@@ -22,6 +22,14 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TrainingTargetsAndAchievementsServiceImpl implements TrainingTargetsAndAchievementsService {
 
+    private static long nz(Long value) {
+        return value != null ? value : 0L;
+    }
+
+    private static double nz(Double value) {
+        return value != null ? value : 0.0;
+    }
+
     private final TrainingTargetRepository trainingTargetRepository;
     private final ParticipantRepository participantRepository;
     private final ProgramExpenditureRepository programExpenditureRepository;
@@ -135,11 +143,11 @@ public class TrainingTargetsAndAchievementsServiceImpl implements TrainingTarget
                     achievedQ1, achievedQ2, achievedQ3, achievedQ4);
 
             // Totals
-            dto.setTotalTarget(t.getQ1Target() + t.getQ2Target() + t.getQ3Target() + t.getQ4Target());
+            dto.setTotalTarget(nz(t.getQ1Target()) + nz(t.getQ2Target()) + nz(t.getQ3Target()) + nz(t.getQ4Target()));
             dto.setTotalAchieved(achievedQ1 + achievedQ2 + achievedQ3 + achievedQ4);
 
             dto.setTotalFinancialTarget(
-                    (int)(t.getQ1Budget() + t.getQ2Budget() + t.getQ3Budget() + t.getQ4Budget())
+                    (int)(nz(t.getQ1Budget()) + nz(t.getQ2Budget()) + nz(t.getQ3Budget()) + nz(t.getQ4Budget()))
             );
 
             dto.setTotalFinancialAchieved(
@@ -183,9 +191,9 @@ public class TrainingTargetsAndAchievementsServiceImpl implements TrainingTarget
             dto.setPhysicalTargetQ1(t.getQ1Target());
             dto.setPhysicalTargetQ2(t.getQ2Target());
             dto.setPhysicalTargetQ3(t.getQ3Target());
-            dto.setPhysicalTargetQ3(t.getQ4Target());
+            dto.setPhysicalTargetQ4(t.getQ4Target());
             dto.setTotalTrainingTarget(
-                    t.getQ1Target() + t.getQ2Target() + t.getQ3Target() + t.getQ4Target()
+                    nz(t.getQ1Target()) + nz(t.getQ2Target()) + nz(t.getQ3Target()) + nz(t.getQ4Target())
             );
 
             // Financial targets
@@ -194,7 +202,7 @@ public class TrainingTargetsAndAchievementsServiceImpl implements TrainingTarget
             dto.setFinancialTargetQ3(t.getQ3Budget());
             dto.setFinancialTargetQ4(t.getQ4Budget());
             dto.setTotalFinancialTarget(
-                    t.getQ1Budget() + t.getQ2Budget() + t.getQ3Budget() + t.getQ4Budget()
+                    nz(t.getQ1Budget()) + nz(t.getQ2Budget()) + nz(t.getQ3Budget()) + nz(t.getQ4Budget())
             );
 
             return dto;

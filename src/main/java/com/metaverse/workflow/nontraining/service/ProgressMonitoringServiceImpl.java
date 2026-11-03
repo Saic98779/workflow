@@ -219,7 +219,7 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
         List<TrainingTargets> allById = trainingTargetRepository.findBySubActivity_SubActivityIdInAndAgency_AgencyId(longs, agencyId);
         for (TrainingTargets targets : allById) {
             Long subActivityId = targets.getSubActivity().getSubActivityId();
-            long total = targets.getQ1Target() + targets.getQ2Target() + targets.getQ3Target() + targets.getQ4Target();
+            long total = nz(targets.getQ1Target()) + nz(targets.getQ2Target()) + nz(targets.getQ3Target()) + nz(targets.getQ4Target());
             target.merge(subActivityId, total, Long::sum);
         }
         List<SubActivityParticipantCountDTO> participantCountByAgencyId = activityRepository.findProgramCountByAgencyId(agencyId);
@@ -231,7 +231,7 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
         Map<Long, Double> budgetAllocated = new HashMap<>();
         for (TrainingTargets targets : allById) {
             Double ifTargetPresent = budgetAllocated.getOrDefault(targets.getSubActivity().getSubActivityId(), 0.0);
-            budgetAllocated.put(targets.getSubActivity().getSubActivityId(), (targets.getQ1Budget() + targets.getQ2Budget() + targets.getQ3Budget() + targets.getQ4Budget()) + ifTargetPresent);
+            budgetAllocated.put(targets.getSubActivity().getSubActivityId(), (nz(targets.getQ1Budget()) + nz(targets.getQ2Budget()) + nz(targets.getQ3Budget()) + nz(targets.getQ4Budget())) + ifTargetPresent);
         }
 
         Iterable<ProgramExpenditure> bySubActivitySubActivityId = programExpenditureRepository.findBySubActivity_SubActivityIdInAndAgency_AgencyId(subActivityNames.keySet(), agencyId);
@@ -273,6 +273,14 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
         return trainingProgressData;
     }
 
+    private static long nz(Long value) {
+        return value != null ? value : 0L;
+    }
+
+    private static double nz(Double value) {
+        return value != null ? value : 0.0;
+    }
+
     private static void addOrUpdate(Map<Long, Double> map, Long key, Double value) {
         map.merge(key, value, Double::sum);
     }
@@ -301,8 +309,12 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
                         long subActivityId = subActivity.getSubActivityId();
 
                         List<NonTrainingTargets> nonTrainingSubActivity = nonTrainingTargetRepository.findByNonTrainingSubActivity_subActivityId(subActivityId);
-                        long physicalTarget = nonTrainingSubActivity.stream().mapToLong(r -> r.getQ1Target() + r.getQ2Target() + r.getQ3Target() + r.getQ4Target()).sum();
-                        double financialTarget = nonTrainingSubActivity.stream().mapToDouble(r -> r.getQ1Budget() + r.getQ2Budget() + r.getQ3Budget() + r.getQ4Budget()).sum();
+                        long physicalTarget = nonTrainingSubActivity.stream()
+                                .mapToLong(r -> nz(r.getQ1Target()) + nz(r.getQ2Target()) + nz(r.getQ3Target()) + nz(r.getQ4Target()))
+                                .sum();
+                        double financialTarget = nonTrainingSubActivity.stream()
+                                .mapToDouble(r -> nz(r.getQ1Budget()) + nz(r.getQ2Budget()) + nz(r.getQ3Budget()) + nz(r.getQ4Budget()))
+                                .sum();
                         nonTrainingProgramDto.setPhysicalTarget((int) physicalTarget);
                         nonTrainingProgramDto.setFinancialTarget(financialTarget);
 
@@ -582,10 +594,10 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
 
         for (TrainingTargets t : allTargets) {
             Long subActivityId = t.getSubActivity().getSubActivityId();
-            long total = t.getQ1Target() + t.getQ2Target() + t.getQ3Target() + t.getQ4Target();
+            long total = nz(t.getQ1Target()) + nz(t.getQ2Target()) + nz(t.getQ3Target()) + nz(t.getQ4Target());
             target.merge(subActivityId, total, Long::sum);
 
-            double totalBudget = t.getQ1Budget() + t.getQ2Budget() + t.getQ3Budget() + t.getQ4Budget();
+            double totalBudget = nz(t.getQ1Budget()) + nz(t.getQ2Budget()) + nz(t.getQ3Budget()) + nz(t.getQ4Budget());
             budgetAllocated.merge(subActivityId, totalBudget, Double::sum);
         }
 
