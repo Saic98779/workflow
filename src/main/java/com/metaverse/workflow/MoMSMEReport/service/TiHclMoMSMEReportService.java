@@ -29,6 +29,14 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class TiHclMoMSMEReportService {
 
+    private static long nz(Long value) {
+        return value != null ? value : 0L;
+    }
+
+    private static double nz(Double value) {
+        return value != null ? value : 0.0;
+    }
+
     private final TrainingTargetRepository trainingTargetRepository;
     private final ProgramRepository programRepository;
     private final ProgramExpenditureRepository programExpenditureRepository;
@@ -137,9 +145,9 @@ public class TiHclMoMSMEReportService {
                 int msmeBenefited = (int) programs.stream().flatMap(p -> p.getParticipants().stream()).filter(pa -> pa.getOrganization() != null).count();
 
                 // TARGET & BUDGET
-                long totalTarget = targetsList.stream().mapToLong(t -> t.getQ1Target() + t.getQ2Target() + t.getQ3Target() + t.getQ4Target()).sum();
+                long totalTarget = targetsList.stream().mapToLong(t -> nz(t.getQ1Target()) + nz(t.getQ2Target()) + nz(t.getQ3Target()) + nz(t.getQ4Target())).sum();
 
-                Double approvedBudget = targetsList.stream().mapToDouble(t -> t.getQ1Budget() + t.getQ2Budget() + t.getQ3Budget() + t.getQ4Budget()).sum();
+                Double approvedBudget = targetsList.stream().mapToDouble(t -> nz(t.getQ1Budget()) + nz(t.getQ2Budget()) + nz(t.getQ3Budget()) + nz(t.getQ4Budget())).sum();
 
                 // PERCENTAGE FIXED (avoiding integer division)
                 String percentTarget = totalTarget == 0 ? "0%" : String.format("%.1f%%", (programs.size() * 100.0) / totalTarget);
@@ -170,9 +178,9 @@ public class TiHclMoMSMEReportService {
 
                 List<NonTrainingTargets> targetsList = nonTrainingTargetRepository.findByNonTrainingSubActivity_SubActivityId(subActivityId);
 
-                long totalTarget = targetsList.stream().mapToLong(t -> t.getQ1Target() + t.getQ2Target() + t.getQ3Target() + t.getQ4Target()).sum();
+                long totalTarget = targetsList.stream().mapToLong(t -> nz(t.getQ1Target()) + nz(t.getQ2Target()) + nz(t.getQ3Target()) + nz(t.getQ4Target())).sum();
 
-                Double approvedBudget = targetsList.stream().mapToDouble(t -> t.getQ1Budget() + t.getQ2Budget() + t.getQ3Budget() + t.getQ4Budget()).sum();
+                Double approvedBudget = targetsList.stream().mapToDouble(t -> nz(t.getQ1Budget()) + nz(t.getQ2Budget()) + nz(t.getQ3Budget()) + nz(t.getQ4Budget())).sum();
 
                 switch (subActivityId.toString()) {
 

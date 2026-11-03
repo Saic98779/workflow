@@ -8,6 +8,14 @@ import java.util.List;
 
 public class TrainingTargetResponseMapper {
 
+    private static long nz(Long value) {
+        return value != null ? value : 0L;
+    }
+
+    private static double nz(Double value) {
+        return value != null ? value : 0.0;
+    }
+
     public static TrainingTargetResponse mapTrainingTarget(TrainingTargets request) {
         return TrainingTargetResponse.builder()
                 .trainingTargetId(request.getTrainingTargetId())
@@ -16,7 +24,7 @@ public class TrainingTargetResponseMapper {
                 .q2(request.getQ2Target())
                 .q3(request.getQ3Target())
                 .q4(request.getQ4Target())
-                .yearlyTarget(request.getQ1Target() + request.getQ2Target() + request.getQ3Target() + request.getQ4Target())
+                .yearlyTarget(nz(request.getQ1Target()) + nz(request.getQ2Target()) + nz(request.getQ3Target()) + nz(request.getQ4Target()))
                 .agencyName(request.getAgency().getAgencyName())
 //                .activityName(request.getActivity().getActivityName())
                 .build();
@@ -76,15 +84,15 @@ public class TrainingTargetResponseMapper {
         response.setPhysicalTargetQ2(trainingTarget.getQ2Target());
         response.setPhysicalTargetQ3(trainingTarget.getQ3Target());
         response.setPhysicalTargetQ4(trainingTarget.getQ4Target());
-        response.setTotalTrainingTarget(trainingTarget.getQ1Target()+trainingTarget.getQ2Target()+
-                trainingTarget.getQ3Target()+trainingTarget.getQ4Target());
+        response.setTotalTrainingTarget(nz(trainingTarget.getQ1Target())+nz(trainingTarget.getQ2Target())+
+                nz(trainingTarget.getQ3Target())+nz(trainingTarget.getQ4Target()));
 
         response.setFinancialTargetQ1(trainingTarget.getQ1Budget());
         response.setFinancialTargetQ2(trainingTarget.getQ2Budget());
         response.setFinancialTargetQ3(trainingTarget.getQ3Budget());
         response.setFinancialTargetQ4(trainingTarget.getQ4Budget());
-        response.setTotalFinancialTarget(trainingTarget.getQ1Budget()+trainingTarget.getQ2Budget()+
-                trainingTarget.getQ3Budget()+trainingTarget.getQ4Budget());
+        response.setTotalFinancialTarget(nz(trainingTarget.getQ1Budget())+nz(trainingTarget.getQ2Budget())+
+                nz(trainingTarget.getQ3Budget())+nz(trainingTarget.getQ4Budget()));
 
         response.setFinancialYear(trainingTarget.getFinancialYear());
 
