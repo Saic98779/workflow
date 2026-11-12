@@ -171,12 +171,25 @@ public class TrainingTargetsAndAchievementsServiceImpl implements TrainingTarget
 
         log.info("Fetching ONLY Targets for Agency: {} | FY: {}", agencyId, year);
 
-        List<TrainingTargets> targets =
-                trainingTargetRepository.findByAgency_AgencyIdAndFinancialYear(agencyId, year);
+        boolean hasYear = year != null && !year.isBlank();
+        boolean hasAgency = agencyId != null;
+
+        List<TrainingTargets> targets;
+        if (hasYear && hasAgency) {
+            targets = trainingTargetRepository.findByAgency_AgencyIdAndFinancialYear(agencyId, year);
+        } else if (hasAgency) {
+            targets = trainingTargetRepository.findByAgency_AgencyId(agencyId);
+        } else if (hasYear) {
+            targets = trainingTargetRepository.findByFinancialYear(year);
+        } else {
+            targets = trainingTargetRepository.findAll();
+        }
 
         if (targets.isEmpty()) {
-            log.warn("No targets found for agency {} in FY {}", agencyId, year);
-            throw new RuntimeException("No targets found for agency " + agencyId + " in FY " + year);
+            String agencyPart = hasAgency ? "agency " + agencyId : "any agency";
+            String yearPart = hasYear ? "FY " + year : "any FY";
+            log.warn("No targets found for {} in {}", agencyPart, yearPart);
+            throw new RuntimeException("No targets found for " + agencyPart + " in " + yearPart);
         }
 
         return targets.stream().map(t -> {

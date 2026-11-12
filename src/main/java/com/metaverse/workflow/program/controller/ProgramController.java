@@ -300,7 +300,7 @@ public class ProgramController {
         }
 
         String basePrefix = "/home/metaverseedu/public_html/";
-        String urlPrefix = "https://metaverseedu.in/";
+        String urlPrefix = " https://ramp-tg.metaversedu.in/";
 
         List<String> fileUrls = paths.stream()
                 .map(path -> {

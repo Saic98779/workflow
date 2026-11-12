@@ -379,7 +379,7 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
              ALEAP   ->  72  : Human Resource
 
              */
-            case 26, 14, 15, 16, 17, 74, 125, 6, 62, 82, 84, 72, 111 ,94 -> { //
+            case 26, 14, 15, 16, 17, 74, 125, 6, 62, 82, 84, 72, 111 ,94 ,75, 41, 45, 54 -> { //
                 List<NonTrainingResource> nonTrainingSubActivity =
                         nonTrainingResourcesRepository.findByNonTrainingSubActivity_subActivityId(subActivityId);
 
@@ -487,7 +487,9 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
                 TGTPC-4 ->  110 : Admin Cost , Logistic
                 TGTPC-10->  124 : Admn Cost including logistics etc.
             */
-            case 27, 28, 73, 90, 12, 38, 39, 40, 64, 37, 110, 124 ,132, 133, 112, 113, 114, 115, 95, 96, 97, 98,99, 100, 101, 102, 103, 104, 105, 106, 107, 108,109 -> { //
+            case 27, 28, 73, 90, 12, 38, 39, 40, 64, 37, 110, 124 ,132, 133, 112, 113, 114, 115, 95, 96, 97, 98,99, 100, 101, 102, 103, 104, 105, 106, 107, 108,109,
+                 66, 20, 21, 22, 23, 24, 25, 163, 145, 146, 147, 148, 149, 150, 157, 158, 151, 152, 153, 154, 155, 156, 160, 161, 162, 2, 4, 8, 91,
+                 10, 11, 13, 92, 61, 29, 30, 31, 36, 55, 56, 57, 58, 59, 60,  83, 142, 143, 144, 68, 71, 128-> { //
                 Optional<List<NonTrainingExpenditure>> nonTrainingSubActivity = nonTrainingExpenditureRepository.findByNonTrainingSubActivity_SubActivityId(subActivityId);
                 if (nonTrainingSubActivity.isPresent()) {
                     Map<String, Double> result =
@@ -529,6 +531,57 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
                     Object[] objects = {String.valueOf(0), 0.0,0.0};
                     return objects;
                 }
+            }
+            /*
+ Combined: TravelAndTransport + NonTrainingExpenditure + NonTrainingResourceExpenditure
+*/
+            case 70, 134, 135, 136, 137, 138, 139, 140, 141,
+                 117, 118, 119, 120, 121, 122, 123 -> {
+
+                double approved = 0.0;
+                double pending = 0.0;
+
+                // 1. Travel and Transport
+                List<TravelAndTransport> travelList =
+                        travelAndTransportRepository.findByNonTrainingSubActivity_SubActivityId(subActivityId);
+                if (travelList != null) {
+                    for (TravelAndTransport t : travelList) {
+                        double amt = t.getAmount() == null ? 0.0 : t.getAmount();
+                        if (t.getStatus() == BillRemarksStatus.APPROVED) approved += amt;
+                        else pending += amt;
+                    }
+                }
+
+                // 2. Non Training Expenditure
+                List<NonTrainingExpenditure> expList =
+                        nonTrainingExpenditureRepository.findByNonTrainingSubActivity_SubActivityId(subActivityId)
+                                .orElse(Collections.emptyList());
+                for (NonTrainingExpenditure e : expList) {
+                    double amt = e.getExpenditureAmount() == null ? 0.0 : e.getExpenditureAmount();
+                    if (e.getStatus() == BillRemarksStatus.APPROVED) approved += amt;
+                    else pending += amt;
+                }
+
+                // 3. Non Training Resource Expenditures
+                List<NonTrainingResource> resourceList =
+                        nonTrainingResourcesRepository.findByNonTrainingSubActivity_subActivityId(subActivityId);
+                if (resourceList != null) {
+                    for (NonTrainingResource r : resourceList) {
+                        if (r.getNonTrainingResourceExpenditures() == null) continue;
+                        for (NonTrainingResourceExpenditure x : r.getNonTrainingResourceExpenditures()) {
+                            double amt = x.getAmount() == null ? 0.0 : x.getAmount();
+                            if (x.getStatus() == BillRemarksStatus.APPROVED) approved += amt;
+                            else pending += amt;
+                        }
+                    }
+                }
+
+                String physicalAchievement = nonTrainingAchievementRepository
+                        .findByNonTrainingSubActivity_SubActivityId(subActivityId)
+                        .map(d -> d.getPhysicalTargetAchievement())
+                        .orElse("0");
+
+                return new Object[]{physicalAchievement, approved, pending};
             }
             default -> {
                 return new Object[]{String.valueOf(0), 0.0,0.0};
