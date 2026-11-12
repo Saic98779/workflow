@@ -23,7 +23,8 @@ public class TrainingTargetsAndAchievementsController {
     }
 
     @GetMapping("/targets/by-agency")
-    public ResponseEntity<?> getAllTrainingTargetsByAgencyId(@RequestParam String year, @RequestParam Long agencyId) {
+    public ResponseEntity<?> getAllTrainingTargetsByAgencyId(@RequestParam(required = false) String year,
+                                                             @RequestParam(required = false) Long agencyId) {
         List<TargetResponse> response = trainingAndAchievementsService.getTrainingTargets(year, agencyId);
         return ResponseEntity.ok(response);
     }
