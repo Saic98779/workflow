@@ -228,10 +228,12 @@ public class FileGeneratorController {
             headers.add(HttpHeaders.CONTENT_DISPOSITION,
                     "attachment; filename=Program_Summary_Details.pdf");
 
+            byte[] pdfBytes = bis.readAllBytes();
             return ResponseEntity.ok()
                     .headers(headers)
                     .contentType(MediaType.APPLICATION_PDF)
-                    .body(new InputStreamResource(bis));
+                    .contentLength(pdfBytes.length)
+                    .body(pdfBytes);
 
         } catch (Exception e) {
             System.err.println(e.getMessage());
@@ -561,10 +563,12 @@ public class FileGeneratorController {
             headers.add(HttpHeaders.CONTENT_DISPOSITION,
                     "attachment; filename=" + name + "_Program_Summary_NoParticipants.pdf");
 
+            byte[] pdfBytes = bis.readAllBytes();
             return ResponseEntity.ok()
                     .headers(headers)
                     .contentType(MediaType.APPLICATION_PDF)
-                    .body(new InputStreamResource(bis));
+                    .contentLength(pdfBytes.length)
+                    .body(pdfBytes);
 
         } catch (Exception e) {
             throw new RuntimeException(e);
