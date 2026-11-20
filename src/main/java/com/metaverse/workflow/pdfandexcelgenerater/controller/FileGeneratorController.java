@@ -11,7 +11,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.websocket.server.PathParam;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -69,14 +68,14 @@ public class FileGeneratorController {
     }
 
     @GetMapping(value = "/program/pdf/{agencyId}", produces = MediaType.APPLICATION_PDF_VALUE)
-    public ResponseEntity<InputStreamResource> generatePdfReport(HttpServletResponse response, @PathVariable Long agencyId) throws IOException {
+    public ResponseEntity<byte[]> generatePdfReport(HttpServletResponse response, @PathVariable Long agencyId) throws IOException {
         ByteArrayInputStream bis = programPdfGenerator.generateProgramsPdf(response, agencyId);
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=Program_Details.pdf");
         return ResponseEntity.ok()
                 .headers(headers)
                 .contentType(MediaType.APPLICATION_PDF)
-                .body(new InputStreamResource(bis));
+                .body(bis.readAllBytes());
 
     }
 
@@ -94,7 +93,7 @@ public class FileGeneratorController {
         return ResponseEntity.ok()
                 .headers(headers)
                 .contentType(MediaType.APPLICATION_PDF)
-                .body(new InputStreamResource(bis));
+                .body(bis.readAllBytes());
 
     }
 
@@ -112,12 +111,12 @@ public class FileGeneratorController {
         return ResponseEntity.ok()
                 .headers(headers)
                 .contentType(MediaType.APPLICATION_PDF)
-                .body(new InputStreamResource(bis));
+                .body(bis.readAllBytes());
 
     }
 
     @GetMapping(value = "/program/participant/pdf/{programId}", produces = MediaType.APPLICATION_PDF_VALUE)
-    public ResponseEntity<InputStreamResource> generateParticipantPdfReport(@PathVariable Long programId) throws IOException {
+    public ResponseEntity<byte[]> generateParticipantPdfReport(@PathVariable Long programId) throws IOException {
         if (!programRepository.existsById(programId)) {
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
@@ -130,7 +129,7 @@ public class FileGeneratorController {
         return ResponseEntity.ok()
                 .headers(headers)
                 .contentType(MediaType.APPLICATION_PDF)
-                .body(new InputStreamResource(bis));
+                .body(bis.readAllBytes());
     }
 
 

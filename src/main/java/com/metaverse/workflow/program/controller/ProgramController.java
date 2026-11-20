@@ -26,7 +26,8 @@ import net.minidev.json.parser.ParseException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -269,7 +270,7 @@ public class ProgramController {
     }
 
     @GetMapping("/program/file/download/{fileId}")
-    public ResponseEntity<InputStreamResource> getProgramFile(@PathVariable("fileId") Long fileId) throws FileNotFoundException {
+    public ResponseEntity<Resource> getProgramFile(@PathVariable("fileId") Long fileId) throws FileNotFoundException {
         log.info("Called getProgramFile fileId=" + fileId);
         Path path = programService.getProgramFile(fileId);
         if (path == null) {
@@ -281,7 +282,7 @@ public class ProgramController {
             headers.add("Cache-Control", "no-cache, no-store, must-revalidate");
             headers.add("Pragma", "no-cache");
             headers.add("Expires", "0");
-            InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
+            Resource resource = new FileSystemResource(file);
             return ResponseEntity.ok()
                     .headers(headers)
                     .contentLength(file.length())
