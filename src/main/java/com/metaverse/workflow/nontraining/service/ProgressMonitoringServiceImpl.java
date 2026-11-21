@@ -10,6 +10,7 @@ import com.metaverse.workflow.nontraining.dto.ProgressMonitoringDto;
 import com.metaverse.workflow.nontraining.dto.TrainingProgramDto;
 import com.metaverse.workflow.nontraining.repository.NonTrainingAchievementRepository;
 import com.metaverse.workflow.nontraining.repository.NonTrainingActivityRepository;
+import com.metaverse.workflow.participant.repository.ParticipantRepository;
 import com.metaverse.workflow.nontrainingExpenditures.Dto.CorpusDebitFinancing;
 import com.metaverse.workflow.nontrainingExpenditures.repository.*;
 import com.metaverse.workflow.nontrainingExpenditures.service.WeHubService;
@@ -32,6 +33,7 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
     private final TrainingTargetRepository trainingTargetRepository;
     private final NonTrainingResourceRepository nonTrainingResourcesRepository;
     private final ActivityRepository activityRepository;
+    private final ParticipantRepository participantRepository;
     private final TravelAndTransportRepository travelAndTransportRepository;
 
     private final WeHubService service;
@@ -767,21 +769,36 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
 
         List<TrainingProgramDto> result = new ArrayList<>();
 
-        Map<Long, String> activityNames = new HashMap<>();
-        Map<Long, String> subActivityNames = new HashMap<>();
+        // Keep insertion order so rows come out activity by activity
+        Map<Long, String> activityNames = new LinkedHashMap<>();
+        Map<Long, String> subActivityNames = new LinkedHashMap<>();
         Map<Long, Long> participantCountMap = new HashMap<>();
         Map<Long, Double> expenditureMap = new HashMap<>();
 
+        // No dates given -> whole period
+        Date from = fromDate != null ? fromDate : new GregorianCalendar(2000, Calendar.JANUARY, 1).getTime();
+        Date to = toDate != null ? toDate : new GregorianCalendar(2100, Calendar.DECEMBER, 31).getTime();
+
         // -------------------- ACTIVITIES & SUB ACTIVITIES --------------------
         List<Activity> activities = activityRepository.findByAgencyAgencyId(agencyId);
-        if (activities.isEmpty()) {
+        if (activities == null || activities.isEmpty()) {
             return result;
         }
 
-        String agencyName = activities.get(0).getAgency().getAgencyName();
+        String agencyName = activities.stream()
+                .filter(a -> a.getAgency() != null)
+                .map(a -> a.getAgency().getAgencyName())
+                .findFirst()
+                .orElse(null);
 
         for (Activity activity : activities) {
+            if (activity.getSubActivities() == null) {
+                continue;
+            }
             for (SubActivity subActivity : activity.getSubActivities()) {
+                if (subActivity == null || subActivity.getSubActivityId() == null) {
+                    continue;
+                }
                 activityNames.put(subActivity.getSubActivityId(), activity.getActivityName());
                 subActivityNames.put(subActivity.getSubActivityId(), subActivity.getSubActivityName());
             }
@@ -789,30 +806,20 @@ public class ProgressMonitoringServiceImpl implements ProgressMonitoringService 
 
         Set<Long> subActivityIds = subActivityNames.keySet();
 
-        // -------------------- PARTICIPANT COUNT --------------------
-        List<SubActivityParticipantCountDTO> participantCounts =
-                activityRepository.findProgramCountByAgencyId(agencyId);
-
-        for (SubActivityParticipantCountDTO dto : participantCounts) {
-            participantCountMap.put(
-                    dto.getSubActivityId(),
-                    Long.valueOf(dto.getParticipantCount())
-            );
+        // -------------------- PARTICIPANT COUNT (within the date range) --------------------
+        for (Object[] row : participantRepository.countParticipantsBySubActivityAndProgramCreatedOnBetween(
+                agencyId, from, to)) {
+            if (row[0] instanceof Number id && row[1] instanceof Number count) {
+                participantCountMap.put(id.longValue(), count.longValue());
+            }
         }
 
-        // -------------------- EXPENDITURE (APPROVED + PENDING) --------------------
-        Iterable<ProgramExpenditure> expenditures =
-                programExpenditureRepository
-                        .findBySubActivity_SubActivityIdInAndAgency_AgencyIdAndBillDateBetween(
-                                subActivityIds,
-                                agencyId,
-                                fromDate,
-                                toDate
-                        );
-
-        for (ProgramExpenditure p : expenditures) {
-            Long subActivityId = p.getSubActivity().getSubActivityId();
-            expenditureMap.merge(subActivityId, p.getCost(), Double::sum);
+        // -------------------- EXPENDITURE (APPROVED + PENDING, within the date range) --------------------
+        for (Object[] row : programExpenditureRepository.sumExpenditureByAgencyAndDateRangeGroupBySubActivity(
+                agencyId, from, to)) {
+            if (row[0] instanceof Number id && row[1] instanceof Number sum) {
+                expenditureMap.merge(id.longValue(), sum.doubleValue(), Double::sum);
+            }
         }
 
         // -------------------- FINAL DTO BUILD --------------------

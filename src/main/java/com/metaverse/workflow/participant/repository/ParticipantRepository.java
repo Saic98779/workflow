@@ -48,6 +48,32 @@ public interface ParticipantRepository extends JpaRepository<Participant, Long> 
             @Param("startDate") Date startDate,
             @Param("endDate") Date endDate);
 
+    /**
+     * Lightweight projection of {@link #findAllByAgencyIdAndProgramCreatedOnBetween}:
+     * one row per (participantId, subActivityId of any of the participant's programs, participant createdOn)
+     * for participants having at least one program of the agency created in the date range.
+     */
+    @Query("SELECT DISTINCT p.participantId, pr.subActivityId, p.createdOn FROM Participant p " +
+            "JOIN p.programs pr " +
+            "WHERE EXISTS (SELECT 1 FROM Participant p2 JOIN p2.programs pr2 " +
+            "              WHERE p2 = p AND pr2.agency.agencyId = :agencyId " +
+            "              AND pr2.createdOn BETWEEN :startDate AND :endDate)")
+    List<Object[]> findParticipantSubActivityRowsByAgencyIdAndProgramCreatedOnBetween(
+            @Param("agencyId") Long agencyId,
+            @Param("startDate") Date startDate,
+            @Param("endDate") Date endDate);
+
+    /** Distinct participants per sub-activity for the agency's programs created in the date range: rows of [subActivityId, count]. */
+    @Query("SELECT pr.subActivityId, COUNT(DISTINCT p.participantId) FROM Participant p " +
+            "JOIN p.programs pr " +
+            "WHERE pr.agency.agencyId = :agencyId " +
+            "AND pr.createdOn BETWEEN :startDate AND :endDate " +
+            "GROUP BY pr.subActivityId")
+    List<Object[]> countParticipantsBySubActivityAndProgramCreatedOnBetween(
+            @Param("agencyId") Long agencyId,
+            @Param("startDate") Date startDate,
+            @Param("endDate") Date endDate);
+
 
     @Query("SELECT pr.activityId, COUNT(DISTINCT p) " +
             "FROM Participant p " +

@@ -30,6 +30,9 @@ import com.metaverse.workflow.audit.ApiModule;
 @RequiredArgsConstructor
 @ApiModule("FileGenerator")
 public class FileGeneratorController {
+    private static final org.apache.logging.log4j.Logger log =
+            org.apache.logging.log4j.LogManager.getLogger(FileGeneratorController.class);
+
     private final MoMSMEExcelGenerator moMSMEExcelGenerator;
     private final TrainingProgramExcelGenerator excelGenerator;
     private final ExpenditureExcelGenerator expenditureExcelGenerator;
@@ -495,21 +498,46 @@ public class FileGeneratorController {
     }
 
     @PostMapping("/export/progress/excel")
-    public void exportExcelReport(
-            @RequestBody ReportRequest request,
-            HttpServletResponse response) throws IOException {
+    public ResponseEntity<?> exportExcelReport(@RequestBody(required = false) ReportRequest request) {
 
+        if (request == null || request.getAgencyIds() == null
+                || request.getAgencyIds().stream().noneMatch(java.util.Objects::nonNull)) {
+            return ResponseEntity.badRequest().body(java.util.Map.of(
+                    "success", false,
+                    "message", "agencyIds is required"));
+        }
+        if (request.getDateType() == DateType.DATE_RANGE
+                && (request.getFromDate() == null || request.getToDate() == null)
+                && (request.getFinancialYear() == null || request.getFinancialYear().isBlank())) {
+            return ResponseEntity.badRequest().body(java.util.Map.of(
+                    "success", false,
+                    "message", "fromDate and toDate are required for DATE_RANGE"));
+        }
 
-        response.setContentType("application/vnd.ms-excel");
-        response.setHeader("Content-Disposition", "attachment; filename=Agency_Report.xls");
+        // Build the whole file in memory first, so a failure returns a proper error
+        // instead of a half-written download (or a misleading 401 from the /error forward).
+        byte[] excelBytes;
+        try (java.io.ByteArrayOutputStream out = new java.io.ByteArrayOutputStream()) {
+            trainingTargetPreview.generateExcel(request, request.getLoginName(), out);
+            excelBytes = out.toByteArray();
+        } catch (Exception ex) {
+            log.error("Progress report Excel generation failed | request={}", request, ex);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(java.util.Map.of(
+                    "success", false,
+                    "message", "Failed to generate progress report: " + ex.getMessage()));
+        }
 
-        ServletOutputStream outputStream = response.getOutputStream();
+        StringBuilder fileName = new StringBuilder("Agency_Report");
+        if (request.getFinancialYear() != null && !request.getFinancialYear().isBlank()) {
+            fileName.append("_").append(request.getFinancialYear().replaceAll("[^0-9-]", ""));
+        }
+        fileName.append(".xls");
 
-        trainingTargetPreview.generateExcel(request, request.getLoginName(), outputStream);
-
-        outputStream.flush();
-        response.flushBuffer();
-
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName)
+                .contentType(MediaType.parseMediaType("application/vnd.ms-excel"))
+                .contentLength(excelBytes.length)
+                .body(excelBytes);
     }
 
     @GetMapping("/export/financial-tracker/excel")

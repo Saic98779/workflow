@@ -15,6 +15,8 @@ import java.util.Optional;
 public interface NonTrainingTargetRepository extends JpaRepository<NonTrainingTargets, Long> {
 
     List<NonTrainingTargets> findByNonTrainingSubActivity_NonTrainingActivity_Agency_AgencyId(Long agencyId);
+
+    List<NonTrainingTargets> findByFinancialYear(String financialYear);
     List<NonTrainingTargets> findByNonTrainingSubActivity_subActivityId(Long subActivityId);
 
 

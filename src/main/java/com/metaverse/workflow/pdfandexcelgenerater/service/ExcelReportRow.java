@@ -21,4 +21,10 @@ public class ExcelReportRow {
 
     //Report Type
     private String reportType;
+
+    // true when this row's data could not be loaded; values are shown as 0 and the row is highlighted
+    private boolean error;
+
+    // Explanation shown in the Remarks column (error / no data)
+    private String remarks;
 }

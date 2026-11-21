@@ -45,9 +45,45 @@ public class NonTrainingTargetsAndAchievementsServiceImpl implements NonTraining
             throw new RuntimeException("No targets found for agency " + agencyId + " in FY " + financialYear);
         }
 
-        return targets.stream().map(t -> {
+        return targets.stream().map(t -> safeBuildTargetsAndAchievements(t, agencyId, financialYear)).toList();
+    }
+
+    /** Builds the row for one target; if anything fails, returns the row with 0 values flagged as error. */
+    private NonTrainingTargetsAndAchievementsResponse safeBuildTargetsAndAchievements(
+            NonTrainingTargets t, Long agencyId, String financialYear) {
+        try {
+            return buildTargetsAndAchievements(t, agencyId, financialYear);
+        } catch (Exception ex) {
             NonTrainingTargetsAndAchievementsResponse dto = new NonTrainingTargetsAndAchievementsResponse();
-            dto.setAgencyName(t.getNonTrainingActivity().getAgency().getAgencyName());
+            try {
+                dto.setFinancialYear(t.getFinancialYear());
+                NonTrainingSubActivity sub = t.getNonTrainingSubActivity();
+                if (sub != null) {
+                    dto.setSubActivityName(sub.getSubActivityName());
+                    if (sub.getNonTrainingActivity() != null) {
+                        dto.setActivityName(sub.getNonTrainingActivity().getActivityName());
+                        if (sub.getNonTrainingActivity().getAgency() != null) {
+                            dto.setAgencyName(sub.getNonTrainingActivity().getAgency().getAgencyName());
+                        }
+                    }
+                }
+            } catch (Exception ignored) {
+                // keep whatever names were resolved
+            }
+            dto.setTotalTarget(0L);
+            dto.setTotalAchieved(0L);
+            dto.setTotalFinancialTarget(0);
+            dto.setTotalFinancialAchieved(0.0);
+            dto.setDataError(true);
+            return dto;
+        }
+    }
+
+    private NonTrainingTargetsAndAchievementsResponse buildTargetsAndAchievements(
+            NonTrainingTargets t, Long agencyId, String financialYear) {
+            NonTrainingTargetsAndAchievementsResponse dto = new NonTrainingTargetsAndAchievementsResponse();
+            dto.setAgencyName(t.getNonTrainingSubActivity().getNonTrainingActivity().getAgency() != null
+                    ? t.getNonTrainingSubActivity().getNonTrainingActivity().getAgency().getAgencyName() : null);
             dto.setActivityName(t.getNonTrainingSubActivity().getNonTrainingActivity().getActivityName());
             dto.setSubActivityName(t.getNonTrainingSubActivity().getSubActivityName());
             dto.setFinancialYear(t.getFinancialYear());
@@ -65,20 +101,35 @@ public class NonTrainingTargetsAndAchievementsServiceImpl implements NonTraining
             dto.setFinancialTargetQ4(Optional.ofNullable(t.getQ4Budget()).orElse(0.0));
 
 
-            Object[] physicalFinancialAchieved = quarterlyWiseExpenditure(
-                    agencyId,
-                    t.getNonTrainingSubActivity().getSubActivityId(),
-                    financialYear,
-                    t.getNonTrainingSubActivity().getNonTrainingActivity().getActivityName(),
-                    t.getNonTrainingSubActivity().getSubActivityName()
-            );
+            Object[] physicalFinancialAchieved;
+            try {
+                physicalFinancialAchieved = quarterlyWiseExpenditure(
+                        agencyId,
+                        t.getNonTrainingSubActivity().getSubActivityId(),
+                        financialYear,
+                        t.getNonTrainingSubActivity().getNonTrainingActivity().getActivityName(),
+                        t.getNonTrainingSubActivity().getSubActivityName()
+                );
+            } catch (Exception ex) {
+                // Achievements unavailable for this sub-activity -> treat as 0 and flag the row
+                physicalFinancialAchieved = null;
+                dto.setDataError(true);
+            }
 
 
-            Long[] physicalAchieved = Arrays.stream((Object[]) physicalFinancialAchieved[0])
-                    .map(o -> (o instanceof Number) ? ((Number) o).longValue() : 0L)
-                    .toArray(Long[]::new);
+            Object[] physicalRaw = physicalFinancialAchieved != null && physicalFinancialAchieved.length > 0
+                    && physicalFinancialAchieved[0] instanceof Object[] p ? p : new Object[0];
+            Object[] financialRaw = physicalFinancialAchieved != null && physicalFinancialAchieved.length > 1
+                    && physicalFinancialAchieved[1] instanceof Object[] f ? f : new Object[0];
 
-            Double[] financialAchieved = Arrays.stream((Object[]) physicalFinancialAchieved[1])
+            // Always 4 quarters; missing / null values become 0
+            Long[] physicalAchieved = new Long[4];
+            for (int i = 0; i < 4; i++) {
+                physicalAchieved[i] = i < physicalRaw.length && physicalRaw[i] instanceof Number n
+                        ? n.longValue() : 0L;
+            }
+
+            Double[] financialAchieved = Arrays.stream(financialRaw)
                     .map(o -> (o instanceof Number) ? ((Number) o).doubleValue() : 0.0)
                     .toArray(Double[]::new);
 
@@ -123,7 +174,6 @@ public class NonTrainingTargetsAndAchievementsServiceImpl implements NonTraining
                             : Math.round(((totalFinancialAchieved / dto.getTotalFinancialTarget()) * 100) * 100.0)/100.0
             );
             return dto;
-        }).toList();
     }
 
 
@@ -466,7 +516,32 @@ public class NonTrainingTargetsAndAchievementsServiceImpl implements NonTraining
             throw new RuntimeException("No targets found for agency " + agencyId + " in FY " + year);
         }
 
-        return targets.stream().map(t -> {
+        return targets.stream().map(this::toTargetResponse).toList();
+    }
+
+    @Override
+    public List<TargetResponse> getNonTrainingTargetsForExport(String year, Long agencyId) {
+
+        boolean hasYear = year != null && !year.isBlank();
+        boolean hasAgency = agencyId != null;
+
+        List<NonTrainingTargets> targets;
+        if (hasYear && hasAgency) {
+            targets = nonTrainingTargetRepository
+                    .findByNonTrainingSubActivity_NonTrainingActivity_Agency_AgencyIdAndFinancialYear(agencyId, year);
+        } else if (hasAgency) {
+            targets = nonTrainingTargetRepository
+                    .findByNonTrainingSubActivity_NonTrainingActivity_Agency_AgencyId(agencyId);
+        } else if (hasYear) {
+            targets = nonTrainingTargetRepository.findByFinancialYear(year);
+        } else {
+            targets = nonTrainingTargetRepository.findAll();
+        }
+
+        return targets.stream().map(this::toTargetResponse).toList();
+    }
+
+    private TargetResponse toTargetResponse(NonTrainingTargets t) {
             TargetResponse dto = new TargetResponse();
 
             dto.setTargetId(t.getId());
@@ -496,9 +571,5 @@ public class NonTrainingTargetsAndAchievementsServiceImpl implements NonTraining
             );
 
             return dto;
-        }).toList();
     }
-
-
-
 }

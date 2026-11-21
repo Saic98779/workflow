@@ -7,14 +7,19 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -29,7 +34,7 @@ public class TrainingTargetPreview {
     public void generateExcel(
             ReportRequest request,
             String createdBy,
-            ServletOutputStream outputStream) throws IOException {
+            OutputStream outputStream) throws IOException {
 
         log.info("Excel generation started | createdBy={} | agencies={}",
                 createdBy, request.getAgencyIds());
@@ -62,20 +67,30 @@ public class TrainingTargetPreview {
         row(sheet, rowNum++, "Created By", createdBy);
         row(sheet, rowNum++, "Generated On", LocalDateTime.now().toString());
 
-        String agencies = String.join(", ",
-                agencyRepository.findAgencyNamesByIds(request.getAgencyIds()));
+        String agencies = "";
+        List<Long> agencyIds = agencyIds(request);
+        if (!agencyIds.isEmpty()) {
+            try {
+                agencies = String.join(", ", agencyRepository.findAgencyNamesByIds(agencyIds));
+            } catch (Exception ex) {
+                log.warn("Could not resolve agency names for {} : {}", agencyIds, ex.getMessage());
+            }
+        }
 
         log.debug("Summary agencies resolved: {}", agencies);
 
         row(sheet, rowNum++, "Agencies", agencies);
-        row(sheet, rowNum++, "Report Type", request.getReportType().name());
-        row(sheet, rowNum++, "Training Type", request.getTrainingType().name());
+        row(sheet, rowNum++, "Report Type",
+                request.getReportType() != null ? request.getReportType().name() : ReportType.TARGET.name());
+        row(sheet, rowNum++, "Training Type",
+                request.getTrainingType() != null ? request.getTrainingType().name()
+                        : TrainingType.TRAINING_AND_NON_TRAINING.name());
 
-        if (request.getDateType() == DateType.FINANCIAL_YEAR) {
-            row(sheet, rowNum++, "Financial Year", request.getFinancialYear());
+        if (request.getDateType() == DateType.DATE_RANGE) {
+            row(sheet, rowNum++, "From Date", request.getFromDate());
+            row(sheet, rowNum++, "To Date", request.getToDate());
         } else {
-            row(sheet, rowNum++, "From Date", request.getFromDate().toString());
-            row(sheet, rowNum++, "To Date", request.getToDate().toString());
+            row(sheet, rowNum++, "Financial Year", request.getFinancialYear());
         }
 
         setColumnWidths(sheet, 2);
@@ -85,7 +100,15 @@ public class TrainingTargetPreview {
     private void row(HSSFSheet sheet, int rowNum, String key, String value) {
         HSSFRow row = sheet.createRow(rowNum);
         row.createCell(0).setCellValue(key);
-        row.createCell(1).setCellValue(value);
+        row.createCell(1).setCellValue(value != null ? value : "");
+    }
+
+    /** Distinct, non-null agency ids of the request. */
+    private List<Long> agencyIds(ReportRequest request) {
+        if (request.getAgencyIds() == null) {
+            return List.of();
+        }
+        return request.getAgencyIds().stream().filter(Objects::nonNull).distinct().toList();
     }
 
     private void createDataSheet(HSSFWorkbook workbook, ReportRequest request) {
@@ -95,21 +118,47 @@ public class TrainingTargetPreview {
         HSSFSheet sheet = workbook.createSheet("Report Data");
         int rowNum = 0;
 
-        createHeader(sheet, request.getReportType());
+        ReportType reportType = request.getReportType() != null ? request.getReportType() : ReportType.TARGET;
+        createHeader(sheet, reportType);
         rowNum++;
 
-        for (Long agencyId : request.getAgencyIds()) {
+        // Highlight for rows whose data failed to load (values written as 0)
+        HSSFCellStyle errorStyle = workbook.createCellStyle();
+        errorStyle.setFillForegroundColor(IndexedColors.ROSE.getIndex());
+        errorStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+
+        for (Long agencyId : agencyIds(request)) {
 
             log.debug("Fetching report rows for agencyId={}", agencyId);
 
-            List<ExcelReportRow> rows =
-                    reportDataService.prepareExcelRows(agencyId, request);
+            List<ExcelReportRow> rows;
+            try {
+                rows = reportDataService.prepareExcelRows(agencyId, request);
+            } catch (Exception ex) {
+                log.error("Failed to prepare report rows for agencyId={}", agencyId, ex);
+                rows = List.of(ExcelReportRow.builder()
+                        .agency("Agency " + agencyId)
+                        .activity("-")
+                        .subActivity("-")
+                        .physicalTarget(0L)
+                        .budgetAllocated(0.0)
+                        .trainingAchievement(0L)
+                        .expenditure(0.0)
+                        .error(true)
+                        .remarks("Error while loading data - values shown as 0")
+                        .build());
+            }
 
             log.debug("Fetched {} rows for agencyId={}", rows.size(), agencyId);
 
             for (ExcelReportRow data : rows) {
                 HSSFRow row = sheet.createRow(rowNum++);
-                writeRow(row, data, request.getReportType());
+                writeRow(row, data, reportType);
+                if (data.isError()) {
+                    for (int c = 0; c < row.getLastCellNum(); c++) {
+                        row.getCell(c).setCellStyle(errorStyle);
+                    }
+                }
             }
         }
 
@@ -139,6 +188,8 @@ public class TrainingTargetPreview {
             header.createCell(col++).setCellValue("Physical Achievement");
             header.createCell(col++).setCellValue("Expenditure");
         }
+
+        header.createCell(col).setCellValue("Remarks");
     }
 
     private void writeRow(
@@ -157,7 +208,8 @@ public class TrainingTargetPreview {
         row.createCell(col++).setCellValue(
                 data.getSubActivity() != null ? data.getSubActivity() : "");
 
-        row.createCell(col++).setCellValue(data.getReportType());
+        row.createCell(col++).setCellValue(
+                data.getReportType() != null ? data.getReportType() : "");
 
         if (reportType != ReportType.ACHIEVEMENT) {
             row.createCell(col++).setCellValue(
@@ -174,6 +226,8 @@ public class TrainingTargetPreview {
             row.createCell(col++).setCellValue(
                     data.getExpenditure() != null ? data.getExpenditure() : 0.0);
         }
+
+        row.createCell(col).setCellValue(data.getRemarks() != null ? data.getRemarks() : "");
     }
 
     /**

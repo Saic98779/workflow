@@ -1,5 +1,6 @@
 package com.metaverse.workflow.trainingandnontrainingtarget.dtos;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 @Data
@@ -30,4 +31,8 @@ public class NonTrainingTargetsAndAchievementsResponse {
     private Long totalAchieved;
     private String physicalExpenditurePercentage;
     private Double financialExpenditurePercentage;
+
+    /** true when achievements for this row failed to load and were defaulted to 0 (internal, not serialized). */
+    @JsonIgnore
+    private boolean dataError;
 }

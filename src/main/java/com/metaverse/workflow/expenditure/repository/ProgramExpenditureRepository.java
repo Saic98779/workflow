@@ -41,6 +41,17 @@ public interface ProgramExpenditureRepository extends JpaRepository<ProgramExpen
             @Param("endDate") Date endDate
     );
 
+    /** Same as {@link #sumExpenditureByAgencyAndSubActivityAndDateRange} for all sub-activities at once: rows of [subActivityId, sum]. */
+    @Query("SELECT pe.subActivity.subActivityId, SUM(pe.cost) FROM ProgramExpenditure pe " +
+            "WHERE pe.agency.agencyId = :agencyId " +
+            "AND pe.billDate BETWEEN :startDate AND :endDate " +
+            "GROUP BY pe.subActivity.subActivityId")
+    List<Object[]> sumExpenditureByAgencyAndDateRangeGroupBySubActivity(
+            @Param("agencyId") Long agencyId,
+            @Param("startDate") Date startDate,
+            @Param("endDate") Date endDate
+    );
+
 
     Iterable<ProgramExpenditure> findBySubActivity_SubActivityIdInAndAgency_AgencyId(Iterable<Long> subActivityListIDs,Long agencyId);
 
